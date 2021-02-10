@@ -2,14 +2,17 @@ import { User } from "@prisma/client";
 import axios from "axios";
 import Head from "next/head";
 import { useQuery } from "react-query";
-import { CreatePost, CreateUser, PostsList, UsersList } from "../components/Test";
+import {
+  CreatePost,
+  CreateUser,
+  PostsList,
+  UsersList,
+} from "../components/Test";
 import styles from "../styles/Home.module.css";
 import dynamic from "next/dynamic";
 import { InferGetStaticPropsType } from "next";
 
-export default function Home(
-  props
-) {
+export default function Home(props) {
   return (
     <div className={styles.container}>
       <Head>

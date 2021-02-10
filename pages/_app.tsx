@@ -2,7 +2,7 @@ import "../styles/globals.css";
 import React from 'react'
 import { Hydrate } from "react-query/hydration";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { AppProps } from "next/dist/next-server/lib/router/router";
+import { AppProps } from "next/app";
 import { ReactQueryDevtools } from 'react-query/devtools'
 
 function MyApp({ Component, pageProps }) {

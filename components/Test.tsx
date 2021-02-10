@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Post, User } from "@prisma/client";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useMutationCacheStatus } from "../hooks/useMutationCacheStatus";
 
@@ -37,7 +37,7 @@ export function PostsList() {
 export function CreatePost() {
   const queryClient = useQueryClient();
 
-  const { mutate, status, reset } = useMutation(
+  const { mutate } = useMutation(
     "post",
     (newPost: Post) => axios.put("/api/post/23232", newPost),
     {
@@ -68,7 +68,7 @@ export function CreatePost() {
 export function CreateUser() {
   const queryClient = useQueryClient();
 
-  const { mutate, status, reset } = useMutation(
+  const { mutate } = useMutation(
     "user",
     (newUser: User) => axios.put("/api/user/22323", newUser),
     {
