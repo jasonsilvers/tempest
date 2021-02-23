@@ -41,7 +41,8 @@ export default async function userHandler(
       const result = await prisma.post.create({
         data: {
           title,
-          content,
+          content, 
+          subtitle: 'test',
           author: { connect: { id: authorId } },
         },
       });

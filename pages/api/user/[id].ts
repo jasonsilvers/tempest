@@ -17,7 +17,8 @@ export default async function userHandler(
     userId = parseInt(id);
   }
 
-  console.log(userId);
+  const canAddUsr = permit(req.permissions)
+
 
   switch (method) {
     case "GET": {

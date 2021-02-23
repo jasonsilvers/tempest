@@ -11,8 +11,9 @@ generator client {
 }
 
 model Post {
-  id        Int     @default(autoincrement()) @id
+  id        Int     @id @default(autoincrement())
   title     String
+  subtitle  String
   content   String?
   published Boolean @default(false)
   author    User?   @relation(fields: [authorId], references: [id])
@@ -20,11 +21,13 @@ model Post {
 }
 
 model User {
-  id            Int       @default(autoincrement()) @id
-  name          String?
-  email         String?   @unique
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @updatedAt @map(name: "updated_at")
-  posts         Post[]
+  id        Int      @id @default(autoincrement())
+  dodId     String?   @unique
+  name      String?
+  email     String?  @unique
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+  posts     Post[]
+
   @@map(name: "users")
 }
