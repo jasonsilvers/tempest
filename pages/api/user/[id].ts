@@ -17,9 +17,6 @@ export default async function userHandler(
     userId = parseInt(id);
   }
 
-  const canAddUsr = permit(req.permissions)
-
-
   switch (method) {
     case "GET": {
       const user = await prisma.user.findUnique({

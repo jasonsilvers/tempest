@@ -13,6 +13,7 @@ import dynamic from "next/dynamic";
 import { InferGetStaticPropsType } from "next";
 
 export default function Home(props) {
+
   return (
     <div className={styles.container}>
       <Head>

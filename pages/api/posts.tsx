@@ -6,7 +6,6 @@ import prisma from "../../lib/prisma";
 
 export default async (req: NextApiRequest, res: NextApiResponse<Post[]>) => {
   res.statusCode = 200;
-
   const posts = await prisma.post.findMany();
 
   res.json(posts);

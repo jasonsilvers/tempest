@@ -22,12 +22,51 @@ model Post {
 
 model User {
   id        Int      @id @default(autoincrement())
-  dodId     String?   @unique
+  dodId     String?  @unique
   name      String?
   email     String?  @unique
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
   posts     Post[]
+  role      Role2?
 
+  //Model = user, TableName = users
   @@map(name: "users")
+}
+
+model Role {
+  id              Int            @id @default(autoincrement())
+  name            String
+  resouces        Resource[]
+}
+
+model Resource {
+  id          Int          @id @default(autoincrement())
+  name        String
+  permissions Permission[]
+  Role        Role?        @relation(fields: [roleId], references: [id])
+  roleId      Int?
+}
+
+model Permission {
+  id         Int       @id @default(autoincrement())
+  name       String
+  attributes String[]
+  Resource   Resource? @relation(fields: [resourceId], references: [id])
+  resourceId Int?
+}
+
+model AccessControl2 {
+  id Int @id @default(autoincrement())
+  role String
+  resource String
+  action String
+  attributes String
+}
+
+model Role2 {
+  id              Int            @id @default(autoincrement())
+  name            String
+  AccessControl   AccessControl2? @relation(fields: [accessControlId], references: [id])
+  accessControlId Int?
 }
