@@ -17,7 +17,9 @@ model Post {
   content   String?
   published Boolean @default(false)
   author    User?   @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  authorId  Int? @map("author_id")
+
+  @@map(name: "post")
 }
 
 model User {
@@ -25,27 +27,33 @@ model User {
   dodId     String?  @unique
   name      String?
   email     String?  @unique
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
   posts     Post[]
   role      Role2?
 
-  //Model = user, TableName = users
-  @@map(name: "users")
+  //Model = User, TableName = users
+  @@map(name: "user")
 }
 
 model Role {
   id              Int            @id @default(autoincrement())
   name            String
-  resouces        Resource[]
+  resources        Resource[]
+
+  @@map(name: "role")
+
 }
 
 model Resource {
   id          Int          @id @default(autoincrement())
   name        String
   permissions Permission[]
-  Role        Role?        @relation(fields: [roleId], references: [id])
-  roleId      Int?
+  Role        Role?  @relation(fields: [roleId], references: [id])
+  roleId      Int? @map("role_id")
+
+  @@map(name: "resource")
+
 }
 
 model Permission {
@@ -53,7 +61,10 @@ model Permission {
   name       String
   attributes String[]
   Resource   Resource? @relation(fields: [resourceId], references: [id])
-  resourceId Int?
+  resourceId Int? @map("resource_id")
+
+  @@map(name: "permission")
+
 }
 
 model AccessControl2 {
@@ -62,11 +73,16 @@ model AccessControl2 {
   resource String
   action String
   attributes String
+
+  @@map(name: "accesscontrol2")
+
 }
 
 model Role2 {
   id              Int            @id @default(autoincrement())
   name            String
   AccessControl   AccessControl2? @relation(fields: [accessControlId], references: [id])
-  accessControlId Int?
+  accessControlId Int? @map("access_control_id")
+  @@map(name: "role2")
+
 }
