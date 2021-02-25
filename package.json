@@ -8,8 +8,10 @@
     "start": "next start",
     "lint": "eslint . --ext js,jsx,ts,tsx --quiet",
     "test": "jest --watchAll",
-    "studio": "npx prisma studio",
-    "migrate": "prisma migrate dev --preview-feature"
+    "db:studio": "npx prisma studio",
+    "db:migrate": "prisma migrate dev --preview-feature",
+    "db:reset": "prisma migrate reset --preview-feature",
+    "db:seed": "prisma db seed --preview-feature"
   },
   "dependencies": {
     "@prisma/client": "^2.16.1",

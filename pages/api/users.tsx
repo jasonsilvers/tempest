@@ -14,10 +14,10 @@ function hasRoleAndCanReadResource (ac: AccessControl, role: string, resource: s
 const users = async (req: NextAPIRequestWithAuthorization, res: NextApiResponse<User[]>) => {
   res.statusCode = 200;
 
-  // console.log(req.ac)
-  // const permission = hasRoleAndCanReadResource(req.ac, 'admin', 'record')
+  console.log(req.ac)
+  const permission = hasRoleAndCanReadResource(req.ac, 'admin', 'record')
 
-  // console.log('This is the permission', permission)
+  console.log('This is the permission', permission)
 
   const users = await prisma.user.findMany();
 

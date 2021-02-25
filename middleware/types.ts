@@ -8,3 +8,10 @@ export type NextAPIRequestWithAuthorization = NextApiRequest & {
 export type P1Token = {
   usercertificate: string
 }
+
+export type Grant = {
+  role: string,
+  resource: string,
+  action: string,
+  attributes: string
+}

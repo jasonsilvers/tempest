@@ -3,22 +3,20 @@ import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import jwt_decode from "jwt-decode";
 import { Access, AccessControl } from "accesscontrol";
 import cors from "./cors";
-import { NextAPIRequestWithAuthorization, P1Token } from "./types";
+import { Grant, NextAPIRequestWithAuthorization, P1Token } from "./types";
 import prisma from "../lib/prisma";
 
 const dev = process.env.NODE_ENV === "development";
 
 function getDodIdFromToken(jwt: string) {
-
   if (jwt === null || jwt === undefined) {
-    return null
+    return null;
   }
 
   const decodedJwt: P1Token = jwt_decode(jwt);
   const splitJWT = decodedJwt.usercertificate.split(".");
 
   return splitJWT[splitJWT.length - 1];
-
 }
 
 const jwtInterceptor = (handler: NextApiHandler) => async (
@@ -29,59 +27,44 @@ const jwtInterceptor = (handler: NextApiHandler) => async (
     await cors(req, res);
   }
 
-  console.log('test')
-  console.log(req.headers)
-
   const jwt = req.headers.authorization?.split(" ")[1];
   const dodId = getDodIdFromToken(jwt);
 
-  console.log('test')
+  console.log('DOD ID-', dodId)
 
-  // const user = await prisma.user.findFirst({
-  //   where: { dodId },
-  // });
+  const user = await prisma.user.findFirst({
+    where: { dodId },
+  });
 
-  //decode jwt
-  //get userId
-  //look up user in database
-  //get role and permission
-  //use role and permission to create Access Control object
-  //attach access control object to req
+  console.log(user)
 
-  //Load ONLY users roles/permissions?
-  //OR
-  //Load all permissions and get users role?
+  const role = await prisma.role.findFirst({
+    where: { id: user.roleId},
+    include: {
+      grant: {
+        select: {
+          action: true,
+          attributes: true,
+          resource: true,
+          role: true
+        }
+      }
+    }
 
-  const roles = await prisma.role.findMany()
+  });
 
-  console.log(roles)
+  // const permissions = role.permissions.map(permission => {
+  //   return {
+  //     role: permission.roleName,
+  //     resource: permission.resourceName,
+  //     action: permission.name,
+  //     attributes: permission.attributes.join(', ')
+  //   } as Grant
+  // })
+  
+  console.log(role.grant)
 
-  // const acFromDb2 = await prisma.accessControl2.findMany()
-
-  // console.log(acFromDb2)
-
-  let grantsObject = {
-    admin: {
-      record: {
-        "create:any": ["*"],
-        "read:any": ["*"],
-        "update:any": ["*"],
-        "delete:any": ["*"],
-      },
-    },
-  };
-
-  let userObject = {
-    user: {
-      record: {
-        "read:own": ["*"],
-        "update:own": ["*"],
-      },
-    },
-  };
-
-  const ac = new AccessControl(userObject);
-
+  const ac = new AccessControl(role.grant);
   req.ac = ac;
 
   return handler(req, res);
