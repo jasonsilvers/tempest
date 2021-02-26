@@ -1,11 +1,21 @@
-const { PrismaClient } = require("@prisma/client");
+const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient();
 
 async function main() {
 
+  const organization = await prisma.organization.create({
+    data: {
+      name: 'test',
+    }
+  })
+
   const role = await prisma.role.create({
     data: {
-      name: 'admin'
+      accessControlName: 'admin',
+      displayName: 'admin',
+      organization: {
+        connect: {id: organization.id}
+      }
     }
   })
 
@@ -23,7 +33,7 @@ async function main() {
         name: resource.name
       }},
       roleModel: {connect: {
-        name: role.name
+        accessControlName: role.accessControlName
       }}
     }
   })
@@ -36,6 +46,11 @@ async function main() {
       email: "bob.anderson@gmail.com",
       createdAt: new Date(),
       updatedAt: new Date(),
+      organization: {
+        connect: {
+          id: organization.id
+        }
+      },
       role: {connect: {
         id: role.id
       }}

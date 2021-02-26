@@ -34,6 +34,7 @@ const jwtInterceptor = (handler: NextApiHandler) => async (
 
   const user = await prisma.user.findFirst({
     where: { dodId },
+    include: {organization: true}
   });
 
   console.log(user)
@@ -65,6 +66,9 @@ const jwtInterceptor = (handler: NextApiHandler) => async (
   console.log(role.grant)
 
   const ac = new AccessControl(role.grant);
+
+  ac.grant
+
   req.ac = ac;
 
   return handler(req, res);

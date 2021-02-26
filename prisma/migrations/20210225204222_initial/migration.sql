@@ -19,6 +19,16 @@ CREATE TABLE "user" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "roleId" INTEGER,
+    "organizationId" INTEGER,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Organization" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "organizationId" INTEGER,
 
     PRIMARY KEY ("id")
 );
@@ -26,7 +36,9 @@ CREATE TABLE "user" (
 -- CreateTable
 CREATE TABLE "role" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "access_control_name" TEXT NOT NULL,
+    "display_name" TEXT NOT NULL,
+    "organizationId" INTEGER NOT NULL,
 
     PRIMARY KEY ("id")
 );
@@ -57,7 +69,7 @@ CREATE UNIQUE INDEX "user.dodId_unique" ON "user"("dodId");
 CREATE UNIQUE INDEX "user.email_unique" ON "user"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "role.name_unique" ON "role"("name");
+CREATE UNIQUE INDEX "role.access_control_name_unique" ON "role"("access_control_name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "resource.name_unique" ON "resource"("name");
@@ -69,7 +81,16 @@ ALTER TABLE "post" ADD FOREIGN KEY ("author_id") REFERENCES "user"("id") ON DELE
 ALTER TABLE "user" ADD FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "user" ADD FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Organization" ADD FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "role" ADD FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "grant" ADD FOREIGN KEY ("resource_name") REFERENCES "resource"("name") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "grant" ADD FOREIGN KEY ("role_name") REFERENCES "role"("name") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "grant" ADD FOREIGN KEY ("role_name") REFERENCES "role"("access_control_name") ON DELETE CASCADE ON UPDATE CASCADE;

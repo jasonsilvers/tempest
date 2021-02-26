@@ -1,3 +1,4 @@
+import { User } from "@prisma/client";
 import { AccessControl } from "accesscontrol";
 import { NextApiRequest } from "next";
 
@@ -14,4 +15,8 @@ export type Grant = {
   resource: string,
   action: string,
   attributes: string
+}
+
+export type UserDTO = User & {
+  ac: AccessControl
 }
