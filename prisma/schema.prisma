@@ -55,7 +55,7 @@ model Role {
   //Can see children organizations
   displayName       String @map("display_name")
   user              User[]
-  grant             Grant[]
+  grants             Grant[]
   organization      Organization @relation(fields: [organizationId], references: [id])
   organizationId    Int
 

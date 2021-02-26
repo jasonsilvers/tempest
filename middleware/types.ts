@@ -4,6 +4,7 @@ import { NextApiRequest } from "next";
 
 export type NextAPIRequestWithAuthorization = NextApiRequest & {
   ac: AccessControl
+  user: UserDTO
 }
 
 export type P1Token = {
@@ -18,5 +19,5 @@ export type Grant = {
 }
 
 export type UserDTO = User & {
-  ac: AccessControl
+  grants: Grant[]
 }

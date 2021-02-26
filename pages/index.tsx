@@ -1,6 +1,6 @@
-import { User } from "@prisma/client";
 import axios from "axios";
 import Head from "next/head";
+import Link from 'next/link'
 import { useQuery } from "react-query";
 import {
   CreatePost,
@@ -9,8 +9,6 @@ import {
   UsersList,
 } from "../components/Test";
 import styles from "../styles/Home.module.css";
-import dynamic from "next/dynamic";
-import { InferGetStaticPropsType } from "next";
 
 export default function Home(props) {
 
@@ -25,6 +23,15 @@ export default function Home(props) {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+        <ul>
+          <li>
+            <Link href="/profile">
+              <a>Profile</a>
+            </Link>
+          </li>
+        </ul>
+
+
         <p className={styles.description}>
           Get started by editing{" "}
           <code className={styles.code}>pages/index.js</code>
@@ -77,3 +84,5 @@ export default function Home(props) {
     </div>
   );
 }
+
+
