@@ -28,7 +28,7 @@ CREATE TABLE "user" (
 CREATE TABLE "Organization" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "organizationId" INTEGER,
+    "parentId" INTEGER,
 
     PRIMARY KEY ("id")
 );
@@ -84,7 +84,7 @@ ALTER TABLE "user" ADD FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE 
 ALTER TABLE "user" ADD FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Organization" ADD FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Organization" ADD FOREIGN KEY ("parentId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "role" ADD FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;

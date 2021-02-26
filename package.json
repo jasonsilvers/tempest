@@ -10,8 +10,9 @@
     "test": "jest --watchAll",
     "db:studio": "npx prisma studio",
     "db:migrate": "prisma migrate dev --preview-feature",
-    "db:reset": "prisma migrate reset --preview-feature",
-    "db:seed": "prisma db seed --preview-feature"
+    "db:reseed": "prisma migrate reset --preview-feature",
+    "db:seed": "prisma db seed --preview-feature",
+    "db:reset": "rm -rf ./prisma/migrations && prisma migrate dev --preview-feature && npm run db:seed"
   },
   "dependencies": {
     "@prisma/client": "^2.16.1",
@@ -49,6 +50,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^26.6.3",
     "jest-dom": "^4.0.0",
+    "node-mocks-http": "^1.10.1",
     "prettier": "^2.2.1",
     "prisma": "^2.16.1",
     "ts-node": "^9.1.1",

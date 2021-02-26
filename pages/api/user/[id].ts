@@ -22,7 +22,6 @@ export default async function userHandler(
       const user = await prisma.user.findUnique({
         where: { id: userId },
       });
-
       res.status(200).json(user);
       break;
     }

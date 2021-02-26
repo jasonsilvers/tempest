@@ -1,10 +1,9 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 import jwt_decode from "jwt-decode";
-import { Access, AccessControl } from "accesscontrol";
+import { AccessControl } from "accesscontrol";
 import cors from "./cors";
 import {
-  Grant,
   NextAPIRequestWithAuthorization,
   P1Token,
   UserDTO,
@@ -49,7 +48,7 @@ const jwtInterceptor = (handler: NextApiHandler) => async (
   const role = await prisma.role.findFirst({
     where: { id: user.roleId },
     include: {
-      grant: {
+      grants: {
         select: {
           action: true,
           attributes: true,
@@ -60,11 +59,11 @@ const jwtInterceptor = (handler: NextApiHandler) => async (
     },
   });
 
-  const ac = new AccessControl(role.grant);
+  const ac = new AccessControl(role.grants);
 
   const userDTO: UserDTO = {
     ...user,
-    grants: role.grant
+    grants: role.grants
   };
 
   req.user = userDTO;
