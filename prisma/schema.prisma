@@ -8,6 +8,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  //Must add binary for production build
 }
 
 model Post {

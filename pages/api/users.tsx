@@ -20,7 +20,6 @@ export const users = async (
   res: NextApiResponse<User[] | Object>
 ) => {
   const permission = hasRoleAndCanReadResource(req.ac, 'admin', 'record');
-  console.log(permission);
 
   if (permission.granted) {
     res.statusCode = 200;

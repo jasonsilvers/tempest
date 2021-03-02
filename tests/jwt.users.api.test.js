@@ -1,4 +1,4 @@
-import { users } from '../users';
+import { users } from '../pages/api/users';
 import { createMocks } from 'node-mocks-http';
 import { AccessControl } from 'accesscontrol';
 

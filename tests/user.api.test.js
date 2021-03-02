@@ -1,5 +1,5 @@
 import { createMocks } from "node-mocks-http"
-import userHandler from "../[id]"
+import userHandler from '../pages/api/user/[id]'
 const usertest = {
   id: 123,
   name: "me"

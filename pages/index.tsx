@@ -29,6 +29,11 @@ export default function Home(props) {
               <a>Profile</a>
             </Link>
           </li>
+          <li>
+            <Link href="/posts">
+              <a>Posts</a>
+            </Link>
+          </li>
         </ul>
 
 
@@ -36,7 +41,6 @@ export default function Home(props) {
           Get started by editing{" "}
           <code className={styles.code}>pages/index.js</code>
         </p>
-        <CreateUser />
         <CreatePost />
         <UsersList />
         <PostsList />
