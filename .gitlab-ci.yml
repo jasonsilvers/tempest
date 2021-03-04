@@ -1,4 +1,0 @@
-include:
-  - project: 'platform-one/devops/pipeline-products'
-    ref: 'nextJsTest'
-    file: '/products/tron/nextJS/next-ci.yml'
