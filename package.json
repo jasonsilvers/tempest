@@ -13,7 +13,8 @@
     "db:reseed": "prisma migrate reset --preview-feature",
     "db:seed": "prisma db seed --preview-feature",
     "jwt-proxy": "jwt-proxy 9000 3000 --silent --jwt user.jwt",
-    "db:reset": "rm -rf ./prisma/migrations && prisma migrate dev --preview-feature && npm run db:seed"
+    "db:reset": "rm -rf ./prisma/migrations && prisma migrate dev --preview-feature && npm run db:seed",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^2.16.1",
@@ -33,7 +34,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.6.3",
-    "@tron/jwt-cli-utility": "^1.0.10",
+    "@tron/jwt-cli-utility": "^1.0.0",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.31",
     "@types/react": "^17.0.1",

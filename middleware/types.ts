@@ -3,7 +3,7 @@ import { AccessControl } from "accesscontrol";
 import { NextApiRequest } from "next";
 
 export type NextAPIRequestWithAuthorization = NextApiRequest & {
-  ac: AccessControl
+  accessControl: AccessControl
   user: UserDTO
 }
 

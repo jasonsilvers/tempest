@@ -9,8 +9,14 @@ import {
   UsersList,
 } from "../components/Test";
 import styles from "../styles/Home.module.css";
+import { useContext } from "react";
+import { UserContext } from "./_app";
 
 export default function Home(props) {
+
+  const userContext = useContext(UserContext)
+
+  console.log(userContext)
 
   return (
     <div className={styles.container}>

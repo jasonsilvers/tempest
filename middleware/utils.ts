@@ -27,26 +27,29 @@ const jwtInterceptor = (handler: NextApiHandler) => async (
   req: NextAPIRequestWithAuthorization,
   res: NextApiResponse
 ) => {
+
+
   if (dev) {
     await cors(req, res);
   }
 
-  console.log(req.headers)
   const jwt = req.headers.authorization?.split(" ")[1];
-  console.log(jwt)
-  const dodId = getDodIdFromToken(jwt);
 
-  console.log("DOD ID-", dodId);
+  if (!jwt) {
+    console.log('it does not have a jwt')
+    res.statusCode = 500
+    return res.json('No Authorization header')
+
+  }
+  const dodId = getDodIdFromToken(jwt);
 
   const user = await prisma.user.findFirst({
     where: { dodId },
     include: { organization: true },
   });
 
-  console.log(user)
-
-  const role = await prisma.role.findFirst({
-    where: { id: user.roleId },
+  const role = await prisma.role.findUnique({
+    where: { id: user?.roleId },
     include: {
       grants: {
         select: {
@@ -67,7 +70,7 @@ const jwtInterceptor = (handler: NextApiHandler) => async (
   };
 
   req.user = userDTO;
-  req.ac = ac;
+  req.accessControl = ac;
 
   return handler(req, res);
 };

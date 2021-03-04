@@ -19,7 +19,8 @@ export const users = async (
   req: NextAPIRequestWithAuthorization,
   res: NextApiResponse<User[] | Object>
 ) => {
-  const permission = hasRoleAndCanReadResource(req.ac, 'admin', 'record');
+
+  const permission = hasRoleAndCanReadResource(req.accessControl, 'admin', 'record');
 
   if (permission.granted) {
     res.statusCode = 200;

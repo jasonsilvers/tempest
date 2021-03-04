@@ -3,9 +3,13 @@ import axios from "axios";
 import {
   GetStaticProps,
   GetStaticPropsResult,
-  InferGetStaticPropsType, InferGetServerSidePropsType } from "next";
+  InferGetStaticPropsType,
+  InferGetServerSidePropsType,
+} from "next";
+import { useContext } from "react";
 import { QueryClient, useQuery } from "react-query";
 import { dehydrate } from "react-query/hydration";
+import { UserContext } from "./_app";
 
 async function fetchPosts() {
   return await axios.get("/api/posts").then((response) => response.data);
@@ -14,11 +18,16 @@ async function fetchPosts() {
 function Posts(props: InferGetStaticPropsType<typeof getStaticProps>) {
   const { data: posts } = useQuery<Post[]>("posts", fetchPosts);
 
+  const userContext = useContext(UserContext);
+
+  console.log(userContext)
+
   return (
     <div>
       <h1>Posts on another page with hydration</h1>
-      {posts?.map(post => <div key={post.id}>{post.title}</div>
-      )}
+      {posts?.map((post) => (
+        <div key={post.id}>{post.title}</div>
+      ))}
     </div>
   );
 }
@@ -39,7 +48,7 @@ export async function getStaticProps() {
 }
 
 //For page generation on every request
- 
+
 // export async function getServerSideProps() {}
 
 export default Posts;

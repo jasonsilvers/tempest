@@ -82,3 +82,10 @@ model Grant {
 
   @@map(name: "grant")
 }
+
+model Cars {
+  id Int @id @default(autoincrement())
+  name String
+  wheels Int
+
+}
