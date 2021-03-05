@@ -2,10 +2,10 @@ import { AccessControl } from "accesscontrol";
 import axios from "axios";
 import { NextApiResponse, InferGetServerSidePropsType } from "next";
 import { useQuery } from "react-query";
+import { withPageAuthRequired } from "../lib/p1Auth/client/server/with-page-auth";
 import { UserDTO } from "../middleware/types";
-import { NextAPIRequestWithAuthorization } from "../middleware/types";
 
-const Profile = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Profile = () => {
   const query = useQuery<UserDTO>("users", () =>
     axios
       .get("http://localhost:9000/api/login")
@@ -32,20 +32,20 @@ const Profile = (props: InferGetServerSidePropsType<typeof getServerSideProps>) 
   );
 };
 
-export const getServerSideProps = async (context) => {
+// export const getServerSideProps = async (context) => {
 
-  console.log('hello')
-  console.log(context.req.headers)
+//   console.log('hello')
+//   console.log(context.req.headers)
 
-  console.log(context.res.headers)
+//   console.log(context.res.headers)
 
-  //In production will this have the JWT in the authorization header? YES!... I
+//   //In production will this have the JWT in the authorization header? YES!... I
 
-  return {
-    props: {
-      test: 'this is a test'
-    },
-  };
-};
+//   return {
+//     props: {
+//       test: 'this is a test'
+//     },
+//   };
+// };
 
-export default Profile;
+export default withPageAuthRequired(Profile);

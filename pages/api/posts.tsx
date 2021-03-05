@@ -5,6 +5,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../lib/prisma";
 
 export default async (req: NextApiRequest, res: NextApiResponse<Post[]>) => {
+  console.log("Made call");
+  
   res.statusCode = 200;
   const posts = await prisma.post.findMany();
 

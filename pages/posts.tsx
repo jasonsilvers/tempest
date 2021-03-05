@@ -1,31 +1,37 @@
-import { Post } from "@prisma/client";
+import { Post, User } from "@prisma/client";
 import axios from "axios";
 import {
   GetStaticProps,
   GetStaticPropsResult,
   InferGetStaticPropsType,
   InferGetServerSidePropsType,
+  GetServerSidePropsContext,
 } from "next";
 import { useContext } from "react";
-import { QueryClient, useQuery } from "react-query";
-import { dehydrate } from "react-query/hydration";
+import {
+  withPageAuthRequired,
+  withPageAuth,
+} from "../lib/p1Auth/client/server/with-page-auth";
+import prisma from "../lib/prisma";
 import { UserContext } from "./_app";
 
 async function fetchPosts() {
-  return await axios.get("/api/posts").then((response) => response.data);
+  console.log("Calls end point");
+
+  return axios.get("/api/posts");
 }
 
-function Posts(props: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { data: posts } = useQuery<Post[]>("posts", fetchPosts);
+function Posts(props: any) {
+  // const { data: posts } = useQuery<Post[]>("posts", fetchPosts);
 
   const userContext = useContext(UserContext);
 
-  console.log(userContext)
+  console.log(props);
 
   return (
     <div>
       <h1>Posts on another page with hydration</h1>
-      {posts?.map((post) => (
+      {props.posts?.map((post) => (
         <div key={post.id}>{post.title}</div>
       ))}
     </div>
@@ -34,21 +40,33 @@ function Posts(props: InferGetStaticPropsType<typeof getStaticProps>) {
 
 //If you page depends on external data you can use:
 
-//For Page generation at build
-export async function getStaticProps() {
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery(["posts"], () => fetchPosts());
-
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-}
+type Props = {
+  posts: any;
+};
 
 //For page generation on every request
 
-// export async function getServerSideProps() {}
+// export const getServerSideProps = withPageAuth(async () => {
+
+//   console.log('This is on the server')
+//   const post = await prisma.post.findMany()
+
+//   return {
+//     props: {
+//       posts: post
+//     },
+//   };
+// })
+
+export const getStaticProps = async () => {
+  const posts = await prisma.post.findMany();
+
+  return {
+    props: {
+      posts,
+    },
+  };
+};
 
 export default Posts;
+// export default withPageAuthRequired(Posts);

@@ -3,8 +3,8 @@
 import { User } from '@prisma/client';
 import { AccessControl } from 'accesscontrol';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NextAPIRequestWithAuthorization } from '../../lib/p1Auth/client/server/types/types';
 import prisma from '../../lib/prisma';
-import { NextAPIRequestWithAuthorization } from '../../middleware/types';
 import jwtInterceptor from '../../middleware/utils';
 
 function hasRoleAndCanReadResource(
@@ -16,7 +16,7 @@ function hasRoleAndCanReadResource(
 }
 
 export const users = async (
-  req: NextAPIRequestWithAuthorization,
+  req: NextAPIRequestWithAuthorization<User> & {accessControl: AccessControl},
   res: NextApiResponse<User[] | Object>
 ) => {
 
