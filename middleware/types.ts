@@ -1,18 +1,18 @@
-import { User } from "@prisma/client";
-import { AccessControl } from "accesscontrol";
-import { NextApiRequest } from "next";
+import { User } from '@prisma/client';
+import { AccessControl } from 'accesscontrol';
+import { NextApiRequest } from 'next';
 
 export type P1Token = {
-  usercertificate: string
-}
+  usercertificate: string;
+};
 
 export type Grant = {
-  role: string,
-  resource: string,
-  action: string,
-  attributes: string
-}
+  role: string;
+  resource: string;
+  action: string;
+  attributes: string;
+};
 
 export type UserDTO = User & {
-  grants: Grant[]
-}
+  grants: Grant[];
+};

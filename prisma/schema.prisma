@@ -24,37 +24,38 @@ model Post {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  dodId     String?  @unique
-  name      String?
-  email     String?  @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  posts     Post[]
-  role      Role?    @relation(fields: [roleId], references: [id])
-  roleId    Int?
+  id             Int           @id @default(autoincrement())
+  dodId          String?       @unique
+  name           String?
+  email          String?       @unique
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  posts          Post[]
+  role           Role?         @relation(fields: [roleId], references: [id])
+  roleId         Int?
   organization   Organization? @relation(fields: [organizationId], references: [id])
   organizationId Int?
+
   @@map(name: "user")
 }
 
 model Organization {
-  id               Int            @id @default(autoincrement())
-  name             String
+  id       Int            @id @default(autoincrement())
+  name     String
   //Self reference
-  parent           Organization?  @relation(name: "ParentChildren", fields:[parentId], references: [id])
-  parentId         Int?
-  children         Organization[] @relation(name: "ParentChildren")
-  roles Role[]
-  users User[]
+  parent   Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
+  parentId Int?
+  children Organization[] @relation(name: "ParentChildren")
+  roles    Role[]
+  users    User[]
 }
 
 model Role {
-  id                Int    @id @default(autoincrement())
-  accessControlName String @unique @map("access_control_name")
+  id                Int          @id @default(autoincrement())
+  accessControlName String       @unique @map("access_control_name")
   //Add a flag for AC for sub organizations
   //Can see children organizations
-  displayName       String @map("display_name")
+  displayName       String       @map("display_name")
   user              User[]
   grants            Grant[]
   organization      Organization @relation(fields: [organizationId], references: [id])
@@ -84,8 +85,8 @@ model Grant {
 }
 
 model Cars {
-  id Int @id @default(autoincrement())
-  name String
+  id     Int    @id @default(autoincrement())
+  name   String
   wheels Int
 
 }

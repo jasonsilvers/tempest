@@ -62,6 +62,15 @@ CREATE TABLE "grant" (
     PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Cars" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "wheels" INTEGER NOT NULL,
+
+    PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user.dodId_unique" ON "user"("dodId");
 

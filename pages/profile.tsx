@@ -2,7 +2,7 @@ import { AccessControl } from "accesscontrol";
 import axios from "axios";
 import { NextApiResponse, InferGetServerSidePropsType } from "next";
 import { useQuery } from "react-query";
-import { withPageAuthRequired } from "../lib/p1Auth/client/server/with-page-auth";
+import { withComponentAuthRequired } from "../lib/p1Auth/client/server/with-page-auth";
 import { UserDTO } from "../middleware/types";
 
 const Profile = () => {
@@ -48,4 +48,4 @@ const Profile = () => {
 //   };
 // };
 
-export default withPageAuthRequired(Profile);
+export default withComponentAuthRequired(Profile);

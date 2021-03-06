@@ -9,8 +9,8 @@ import {
 } from "next";
 import { useContext } from "react";
 import {
-  withPageAuthRequired,
-  withPageAuth,
+  withComponentAuthRequired,
+  withPageAuthFor,
 } from "../lib/p1Auth/client/server/with-page-auth";
 import prisma from "../lib/prisma";
 import { UserContext } from "./_app";
