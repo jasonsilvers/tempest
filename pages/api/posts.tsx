@@ -2,7 +2,7 @@
 
 import { Post } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../lib/prisma";
+import prisma from "../../prisma/prisma";
 
 export default async (req: NextApiRequest, res: NextApiResponse<Post[]>) => {
   console.log("Made call");

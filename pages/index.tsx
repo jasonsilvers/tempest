@@ -1,21 +1,14 @@
-import axios from 'axios';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useQuery } from 'react-query';
 import {
   CreatePost,
-  CreateUser,
   PostsList,
   UsersList,
 } from '../components/Test';
 import styles from '../styles/Home.module.css';
-import { useContext } from 'react';
-import { UserContext } from './_app';
+
 
 export default function Home(props) {
-  const userContext = useContext(UserContext);
-
-  console.log(userContext);
 
   return (
     <div className={styles.container}>
@@ -42,6 +35,11 @@ export default function Home(props) {
           <li>
             <Link href="/postsSSR">
               <a>Posts SSR With Auth</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/profileCSR">
+              <a>Profile CSR With Auth</a>
             </Link>
           </li>
         </ul>

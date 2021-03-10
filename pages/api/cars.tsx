@@ -2,7 +2,7 @@
 
 import { Cars, Post } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../lib/prisma";
+import prisma from "../../prisma/prisma";
 
 export default async (req: NextApiRequest, res: NextApiResponse<Cars[]>) => {
   res.statusCode = 200;

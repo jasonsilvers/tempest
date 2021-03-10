@@ -2,13 +2,13 @@ import { AccessControl } from "accesscontrol";
 import axios from "axios";
 import { NextApiResponse, InferGetServerSidePropsType } from "next";
 import { useQuery } from "react-query";
-import { withComponentAuthRequired } from "../lib/p1Auth/client/server/with-page-auth";
+import { withComponentAuthRequired } from "../lib/p1Auth/utils/with-page-auth-factory";
 import { UserDTO } from "../middleware/types";
 
 const Profile = () => {
   const query = useQuery<UserDTO>("users", () =>
     axios
-      .get("http://localhost:9000/api/login")
+      .get("http://localhost:3000/api/login")
       .then((response) => response.data)
   );
 
@@ -18,11 +18,9 @@ const Profile = () => {
 
   const ac = new AccessControl(query.data?.grants);
 
-  console.log(ac)
 
   const isAdmin = ac.hasRole("admin");
 
-  console.log("User is a admin", isAdmin);
 
   return (
     <div>

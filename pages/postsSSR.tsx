@@ -1,10 +1,7 @@
 import { Post, User } from '@prisma/client';
-import axios from 'axios';
-import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { useContext } from 'react';
-import { withPageAuthFor } from '../lib/p1Auth/client/server/with-page-auth';
-import prisma from '../lib/prisma';
-import { UserContext } from './_app';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { withPageAuth } from '../lib/p1Auth';
+import prisma from '../prisma/prisma';
 
 interface IPostsProps {
   posts: Post[];
@@ -14,7 +11,7 @@ interface IPostsProps {
 const Posts: React.FC<IPostsProps> = ({ posts, user }) => {
   // const { data: posts } = useQuery<Post[]>("posts", fetchPosts);
 
-  const userContext = useContext(UserContext);
+  console.log(user);
 
   return (
     <div>
@@ -30,16 +27,9 @@ const Posts: React.FC<IPostsProps> = ({ posts, user }) => {
   );
 };
 
-//If you page depends on external data you can use:
-
-// type Props = {
-//   posts: any;
-// };
-
 //For page generation on every request
 
-const getProp = async () => {
-  console.log('This is on the server');
+const getProp: GetServerSideProps = async () => {
   const post = await prisma.post.findMany();
 
   return {
@@ -49,12 +39,11 @@ const getProp = async () => {
   };
 };
 
-export const getServerSideProps = withPageAuthFor({
+export const getServerSideProps = withPageAuth({
   getServerSideProps: getProp,
-  discriminatorJWTToken: 'dodid',
   returnTo: 'http://localhost:3000/login',
-  DBQueryFunctionToReturnUser: async (q):Promise<User> =>
-    prisma.user.findUnique({ where: { dodId: q } }),
+  DBQueryFunctionToReturnUser: async (query): Promise<User> =>
+    prisma.user.findUnique({ where: { dodId: query } }),
 });
 
 export default Posts;

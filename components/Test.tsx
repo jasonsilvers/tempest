@@ -7,7 +7,7 @@ import { useMutationCacheStatus } from "../hooks/useMutationCacheStatus";
 export function UsersList() {
   const query = useQuery<User[]>("users", () =>
     axios
-      .get("http://localhost:9000/api/users")
+      .get("http://localhost:3000/api/users")
       .then((response) => response.data)
   );
 

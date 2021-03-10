@@ -1,6 +1,6 @@
 import { Post } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../lib/prisma";
+import prisma from "../../../prisma/prisma";
 
 
 // type CopyWithPartial<T, K extends keyof T> = Omit<T, K> & Partial<T>;
