@@ -1,32 +1,11 @@
-import { Post, User } from "@prisma/client";
-import axios from "axios";
-import {
-  GetStaticProps,
-  GetStaticPropsResult,
-  InferGetStaticPropsType,
-  InferGetServerSidePropsType,
-  GetServerSidePropsContext,
-} from "next";
-import { useContext } from "react";
-import {
-  withComponentAuthRequired,
-  withPageAuthFor,
-} from "../lib/p1Auth/client/server/with-page-auth";
-import prisma from "../lib/prisma";
-import { UserContext } from "./_app";
+import { InferGetStaticPropsType } from 'next';
 
-async function fetchPosts() {
-  console.log("Calls end point");
+import prisma from '../prisma/prisma';
 
-  return axios.get("/api/posts");
-}
-
-function Posts(props: any) {
+function Posts(props: InferGetStaticPropsType<typeof getStaticProps>) {
   // const { data: posts } = useQuery<Post[]>("posts", fetchPosts);
 
-  const userContext = useContext(UserContext);
-
-  console.log(props);
+  console.log('Props: ' + props);
 
   return (
     <div>

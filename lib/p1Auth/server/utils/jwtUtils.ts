@@ -1,6 +1,6 @@
 import { NextAPIRequestWithAuthorization } from '../types/types';
 import Cors from 'cors';
-import initMiddleware from '../../../../../middleware/init-middleware';
+import initMiddleware from '../../../../middleware/init-middleware';
 import { NextApiResponse } from 'next';
 import jwt_decode from 'jwt-decode';
 
@@ -25,6 +25,7 @@ export interface P1JWT {
 }
 
 const explodeJWT = (jwt: string): P1JWT => {
+
   const decodedJwt: P1JWT = jwt_decode(jwt);
   const dodid = decodedJwt.usercertificate.split('.').slice(-1)[0];
 

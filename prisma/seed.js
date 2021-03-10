@@ -48,12 +48,12 @@ async function main() {
       email: 'bob.anderson@gmail.com',
       createdAt: new Date(),
       updatedAt: new Date(),
-      organization: {
+      Organization: {
         connect: {
           id: organization.id,
         },
       },
-      role: {
+      Role: {
         connect: {
           id: role.id,
         },
@@ -63,7 +63,7 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
+  .catch((e) => { 
     console.error(e);
     process.exit(1);
   })

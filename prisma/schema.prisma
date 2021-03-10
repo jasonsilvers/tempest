@@ -31,9 +31,9 @@ model User {
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
   posts          Post[]
-  role           Role?         @relation(fields: [roleId], references: [id])
+  Role           Role?         @relation(fields: [roleId], references: [id])
   roleId         Int?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
+  Organization   Organization? @relation(fields: [organizationId], references: [id])
   organizationId Int?
 
   @@map(name: "user")

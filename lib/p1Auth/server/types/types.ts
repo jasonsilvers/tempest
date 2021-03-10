@@ -1,4 +1,3 @@
-import { AccessControl } from 'accesscontrol';
 import {
   GetServerSideProps,
   GetServerSidePropsResult,
@@ -6,8 +5,6 @@ import {
   NextApiRequest,
 } from 'next';
 import { ComponentType } from 'react';
-import { UserDTO } from '../../../../../middleware/types';
-import { P1JWT } from '../utils/jwtUtils';
 
 export type NextAPIRequestWithAuthorization<T> = NextApiRequest & {
   user: T;
@@ -31,16 +28,15 @@ export type GetStaticPropsResultWithSession<T> = GetStaticPropsResult<{
   [key: string]: any;
 }>;
 
-type JWTTokens = keyof P1JWT;
+export type DBQueryFunctionToReturnUser = (query: string) => Promise<any>
 
-export type WithPageAuthRequiredOptions<T> = {
-  DBQueryFunctionToReturnUser: (query: string) => Promise<T>;
+export type WithPageAuthRequiredOptions = {
+  DBQueryFunctionToReturnUser: DBQueryFunctionToReturnUser
   getServerSideProps?: GetServerSideProps;
   returnTo?: string;
-  discriminatorJWTToken: JWTTokens | string; // i'm torn here.  remove the string you get intellisense
 };
 
-export type WithComponentAuthRequired = <P extends object>(
+export type WithComponentAuth = <P extends object>(
   Component: ComponentType<P>,
   options?: {}
 ) => React.FC<P>;

@@ -1,11 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import { User } from '@prisma/client';
-import { AccessControl } from 'accesscontrol';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { NextAPIRequestWithAuthorization } from '../../lib/p1Auth/client/server/types/types';
-import prisma from '../../lib/prisma';
-import jwtInterceptor from '../../middleware/utils';
+import { User, Organization, Prisma } from "@prisma/client";
+import { AccessControl } from "accesscontrol";
+import { NextApiRequest, NextApiResponse } from "next";
+import { NextAPIRequestWithAuthorization } from "../../lib/p1Auth/server/types/types";
+import prisma from "../../prisma/prisma";
+import jwtInterceptor from "../../middleware/utils";
+import withApiAuth from "../../lib/p1Auth/server/with-api-auth";
 
 function hasRoleAndCanReadResource(
   ac: AccessControl,
@@ -15,21 +16,38 @@ function hasRoleAndCanReadResource(
   return ac.hasRole(role) && ac.can(role).createAny(resource);
 }
 
+type UserWithRole = Prisma.UserGetPayload<{
+  include: { Role: {include: {grants: true}} };
+}>;
+
+
 export const users = async (
-  req: NextAPIRequestWithAuthorization<User> & {accessControl: AccessControl},
+  req: NextAPIRequestWithAuthorization<UserWithRole>,
   res: NextApiResponse<User[] | Object>
 ) => {
 
-  const permission = hasRoleAndCanReadResource(req.accessControl, 'admin', 'record');
 
-  if (permission.granted) {
+  console.log(req.user.Role)
+
+  const ac = new AccessControl(req.user.Role.grants)
+
+  console.log(ac)
+
+  if (req.user) {
     res.statusCode = 200;
     const users = await prisma.user.findMany();
     res.json(users);
   } else {
     res.statusCode = 401;
-    res.json({ suck: 'you do' });
+    res.json({ suck: "you do" });
   }
 };
 
-export default jwtInterceptor(users);
+export default withApiAuth<UserWithRole>(
+  users,
+  (query): Promise<UserWithRole> =>
+    prisma.user.findUnique({
+      where: { dodId: query },
+      include: { Role: { include: { grants: true } } },
+    })
+);

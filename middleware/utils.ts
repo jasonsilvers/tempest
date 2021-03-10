@@ -4,8 +4,8 @@ import jwt_decode from "jwt-decode";
 import { AccessControl } from "accesscontrol";
 import cors from "./cors";
 import { P1Token, UserDTO } from "./types";
-import prisma from "../lib/prisma";
-import { NextAPIRequestWithAuthorization } from "../lib/p1Auth/client/server/types/types";
+import prisma from "../prisma/prisma";
+import { NextAPIRequestWithAuthorization } from "../lib/p1Auth/server/types/types";
 import { User } from "@prisma/client";
 
 const dev = process.env.NODE_ENV === "development";
@@ -32,7 +32,6 @@ const jwtInterceptor = (handler: NextApiHandler) => async (
   const jwt = req.headers.authorization?.split(" ")[1];
 
   if (!jwt) {
-    console.log("it does not have a jwt");
     res.statusCode = 500;
     return res.json("No Authorization header");
   }
@@ -40,7 +39,7 @@ const jwtInterceptor = (handler: NextApiHandler) => async (
 
   const user = await prisma.user.findFirst({
     where: { dodId },
-    include: { organization: true },
+    include: { Organization: true },
   });
 
   const role = await prisma.role.findUnique({
