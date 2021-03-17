@@ -1,7 +1,8 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import Navbar from '../components/Navigation/Navbar'
-import NavItem from '../components/Navigation/NavItem'
+import Navbar from '../components/Navigation/Navbar';
+import React from 'react';
+import Link from 'next/link';
 
 export default function Home(props) {
   return (
@@ -12,15 +13,8 @@ export default function Home(props) {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Tempest
-        </h1>
-        <Navbar>
-          <Navbar.Link goToUrl="/Dashboard">Dashboard</Navbar.Link>
-          <Navbar.Link goToUrl="/Profile">Profile</Navbar.Link>
-          <Navbar.Link goToUrl="/Settings">Settings</Navbar.Link>
-          <Navbar.Link goToUrl="/Contact">Contact</Navbar.Link>
-        </Navbar>
+        <h1 className={styles.title}>Tempest</h1>
+        <Link href="/Dashboard"> Login </Link>
       </main>
     </div>
   );

@@ -1,16 +1,16 @@
-import Navbar from "../components/Navigation/Navbar"
-
+import Navbar from '../components/Navigation/Navbar';
 
 const Dashboard = () => {
   return (
     <div>
-        <Navbar>
-          <Navbar.Prev/>
-          <Navbar.Prev goToUrl="/Settings">Settings</Navbar.Prev>
-          <Navbar.Link goToUrl="/Contact">Contact</Navbar.Link>
-        </Navbar>
+      <h1>DashBoard</h1>
+      <Navbar>
+        <Navbar.Link goToUrl="/Profile">Profile</Navbar.Link>
+        <Navbar.Link goToUrl="/Settings">Settings</Navbar.Link>
+        <Navbar.Link goToUrl="/Contact">Contact</Navbar.Link>
+      </Navbar>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

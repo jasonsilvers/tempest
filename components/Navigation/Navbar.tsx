@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { useRouter } from "next/router"
+import { useState } from 'react';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 
 interface INavbarComposition {
   Link: React.FC<ILinkProps>;
-  Prev: React.FC
+  Prev: React.FC;
 }
 
 const Navbar: React.FC & INavbarComposition = ({ children }) => {
@@ -15,21 +16,22 @@ interface ILinkProps {
 }
 
 const Link: React.FC<ILinkProps> = ({ children, goToUrl }) => {
-  return <Link href={goToUrl}> {children} </Link>;
+  return (
+    <NextLink href={goToUrl}>
+      <a>{children}</a>
+    </NextLink>
+  );
 };
 
 const Prev: React.FC = () => {
-  const router = useRouter()
-  // if(process.browser){
-
-    return <Link href={router.back()}>Back</Link>
-  // }else{
-    // return <></>
-  // }
-}
+  if (process.browser) {
+    const router = useRouter();
+    return <a onClick={() => router.back()}>Go Back</a>;
+  } else {
+    return <></>;
+  }
+};
 
 Navbar.Link = Link;
 Navbar.Prev = Prev;
 export default Navbar;
-
-
