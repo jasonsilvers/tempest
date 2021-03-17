@@ -11,6 +11,7 @@ const Navbar: React.FC & INavbarComposition = ({ children }) => {
   return <div>{children}</div>;
 };
 
+
 interface ILinkProps {
   goToUrl: string;
 }
