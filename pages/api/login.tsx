@@ -1,5 +1,5 @@
 import { NextApiResponse } from "next";
-import { NextAPIRequestWithAuthorization } from "../../lib/p1Auth/client/server/types/types";
+import { NextAPIRequestWithAuthorization } from "../../lib/p1Auth/server/types/types";
 import { UserDTO } from "../../middleware/types";
 
 const login = async (
