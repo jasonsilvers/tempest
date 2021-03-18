@@ -1,15 +1,7 @@
-import React from "react"
-import Navbar from "../components/Navigation/Navbar"
+import React from 'react';
 
 const Settings = () => {
-  return (
-    <Navbar>
-    <Navbar.Prev/>
-    <Navbar.Link goToUrl="/Profile">Profile</Navbar.Link>
-    <Navbar.Link goToUrl="/Settings">Settings</Navbar.Link>
-    <Navbar.Link goToUrl="/Contact">Contact</Navbar.Link>
-  </Navbar>
-  )
-}
+  return <h1>Settings</h1>;
+};
 
-export default Settings
+export default Settings;

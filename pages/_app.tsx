@@ -7,6 +7,8 @@ import {
   UserContextProvider,
   useUser,
 } from '../lib/p1Auth/client/UserContextProvider'; // auth lib
+import Navigation from '../components/Navigation/Navigation';
+import Navbar from '../components/Navigation/NavBar';
 
 function MyApp({ Component, pageProps }) {
   const queryClient = new QueryClient();
@@ -17,6 +19,7 @@ function MyApp({ Component, pageProps }) {
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
         <UserContextProvider user={user}>
+          <Navbar/>
           <Component {...pageProps} />
         </UserContextProvider>
       </Hydrate>

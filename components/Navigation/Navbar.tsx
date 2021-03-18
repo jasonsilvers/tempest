@@ -1,38 +1,18 @@
-import { useState } from 'react';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
+import React from 'react';
+import Navigation from './Navigation';
+import tw, { css, styled, theme } from 'twin.macro';
 
-interface INavbarComposition {
-  Link: React.FC<ILinkProps>;
-  Prev: React.FC;
-}
+const Link = tw(Navigation.Link)`m-4`;
 
-const Navbar: React.FC & INavbarComposition = ({ children }) => {
-  return <div>{children}</div>;
-};
-
-
-interface ILinkProps {
-  goToUrl: string;
-}
-
-const Link: React.FC<ILinkProps> = ({ children, goToUrl }) => {
+const Navbar: React.FC = () => {
   return (
-    <NextLink href={goToUrl}>
-      <a>{children}</a>
-    </NextLink>
+    <div>
+      <Link goToUrl="/Profile">Profile</Link>
+      <Link goToUrl="/Contact">Contact</Link>
+      <Link goToUrl="/Dashboard">Dashboard</Link>
+      <Link goToUrl="/Settings">Settings</Link>
+    </div>
   );
 };
 
-const Prev: React.FC = () => {
-  if (process.browser) {
-    const router = useRouter();
-    return <a onClick={() => router.back()}>Go Back</a>;
-  } else {
-    return <></>;
-  }
-};
-
-Navbar.Link = Link;
-Navbar.Prev = Prev;
 export default Navbar;
