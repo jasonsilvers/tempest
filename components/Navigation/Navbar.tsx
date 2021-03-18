@@ -6,12 +6,13 @@ const Link = tw(Navigation.Link)`m-4`;
 
 const Navbar: React.FC = () => {
   return (
-    <div>
+    <Navigation>
+      <Navigation.Prev />
       <Link goToUrl="/Profile">Profile</Link>
       <Link goToUrl="/Contact">Contact</Link>
       <Link goToUrl="/Dashboard">Dashboard</Link>
       <Link goToUrl="/Settings">Settings</Link>
-    </div>
+    </Navigation>
   );
 };
 
