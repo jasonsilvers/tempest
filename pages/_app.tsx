@@ -7,7 +7,7 @@ import {
   UserContextProvider,
   useUser,
 } from '../lib/p1Auth/client/UserContextProvider'; // auth lib
-import Navigation from '../components/Navigation/Navigation';
+import AppBar from '../components/Navigation/Navigation';
 import Navbar from '../components/Navigation/NavBar';
 
 function MyApp({ Component, pageProps }) {
