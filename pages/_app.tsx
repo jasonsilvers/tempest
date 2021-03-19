@@ -13,13 +13,12 @@ import Navbar from '../components/Navigation/NavBar';
 function MyApp({ Component, pageProps }) {
   const queryClient = new QueryClient();
   const { user } = pageProps;
-  // const [user] = useUser()
 
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
         <UserContextProvider user={user}>
-          <Navbar/>
+          <Navbar />
           <Component {...pageProps} />
         </UserContextProvider>
       </Hydrate>

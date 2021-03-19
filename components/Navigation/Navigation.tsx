@@ -12,20 +12,27 @@ import styled from 'styled-components'
  * This ensures dev error messages are sent when using
  * the sub components of Navigation incorrectly
  * */
-const NavigationContext = React.createContext("");
-const useNavigationContext = (comp?: string) => {
+
+interface INavContext {
+  activeLinkStyle:React.CSSProperties
+}
+
+const NavigationContext = React.createContext<React.CSSProperties>(null);
+const useNavigationStyle = (comp: string, styleProp?: React.CSSProperties) => {
   const context = useContext(NavigationContext);
 
-  if (context !== "nav") {
+  if (!context) {
     throw Error(`You must use ${comp ?? "This Component"} inside <Navigation>`);
   }
+
+  return styleProp ? styleProp : context
 };
 
 interface INavbarComposition {
   Header: React.FC<ILinkProps>;
   Link: React.FC<ILinkProps>;
   Prev: React.FC;
-  Profile: React.FC<ILinkProps>;
+  // Profile: React.FC<ILinkProps>;
 }
 
 interface INavigationProps {
@@ -37,51 +44,45 @@ display: flex;
 align-items: center;
 `
 
-/*
-
-const Component = styled.div`
-  background: blue;
-  color: red;
-`
-
-const ExtendedComponent = styled(Component)`
-  color: green;
-`*/
-
-const Navigation: React.FC<INavigationProps> & INavbarComposition = ({ children, className = "" }) => {
+const Navigation: React.FC<ILinkProps> & INavbarComposition = ({ children, className = "", activeLinkStyle={color:'blue'} }) => {
   return (
-    <NavigationContext.Provider value="nav">
-      <StyledDiv>{children}</StyledDiv>
+    <NavigationContext.Provider value={activeLinkStyle}>
+      <StyledDiv className={className} >{children}</StyledDiv>
     </NavigationContext.Provider>
   );
 };
 
+const StyledHeader = styled.a`
+font-size: 2rem;
+margin-right: 2rem;`
+
 const Header: React.FC<ILinkProps> = ({ children, goToUrl, className = "" }) => {
-  useNavigationContext("<Navigation.Header>");
+  useNavigationStyle("<Navigation.Header>");
   return (
     <NextLink href={goToUrl}>
-      <a className={"header" + " " + className }
-      >
+      <StyledHeader className={className}>
         {children}
-      </a>
+      </StyledHeader>
     </NextLink>
   );
 };
 
 interface ILinkProps extends INavigationProps {
   goToUrl: string;
+  activeLinkStyle?: React.CSSProperties;
 }
 
 const StyledLink = styled.a`margin-right: 1.5rem;`
 
-const Link: React.FC<ILinkProps> = ({ children, goToUrl, className }) => {
+const Link: React.FC<ILinkProps> = ({ children, goToUrl, className, activeLinkStyle }) => {
   const router = useRouter();
-  useNavigationContext("<Navigation.Link>");
+  const styleToUse = useNavigationStyle("<Navigation.Link>", activeLinkStyle);
+
   return (
     <NextLink href={goToUrl}>
       <StyledLink
         className={className}
-        style={{ color: `${router.route === goToUrl ? "blue" : "black"}` }}
+        style={router.route === goToUrl ? styleToUse : {}}
       >
         {children}
       </StyledLink>
@@ -91,30 +92,31 @@ const Link: React.FC<ILinkProps> = ({ children, goToUrl, className }) => {
 
 const Prev: React.FC = () => {
   const router = useRouter();
-  useNavigationContext("<Navigation.Prev/>");
-  return <a onClick={() => router.back()}>Go Back</a>;
+  useNavigationStyle("<Navigation.Prev/>");
+  return <StyledLink onClick={() => router.back()}>Go Back</StyledLink>;
 };
 
-interface IProfileProps {
- ProfileIcon?: JSX.Element
-}
+/*                   -----------------    Profile Commented Out -----------------                       */
 
-const Profile: React.FC<ILinkProps & IProfileProps> = ({ children, goToUrl, className, ProfileIcon=DefaultIcon }) => {
-  useNavigationContext("<Navigation.Profile>");
+// interface IProfileProps {
+//  ProfileIcon?: JSX.Element
+// }
 
-  return (
-    <NextLink href={goToUrl}>
-      <a className={className + " " + "profile" }>
-        {children}
-      <ProfileIcon height="32px" width="32px"/>
-      </a>
-    </NextLink>
-  );
-};
+// const Profile: React.FC<ILinkProps & IProfileProps> = ({ children, goToUrl, className, ProfileIcon=DefaultIcon }) => {
+//   useNavigationContext("<Navigation.Profile>");
 
+//   return (
+//     <NextLink href={goToUrl}>
+//       <a className={className + " " + "profile" }>
+//         {children}
+//       <ProfileIcon height="32px" width="32px"/>
+//       </a>
+//     </NextLink>
+//   );
+// };
 
+// Navigation.Profile = Profile;
 Navigation.Link = Link;
 Navigation.Prev = Prev;
 Navigation.Header = Header;
-Navigation.Profile = Profile;
 export default Navigation;
