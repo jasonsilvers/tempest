@@ -14,3 +14,24 @@ a {
 * {
   box-sizing: border-box;
 }
+
+/* This is for the Navigation Component */
+
+.header {
+  font-size: 2rem;
+  margin-right: 2rem;
+}
+
+.link {
+  margin-right: 1.5rem;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+}
