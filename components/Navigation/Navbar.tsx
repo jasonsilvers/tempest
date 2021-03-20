@@ -1,11 +1,15 @@
-import React from 'react';
-import AppBar from '../../UI Lib/AppBar';
-import { useUser } from '../../lib/p1Auth/client/UserContextProvider';
+import React from "react";
+import AppBar from "../../UI Lib/AppBar";
+import { useUser } from "@tron/nextjs-auth-p1";
 
-import { Header, Link } from './Navigation';
+import { Header, Link } from "./Navigation";
+import { User } from ".prisma/client";
+import tw from "twin.macro";
+
+const Welcome = tw.div`ml-auto mr-4`
 
 const Navbar: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useUser<User>();
   return (
     // user?
     <AppBar>
@@ -14,6 +18,7 @@ const Navbar: React.FC = () => {
       <Link goToUrl="/Profile">Profile</Link>
       <Link goToUrl="/Contact">Contact</Link>
       <Link goToUrl="/Settings">Settings</Link>
+      <Welcome>Welcome - {user?.name}</Welcome>
     </AppBar>
     // : null
   );
