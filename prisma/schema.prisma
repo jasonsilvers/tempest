@@ -11,18 +11,6 @@ generator client {
   //Must add binary for production build
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  subtitle  String
-  content   String?
-  published Boolean @default(false)
-  author    User?   @relation(fields: [authorId], references: [id])
-  authorId  Int?    @map("author_id")
-
-  @@map(name: "post")
-}
-
 model User {
   id             Int           @id @default(autoincrement())
   dodId          String?       @unique
@@ -30,7 +18,6 @@ model User {
   email          String?       @unique
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
-  posts          Post[]
   Role           Role?         @relation(fields: [roleId], references: [id])
   roleId         Int?
   Organization   Organization? @relation(fields: [organizationId], references: [id])
