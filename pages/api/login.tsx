@@ -1,14 +1,25 @@
 import { NextApiResponse } from "next";
-import { NextAPIRequestWithAuthorization } from "../../lib/p1Auth/server/types/types";
-import { UserDTO } from "../../middleware/types";
+import {
+  withApiAuth,
+  NextApiRequestWithAuthorization,
+} from "@tron/nextjs-auth-p1";
+import prisma from "../../prisma/prisma";
+import { User } from ".prisma/client";
 
 const login = async (
-  req: NextAPIRequestWithAuthorization<UserDTO>,
-  res: NextApiResponse<string>
+  req: NextApiRequestWithAuthorization<User>,
+  res: NextApiResponse
 ) => {
   res.statusCode = 200;
-
-  res.json('hello');
+  res.json(req.user);
 };
 
-export default login;
+const getUser = (queryString: string) => {
+  return prisma.user.findUnique({
+    where: {
+      dodId: queryString,
+    },
+  });
+};
+
+export default withApiAuth(login, getUser);

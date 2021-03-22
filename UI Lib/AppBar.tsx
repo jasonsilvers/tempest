@@ -3,7 +3,7 @@ import styled, { CSSProp } from 'styled-components';
 const StyledDiv = styled.div`
   display: flex;
   align-items: center;
-  background-color: darkolivegreen;
+  background-color: #a7a9a5;
   height: 3rem;
 `;
 
