@@ -1,13 +1,23 @@
 import React from "react";
 import { useUser, withPageAuth } from "@tron/nextjs-auth-p1";
-import { UserWithGrants } from "../prisma/repositories/user";
+import { Resource, Role } from "../types/global";
+import usePermissions from "../hooks/usePermissions";
+import { UserWithRole} from "../prisma/repositories/user";
 
 const Profile = () => {
-  const { user } = useUser<UserWithGrants>();
+  const { ac, isLoading, userRole } = usePermissions();
 
-  console.log(user);
+  const permission = ac?.can(userRole).read(Resource.PROFILE);
 
-  return <h1>Profile</h1>;
+  if (isLoading) {
+    return null;
+  }
+
+  if (permission?.granted) {
+    return <h1>Profile</h1>;
+  }
+
+  return <h1>You do not have access to this page</h1>;
 };
 
 export default withPageAuth(Profile);

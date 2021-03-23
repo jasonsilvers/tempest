@@ -18,7 +18,7 @@ model User {
   email          String?       @unique
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
-  Role           Role?         @relation(fields: [roleId], references: [id])
+  role           Role?         @relation(fields: [roleId], references: [id])
   roleId         Int?
   Organization   Organization? @relation(fields: [organizationId], references: [id])
   organizationId Int?
@@ -27,14 +27,24 @@ model User {
 }
 
 model Organization {
-  id       Int            @id @default(autoincrement())
-  name     String
+  id             Int              @id @default(autoincrement())
+  name           String
   //Self reference
-  parent   Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
-  parentId Int?
-  children Organization[] @relation(name: "ParentChildren")
-  roles    Role[]
-  users    User[]
+  parent         Organization?    @relation(name: "ParentChildren", fields: [parentId], references: [id])
+  parentId       Int?
+  children       Organization[]   @relation(name: "ParentChildren")
+  roles          Role[]
+  users          User[]
+  trainingRecord TrainingRecord[]
+}
+
+model TrainingRecord {
+  id             Int          @id @default(autoincrement())
+  title          String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int
+
+  @@map("training_record")
 }
 
 model Role {

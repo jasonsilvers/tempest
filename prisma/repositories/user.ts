@@ -8,10 +8,8 @@ export const getUser = (queryString: string) => {
     where: {
       dodId: queryString,
     },
-    include: { Role: { include: { grants: true } } },
+    include: { role: true },
   });
 };
 
-export type UserWithGrants = ThenArg<ReturnType<typeof getUser>>;
-
-
+export type UserWithRole = ThenArg<ReturnType<typeof getUser>>;
