@@ -5,8 +5,17 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { UserContextProvider } from '@tron/nextjs-auth-p1'; // auth lib
 import NavBar from '../components/Navigation/Navbar';
+import { ErrorBoundary } from 'react-error-boundary';
 import GlobalStyles from '../styles/GlobalStyles';
-import Home from '.';
+
+function ErrorFallback({ error, resetErrorBoundary }) {
+  return (
+    <div role="alert">
+      <pre>{error}</pre>
+      <button onClick={resetErrorBoundary}>Please try again</button>
+    </div>
+  );
+}
 
 function MyApp({ Component, pageProps }) {
   const queryClient = new QueryClient();
@@ -17,9 +26,9 @@ function MyApp({ Component, pageProps }) {
         <UserContextProvider user={pageProps.user} loginUrl="/api/login">
           <GlobalStyles />
           <NavBar />
-          <div style={{ paddingTop: '64px' }}>
+          <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => {}}>
             <Component {...pageProps} />
-          </div>
+          </ErrorBoundary>
         </UserContextProvider>
       </Hydrate>
       <ReactQueryDevtools />

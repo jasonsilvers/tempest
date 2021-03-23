@@ -1,16 +1,4 @@
 -- CreateTable
-CREATE TABLE "post" (
-    "id" SERIAL NOT NULL,
-    "title" TEXT NOT NULL,
-    "subtitle" TEXT NOT NULL,
-    "content" TEXT,
-    "published" BOOLEAN NOT NULL DEFAULT false,
-    "author_id" INTEGER,
-
-    PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "user" (
     "id" SERIAL NOT NULL,
     "dodId" TEXT,
@@ -62,15 +50,6 @@ CREATE TABLE "grant" (
     PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Cars" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "wheels" INTEGER NOT NULL,
-
-    PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "user.dodId_unique" ON "user"("dodId");
 
@@ -82,9 +61,6 @@ CREATE UNIQUE INDEX "role.access_control_name_unique" ON "role"("access_control_
 
 -- CreateIndex
 CREATE UNIQUE INDEX "resource.name_unique" ON "resource"("name");
-
--- AddForeignKey
-ALTER TABLE "post" ADD FOREIGN KEY ("author_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "user" ADD FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE SET NULL ON UPDATE CASCADE;
