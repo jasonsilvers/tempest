@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint . --ext js,jsx,ts,tsx --quiet",
     "test": "jest --watchAll",
+    "coverage": "jest --coverage",
     "createDevDatabase": "docker-compose up -d",
     "db:studio": "prisma studio",
     "db:migrate": "prisma migrate dev --preview-feature",
@@ -18,6 +19,7 @@
     "db:generate": "prisma generate"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.3",
     "@prisma/client": "^2.18.0",
     "@svgr/webpack": "^5.5.0",
     "@tron/nextjs-auth-p1": "^1.0.0",
@@ -27,6 +29,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "next": "10.0.5",
+    "next-page-tester": "^0.24.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-query": "^3.5.12",

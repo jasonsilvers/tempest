@@ -1,8 +1,8 @@
-import Head from "next/head";
-import styles from "../styles/Home.module.css";
-import React from "react";
-import Link from "next/link";
-import { useUser } from "@tron/nextjs-auth-p1";
+import Head from 'next/head';
+import styles from '../styles/Home.module.css';
+import React from 'react';
+import Link from 'next/link';
+import { useUser } from '@tron/nextjs-auth-p1';
 
 export default function Home(props) {
   const { user, isLoading, isError } = useUser();

@@ -1,8 +1,14 @@
-
 const Dashboard = () => {
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1
+        style={{
+          backgroundColor: 'red',
+          height: '200px',
+        }}
+      >
+        <p>Dashboard</p>
+      </h1>
     </div>
   );
 };

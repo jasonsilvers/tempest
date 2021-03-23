@@ -11,12 +11,12 @@ interface ILinkProps {
 
 const StyledHeader = styled.a`
   font-size: 2rem;
-  margin-right: 2rem;
+  margin-right: 32px;
 `;
 
 const Header: React.FC<ILinkProps> = ({
   children,
-  goToUrl,
+  goToUrl = '/',
   className = '',
 }) => {
   return (
@@ -27,7 +27,7 @@ const Header: React.FC<ILinkProps> = ({
 };
 
 const StyledLink = styled.a`
-  margin-right: 1.5rem;
+  margin-right: 24px;
 `;
 
 const Link: React.FC<ILinkProps> = ({
@@ -39,7 +39,7 @@ const Link: React.FC<ILinkProps> = ({
   const router = useRouter();
 
   return (
-    <NextLink href={goToUrl ?? '/'}>
+    <NextLink href={goToUrl}>
       <StyledLink
         className={className}
         style={
