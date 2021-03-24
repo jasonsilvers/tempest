@@ -1,7 +1,8 @@
 import React from 'react';
-import { withPageAuth } from '@tron/nextjs-auth-p1';
-import { Resource } from '../types/global';
+import { useUser, withPageAuth } from '@tron/nextjs-auth-p1';
+import { Resource, Role } from '../types/global';
 import usePermissions from '../hooks/usePermissions';
+import { UserWithRole } from '../prisma/repositories/user';
 
 const Profile = () => {
   const { ac, isLoading, userRole } = usePermissions();
