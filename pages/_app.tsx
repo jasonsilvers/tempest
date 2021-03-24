@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import { UserContextProvider } from '@tron/nextjs-auth-p1'; // auth lib
 import NavBar from '../components/Navigation/Navbar';
 import { ErrorBoundary } from 'react-error-boundary';
+import GlobalStyles from '../styles/GlobalStyles';
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
