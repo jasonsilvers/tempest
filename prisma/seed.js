@@ -53,7 +53,7 @@ async function main() {
           id: organization.id,
         },
       },
-      Role: {
+      role: {
         connect: {
           id: role.id,
         },
