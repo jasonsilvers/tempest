@@ -4,7 +4,7 @@ import { useTestRouter, useTestUser } from './NextMocks';
 import * as React from 'react';
 import { render as rtlRender } from '@testing-library/react';
 
-function render(
+const render = (
   component,
   {
     nextJSRoute = '/',
@@ -13,7 +13,7 @@ function render(
     user = { name: 'test user' } as Partial<User>,
     ...options
   } = {}
-) {
+) => {
   useTestRouter.mockImplementation(() => ({ route: nextJSRoute }));
 
   useTestUser.mockImplementationOnce(() => ({
@@ -29,7 +29,7 @@ function render(
     </UserContextProvider>
   );
   return rtlRender(component, { wrapper: Wrapper, ...options });
-}
+};
 export * from '@testing-library/react';
 // override React Testing Library's render with our own
 export { render };
