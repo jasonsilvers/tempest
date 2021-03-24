@@ -10,6 +10,7 @@ const Welcome = tw.div`ml-auto mr-4 text-red-500`;
 
 const Navbar: React.FC = () => {
   const { user } = useUser<User>();
+
   return user ? (
     <AppBar>
       <Toolbar>
