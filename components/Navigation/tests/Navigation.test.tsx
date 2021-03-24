@@ -1,4 +1,4 @@
-import { render } from '../../../__mocks__/TempestTestWrapper';
+import { render } from '../../../__mocks__/TempestTestUtils';
 import { Header, Link } from '../Navigation';
 
 test('should render the Header comp', () => {

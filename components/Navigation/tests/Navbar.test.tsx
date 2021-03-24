@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '../Navbar';
-import { render } from '../../../__mocks__/TempestTestWrapper';
+import { render } from '../../../__mocks__/TempestTestUtils';
 import { prettyDOM } from '@testing-library/react';
 
 test('should render a navbar', () => {
@@ -19,7 +19,6 @@ test('should render a navbar with colored link', () => {
   expect(header).toBeInTheDocument;
   const dashLink = getByText(/dashboard/i);
   expect(dashLink.style.color).toBe('blue');
-  prettyDOM();
   expect(getByText(/Don/i)).toBeInTheDocument;
 });
 
