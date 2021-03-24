@@ -1,5 +1,4 @@
-import { render } from '@testing-library/react';
-import { useTestRouter } from '../../../__mocks__/NextMocks';
+import { render } from '../../../__mocks__/TempestTestWrapper';
 import { Header, Link } from '../Navigation';
 
 test('should render the Header comp', () => {
@@ -9,22 +8,18 @@ test('should render the Header comp', () => {
 });
 
 test('should render the Link comp', () => {
-  useTestRouter.mockImplementationOnce(() => ({
-    route: '/Tempest',
-  }));
-
-  const { getByText } = render(<Link goToUrl="/">Tempest</Link>);
+  const { getByText } = render(<Link goToUrl="/">Tempest</Link>, {
+    nextJSRoute: '/Tempest',
+  });
 
   expect(getByText(/Tempest/));
 });
 
 // we should set this to be equal to the secondary color when styles are a thing
 test('should render the Link comp with blue colors', () => {
-  useTestRouter.mockImplementationOnce(() => ({
-    route: '/Tempest',
-  }));
-
-  const { getByText } = render(<Link goToUrl="/Tempest">Tempest</Link>);
+  const { getByText } = render(<Link goToUrl="/Tempest">Tempest</Link>, {
+    nextJSRoute: '/Tempest',
+  });
   const link = getByText(/Tempest/);
 
   expect(link);
