@@ -9,7 +9,10 @@ import Toolbar from '@material-ui/core/Toolbar';
 const Welcome = tw.div`ml-auto mr-4 text-red-500`;
 
 const Navbar: React.FC = () => {
-  const { user } = useUser<User>();
+  const { user, error } = useUser<User>();
+
+  // error ??? adf
+
   return user ? (
     <AppBar>
       <Toolbar>
