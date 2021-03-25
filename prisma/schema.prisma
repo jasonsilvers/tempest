@@ -48,15 +48,12 @@ model TrainingRecord {
 }
 
 model Role {
-  id                Int          @id @default(autoincrement())
-  accessControlName String       @unique @map("access_control_name")
-  //Add a flag for AC for sub organizations
-  //Can see children organizations
-  displayName       String       @map("display_name")
-  user              User[]
-  grants            Grant[]
-  organization      Organization @relation(fields: [organizationId], references: [id])
-  organizationId    Int
+  id             Int          @id @default(autoincrement())
+  name           String       @unique @map("name")
+  user           User[]
+  grants         Grant[]
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int
 
   @@map(name: "role")
 }
@@ -75,7 +72,7 @@ model Grant {
   attributes    String
   resourceModel Resource @relation(fields: [resource], references: [name])
   resource      String   @map("resource_name")
-  roleModel     Role     @relation(fields: [role], references: [accessControlName])
+  roleModel     Role     @relation(fields: [role], references: [name])
   role          String   @map("role_name")
 
   @@map(name: "grant")

@@ -22,10 +22,18 @@ CREATE TABLE "Organization" (
 );
 
 -- CreateTable
+CREATE TABLE "training_record" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "organizationId" INTEGER NOT NULL,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "role" (
     "id" SERIAL NOT NULL,
-    "access_control_name" TEXT NOT NULL,
-    "display_name" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "organizationId" INTEGER NOT NULL,
 
     PRIMARY KEY ("id")
@@ -57,7 +65,7 @@ CREATE UNIQUE INDEX "user.dodId_unique" ON "user"("dodId");
 CREATE UNIQUE INDEX "user.email_unique" ON "user"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "role.access_control_name_unique" ON "role"("access_control_name");
+CREATE UNIQUE INDEX "role.name_unique" ON "role"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "resource.name_unique" ON "resource"("name");
@@ -72,10 +80,13 @@ ALTER TABLE "user" ADD FOREIGN KEY ("organizationId") REFERENCES "Organization"(
 ALTER TABLE "Organization" ADD FOREIGN KEY ("parentId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "training_record" ADD FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "role" ADD FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "grant" ADD FOREIGN KEY ("resource_name") REFERENCES "resource"("name") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "grant" ADD FOREIGN KEY ("role_name") REFERENCES "role"("access_control_name") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "grant" ADD FOREIGN KEY ("role_name") REFERENCES "role"("name") ON DELETE CASCADE ON UPDATE CASCADE;

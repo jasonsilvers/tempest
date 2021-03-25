@@ -25,5 +25,5 @@
     ]
   },
   "include": ["next-env.d.ts", "twin.d.ts", "**/*.ts", "**/*.tsx", "pages/api/user/__test__/user.api.test.js", "components/Navigation/tests/Navigation.test.tss"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "__tests__"]
 }
