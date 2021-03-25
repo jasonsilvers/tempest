@@ -1,27 +1,27 @@
-import { render } from '../../../__mocks__/TempestTestUtils';
-import { Header, Link } from '../Navigation';
+import { render } from "../../utils/TempestTestUtils";
+import { Header, Link } from "../../../components/Navigation/Navigation";
 
-test('should render the Header comp', () => {
+test("should render the Header comp", () => {
   const { getByText } = render(<Header>Tempest</Header>);
 
   expect(getByText(/Tempest/));
 });
 
-test('should render the Link comp', () => {
+test("should render the Link comp", () => {
   const { getByText } = render(<Link goToUrl="/">Tempest</Link>, {
-    nextJSRoute: '/Tempest',
+    nextJSRoute: "/Tempest",
   });
 
   expect(getByText(/Tempest/));
 });
 
 // we should set this to be equal to the secondary color when styles are a thing
-test('should render the Link comp with blue colors', () => {
+test("should render the Link comp with blue colors", () => {
   const { getByText } = render(<Link goToUrl="/Tempest">Tempest</Link>, {
-    nextJSRoute: '/Tempest',
+    nextJSRoute: "/Tempest",
   });
   const link = getByText(/Tempest/);
 
   expect(link);
-  expect(link.style.color).toBe('blue');
+  expect(link.style.color).toBe("blue");
 });

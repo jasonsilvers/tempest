@@ -22,7 +22,7 @@ const usePermissions = () => {
   let userRole: string;
 
   if (grantsQuery.data) {
-    userRole = user.role.accessControlName;
+    userRole = user.role.name;
     ac = new AccessControl(grantsQuery.data);
   }
 

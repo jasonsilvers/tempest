@@ -10,8 +10,7 @@ async function main() {
 
   const role = await prisma.role.create({
     data: {
-      accessControlName: 'admin',
-      displayName: 'admin',
+      name: 'admin',
       organization: {
         connect: { id: organization.id },
       },
@@ -35,7 +34,7 @@ async function main() {
       },
       roleModel: {
         connect: {
-          accessControlName: role.accessControlName,
+          name: role.name,
         },
       },
     },

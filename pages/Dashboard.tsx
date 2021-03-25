@@ -1,9 +1,8 @@
-const Dashboard = () => {
+const Dashboard = (props) => {
   return (
     <div>
       <h1
         style={{
-          backgroundColor: 'red',
           height: '200px',
         }}
       >
