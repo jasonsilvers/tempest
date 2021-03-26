@@ -1,5 +1,5 @@
-import { User } from "@prisma/client";
-import prisma from "../prisma";
+import { User } from '@prisma/client';
+import prisma from '../prisma';
 
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 

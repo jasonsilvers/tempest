@@ -1,10 +1,10 @@
-import React from "react";
-import { useUser } from "@tron/nextjs-auth-p1";
-import { Header, Link } from "./Navigation";
-import { User } from ".prisma/client";
-import tw from "twin.macro";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
+import React from 'react';
+import { useUser } from '@tron/nextjs-auth-p1';
+import { Header, Link } from './Navigation';
+import { User } from '.prisma/client';
+import tw from 'twin.macro';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 
 const Welcome = tw.div`ml-auto mr-4 text-red-500`;
 

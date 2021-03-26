@@ -1,5 +1,5 @@
-import Head from "next/head";
-import React from "react";
+import Head from 'next/head';
+import React from 'react';
 
 const UnauthenticatedApp = (props) => {
   return (
@@ -14,4 +14,4 @@ const UnauthenticatedApp = (props) => {
   );
 };
 
-export default UnauthenticatedApp
+export default UnauthenticatedApp;

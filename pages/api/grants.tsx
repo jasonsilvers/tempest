@@ -1,11 +1,11 @@
-import { NextApiResponse } from "next";
+import { NextApiResponse } from 'next';
 import {
   withApiAuth,
   NextApiRequestWithAuthorization,
-} from "@tron/nextjs-auth-p1";
-import { User } from "@prisma/client";
-import { getUser } from "../../prisma/repositories/user";
-import prisma from "../../prisma/prisma";
+} from '@tron/nextjs-auth-p1';
+import { User } from '@prisma/client';
+import { getUser } from '../../prisma/repositories/user';
+import prisma from '../../prisma/prisma';
 
 const grants = async (
   req: NextApiRequestWithAuthorization<User>,

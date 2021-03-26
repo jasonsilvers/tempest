@@ -1,10 +1,10 @@
-import { NextApiResponse } from "next";
+import { NextApiResponse } from 'next';
 import {
   withApiAuth,
   NextApiRequestWithAuthorization,
-} from "@tron/nextjs-auth-p1";
-import { User } from "@prisma/client";
-import { getUser } from "../../prisma/repositories/user";
+} from '@tron/nextjs-auth-p1';
+import { User } from '@prisma/client';
+import { getUser } from '../../prisma/repositories/user';
 
 const login = async (
   req: NextApiRequestWithAuthorization<User>,
