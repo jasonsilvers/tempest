@@ -1,12 +1,12 @@
-import "../styles/globals.css";
-import React, { useEffect, useRef } from "react";
-import { Hydrate } from "react-query/hydration";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { UserContextProvider } from "@tron/nextjs-auth-p1"; // auth lib
-import NavBar from "../components/Navigation/Navbar";
-import { ErrorBoundary } from "react-error-boundary";
-import GlobalStyles from "../styles/GlobalStyles";
+import '../styles/globals.css';
+import React, { useEffect, useRef } from 'react';
+import { Hydrate } from 'react-query/hydration';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
+import { UserContextProvider } from '@tron/nextjs-auth-p1'; // auth lib
+import NavBar from '../components/Navigation/Navbar';
+import { ErrorBoundary } from 'react-error-boundary';
+import GlobalStyles from '../styles/GlobalStyles';
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -23,13 +23,12 @@ function MyApp({ Component, pageProps }) {
     queryClientRef.current = new QueryClient();
   }
 
-
   useEffect(() => {
-    const jssStyles = document.querySelector('#jss-server-side')
+    const jssStyles = document.querySelector('#jss-server-side');
     if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles)
+      jssStyles.parentElement.removeChild(jssStyles);
     }
-  })
+  });
 
   return (
     <QueryClientProvider client={queryClientRef.current}>

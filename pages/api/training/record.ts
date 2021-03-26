@@ -1,12 +1,12 @@
-import { NextApiResponse } from "next";
+import { NextApiResponse } from 'next';
 import {
   withApiAuth,
   NextApiRequestWithAuthorization,
-} from "@tron/nextjs-auth-p1";
-import { getUser, UserWithRole } from "../../../prisma/repositories/user";
-import prisma from "../../../prisma/prisma";
-import { getAcList } from "../../../middleware/utils";
-import { Resource } from "../../../types/global";
+} from '@tron/nextjs-auth-p1';
+import { getUser, UserWithRole } from '../../../prisma/repositories/user';
+import prisma from '../../../prisma/prisma';
+import { getAcList } from '../../../middleware/utils';
+import { Resource } from '../../../types/global';
 
 const grants = async (
   req: NextApiRequestWithAuthorization<UserWithRole>,
@@ -19,7 +19,7 @@ const grants = async (
     const records = await prisma.trainingRecord.findMany();
     res.json(records);
   } else {
-    res.status(403).json("You dont have permission");
+    res.status(403).json('You dont have permission');
   }
 };
 

@@ -7,15 +7,15 @@ import { useRouter } from 'next/router';
 
 function Home(props) {
   const { user, isLoading, error } = useUser();
-  const router = useRouter()
+  const router = useRouter();
 
   if (isLoading) {
     return <div>We are logging you in... please stand by</div>;
   }
 
   if (!user) {
-    console.warn(error)
-    router.push('/Unauthenticated')
+    console.warn(error);
+    router.push('/Unauthenticated');
   }
 
   return (
@@ -33,4 +33,4 @@ function Home(props) {
   );
 }
 
-export default Home
+export default Home;

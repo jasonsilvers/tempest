@@ -1,33 +1,33 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
-const { defaults } = require("jest-config");
+const { defaults } = require('jest-config');
 
 module.exports = {
   ...defaults,
   testPathIgnorePatterns: [
-    "<rootDir>/.next/",
-    "<rootDir>/node_modules/",
-    "<rootDir>/__tests__/setup/",
-    "<rootDir>/__tests__/utils/",
+    '<rootDir>/.next/',
+    '<rootDir>/node_modules/',
+    '<rootDir>/__tests__/setup/',
+    '<rootDir>/__tests__/utils/',
   ],
   collectCoverage: true,
   coveragePathIgnorePatterns: [
-    "/node_modules/",
-    "enzyme.js",
-    "/.next/",
-    "/__tests__/",
+    '/node_modules/',
+    'enzyme.js',
+    '/.next/',
+    '/__tests__/',
   ],
-  coverageReporters: ["json", "lcov", "text", "text-summary"],
+  coverageReporters: ['json', 'lcov', 'text', 'text-summary'],
   collectCoverageFrom: [
-    "components/**/*.{ts,tsx}",
-    "hooks/**/*.{ts,tsx}",
-    "middleware/**/*.{ts,tsx}",
-    "pages/**/*.{ts,tsx}",
-    "prisma/repositories/**/*.{ts,tsx}"
+    'components/**/*.{ts,tsx}',
+    'hooks/**/*.{ts,tsx}',
+    'middleware/**/*.{ts,tsx}',
+    'pages/**/*.{ts,tsx}',
+    'prisma/repositories/**/*.{ts,tsx}',
   ],
   moduleNameMapper: {
-    "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-      "<rootDir>/__mocks__/mocks.js",
-    "\\.(css|less|scss)$": "identity-obj-proxy",
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+      '<rootDir>/__mocks__/mocks.js',
+    '\\.(css|less|scss)$': 'identity-obj-proxy',
   },
-  setupFilesAfterEnv: ["./__tests__/setup/jest.setup.ts"],
+  setupFilesAfterEnv: ['./__tests__/setup/jest.setup.ts'],
 };
