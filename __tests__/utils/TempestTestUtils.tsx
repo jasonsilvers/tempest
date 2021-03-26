@@ -43,7 +43,9 @@ const render = (
   }));
 
   return rtlRender(component, {
-    wrapper: (props) => <Wrapper {...props} />,
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
     ...options,
   });
 };
