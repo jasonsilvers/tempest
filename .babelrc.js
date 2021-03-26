@@ -3,6 +3,6 @@ module.exports = {
   plugins: [
     'babel-plugin-macros',
     'superjson-next',
-    ['styled-components', { ssr: true }],
+    ['styled-components', { ssr: true, displayName: true }],
   ],
 };

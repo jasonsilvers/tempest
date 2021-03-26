@@ -36,7 +36,7 @@ function MyApp({ Component, pageProps }) {
         <UserContextProvider user={pageProps.user} loginUrl="/api/login">
           <GlobalStyles />
           <NavBar />
-          <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => {}}>
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
             <Component {...pageProps} />
           </ErrorBoundary>
         </UserContextProvider>

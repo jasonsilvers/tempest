@@ -12,7 +12,7 @@ const Navbar: React.FC = () => {
   const { user } = useUser<User>();
 
   return (
-    <AppBar>
+    <AppBar position="relative">
       <Toolbar>
         <Header goToUrl="/">Tempest</Header>
         {user ? (
