@@ -1,4 +1,4 @@
-import React, { Children } from 'react';
+import React from 'react';
 import Document from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 import { ServerStyleSheets } from '@material-ui/core/styles';

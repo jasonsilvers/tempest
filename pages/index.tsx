@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useRouter } from 'next/router';
 
-function Home(props) {
-  const { user, isLoading, error } = useUser();
+function Home() {
+  const { user, isLoading } = useUser();
   const router = useRouter();
 
   if (isLoading) {
@@ -14,7 +14,6 @@ function Home(props) {
   }
 
   if (!user) {
-    console.warn(error);
     router.push('/Unauthenticated');
   }
 

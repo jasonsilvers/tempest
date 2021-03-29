@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React from 'react';
 
-const UnauthenticatedApp = (props) => {
+const UnauthenticatedApp = () => {
   return (
     <div>
       <Head>

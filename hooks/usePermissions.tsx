@@ -1,10 +1,8 @@
 import { useUser } from '@tron/nextjs-auth-p1';
 import { AccessControl } from 'accesscontrol';
 import axios from 'axios';
-import React, { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { UserWithRole } from '../prisma/repositories/user';
-import { Role } from '../types/global';
 
 const usePermissions = () => {
   const { user } = useUser<UserWithRole>();
@@ -19,10 +17,10 @@ const usePermissions = () => {
   );
 
   let ac: AccessControl;
-  let userRole: string;
+  let userRole = undefined;
 
   if (grantsQuery.data) {
-    userRole = user.role.name;
+    userRole = user?.role.name;
     ac = new AccessControl(grantsQuery.data);
   }
 

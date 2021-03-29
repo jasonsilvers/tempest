@@ -1,19 +1,26 @@
-import { User } from '@prisma/client';
+import { Organization, Role, User } from '@prisma/client';
 import { UserContextProvider } from '@tron/nextjs-auth-p1/dist/client/UserContextProvider';
 import { useTestRouter, useTestUser } from './mocks/NextMocks';
 import * as React from 'react';
 import { render as rtlRender } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 const queryClientInit = new QueryClient();
 
-interface WrapperProps {
-  user?: any;
-  children: React.ReactNode;
+type UserWithAll = User & { role?: Partial<Role> } & {
+  organization?: Partial<Organization>;
+};
+
+interface IWrapperProps {
+  user?: Partial<UserWithAll>;
+  children?: React.ReactNode;
 }
 
-const Wrapper = (props) => {
+const test = 'this';
+
+console.log(test);
+
+const Wrapper: React.FC<IWrapperProps> = (props) => {
   return (
     <QueryClientProvider client={queryClientInit}>
       <UserContextProvider user={props.user} loginUrl="/api/login">
@@ -24,7 +31,7 @@ const Wrapper = (props) => {
 };
 
 const render = (
-  component,
+  component: JSX.Element,
   {
     nextJSRoute = '/',
     isLoading = false,
