@@ -1,7 +1,6 @@
 import React from 'react';
 import Navbar from '../../../components/Navigation/Navbar';
 import { render } from '../../utils/TempestTestUtils';
-import { prettyDOM } from '@testing-library/react';
 
 test('should render a navbar', () => {
   const { getByText } = render(<Navbar />);

@@ -23,7 +23,8 @@ async function main() {
     },
   });
 
-  const permission = await prisma.grant.create({
+  // Permission
+  await prisma.grant.create({
     data: {
       action: 'create:any',
       attributes: '*',
@@ -40,7 +41,8 @@ async function main() {
     },
   });
 
-  const user = await prisma.user.create({
+  // User Bob
+  await prisma.user.create({
     data: {
       name: 'bob anderson',
       dodId: '2223332221',

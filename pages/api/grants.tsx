@@ -7,7 +7,7 @@ import { User } from '@prisma/client';
 import { getUser } from '../../prisma/repositories/user';
 import prisma from '../../prisma/prisma';
 
-const grants = async (
+const getGrants = async (
   req: NextApiRequestWithAuthorization<User>,
   res: NextApiResponse
 ) => {
@@ -20,4 +20,4 @@ const grants = async (
   res.json(grants);
 };
 
-export default withApiAuth(grants, getUser);
+export default withApiAuth(getGrants, getUser);

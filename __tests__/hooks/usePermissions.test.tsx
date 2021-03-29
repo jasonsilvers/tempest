@@ -13,7 +13,7 @@ describe('usePermissions', () => {
         return res(ctx.status(200), ctx.json(grants));
       })
     );
-    const { result, waitForValueToChange, waitForNextUpdate } = renderHook(
+    const { result, waitForValueToChange } = renderHook(
       () => usePermissions(),
       {
         wrapper: Wrapper,
