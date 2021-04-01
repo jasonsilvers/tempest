@@ -6,7 +6,7 @@ import usePermissions from '../hooks/usePermissions';
 const Profile = () => {
   const { ac, isLoading, userRole } = usePermissions();
 
-  const permission = ac?.can(userRole).read(Resource.PROFILE);
+  const permission = ac?.can(userRole).create(Resource.RECORD);
 
   if (isLoading) {
     return null;
