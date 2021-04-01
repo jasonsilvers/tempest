@@ -1,4 +1,3 @@
-import '../styles/globals.css';
 import React, { useEffect, useRef } from 'react';
 import { Hydrate } from 'react-query/hydration';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -7,6 +6,7 @@ import { UserContextProvider } from '@tron/nextjs-auth-p1'; // auth lib
 import NavBar from '../components/Navigation/Navbar';
 import { ErrorBoundary } from 'react-error-boundary';
 import GlobalStyles from '../styles/GlobalStyles';
+import { StylesProvider } from '@material-ui/styles';
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -28,21 +28,23 @@ function MyApp({ Component, pageProps }) {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
-  });
+  }, []);
 
   return (
-    <QueryClientProvider client={queryClientRef.current}>
-      <Hydrate state={pageProps.dehydratedState}>
-        <UserContextProvider user={pageProps.user} loginUrl="/api/login">
-          <GlobalStyles />
-          <NavBar />
-          <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <Component {...pageProps} />
-          </ErrorBoundary>
-        </UserContextProvider>
-      </Hydrate>
-      <ReactQueryDevtools />
-    </QueryClientProvider>
+    <StylesProvider injectFirst>
+      <QueryClientProvider client={queryClientRef.current}>
+        <Hydrate state={pageProps.dehydratedState}>
+          <UserContextProvider user={pageProps.user} loginUrl="/api/login">
+            <GlobalStyles />
+            <NavBar />
+            <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => {}}>
+              <Component {...pageProps} />
+            </ErrorBoundary>
+          </UserContextProvider>
+        </Hydrate>
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+    </StylesProvider>
   );
 }
 
