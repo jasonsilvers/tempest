@@ -11,3 +11,4 @@ export const useTestRouter: jest.SpyInstance<Partial<NextRouter>> = jest.spyOn(
 export const useTestUser: jest.SpyInstance<
   IUserContext<Partial<User>>
 > = jest.spyOn(require('@tron/nextjs-auth-p1'), 'useUser');
+

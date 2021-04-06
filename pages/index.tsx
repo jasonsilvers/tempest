@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import styles from '../styles/Home.module.css';
+
 import React from 'react';
 import Link from 'next/link';
 import { useUser } from '@tron/nextjs-auth-p1';
@@ -18,14 +18,14 @@ function Home() {
   }
 
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>Tempest</h1>
+      <main >
+        <h1>Tempest</h1>
         <Link href="/Dashboard"> Go to Dashboard </Link>
       </main>
     </div>
