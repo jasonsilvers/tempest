@@ -1,6 +1,5 @@
 import { User } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '../../../prisma/prisma';
 import { getUserById, putUser } from '../../../prisma/repositories/user';
 
 export default async function userHandler(
@@ -26,11 +25,22 @@ export default async function userHandler(
       res.status(200).json(user);
       break;
     }
+
     case 'PUT': {
-      const user = await putUser(body);
-      res.status(200).json(user);
-      break;
+      if (!body.id) {
+        res.status(400).end('User must have id to update');
+        break;
+      }
+      if (body.id === userId) {
+        const user = await putUser(body);
+        res.status(200).json(user);
+        break;
+      } else {
+        res.status(400).end('User Obj and Query must match for id');
+        break;
+      }
     }
+
     default:
       res.setHeader('Allow', ['GET', 'PUT']);
       res.status(405).end(`Method ${method} Not Allowed`);

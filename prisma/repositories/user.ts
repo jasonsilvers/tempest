@@ -31,7 +31,8 @@ export const postUser = async (user: User) => {
 };
 
 export const putUser = async (user: User) => {
-  return prisma.user.create({
+  return prisma.user.update({
+    where: { id: user.id },
     data: user,
   });
 };
