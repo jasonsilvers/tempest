@@ -1,25 +1,13 @@
-import * as userRepo from '../../../prisma/repositories/user';
-
-export const mockUserRepository = (
-  method: Extract<keyof typeof userRepo, string>,
-  data: Partial<userRepo.UserWithRole>
-) => {
-  return jest.spyOn(userRepo, method).mockReturnValue(data);
-};
-
 /**
  * Mock Repository Helper function
  *
  * Creates a spy based on params passed and returns that spy for testing
  *
  * @type E Entity to expect
- * @type R Optional type for intellisense of the method param
- * @type R usage - <E, typeof moduleName>
  *
- * @param repo Module to spyOn
- * @param method method/function name to spyOn
+ * @param method method of mocked module to resolve the data for
  * @param data object to return
- * @returns jest.spy
+ * @returns the method just for ease of use
  */
 const mockRepository = <E>(method, data: Partial<E>) => {
   try {
@@ -33,6 +21,3 @@ const mockRepository = <E>(method, data: Partial<E>) => {
 };
 
 export default mockRepository;
-
-// jest.mock('../fetches/airmen.js');
-// getUnits.mockResolvedValue([airman.squadron]);
