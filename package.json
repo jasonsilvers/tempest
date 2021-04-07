@@ -15,7 +15,7 @@
     "db:reseed": "prisma migrate reset --preview-feature",
     "db:seed": "prisma db seed --preview-feature",
     "jwt-proxy": "jwt-proxy 9000 3000 --silent --jwt user.jwt",
-    "db:reset": "rm -rf ./prisma/migrations && prisma migrate dev --preview-feature && npm run db:seed",
+    "db:reset": "rm -rf ./prisma/migrations && prisma migrate dev --preview-feature && prisma generate && npm run db:seed",
     "db:generate": "prisma generate"
   },
   "dependencies": {
