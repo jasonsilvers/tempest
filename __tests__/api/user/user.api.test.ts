@@ -2,14 +2,16 @@ import { User } from '@prisma/client';
 import { createMocks } from 'node-mocks-http';
 import { userApiHandler } from '../../../pages/api/user';
 import mockRepository from '../../utils/mocks/repository';
-import * as repo from '../../../prisma/repositories/user';
+import { createUser } from '../../../prisma/repositories/user';
+
+jest.mock('../../../prisma/repositories/user');
 
 const userTest = {
   name: 'Bob',
 };
 
 test('api/user:POST--Happy Case', async () => {
-  mockRepository<User, typeof repo>(repo, 'postUser', {
+  mockRepository<User>(createUser, {
     ...userTest,
     id: 1,
   });
@@ -42,7 +44,6 @@ test('api/user:POST--ID must be null', async () => {
 test('api/user:GET --Method not allowed', async () => {
   const { req, res } = createMocks({
     method: 'GET',
-    // body: {...userTest, id:1}
   });
   await userApiHandler(req, res);
 

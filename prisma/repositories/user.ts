@@ -5,7 +5,7 @@ import prisma from '../prisma';
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
 // type === User & { role?: Role };
-export type UserWithRole = ThenArg<ReturnType<typeof getUserByDodId>>;
+export type UserWithRole = ThenArg<ReturnType<typeof findUserByDodId>>;
 
 /**
  * Get user method to query the PSQL db though the prisma client
@@ -14,7 +14,7 @@ export type UserWithRole = ThenArg<ReturnType<typeof getUserByDodId>>;
  * @param queryString dodid
  * @returns UserWithRole
  */
-export const getUserByDodId = async (queryString: string) => {
+export const findUserByDodId = async (queryString: string) => {
   return await prisma.user.findUnique({
     where: {
       dodId: queryString,
@@ -29,7 +29,7 @@ export const getUserByDodId = async (queryString: string) => {
  * @param query unique db id
  * @returns UserWithRole
  */
-export const getUserById = async (query: number) => {
+export const findUserById = async (query: number) => {
   return await prisma.user.findUnique({
     where: {
       id: query,
@@ -44,7 +44,7 @@ export const getUserById = async (query: number) => {
  * @param user
  * @returns User
  */
-export const postUser = async (user: User) => {
+export const createUser = async (user: User) => {
   return await prisma.user.create({
     data: user,
   });
@@ -56,7 +56,7 @@ export const postUser = async (user: User) => {
  * @param user
  * @returns User
  */
-export const putUser = async (user: User) => {
+export const updateUser = async (user: User) => {
   return prisma.user.update({
     where: { id: user.id },
     data: user,
