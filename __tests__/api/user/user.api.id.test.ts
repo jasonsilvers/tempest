@@ -1,7 +1,7 @@
 import { createMocks } from 'node-mocks-http';
 import mockRepository from '../../utils/mocks/repository';
 import * as repo from '../../../prisma/repositories/user';
-import userHandler from '../../../pages/api/user/[id]';
+import userQueryHandler from '../../../pages/api/user/[id]';
 import { UserWithRole } from '../../../prisma/repositories/user';
 
 const userTest = {
@@ -20,7 +20,7 @@ test('api/user/1:GET--Happy Case', async () => {
     query: { id: '1' },
   });
 
-  await userHandler(req, res);
+  await userQueryHandler(req, res);
 
   const expectedUser = { ...userTest, id: 1 };
 
@@ -43,7 +43,7 @@ test('api/user/1:PUT--Happy Case', async () => {
     query: { id: '1' },
   });
 
-  await userHandler(req, res);
+  await userQueryHandler(req, res);
 
   const expectedUser = { ...userTest, id: 1 };
 
@@ -65,7 +65,7 @@ test('api/user/1:PUT--Body Null Id', async () => {
     query: { id: '1' },
   });
 
-  await userHandler(req, res);
+  await userQueryHandler(req, res);
 
   expect(res._getStatusCode()).toBe(400);
   expect(res._getData()).toEqual('User must have id to update');
@@ -85,7 +85,7 @@ test('api/user/1:PUT--Query and Body ids', async () => {
     query: { id: '1' },
   });
 
-  await userHandler(req, res);
+  await userQueryHandler(req, res);
 
   expect(spy).toHaveBeenCalledTimes(0);
   expect(res._getStatusCode()).toBe(400);
@@ -99,7 +99,7 @@ test('api/user/1:POST--Method not allowed', async () => {
     body: { ...userTest, id: 1 },
     query: { id: 1 },
   });
-  await userHandler(req, res);
+  await userQueryHandler(req, res);
 
   const expectedUserError = 'Method POST Not Allowed';
 

@@ -1,11 +1,19 @@
 import { User } from '@prisma/client';
 import prisma from '../prisma';
 
+// required to infer the return type from the Prisma Client
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
-// === User & { role?: Role };
+// type === User & { role?: Role };
 export type UserWithRole = ThenArg<ReturnType<typeof getUserByDodId>>;
 
+/**
+ * Get user method to query the PSQL db though the prisma client
+ * for use with the @tron-p1-auth library
+ *
+ * @param queryString dodid
+ * @returns UserWithRole
+ */
 export const getUserByDodId = async (queryString: string) => {
   return await prisma.user.findUnique({
     where: {
@@ -15,6 +23,12 @@ export const getUserByDodId = async (queryString: string) => {
   });
 };
 
+/**
+ * Get user method to query the PSQL db though the prisma client
+ *
+ * @param query unique db id
+ * @returns UserWithRole
+ */
 export const getUserById = async (query: number) => {
   return await prisma.user.findUnique({
     where: {
@@ -24,12 +38,24 @@ export const getUserById = async (query: number) => {
   });
 };
 
+/**
+ * Post user method to create the PSQL db though the prisma client
+ *
+ * @param user
+ * @returns User
+ */
 export const postUser = async (user: User) => {
   return await prisma.user.create({
     data: user,
   });
 };
 
+/**
+ * Put User method to update the PSQL db though the prisma client
+ *
+ * @param user
+ * @returns User
+ */
 export const putUser = async (user: User) => {
   return prisma.user.update({
     where: { id: user.id },
