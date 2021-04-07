@@ -49,7 +49,7 @@ async function main() {
       email: 'bob.anderson@gmail.com',
       createdAt: new Date(),
       updatedAt: new Date(),
-      Organization: {
+      organization: {
         connect: {
           id: organization.id,
         },

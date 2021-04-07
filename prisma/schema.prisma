@@ -36,6 +36,8 @@ model Organization {
   roles          Role[]
   users          User[]
   trainingRecord TrainingRecord[]
+
+  @@map("organization")
 }
 
 model TrainingRecord {
