@@ -14,8 +14,10 @@ beforeAll(() => {
 // so they don't affect other tests.
 afterEach(() => {
   queryClientInit.clear();
-
   server.resetHandlers();
+
+  // resets all mocks between tests
+  jest.clearAllMocks();
 });
 // Clean up after the tests are finished.
 afterAll(() => server.close());

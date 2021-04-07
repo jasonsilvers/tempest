@@ -4,13 +4,13 @@ import {
   NextApiRequestWithAuthorization,
 } from '@tron/nextjs-auth-p1';
 import { User } from '@prisma/client';
-import { getUserByDodId, postUser } from '../../prisma/repositories/user';
+import { findUserByDodId, createUser } from '../../prisma/repositories/user';
 
 export const userApiHandler = async (
   req: NextApiRequestWithAuthorization<User>,
   res: NextApiResponse
 ) => {
-  const { body, method }: { body: User; method?: string } = req;
+  const { body, method }: { body; method?: string } = req;
   switch (method) {
     // HTTP POST method case to create a user
     case 'POST': {
@@ -20,7 +20,8 @@ export const userApiHandler = async (
         break;
       }
       // Call the repository and create the user
-      res.json(postUser(body));
+      const user = await createUser(body);
+      res.json(user);
       res.statusCode = 200;
       break;
     }
@@ -32,4 +33,4 @@ export const userApiHandler = async (
   }
 };
 
-export default withApiAuth(userApiHandler, getUserByDodId);
+export default withApiAuth(userApiHandler, findUserByDodId);

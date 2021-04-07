@@ -4,7 +4,7 @@ import {
   NextApiRequestWithAuthorization,
 } from '@tron/nextjs-auth-p1';
 import {
-  getUserByDodId,
+  findUserByDodId,
   UserWithRole,
 } from '../../../prisma/repositories/user';
 import prisma from '../../../prisma/prisma';
@@ -32,4 +32,4 @@ const grants = async (
   }
 };
 
-export default withApiAuth(grants, getUserByDodId);
+export default withApiAuth(grants, findUserByDodId);

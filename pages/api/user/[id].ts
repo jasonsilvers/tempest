@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getUserById, putUser } from '../../../prisma/repositories/user';
+import { findUserById, updateUser } from '../../../prisma/repositories/user';
 
 export default async function userQueryHandler(
   req: NextApiRequest,
@@ -24,7 +24,7 @@ export default async function userQueryHandler(
   switch (method) {
     // Get Method to return a single user by id
     case 'GET': {
-      const user = await getUserById(userId);
+      const user = await findUserById(userId);
       res.status(200).json(user);
       break;
     }
@@ -38,7 +38,7 @@ export default async function userQueryHandler(
       }
       // if the Query id and JSON body id match then process the update
       if (body.id === userId) {
-        const user = await putUser(body);
+        const user = await updateUser(body);
         res.status(200).json(user);
         break;
       }
