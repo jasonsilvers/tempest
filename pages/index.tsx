@@ -1,8 +1,4 @@
 import Head from 'next/head';
-<<<<<<< HEAD
-=======
-
->>>>>>> WIP Mocking Prisma database for writing unit test that handles a user
 import React from 'react';
 import Link from 'next/link';
 import { useUser } from '@tron/nextjs-auth-p1';
@@ -27,11 +23,7 @@ function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-<<<<<<< HEAD
       <main>
-=======
-      <main >
->>>>>>> WIP Mocking Prisma database for writing unit test that handles a user
         <h1>Tempest</h1>
         <Link href="/Dashboard"> Go to Dashboard </Link>
       </main>
