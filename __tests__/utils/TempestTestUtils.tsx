@@ -16,10 +16,6 @@ interface IWrapperProps {
   children?: React.ReactNode;
 }
 
-const test = 'this';
-
-console.log(test);
-
 const Wrapper: React.FC<IWrapperProps> = (props) => {
   return (
     <QueryClientProvider client={queryClientInit}>
