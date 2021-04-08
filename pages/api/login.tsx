@@ -4,7 +4,7 @@ import {
   NextApiRequestWithAuthorization,
 } from '@tron/nextjs-auth-p1';
 import { User } from '@prisma/client';
-import { getUser } from '../../prisma/repositories/user';
+import { findUserByDodId } from '../../prisma/repositories/user';
 
 const login = async (
   req: NextApiRequestWithAuthorization<User>,
@@ -14,4 +14,4 @@ const login = async (
   res.json(req.user);
 };
 
-export default withApiAuth(login, getUser);
+export default withApiAuth(login, findUserByDodId);

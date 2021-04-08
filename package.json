@@ -15,12 +15,12 @@
     "db:reseed": "prisma migrate reset --preview-feature",
     "db:seed": "prisma db seed --preview-feature",
     "jwt-proxy": "jwt-proxy 9000 3000 --silent --jwt user.jwt",
-    "db:reset": "rm -rf ./prisma/migrations && prisma migrate dev --preview-feature && npm run db:seed",
+    "db:reset": "prisma db push --force-reset --preview-feature && npm run db:seed",
     "db:generate": "prisma generate"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.3",
-    "@prisma/client": "^2.18.0",
+    "@prisma/client": "^2.20.1",
     "@svgr/webpack": "^5.5.0",
     "@tron/nextjs-auth-p1": "^1.0.0",
     "accesscontrol": "^2.2.1",
