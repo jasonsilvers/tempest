@@ -11,4 +11,3 @@ USER appuser
 COPY --from=builder --chown=appuser:appuser /app/build /var/ww
 EXPOSE 8080
 CMD [ "nginx", "-g", "daemon off;" ]
-This 
