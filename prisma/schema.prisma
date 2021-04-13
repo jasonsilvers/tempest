@@ -12,40 +12,61 @@ generator client {
 }
 
 model User {
-  id             Int           @id @default(autoincrement())
-  dodId          String?       @unique
-  firstName      String?
-  lastName       String?
-  email          String?       @unique
-  createdAt      DateTime?     @default(now()) @map("created_at")
-  updatedAt      DateTime?     @updatedAt @map("updated_at")
-  role           Role?         @relation(fields: [roleId], references: [id])
-  roleId         Int?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId Int?
+  id                       Int                    @id @default(autoincrement())
+  dodId                    String?                @unique
+  firstName                String?
+  lastName                 String?
+  email                    String?                @unique
+  createdAt                DateTime?              @default(now()) @map("created_at")
+  updatedAt                DateTime?              @updatedAt @map("updated_at")
+  role                     Role?                  @relation(fields: [roleId], references: [id])
+  roleId                   Int?
+  organization             Organization?          @relation(fields: [organizationId], references: [id])
+  organizationId           Int?
+  traineeTrackingRecords   MemberTrackingRecord[] @relation(name: "TraineeRecords")
+  authorityTrackingRecords MemberTrackingRecord[] @relation(name: "AuthorityRecords")
 
   @@map(name: "user")
 }
 
 model Organization {
-  id             Int              @id @default(autoincrement())
-  name           String
+  id            Int            @id @default(autoincrement())
+  name          String
   //Self reference
-  parent         Organization?    @relation(name: "ParentChildren", fields: [parentId], references: [id])
-  parentId       Int?
-  children       Organization[]   @relation(name: "ParentChildren")
-  roles          Role[]
-  users          User[]
-  trainingRecord TrainingRecord[]
+  parent        Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
+  parentId      Int?
+  children      Organization[] @relation(name: "ParentChildren")
+  roles         Role[]
+  users         User[]
+  trackingItems TrackingItem[]
 
   @@map("organization")
 }
 
-model TrainingRecord {
-  id             Int          @id @default(autoincrement())
-  title          String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId Int
+model MemberTrackingRecord {
+  id                  Int                   @id @default(autoincrement())
+  traineeSignedDate   DateTime?             @map("trainee_signed_date")
+  authoritySignedDate DateTime?             @map("authority_signed_date")
+  authority           User?                 @relation(name: "AuthorityRecords", fields: [authorityId], references: [id])
+  authorityId         Int?                  @map("authority_id")
+  trainee             User?                 @relation(name: "TraineeRecords", fields: [traineeId], references: [id])
+  traineeId           Int?                  @map("trainee_id")
+  completedDate       DateTime?             @map("completed_date")
+  successor           MemberTrackingRecord? @relation(name: "NextTrackingRecord", fields: [successorId], references: [id])
+  predecessor         MemberTrackingRecord? @relation(name: "NextTrackingRecord")
+  successorId         Int?                  @map("next_record_id")
+  trackingItem        TrackingItem          @relation(fields: [trackingItemId], references: [id])
+  trackingItemId      Int                   @map("tracking_item_id")
+
+  @@map("member_tracking_record")
+}
+
+model TrackingItem {
+  id                   Int                    @id @default(autoincrement())
+  title                String
+  organization         Organization           @relation(fields: [organizationId], references: [id])
+  organizationId       Int
+  MemberTrackingRecord MemberTrackingRecord[]
 
   @@map("training_record")
 }
