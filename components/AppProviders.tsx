@@ -3,7 +3,6 @@ import { Hydrate } from 'react-query/hydration';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { UserContextProvider } from '@tron/nextjs-auth-p1'; // auth lib
-import { ErrorBoundary } from 'react-error-boundary';
 import { StylesProvider } from '@material-ui/styles';
 
 function AppProviders({ children, pageProps = null }) {

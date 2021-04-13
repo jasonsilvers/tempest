@@ -7,6 +7,11 @@ type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 // type === User & { role?: Role };
 export type UserWithRole = ThenArg<ReturnType<typeof findUserByDodId>>;
 
+
+export const getUsers = async () => {
+  return await prisma.user.findMany()
+}
+
 /**
  * Get user method to query the PSQL db though the prisma client
  * for use with the @tron-p1-auth library
