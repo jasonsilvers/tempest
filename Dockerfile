@@ -2,6 +2,7 @@ FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/ironbank/nodejs
 ENV NODE_ENV=production
 WORKDIR /app
 COPY . .
+RUN npm install --production
 RUN npx prisma generate
 RUN npm run build
 
