@@ -1,5 +1,5 @@
 import { render } from '../../utils/TempestTestUtils';
-import { Header, Link } from '../../../components/Navigation/Navigation';
+import { Header, Link } from '../../../src/components/Navigation/Navigation';
 
 test('should render the Header comp', () => {
   const { getByText } = render(<Header>Tempest</Header>);

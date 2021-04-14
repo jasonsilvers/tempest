@@ -1,15 +1,47 @@
-FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/ironbank/nodejs14:14.16.0 AS builder
+# Dependencies
+FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/ironbank/nodejs14:14.16.0 AS dependencies
+RUN mkdir -p ${HOME}/deps
+WORKDIR ${HOME}/deps
 ENV NODE_ENV=production
-WORKDIR /app
-COPY . .
+
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci --no-fund --no-audit 
+
+
+# Build artifacts
+# ARG NEXT_PUBLIC_MAPBOX_TOKEN
+FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/ironbank/nodejs14:14.16.0 AS builder
 USER root
-RUN npm install --production
+RUN mkdir -p ${HOME}/build
+WORKDIR ${HOME}/build
+ENV NODE_ENV=production
+
+COPY --from=dependencies /home/node/deps/node_modules ./node_modules
+COPY ./src package.json tsconfig.json .babelrc ./
+
 RUN npx prisma generate
 RUN npm run build
 
-# Stage 2
-FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/base-image/harden-nodejs14:14.16.0
+
+# Nextjs server
+FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/base-image/harden-nodejs14:14.16.0 AS application
+
 USER appuser
-COPY --from=builder --chown=appuser:appuser /app/build /var/www
+WORKDIR /app
+
+
+COPY ./public ./public
+COPY ./src/prisma ./prisma
+COPY .env.production .env
+COPY --chown=appuser:appuser --from=builder ${HOME}/build/node_modules ./node_modules
+COPY --chown=appuser:appuser --from=builder ${HOME}/build/.next ./.next
+COPY --chown=appuser:appuser  startup.sh timeout.js ./
+
+
+ENV NODE_ENV=production
+ENV PORT 8080
+ENV NODE_PATH=.
 EXPOSE 8080
-CMD [ "nginx", "-g", "daemon off;" ]
+
+# REQURIES PRISMA BE IN prod DEPEDENCIES
+CMD ./startup.sh

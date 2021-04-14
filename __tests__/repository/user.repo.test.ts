@@ -4,7 +4,7 @@ import {
   findUserByDodId,
   findUserById,
   updateUser,
-} from '../../prisma/repositories/user';
+} from '../../src/prisma/repositories/user';
 
 const mockUser: Partial<User> = { name: 'Bob', dodId: '1234', id: 1 };
 jest.mock('@prisma/client', () => {

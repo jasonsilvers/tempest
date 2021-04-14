@@ -1,5 +1,5 @@
 import { rest } from 'msw';
-import usePermissions from '../../hooks/usePermissions';
+import usePermissions from '../../src/hooks/usePermissions';
 import { grants } from '../utils/mocks/fixtures';
 import { server } from '../utils/mocks/msw';
 import { renderHook } from '@testing-library/react-hooks';
