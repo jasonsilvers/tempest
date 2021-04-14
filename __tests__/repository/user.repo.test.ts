@@ -1,31 +1,25 @@
-import { User } from '.prisma/client';
+import prisma from '../../src/prisma/prisma';
 import {
   createUser,
   findUserByDodId,
   findUserById,
   updateUser,
 } from '../../src/prisma/repositories/user';
+import { User } from '@prisma/client';
 
-const mockUser: Partial<User> = { name: 'Bob', dodId: '1234', id: 1 };
-jest.mock('@prisma/client', () => {
-  return {
-    PrismaClient: function () {
-      return {
-        user: {
-          findUnique: () => mockUser,
-          create: () => mockUser,
-          update: () => mockUser,
-        },
-      };
-    },
-  };
-});
+const mockUser = { name: 'Bob', dodId: '1234', id: 1 };
+
+prisma.user = {
+  findUnique: () => mockUser,
+  create: () => mockUser,
+  update: () => mockUser,
+};
 
 afterAll = () => {
   jest.clearAllMocks();
 };
 
-const user: Partial<User> = { name: 'Bob', dodId: '1234' };
+const user = { name: 'Bob', dodId: '1234' };
 test('Repository User Prisma Mock Test for Create', async () => {
   const returnPostUser = await createUser(user as User);
 

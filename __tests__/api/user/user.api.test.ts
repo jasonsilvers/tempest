@@ -1,4 +1,3 @@
-import { User } from '@prisma/client';
 import { createMocks } from 'node-mocks-http';
 import { userApiHandler } from '../../../src/pages/api/user';
 import mockRepository from '../../utils/mocks/repository';
@@ -11,7 +10,7 @@ const userTest = {
 };
 
 test('api/user:POST--Happy Case', async () => {
-  mockRepository<User>(createUser, {
+  mockRepository(createUser, {
     ...userTest,
     id: 1,
   });
