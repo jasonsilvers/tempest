@@ -17,7 +17,7 @@ WORKDIR ${HOME}/build
 ENV NODE_ENV=production
 
 COPY --from=dependencies /home/node/deps/node_modules ./node_modules
-COPY ./src package.json tsconfig.json .babelrc ./
+COPY ./src package.json tsconfig.json .babelrc.js ./
 
 RUN npx prisma generate
 RUN npm run build
