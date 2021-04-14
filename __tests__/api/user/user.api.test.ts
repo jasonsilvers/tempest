@@ -1,10 +1,10 @@
 import { User } from '@prisma/client';
 import { createMocks } from 'node-mocks-http';
-import { userApiHandler } from '../../../pages/api/user';
+import { userApiHandler } from '../../../src/pages/api/user';
 import mockRepository from '../../utils/mocks/repository';
-import { createUser } from '../../../prisma/repositories/user';
+import { createUser } from '../../../src/prisma/repositories/user';
 
-jest.mock('../../../prisma/repositories/user');
+jest.mock('../../../src/prisma/repositories/user');
 
 const userTest = {
   name: 'Bob',
