@@ -10,6 +10,6 @@ RUN npm run build
 # Stage 2
 FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/base-image/harden-nodejs14:14.16.0
 USER appuser
-COPY --from=builder --chown=appuser:appuser /app/build /var/ww
+COPY --from=builder --chown=appuser:appuser /app/build /var/www
 EXPOSE 8080
 CMD [ "nginx", "-g", "daemon off;" ]
