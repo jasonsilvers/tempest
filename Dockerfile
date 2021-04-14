@@ -4,7 +4,6 @@ WORKDIR /app
 COPY . .
 USER root
 RUN npm install --production
-USER appuser
 RUN npx prisma generate
 RUN npm run build
 
