@@ -7,15 +7,17 @@ let prisma: PrismaClient | any;
 
 if (process.env.NODE_ENV === 'production') {
   prisma = new PrismaClient();
-} else {
-  if (process.env.NODE_ENV !== 'test') {
-    if (!global.prisma) {
-      global.prisma = new PrismaClient();
-    }
-    prisma = global.prisma;
-  } else {
-    prisma = jest.fn();
+}
+
+if (process.env.NODE_ENV === 'test') {
+  prisma = jest.fn();
+}
+
+if (process.env.NODE_ENV === 'development') {
+  if (!global.prisma) {
+    global.prisma = new PrismaClient();
   }
+  prisma = global.prisma;
 }
 
 export default prisma;
