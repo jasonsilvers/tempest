@@ -6,6 +6,8 @@ import { queryClientInit } from '../utils/TempestTestUtils';
 // speeds up *ByRole queries a bit
 // https://github.com/testing-library/dom-testing-library/issues/552
 configure({ defaultHidden: true });
+require('./mockedPrisma');
+
 // Establish API mocking before all tests.
 beforeAll(() => {
   server.listen();
