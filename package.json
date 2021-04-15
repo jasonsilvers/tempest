@@ -9,6 +9,7 @@
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "test": "jest --watchAll",
     "test:unit": "jest",
+    "test:e2e-ci": "",
     "test:coverage": "jest --coverage",
     "createDevDatabase": "docker-compose up -d",
     "db:studio": "prisma studio",
