@@ -1,19 +1,60 @@
 const { PrismaClient } = require('@prisma/client');
+var faker = require('faker');
 const prisma = new PrismaClient();
 
+const DOD_ID = '2223332221';
+
+function createUser(dodId = null) {
+  const gender = faker.datatype.number(1);
+
+  return {
+    id: faker.datatype.uuid(),
+    firstName: faker.name.firstName(gender),
+    lastName: faker.name.lastName(gender),
+    dodId: dodId
+      ? dodId
+      : faker.datatype.number({ min: 1000000000, max: 1999999999 }).toString(),
+    email: faker.internet.email(),
+  };
+}
+
 async function main() {
-  const organization = await prisma.organization.create({
+  const organization1 = await prisma.organization.create({
     data: {
-      name: 'test',
+      id: '292bbadf-8f08-49ff-afec-d18b9d84ec07',
+      name: '15th MDG',
     },
   });
 
-  const role = await prisma.role.create({
+  const organization2 = await prisma.organization.create({
+    data: {
+      id: 'd61cc8c2-93eb-41cf-927e-a1fb88a8eead',
+      name: 'Dental Squadron',
+      parent: {
+        connect: { id: organization1.id },
+      },
+    },
+  });
+
+  await prisma.organization.create({
+    data: {
+      id: '67c6657f-0022-48b0-89b3-866dd89831ef',
+      name: 'Vaccinations Squadron',
+      parent: {
+        connect: { id: organization1.id },
+      },
+    },
+  });
+
+  const role1 = await prisma.role.create({
     data: {
       name: 'admin',
-      organization: {
-        connect: { id: organization.id },
-      },
+    },
+  });
+
+  await prisma.role.create({
+    data: {
+      name: 'member',
     },
   });
 
@@ -35,28 +76,58 @@ async function main() {
       },
       roleModel: {
         connect: {
-          name: role.name,
+          name: role1.name,
         },
       },
     },
   });
 
-  // User Bob
+  await prisma.trackingItem.createMany({
+    data: [
+      {
+        title: 'Fire Extinguisher',
+        description: 'This is a AF yearly requirment',
+        interval: 365,
+      },
+      {
+        title: 'Supervisor Safety Training',
+        description: 'One time training for new supevisors',
+        interval: 0,
+      },
+    ],
+  });
+
+  const user1 = createUser(DOD_ID);
+
   await prisma.user.create({
     data: {
-      name: 'bob anderson',
-      dodId: '2223332221',
-      email: 'bob.anderson@gmail.com',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      ...user1,
       organization: {
         connect: {
-          id: organization.id,
+          id: organization1.id,
         },
       },
       role: {
         connect: {
-          id: role.id,
+          id: role1.id,
+        },
+      },
+    },
+  });
+
+  const user2 = createUser();
+
+  await prisma.user.create({
+    data: {
+      ...user2,
+      organization: {
+        connect: {
+          id: organization2.id,
+        },
+      },
+      role: {
+        connect: {
+          id: role1.id,
         },
       },
     },
