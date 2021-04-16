@@ -75,6 +75,9 @@
     "react-is": "^17.0.1",
     "ts-node": "^9.1.1"
   },
+  "prisma": {
+    "schema": "./src/prisma/schema.prisma"
+  },
   "babelMacros": {
     "twin": {
       "preset": "styled-components",
