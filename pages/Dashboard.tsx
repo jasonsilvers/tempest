@@ -1,5 +1,5 @@
 import UserForm from "../components/UserForm"
-import React, { useRef } from 'react';
+import React from 'react';
 import UserDebug from '../components/UserDebug'
 import { dehydrate } from "react-query/hydration";
 import {getUsers} from "../prisma/repositories/user"
@@ -10,6 +10,8 @@ import { User } from "@prisma/client";
 
 export default function DashboardPage() {
   const { data: users } = useQuery<User[]>('users', fetchUsers)
+
+
 
   return (
     <main>

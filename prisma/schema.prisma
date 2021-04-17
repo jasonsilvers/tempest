@@ -68,7 +68,7 @@ model TrackingItem {
   organizationId       Int
   MemberTrackingRecord MemberTrackingRecord[]
 
-  @@map("training_record")
+  @@map("training_records")
 }
 
 model Role {

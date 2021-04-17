@@ -25,7 +25,7 @@ const grants = async (
 
   if (permission.granted) {
     res.statusCode = 200;
-    const records = await prisma.trainingRecord.findMany();
+    const records = await prisma.trackingItem.findMany();
     res.json(records);
   } else {
     res.status(403).json('You dont have permission');
