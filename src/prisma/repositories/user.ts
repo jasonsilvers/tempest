@@ -29,7 +29,7 @@ export const findUserByDodId = async (queryString: string) => {
  * @param query unique db id
  * @returns UserWithRole
  */
-export const findUserById = async (query: number) => {
+export const findUserById = async (query: string) => {
   return await prisma.user.findUnique({
     where: {
       id: query,
