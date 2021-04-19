@@ -3,7 +3,8 @@ import prisma from '../prisma';
 
 
 export const getTrackingItems = async () => {
-  return await prisma.trackingItem.findMany();
+  const trackingItems = await prisma.trackingItem.findMany();
+  return trackingItems??[]
 };
 
 /**
