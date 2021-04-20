@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../../../components/Navigation/Navbar';
+import Navbar from '../../../src/components/Navigation/Navbar';
 import { render } from '../../utils/TempestTestUtils';
 
 test('should render a navbar', () => {

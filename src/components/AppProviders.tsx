@@ -17,7 +17,7 @@ function AppProviders({ children, pageProps = null }) {
     <StylesProvider injectFirst>
       <QueryClientProvider client={queryClientRef.current}>
         <Hydrate state={pageProps?.dehydratedState}>
-          <UserContextProvider user={pageProps?.user} loginUrl="/api/login">
+          <UserContextProvider user={pageProps?.user}>
             {children}
           </UserContextProvider>
         </Hydrate>

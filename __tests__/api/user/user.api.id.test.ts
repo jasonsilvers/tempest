@@ -4,20 +4,19 @@ import {
   findUserById,
   updateUser,
   UserWithRole,
-} from '../../../prisma/repositories/user';
-import userQueryHandler from '../../../pages/api/user/[id]';
+} from '../../../src/prisma/repositories/user';
+import userQueryHandler from '../../../src/pages/api/user/[id]';
 
 const userTest = {
   name: 'Bob',
 };
 
-jest.mock('../../../prisma/repositories/user');
+jest.mock('../../../src/prisma/repositories/user');
 
 test('api/user/1:GET--Happy Case', async () => {
   mockRepository<UserWithRole>(findUserById, { ...userTest, id: 1 });
 
   const { req, res } = createMocks({
-    method: 'GET',
     body: userTest,
     query: { id: '1' },
   });

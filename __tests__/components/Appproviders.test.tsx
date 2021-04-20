@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { act } from '../utils/TempestTestUtils';
-import AppProviders from '../../components/AppProviders';
+import AppProviders from '../../src/components/AppProviders';
 
 const TestComponent = () => {
   return <div>Test</div>;
@@ -21,7 +20,7 @@ describe('AppProviders', () => {
   });
 
   it('Allow null pageprops in app providers ', async () => {
-    const { getByText, rerender } = render(
+    const { getByText } = render(
       <AppProviders>
         <TestComponent />
       </AppProviders>
