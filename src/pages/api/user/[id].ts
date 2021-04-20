@@ -12,15 +12,10 @@ export default async function userQueryHandler(
     body,
   } = req;
 
-  // Set userId to 0
-  let userId = 0;
+ 
+  const userId = id as string;
 
-  // query params are sent as a string.  Lets check then parse the id
-  if (typeof id === 'string') {
-    userId = parseInt(id);
-  }
 
-  // Switch off of the different HTTP Methods we expect
   switch (method) {
     // Get Method to return a single user by id
     case 'GET': {

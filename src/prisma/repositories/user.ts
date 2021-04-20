@@ -15,6 +15,7 @@ export type UserWithRole = ThenArg<ReturnType<typeof findUserByDodId>>;
  * @returns UserWithRole
  */
 export const findUserByDodId = async (queryString: string) => {
+  console.log(queryString)
   return await prisma.user.findUnique({
     where: {
       dodId: queryString,
@@ -37,6 +38,11 @@ export const findUserById = async (query: string) => {
     include: { role: true },
   });
 };
+
+
+export const getUsers = async () => {
+  return await prisma.user.findMany()
+  }
 
 /**
  * Post user method to create the PSQL db though the prisma client
