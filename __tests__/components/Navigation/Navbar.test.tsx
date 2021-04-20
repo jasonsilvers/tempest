@@ -11,14 +11,14 @@ test('should render a navbar', () => {
 
 test('should render a navbar with colored link', () => {
   const { getByText } = render(<Navbar />, {
-    user: { name: 'Don' },
+    user: { firstName: 'Don', lastName: 'Jones' },
     nextJSRoute: '/Dashboard',
   });
   const header = getByText(/Tempest/i);
   expect(header).toBeInTheDocument;
   const dashLink = getByText(/dashboard/i);
   expect(dashLink.style.color).toBe('blue');
-  expect(getByText(/Don/i)).toBeInTheDocument;
+  expect(getByText(/Don Jones/i)).toBeInTheDocument;
 });
 
 test('should not render navbar with no user', () => {
