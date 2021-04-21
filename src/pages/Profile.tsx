@@ -1,22 +1,26 @@
 import React from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
-import { EResource } from '../types/global';
+import { EPermission, EResource } from '../types/global';
 import usePermissions from '../hooks/usePermissions';
 
 const Profile = () => {
-  const { ac, isLoading, userRole } = usePermissions();
+  const { isLoading, userRole, permissionCheck } = usePermissions();
 
-  const permission = ac?.can(userRole).create(EResource.RECORD);
+  const permission = permissionCheck(
+    userRole,
+    EPermission.CREATE,
+    EResource.RECORD
+  );
 
   if (isLoading) {
     return null;
   }
 
-  if (permission?.granted) {
-    return <h1>Profile</h1>;
+  if (!permission?.granted) {
+    return <h1>You do not have access to this page</h1>;
   }
 
-  return <h1>You do not have access to this page</h1>;
+  return <h1>Profile</h1>;
 };
 
 export default withPageAuth(Profile);

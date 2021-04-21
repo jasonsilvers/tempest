@@ -36,20 +36,6 @@ model Tag {
   users User[]
 }
 
-model Organization {
-  id            String         @id @db.Uuid
-  name          String
-  //Self reference
-  parent        Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
-  parentId      String?        @db.Uuid
-  children      Organization[] @relation(name: "ParentChildren")
-  updatedAt     DateTime?      @updatedAt @map("updated_at")
-  users         User[]
-  trackingItems TrackingItem[]
-
-  @@map("organization")
-}
-
 model MemberTrackingRecord {
   id                  Int                   @id @default(autoincrement())
   traineeSignedDate   DateTime?             @map("trainee_signed_date")
@@ -68,24 +54,49 @@ model MemberTrackingRecord {
   @@map("member_tracking_record")
 }
 
+model Organization {
+  id        String         @id @db.Uuid
+  name      String
+  //Self reference
+  parent    Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
+  parentId  String?        @db.Uuid
+  children  Organization[] @relation(name: "ParentChildren")
+  users     User[]
+  templates Template[]
+
+  @@map("organization")
+}
+
 model TrackingItem {
   id                   Int                    @id @default(autoincrement())
   title                String                 @unique
   description          String
   interval             Int? //days
   memberTrackingRecord MemberTrackingRecord[]
-  templates            TrackingItemTemplate[]
-  organizations        Organization[]
+  templates            TemplateTrackingItem[]
 
   @@map("training_record")
 }
 
-model TrackingItemTemplate {
-  id            Int            @id @default(autoincrement())
-  name          String
-  trackingItems TrackingItem[]
+model TemplateTrackingItem {
+  id             Int          @id @default(autoincrement())
+  require        Boolean
+  trackingItem   TrackingItem @relation(fields: [trackingItemId], references: [id])
+  trackingItemId Int
+  template       Template     @relation(fields: [templateId], references: [id])
+  templateId     Int
 
-  @@map("tracking_item_template")
+  @@map("template_tracking_item")
+
+}
+
+model Template {
+  id            Int                    @id @default(autoincrement())
+  name          String
+  trackingItems TemplateTrackingItem[]
+  organizations Organization[]
+
+  @@map("template")
 }
 
 model Role {
