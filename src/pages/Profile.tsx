@@ -1,12 +1,12 @@
 import React from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
-import { Resource } from '../types/global';
+import { EResource } from '../types/global';
 import usePermissions from '../hooks/usePermissions';
 
 const Profile = () => {
   const { ac, isLoading, userRole } = usePermissions();
 
-  const permission = ac?.can(userRole).create(Resource.RECORD);
+  const permission = ac?.can(userRole).create(EResource.RECORD);
 
   if (isLoading) {
     return null;

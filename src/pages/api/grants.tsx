@@ -4,7 +4,7 @@ import {
   NextApiRequestWithAuthorization,
 } from '@tron/nextjs-auth-p1';
 import { User } from '@prisma/client';
-import { findUserByDodId } from '../../prisma/repositories/user';
+import { findUserByDodId } from '../../repositories/userRepo';
 import prisma from '../../prisma/prisma';
 
 const getGrants = async (

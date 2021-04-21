@@ -3,7 +3,7 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { AccessControl } from 'accesscontrol';
 import axios from 'axios';
 import { useQuery } from 'react-query';
-import { UserWithRole } from '../prisma/repositories/user';
+import { UserWithRole } from '../repositories/userRepo';
 
 const usePermissions = () => {
   const { user } = useUser<UserWithRole>();

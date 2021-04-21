@@ -43,6 +43,7 @@ model Organization {
   parent        Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
   parentId      String?        @db.Uuid
   children      Organization[] @relation(name: "ParentChildren")
+  updatedAt     DateTime?      @updatedAt @map("updated_at")
   users         User[]
   trackingItems TrackingItem[]
 
@@ -88,10 +89,10 @@ model TrackingItemTemplate {
 }
 
 model Role {
-  id             Int          @id @default(autoincrement())
-  name           String       @unique @map("name")
-  user           User[]
-  grants         Grant[]
+  id     Int     @id @default(autoincrement())
+  name   String  @unique @map("name")
+  user   User[]
+  grants Grant[]
 
   @@map(name: "role")
 }

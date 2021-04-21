@@ -4,7 +4,7 @@ import {
   findUserByDodId,
   findUserById,
   updateUser,
-} from '../../src/prisma/repositories/user';
+} from '../../src/repositories/userRepo';
 import { User } from '@prisma/client';
 // import prisma from '../../src/prisma/prisma';
 

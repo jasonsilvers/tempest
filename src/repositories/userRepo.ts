@@ -1,5 +1,8 @@
-import { User } from '@prisma/client';
-import prisma from '../prisma';
+import { Role, User } from '@prisma/client';
+import prisma from '../prisma/prisma';
+import { ERole } from '../types/global';
+import { IPerson } from './common/types';
+import { getRoleByName } from './roleRepo';
 
 // required to infer the return type from the Prisma Client
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
@@ -44,9 +47,17 @@ export const findUserById = async (query: string) => {
  * @param user
  * @returns User
  */
-export const createUser = async (user: User) => {
+export const createUser = async (user: User, role?: Role) => {
+  let roleConnect = {};
+
+  if (role) {
+    roleConnect = {
+      roleId: role.id,
+    };
+  }
+
   return await prisma.user.create({
-    data: user,
+    data: { ...user, ...roleConnect },
   });
 };
 
@@ -62,3 +73,23 @@ export const updateUser = async (user: User) => {
     data: user,
   });
 };
+
+export async function createUserFromCommonApi(commonUser: IPerson) {
+  const memberRole = await getRoleByName(ERole.MEMBER);
+
+  const newTempestUser = await createUser(
+    {
+      id: commonUser.id,
+      firstName: commonUser.firstName,
+      lastName: commonUser.lastName,
+      dodId: commonUser.dodid,
+      email: commonUser.email,
+    } as User,
+    memberRole
+  );
+
+  return {
+    ...newTempestUser,
+    role: memberRole,
+  } as UserWithRole;
+}
