@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { MemberTrackingRecord, User } from '@prisma/client';
 import prisma from '../prisma';
 
 // required to infer the return type from the Prisma Client
@@ -15,7 +15,7 @@ export type UserWithRole = ThenArg<ReturnType<typeof findUserByDodId>>;
  * @returns UserWithRole
  */
 export const findUserByDodId = async (queryString: string) => {
-  console.log(queryString)
+  console.log(queryString);
   return await prisma.user.findUnique({
     where: {
       dodId: queryString,
@@ -39,10 +39,9 @@ export const findUserById = async (query: string) => {
   });
 };
 
-
 export const getUsers = async () => {
-  return await prisma.user.findMany()
-  }
+  return await prisma.user.findMany();
+};
 
 /**
  * Post user method to create the PSQL db though the prisma client
@@ -66,5 +65,42 @@ export const updateUser = async (user: User) => {
   return prisma.user.update({
     where: { id: user.id },
     data: user,
+  });
+};
+
+/**
+ * Post Member Tracking Record method to update the PSQL db though the prisma client
+ *
+ * @param mtr : Member Tracking Record
+ * @returns MemberTrackingRecord
+ */
+export const createUserTrackingItems = async (mtr: MemberTrackingRecord) => {
+  return prisma.memberTrackingRecord.create({
+    data: mtr,
+  });
+};
+
+/**
+ * Put Member Tracking Record method to update the PSQL db though the prisma client
+ *
+ * @param mtr : Member Tracking Record
+ * @returns MemberTrackingRecord
+ */
+export const updateUserTrackingItems = async (mtr: MemberTrackingRecord) => {
+  return prisma.memberTrackingRecord.update({
+    where: { id: mtr.id },
+    data: mtr,
+  });
+};
+
+/**
+ * Delete Member Tracking Record method to update the PSQL db though the prisma client
+ *
+ * @param mtr : Member Tracking Record
+ * @returns null
+ */
+export const deleteUserTrackingItems = async (mtr: MemberTrackingRecord) => {
+  return prisma.memberTrackingRecord.delete({
+    where: { id: mtr.id },
   });
 };
