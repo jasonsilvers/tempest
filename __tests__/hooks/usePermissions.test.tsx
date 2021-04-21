@@ -18,7 +18,7 @@ describe('usePermissions', () => {
       {
         wrapper: Wrapper,
         initialProps: {
-          user: { name: 'joe', role: { name: 'admin' } },
+          user: { firstName: 'joe', role: { name: 'admin' } },
         },
       }
     );

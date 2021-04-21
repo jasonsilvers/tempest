@@ -21,7 +21,9 @@ const Navbar: React.FC = () => {
             <Link goToUrl="/Profile">Profile</Link>
             <Link goToUrl="/Contact">Contact</Link>
             <Link goToUrl="/Settings">Settings</Link>
-            <Welcome>Welcome - {user.name}</Welcome>
+            <Welcome>
+              Welcome - {user.firstName} {user.lastName}
+            </Welcome>
           </>
         ) : null}
       </Toolbar>
