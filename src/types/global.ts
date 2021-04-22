@@ -1,21 +1,21 @@
-export enum Role {
+export enum ERole {
   ADMIN = 'admin',
   MEMBER = 'member',
   MONITOR = 'monitor',
 }
 
-export enum Resource {
+export enum EResource {
   RECORD = 'record',
   DASHBOARD = 'dashboard',
   PROFILE = 'profile',
   TRAINING_RECORD = 'training_record',
 }
 
-export enum GrantType {
+export enum EGrant {
   ALL = '*',
 }
 
-export enum PermissionType {
+export enum EPermission {
   READ = 'read',
   CREATE = 'create',
   UPDATE = 'update',

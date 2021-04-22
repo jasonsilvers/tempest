@@ -97,21 +97,39 @@ async function main() {
     ],
   });
 
+  const trackingItem1 = await prisma.trackingItem.create({
+    data: {
+      title: 'this is a new tracking item',
+      description: 'This is the description',
+      interval: 30,
+      organizations: {
+        connect: {
+          id: organization1.id,
+        },
+      },
+    },
+  });
+
+  await prisma.trackingItem.update({
+    where: {
+      id: trackingItem1.id,
+    },
+    data: {
+      organizations: {
+        connect: {
+          id: organization2.id,
+        },
+      },
+    },
+  });
+
   const user1 = createUser(DOD_ID);
 
   await prisma.user.create({
     data: {
       ...user1,
-      organization: {
-        connect: {
-          id: organization1.id,
-        },
-      },
-      role: {
-        connect: {
-          id: role1.id,
-        },
-      },
+      organizationId: organization1.id,
+      roleId: role1.id,
     },
   });
 

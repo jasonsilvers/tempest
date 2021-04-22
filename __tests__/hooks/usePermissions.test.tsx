@@ -5,29 +5,83 @@ import { server } from '../utils/mocks/msw';
 import { renderHook } from '@testing-library/react-hooks';
 import { Wrapper } from '../utils/TempestTestUtils';
 import { AccessControl } from 'accesscontrol';
+import { EPermission, EResource } from '../../src/types/global';
 
-describe('usePermissions', () => {
-  it('should return user and new ac list with grants', async () => {
-    server.use(
-      rest.get('/api/grants/', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(grants));
-      })
-    );
-    const { result, waitForValueToChange } = renderHook(
-      () => usePermissions(),
-      {
-        wrapper: Wrapper,
-        initialProps: {
-          user: { name: 'joe', role: { name: 'admin' } },
-        },
-      }
-    );
-
-    const testAC = new AccessControl(grants);
-
-    await waitForValueToChange(() => result.current.data);
-
-    expect(result.current.ac).toStrictEqual(testAC);
-    expect(result.current.userRole).toStrictEqual('admin');
+test('should return user and new ac list with grants', async () => {
+  server.use(
+    rest.get('/api/grants/', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(grants));
+    })
+  );
+  const { result, waitForValueToChange } = renderHook(() => usePermissions(), {
+    wrapper: Wrapper,
+    initialProps: {
+      user: { firstName: 'joe', role: { name: 'admin' } },
+    },
   });
+
+  const testAC = new AccessControl(grants);
+
+  await waitForValueToChange(() => result.current.data);
+
+  expect(result.current.ac).toStrictEqual(testAC);
+  expect(result.current.userRole).toStrictEqual('admin');
+});
+
+test('should return permission when checking create resourse', async () => {
+  server.use(
+    rest.get('/api/grants/', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(grants));
+    })
+  );
+  const { result, waitForValueToChange, waitForNextUpdate } = renderHook(
+    () => usePermissions(),
+    {
+      wrapper: Wrapper,
+      initialProps: {
+        user: { firstName: 'joe', role: { name: 'admin' } },
+      },
+    }
+  );
+
+  await waitForValueToChange(() => result.current.ac);
+
+  const permission = result.current.permissionCheck(
+    'admin',
+    EPermission.READ,
+    EResource.TRAINING_RECORD
+  );
+
+  waitForNextUpdate();
+
+  expect(permission.granted).toBe(true);
+});
+
+test('sets granted to false when ac.can fails', async () => {
+  server.use(
+    rest.get('/api/grants/', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(grants));
+    })
+  );
+  const { result, waitForValueToChange, waitForNextUpdate } = renderHook(
+    () => usePermissions(),
+    {
+      wrapper: Wrapper,
+      initialProps: {
+        user: { firstName: 'joe', role: { name: 'admin' } },
+      },
+    }
+  );
+
+  await waitForValueToChange(() => result.current.ac);
+
+  const permission = result.current.permissionCheck(
+    'NOROLEINGRANTS',
+    EPermission.READ,
+    EResource.TRAINING_RECORD
+  );
+
+  waitForNextUpdate();
+
+  expect(permission.granted).toBe(false);
 });

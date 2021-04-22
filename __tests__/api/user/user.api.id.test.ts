@@ -1,20 +1,20 @@
 import { createMocks } from 'node-mocks-http';
-import mockRepository from '../../utils/mocks/repository';
+import mockMethod from '../../utils/mocks/repository';
 import {
   findUserById,
   updateUser,
   UserWithRole,
-} from '../../../src/prisma/repositories/user';
+} from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/user/[id]';
 
 const userTest = {
   name: 'Bob',
 };
 
-jest.mock('../../../src/prisma/repositories/user');
+jest.mock('../../../src/repositories/userRepo');
 
 test('api/user/1:GET--Happy Case', async () => {
-  mockRepository<UserWithRole>(findUserById, { ...userTest, id: 1 });
+  mockMethod<UserWithRole>(findUserById, { ...userTest, id: '1' });
 
   const { req, res } = createMocks({
     body: userTest,
@@ -23,42 +23,42 @@ test('api/user/1:GET--Happy Case', async () => {
 
   await userQueryHandler(req, res);
 
-  const expectedUser = { ...userTest, id: 1 };
+  const expectedUser = { ...userTest, id: '1' };
 
   expect(res._getStatusCode()).toBe(200);
   expect(JSON.parse(res._getData())).toEqual(expectedUser);
   expect(findUserById).toHaveBeenCalled();
   expect(findUserById).toHaveBeenCalledTimes(1);
-  expect(findUserById).toHaveBeenCalledWith(1);
+  expect(findUserById).toHaveBeenCalledWith('1');
   jest.clearAllMocks();
 });
 
 test('api/user/1:PUT--Happy Case', async () => {
-  const spy = mockRepository<UserWithRole>(updateUser, {
+  const spy = mockMethod<UserWithRole>(updateUser, {
     ...userTest,
-    id: 1,
+    id: '1',
   });
 
   const { req, res } = createMocks({
     method: 'PUT',
-    body: { ...userTest, id: 1 },
+    body: { ...userTest, id: '1' },
     query: { id: '1' },
   });
 
   await userQueryHandler(req, res);
 
-  const expectedUser = { ...userTest, id: 1 };
+  const expectedUser = { ...userTest, id: '1' };
 
   expect(res._getStatusCode()).toBe(200);
   expect(JSON.parse(res._getData())).toEqual(expectedUser);
-  expect(spy).toHaveBeenCalledWith({ ...userTest, id: 1 });
+  expect(spy).toHaveBeenCalledWith({ ...userTest, id: '1' });
   jest.clearAllMocks();
 });
 
 test('api/user/1:PUT--Body Null Id', async () => {
-  const spy = mockRepository<UserWithRole>(updateUser, {
+  const spy = mockMethod<UserWithRole>(updateUser, {
     ...userTest,
-    id: 1,
+    id: '1',
   });
 
   const { req, res } = createMocks({
@@ -75,14 +75,14 @@ test('api/user/1:PUT--Body Null Id', async () => {
 });
 
 test('api/user/1:PUT--Query and Body ids', async () => {
-  const spy = mockRepository<UserWithRole>(updateUser, {
+  const spy = mockMethod<UserWithRole>(updateUser, {
     ...userTest,
-    id: 1,
+    id: '1',
   });
 
   const { req, res } = createMocks({
     method: 'PUT',
-    body: { ...userTest, id: 2 },
+    body: { ...userTest, id: '2' },
     query: { id: '1' },
   });
 
@@ -96,8 +96,8 @@ test('api/user/1:PUT--Query and Body ids', async () => {
 test('api/user/1:POST--Method not allowed', async () => {
   const { req, res } = createMocks({
     method: 'POST',
-    body: { ...userTest, id: 1 },
-    query: { id: 1 },
+    body: { ...userTest, id: '1' },
+    query: { id: '1' },
   });
   await userQueryHandler(req, res);
 

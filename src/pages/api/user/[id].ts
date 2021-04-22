@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { findUserById, updateUser } from '../../../prisma/repositories/user';
+import { findUserById, updateUser } from '../../../repositories/userRepo';
 
 export default async function userQueryHandler(
   req: NextApiRequest,
@@ -12,9 +12,13 @@ export default async function userQueryHandler(
     body,
   } = req;
 
- 
-  const userId = id as string;
+  // Set userId to 0
+  let userId: string;
 
+  // query params are sent as a string.  Lets check then parse the id
+  if (typeof id === 'string') {
+    userId = id;
+  }
 
   switch (method) {
     // Get Method to return a single user by id

@@ -6,7 +6,6 @@ test('should render a navbar', () => {
   const { getByText } = render(<Navbar />);
   const header = getByText(/Tempest/i);
   expect(header).toBeInTheDocument;
-  expect(getByText(/test user/i)).toBeInTheDocument;
 });
 
 test('should render a navbar with colored link', () => {

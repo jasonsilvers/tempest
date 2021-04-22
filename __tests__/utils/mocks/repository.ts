@@ -9,7 +9,9 @@
  * @param data object to return
  * @returns the method just for ease of use
  */
-const mockRepository = <E>(method, data: Partial<E>) => {
+/*eslint-disable */
+// This can be any function
+const mockMethod = <E>(method: any, data: Partial<E>) => {
   try {
     method.mockResolvedValue(data);
   } catch (e) {
@@ -19,5 +21,6 @@ const mockRepository = <E>(method, data: Partial<E>) => {
   }
   return method;
 };
+/*eslint-enable */
 
-export default mockRepository;
+export default mockMethod;

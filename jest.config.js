@@ -15,6 +15,8 @@ module.exports = {
     'enzyme.js',
     '/.next/',
     '/__tests__/',
+    '/src/repositories/common/types.ts',
+    '/src/types',
   ],
   coverageReporters: ['json', 'lcov', 'text', 'text-summary'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}'],

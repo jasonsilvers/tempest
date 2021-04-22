@@ -26,6 +26,11 @@ const lintTS = {
         format: ['PascalCase'],
         prefix: ['I'],
       },
+      {
+        selector: ['enum'],
+        format: ['PascalCase'],
+        prefix: ['E'],
+      },
     ],
   },
 };

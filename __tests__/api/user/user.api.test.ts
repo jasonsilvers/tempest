@@ -1,18 +1,18 @@
 import { createMocks } from 'node-mocks-http';
 import { userApiHandler } from '../../../src/pages/api/user';
-import mockRepository from '../../utils/mocks/repository';
-import { createUser } from '../../../src/prisma/repositories/user';
+import mockMethod from '../../utils/mocks/repository';
+import { createUser } from '../../../src/repositories/userRepo';
 
-jest.mock('../../../src/prisma/repositories/user');
+jest.mock('../../../src/repositories/userRepo');
 
 const userTest = {
   name: 'Bob',
 };
 
 test('api/user:POST--Happy Case', async () => {
-  mockRepository(createUser, {
+  mockMethod(createUser, {
     ...userTest,
-    id: 1,
+    id: '1',
   });
 
   const { req, res } = createMocks({
@@ -21,7 +21,7 @@ test('api/user:POST--Happy Case', async () => {
   });
   await userApiHandler(req, res);
 
-  const expectedUser = { ...userTest, id: 1 };
+  const expectedUser = { ...userTest, id: '1' };
 
   expect(res._getStatusCode()).toBe(200);
   expect(JSON.parse(res._getData())).toEqual(expectedUser);
@@ -30,7 +30,7 @@ test('api/user:POST--Happy Case', async () => {
 test('api/user:POST--ID must be null', async () => {
   const { req, res } = createMocks({
     method: 'POST',
-    body: { ...userTest, id: 1 },
+    body: { ...userTest, id: '1' },
   });
   await userApiHandler(req, res);
 

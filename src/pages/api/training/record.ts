@@ -3,10 +3,7 @@ import {
   withApiAuth,
   NextApiRequestWithAuthorization,
 } from '@tron/nextjs-auth-p1';
-import {
-  findUserByDodId,
-  UserWithRole,
-} from '../../../prisma/repositories/user';
+import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
 import prisma from '../../../prisma/prisma';
 import { getAcList } from '../../../middleware/utils';
 import { Resource } from '../../../types/global';
