@@ -95,7 +95,6 @@ test('login findOrAdduser should creater user in commonAPI and in Tempest if not
 
   server.use(
     rest.post('http://localhost:8089/api/v1/person', (req, res, ctx) => {
-      console.log('It is mocking the post');
       return res(ctx.status(500), ctx.json(persons[1]));
     })
   );

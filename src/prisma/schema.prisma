@@ -56,7 +56,7 @@ model MemberTrackingRecord {
 
 model Organization {
   id        String         @id @db.Uuid
-  name      String
+  name      String         @unique
   //Self reference
   parent    Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
   parentId  String?        @db.Uuid
@@ -86,8 +86,8 @@ model TemplateTrackingItem {
   template       Template     @relation(fields: [templateId], references: [id])
   templateId     Int
 
-  @@map("template_tracking_item")
 
+  @@map("template_tracking_item")
 }
 
 model Template {

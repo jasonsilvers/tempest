@@ -4,8 +4,12 @@ interface IMockedPrisma {
   user: {
     create: jest.Mock;
     update: jest.Mock;
-    findUnique: jest.Mock;
-  };
+    findUnique: jest.Mock
+  },
+  organization: {
+    create: jest.Mock;
+    findMany: jest.Mock;
+  }
 }
 
 jest.mock(
@@ -16,6 +20,10 @@ jest.mock(
       findUnique: jest.fn(),
       update: jest.fn(),
     },
+    organization: {
+      create: jest.fn(),
+      findMany: jest.fn()
+    }
   })
 );
 
