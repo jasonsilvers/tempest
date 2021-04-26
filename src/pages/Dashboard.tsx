@@ -1,4 +1,7 @@
+
+
 const Dashboard = () => {
+
   return (
     <div>
       <h1
@@ -7,6 +10,7 @@ const Dashboard = () => {
         }}
       >
         <p>Dashboard</p>
+        
       </h1>
     </div>
   );

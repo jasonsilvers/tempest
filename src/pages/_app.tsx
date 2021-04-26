@@ -2,6 +2,11 @@ import React, { useEffect } from 'react';
 import NavBar from '../components/Navigation/Navbar';
 import GlobalStyles from '../styles/GlobalStyles';
 import AppProviders from '../components/AppProviders';
+import tw from 'twin.macro';
+import 'typeface-dm-sans'
+
+
+const MainContent = tw.div`ml-80 mt-9`
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -12,10 +17,12 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
   return (
-    <AppProviders pageProps={pageProps}>
-      <GlobalStyles />
+    <AppProviders pageProps={pageProps} >
+      <GlobalStyles  />
       <NavBar />
+      <MainContent>
       <Component {...pageProps} />
+      </MainContent>
     </AppProviders>
   );
 }
