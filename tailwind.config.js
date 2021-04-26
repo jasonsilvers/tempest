@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#bcbcbc',
+        primary: '#2D2270',
       },
       fontFamily: {
         sans: [
@@ -23,6 +23,8 @@ module.exports = {
           '"Segoe UI Symbol"',
           '"Noto Color Emoji"',
         ],
+        default: ['DM Sans'],
+        tempest: ['Reross'],
       },
       screens: {
         sm: '640px',

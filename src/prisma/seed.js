@@ -102,11 +102,6 @@ async function main() {
       title: 'this is a new tracking item',
       description: 'This is the description',
       interval: 30,
-      organizations: {
-        connect: {
-          id: organization1.id,
-        },
-      },
     },
   });
 
@@ -114,13 +109,7 @@ async function main() {
     where: {
       id: trackingItem1.id,
     },
-    data: {
-      organizations: {
-        connect: {
-          id: organization2.id,
-        },
-      },
-    },
+    data: {},
   });
 
   const user1 = createUser(DOD_ID);

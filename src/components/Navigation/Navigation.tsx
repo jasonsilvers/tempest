@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import styled from 'styled-components';
+import tw from 'twin.macro';
 
 interface ILinkProps {
   goToUrl?: string;
@@ -9,10 +9,7 @@ interface ILinkProps {
   className?: string;
 }
 
-const StyledHeader = styled.a`
-  font-size: 2rem;
-  margin-right: 32px;
-`;
+const StyledHeader = tw.a` mr-8 mb-12 uppercase text-4xl`;
 
 const Header: React.FC<ILinkProps> = ({
   children,
@@ -26,9 +23,8 @@ const Header: React.FC<ILinkProps> = ({
   );
 };
 
-const StyledLink = styled.a`
-  margin-right: 24px;
-`;
+
+const StyledLink = tw.a`mr-6 text-lg flex flex-col`;
 
 const Link: React.FC<ILinkProps> = ({
   children,
