@@ -1,10 +1,8 @@
 import { MemberTrackingRecord, TrackingItem } from '@prisma/client';
 import dayjs from 'dayjs';
 import React from 'react';
-
-type MemberTrackingRecordTracker = MemberTrackingRecord & {
-  trackingItem: TrackingItem;
-};
+import tw from 'twin.macro';
+import RecordTable from './RecordTable';
 
 export const status = (completedDate: Date, interval: number) => {
   const numberOfDaysAfterCompleted = dayjs().diff(completedDate, 'day');
@@ -28,31 +26,7 @@ export const status = (completedDate: Date, interval: number) => {
 const MemberRecordTracker: React.FC<{
   trackingRecord: MemberTrackingRecord[];
 }> = ({ trackingRecord }) => {
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>All Training</th>
-          <th>Current</th>
-          <th>Upcoming</th>
-          <th>Overdue</th>
-        </tr>
-      </thead>
-      <tbody>
-        {trackingRecord.map((entry: MemberTrackingRecordTracker) => {
-          return (
-            <tr key={entry.id}>
-              <td>{entry.trackingItem.title}</td>
-              <td>located at</td>
-              <td>
-                {status(entry.completedDate, entry.trackingItem.interval)}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
+  return <RecordTable trackingRecord={trackingRecord} />;
 };
 
 export default MemberRecordTracker;

@@ -4,11 +4,12 @@ import { EPermission, EResource } from '../types/global';
 import usePermissions from '../hooks/usePermissions';
 import MemberRecordTracker from '../components/Profile/MemberRecordTracker';
 import { UserWithRole } from '../repositories/userRepo';
+import tw from 'twin.macro';
 
 const Profile = () => {
   const { isLoading, userRole, permissionCheck } = usePermissions();
-  const {user} = useUser<UserWithRole>()
-  console.log(user)
+  const { user } = useUser<UserWithRole>();
+  console.log(user);
 
   const permission = permissionCheck(
     userRole,
@@ -25,11 +26,11 @@ const Profile = () => {
   }
 
   return (
-  <>
-  <h1>Profile</h1>
-    <MemberRecordTracker trackingRecord={user.traineeTrackingRecords} />
-  </>
-  )
+    <>
+      <h1 tw="text-4xl mt-14">My Training</h1>
+      <MemberRecordTracker trackingRecord={user.traineeTrackingRecords} />
+    </>
+  );
 };
 
 export default withPageAuth(Profile);

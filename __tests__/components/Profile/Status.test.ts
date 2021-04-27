@@ -42,7 +42,6 @@ test('Should return Overdue when interval is greater than 60 days and completed 
   expect(result).toBe('Overdue')
 })
 
-//
 
 test('Should return completed when interval is 60 days and completed Date before due Date', () => {
   const completedDate = dayjs().toDate()
