@@ -22,7 +22,12 @@ export const findUserByDodId = async (queryString: string) => {
     where: {
       dodId: queryString,
     },
-    include: { role: true },
+    include: { role: true,
+    traineeTrackingRecords: {
+      include: {trackingItem: true,
+      }
+    }
+  },
   });
 };
 
