@@ -1,14 +1,15 @@
 import { MemberTrackingRecord, User } from '@prisma/client';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import React from 'react';
-import { useQuery, useQueryClient } from 'react-query';
+import React, { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 import tw from 'twin.macro';
 import RecordTable from './RecordTable';
 // Error here says it can't find the import but actual running of the code works.  Error is erroneous
 import ErrorIcon from '../../assets/error.svg';
 import CautionIcon from '../../assets/caution.svg';
 import SuccessIcon from '../../assets/success.svg';
+import { RecordWithTrackingItem } from './RecordRow';
 
 export const status = (completedDate: Date, interval: number) => {
   const numberOfDaysAfterCompleted = dayjs().diff(completedDate, 'day');
@@ -30,16 +31,23 @@ export const status = (completedDate: Date, interval: number) => {
 };
 
 // Base Category style
-const Category = tw.div`text-black font-bold mb-1 flex items-center`;
+const Category = tw.div`text-black font-bold mb-1 flex items-center my-5`;
 
 // text color changes extending the Category Base styles
 const Overdue = tw(Category)`text-red-600`;
+const SignatureRequired = tw(Category)`text-blue-500`;
 const ComingDue = tw(Category)`text-yellow-400`;
 const Completed = tw(Category)`text-green-400`;
 
 const StyledErrorIcon = tw(ErrorIcon)`ml-3`;
 const StyledCautionIcon = tw(CautionIcon)`ml-3`;
 const StyledSuccessIcon = tw(SuccessIcon)`ml-3`;
+
+const StyledSignatureRequired = () => (
+  <SignatureRequired>
+    Awaiting Signature <StyledCautionIcon />
+  </SignatureRequired>
+);
 
 const StyledOverDue = () => (
   <Overdue>
@@ -59,33 +67,97 @@ const StyledCompleted = () => (
     <StyledSuccessIcon />
   </Completed>
 );
+
+const initSortedCategoryObject = {
+  Completed: [],
+  Upcoming: [],
+  Overdue: [],
+  SignatureRequired: [],
+};
+
+const sortMemberTrackingRecordsByCategory = (
+  trackingRecord: RecordWithTrackingItem,
+  setState: React.Dispatch<
+    React.SetStateAction<{
+      Completed: RecordWithTrackingItem[];
+      Upcoming: RecordWithTrackingItem[];
+      Overdue: RecordWithTrackingItem[];
+      SignatureRequired: RecordWithTrackingItem[];
+    }>
+  >
+) => {
+  const category = status(
+    trackingRecord.completedDate,
+    trackingRecord.trackingItem.interval
+  );
+  setState((current) => {
+    const temp = { ...current };
+    if (
+      !trackingRecord.traineeSignedDate ||
+      !trackingRecord.authoritySignedDate
+    ) {
+      temp['SignatureRequired'].push(trackingRecord);
+    } else {
+      temp[category].push(trackingRecord);
+    }
+    return { ...temp };
+  });
+};
+
 /**
  *
  * Training Record Functional Component
  */
 const MemberRecordTracker: React.FC<{
-  trackingRecord: MemberTrackingRecord[];
-}> = ({ trackingRecord }) => {
+  trackingRecords: MemberTrackingRecord[];
+}> = ({ trackingRecords }) => {
   // Query to fetch all users then save the data keyed by user id
   const { data } = useQuery<User[]>(
     'users',
     async () => await axios.get('/api/user').then((result) => result.data)
   );
 
+  const [sortedByCategory, setSortedByCategory] = useState(
+    initSortedCategoryObject
+  );
+
+  useEffect(() => {
+    if (trackingRecords) {
+      trackingRecords.forEach((tr: RecordWithTrackingItem) =>
+        sortMemberTrackingRecordsByCategory(tr, setSortedByCategory)
+      );
+    }
+  }, [trackingRecords]);
+
   console.log(data);
   const Header = tw.h1`text-2xl font-bold text-black`;
+
+  const Table = tw.table`text-black text-left w-full`;
   return (
     <>
       <Header>Training Record</Header>
-      <RecordTable mtr={trackingRecord}>
-        <StyledOverDue />
-      </RecordTable>
-      <RecordTable mtr={trackingRecord}>
-        <StyledComingDue />
-      </RecordTable>
-      <RecordTable mtr={trackingRecord}>
-        <StyledCompleted />
-      </RecordTable>
+      <Table>
+        {sortedByCategory['SignatureRequired'].length > 0 ? (
+          <RecordTable mtr={sortedByCategory['SignatureRequired']}>
+            <StyledSignatureRequired />
+          </RecordTable>
+        ) : undefined}
+        {sortedByCategory['Overdue'].length > 0 ? (
+          <RecordTable mtr={sortedByCategory['Overdue']}>
+            <StyledOverDue />
+          </RecordTable>
+        ) : undefined}
+        {sortedByCategory['Upcoming'].length > 0 ? (
+          <RecordTable mtr={sortedByCategory['Upcoming']}>
+            <StyledComingDue />
+          </RecordTable>
+        ) : undefined}
+        {sortedByCategory['Completed'].length > 0 ? (
+          <RecordTable mtr={sortedByCategory['Completed']}>
+            <StyledCompleted />
+          </RecordTable>
+        ) : undefined}
+      </Table>
     </>
   );
 };

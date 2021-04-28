@@ -87,7 +87,8 @@ const RecordRow: React.FC<{
 
   const { data: queryUsers } = useQuery<User[]>(
     'users',
-    async () => await axios.get('/api/user').then((result) => result.data)
+    async () => await axios.get('/api/user').then((result) => result.data),
+    { enabled: false }
   );
 
   const { user } = useUser<User>();

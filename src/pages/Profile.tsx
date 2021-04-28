@@ -26,7 +26,7 @@ const Profile = () => {
 
   return (
     <>
-      <MemberRecordTracker trackingRecord={user.traineeTrackingRecords} />
+      <MemberRecordTracker trackingRecords={user.traineeTrackingRecords} />
     </>
   );
 };
