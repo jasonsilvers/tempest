@@ -11,6 +11,13 @@ import CautionIcon from '../../assets/caution.svg';
 import SuccessIcon from '../../assets/success.svg';
 import { RecordWithTrackingItem } from './RecordRow';
 
+/**
+ * Function to get the status text of a tracking item
+ * Function will return Completed, Upcoming or overdue based on time since completed date vs the interval
+ * @param completedDate
+ * @param interval
+ * @returns
+ */
 export const status = (completedDate: Date, interval: number) => {
   const numberOfDaysAfterCompleted = dayjs().diff(completedDate, 'day');
   const DEFAULT_INTERVAL_SMALL = 14;
@@ -39,10 +46,12 @@ const SignatureRequired = tw(Category)`text-blue-500`;
 const ComingDue = tw(Category)`text-yellow-400`;
 const Completed = tw(Category)`text-green-400`;
 
+// Styled Icons importing svg from the assets folder
 const StyledErrorIcon = tw(ErrorIcon)`ml-3`;
 const StyledCautionIcon = tw(CautionIcon)`ml-3`;
 const StyledSuccessIcon = tw(SuccessIcon)`ml-3`;
 
+// Styled compositions for categories
 const StyledSignatureRequired = () => (
   <SignatureRequired>
     Awaiting Signature <StyledCautionIcon />
@@ -68,6 +77,7 @@ const StyledCompleted = () => (
   </Completed>
 );
 
+// initial object keyed by tracking item status
 const initSortedCategoryObject = {
   Completed: [],
   Upcoming: [],
@@ -75,6 +85,12 @@ const initSortedCategoryObject = {
   SignatureRequired: [],
 };
 
+/**
+ * Function to sort tracking items by category
+ * Needs a React Dispatch function to update component state correctly
+ * @param trackingRecord
+ * @param setState
+ */
 const sortMemberTrackingRecordsByCategory = (
   trackingRecord: RecordWithTrackingItem,
   setState: React.Dispatch<
@@ -86,18 +102,21 @@ const sortMemberTrackingRecordsByCategory = (
     }>
   >
 ) => {
-  const category = status(
-    trackingRecord.completedDate,
-    trackingRecord.trackingItem.interval
-  );
+  // update state
   setState((current) => {
     const temp = { ...current };
+    // if neither signature block is signed sort the item to Signature Required
     if (
       !trackingRecord.traineeSignedDate ||
       !trackingRecord.authoritySignedDate
     ) {
       temp['SignatureRequired'].push(trackingRecord);
     } else {
+      // else grab the text from the status function in order to sort this tracking item accordingly
+      const category = status(
+        trackingRecord.completedDate,
+        trackingRecord.trackingItem.interval
+      );
       temp[category].push(trackingRecord);
     }
     return { ...temp };
@@ -121,6 +140,8 @@ const MemberRecordTracker: React.FC<{
     initSortedCategoryObject
   );
 
+  // sort on initial load
+  // and if the tracking Records change then lets re-sort
   useEffect(() => {
     if (trackingRecords) {
       trackingRecords.forEach((tr: RecordWithTrackingItem) =>
@@ -129,14 +150,15 @@ const MemberRecordTracker: React.FC<{
     }
   }, [trackingRecords]);
 
-  console.log(data);
   const Header = tw.h1`text-2xl font-bold text-black`;
-
   const Table = tw.table`text-black text-left w-full`;
+
   return (
     <>
       <Header>Training Record</Header>
+      {/* Table here has to wrap all the RecordTables to ensure proper alignment */}
       <Table>
+        {/* Check if the categories have elements to render */}
         {sortedByCategory['SignatureRequired'].length > 0 ? (
           <RecordTable mtr={sortedByCategory['SignatureRequired']}>
             <StyledSignatureRequired />
