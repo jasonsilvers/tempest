@@ -1,7 +1,7 @@
 import { MemberTrackingRecord, User } from '@prisma/client';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import tw from 'twin.macro';
 import RecordTable from './RecordTable';
@@ -77,6 +77,10 @@ const StyledCompleted = () => (
   </Completed>
 );
 
+// Win macro styles for table and headers
+const Header = tw.h1`text-2xl font-bold text-black`;
+const Table = tw.table`text-black text-left w-full`;
+
 // initial object keyed by tracking item status
 const initSortedCategoryObject = {
   Completed: [],
@@ -142,16 +146,13 @@ const MemberRecordTracker: React.FC<{
 
   // sort on initial load
   // and if the tracking Records change then lets re-sort
-  useEffect(() => {
+  useMemo(() => {
     if (trackingRecords) {
       trackingRecords.forEach((tr: RecordWithTrackingItem) =>
         sortMemberTrackingRecordsByCategory(tr, setSortedByCategory)
       );
     }
   }, [trackingRecords]);
-
-  const Header = tw.h1`text-2xl font-bold text-black`;
-  const Table = tw.table`text-black text-left w-full`;
 
   return (
     <>

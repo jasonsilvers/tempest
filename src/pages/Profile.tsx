@@ -10,19 +10,19 @@ const Profile = () => {
   const { user } = useUser<UserWithRole>();
   console.log(user);
 
-  const permission = permissionCheck(
-    userRole,
-    EPermission.CREATE,
-    EResource.RECORD
-  );
+  // const permission = permissionCheck(
+  //   userRole,
+  //   EPermission.CREATE,
+  //   EResource.RECORD
+  // );
 
   if (isLoading) {
     return null;
   }
 
-  if (!permission?.granted) {
-    return <h1>You do not have access to this page</h1>;
-  }
+  // if (!permission?.granted) {
+  //   return <h1>You do not have access to this page</h1>;
+  // }
 
   return (
     <>

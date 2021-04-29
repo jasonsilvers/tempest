@@ -19,5 +19,6 @@ export enum EPermission {
   READ = 'read',
   CREATE = 'create',
   UPDATE = 'update',
+  UPDATE_OWN = 'updateOwn',
   DELETE = 'delete',
 }

@@ -43,6 +43,11 @@ const getTraineeSignature = (
   if (!signatureOwner) {
     return 'Fetching Data...';
   }
+
+  if (!signatureDate && signatureOwner.id !== loggedInUserId) {
+    return 'Awaiting Trainee Signature';
+  }
+
   // if signature date is false and
   // user logged in is the signature owner
   // render button to sign
@@ -62,35 +67,25 @@ const getTraineeSignature = (
  *
  * @param authSigDate      -- required to create signature
  * @param traineeSigDate   -- required to determine button rendering
- * @param signatureOwner   -- required to create signature
- * @param loggedInUserId   -- required to render the signature button for the correct user
+ * @param canSignAuth      -- permission boolean for update:any Record
  * @returns
  */
 const getAuthSignature = (
   authSigDate: Date,
-  traineeSigDate: Date,
   signatureOwner: User,
-  loggedInUserId: string
+  canSignAuth: boolean
 ) => {
-  // fail back if the signatureOwner:User is false
-  // would indicate data is still fetching
-  if (!signatureOwner) {
-    return 'Fetching Data...';
-  }
-  // if tracking record's trainee date is not set or
-  // the user logged in is not the signature owner or
-  // the auth signature date is false
+  // if no auth signature date
+  // and member does not have permissions to sign
   // then render "Awaiting Signature*"
-  if (
-    !traineeSigDate ||
-    (signatureOwner.id !== loggedInUserId && !authSigDate)
-  ) {
+  if (!authSigDate && !canSignAuth) {
     return <AwaitSignature>Awaiting Signature*</AwaitSignature>;
   }
-  // if trainee signature is good and
-  // the logged in user is the signature owner
+
+  // if no auth signature date
+  // and user has permissions to sign
   // render sign button
-  if (traineeSigDate && signatureOwner.id === loggedInUserId) {
+  if (!authSigDate && canSignAuth) {
     return <SignatureButton>Sign & Submit</SignatureButton>;
   }
 
@@ -109,7 +104,8 @@ const TableData = tw.td`py-3`;
 
 const RecordRow: React.FC<{
   trackingRecord: RecordWithTrackingItem;
-}> = ({ trackingRecord }) => {
+  canSignAuth: boolean;
+}> = ({ trackingRecord, canSignAuth }) => {
   //###############################################################################\\
   //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\\
   //⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺ \\
@@ -155,10 +151,8 @@ const RecordRow: React.FC<{
       <TableData>
         {getAuthSignature(
           trackingRecord.authoritySignedDate,
-          trackingRecord.traineeSignedDate,
-          // pass undefined if data is still fetching
           users ? users[trackingRecord.authorityId] : undefined,
-          user.id
+          canSignAuth
         )}
       </TableData>
       <TableData>
