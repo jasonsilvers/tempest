@@ -55,7 +55,7 @@ export const grants = [
   {
     action: 'read:any',
     attributes: '*',
-    resource: 'tracking_record',
+    resource: 'test',
     role: 'norole',
   },
 ];

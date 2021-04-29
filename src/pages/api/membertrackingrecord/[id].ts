@@ -11,12 +11,7 @@ import {
   findMemberTrackingRecordById,
 } from '../../../repositories/memberTrackingRecordRepo';
 import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
-import { EResource } from '../../../types/global';
-import user from '../user';
-
-interface ITempestApiError {
-  message: string;
-}
+import { EResource, ITempestApiError } from '../../../types/global';
 
 async function authorityTrackingRecordHandler(
   req: NextApiRequestWithAuthorization<UserWithRole, MemberTrackingRecord>,
@@ -101,14 +96,9 @@ async function authorityTrackingRecordHandler(
         });
       }
 
-      //get membertracking record from database
       try {
         const memberRecordFromDb = await findMemberTrackingRecordById(
           trackingRecordId
-        );
-
-        const filteredMemberRecordFromDb = permission.filter(
-          memberRecordFromDb
         );
 
         if (
@@ -120,9 +110,7 @@ async function authorityTrackingRecordHandler(
           });
         }
 
-        const deletedRecord = await deleteMemberTrackingRecord(
-          trackingRecordId
-        );
+        await deleteMemberTrackingRecord(trackingRecordId);
 
         res.status(200).json({ message: 'record deleted' });
       } catch {

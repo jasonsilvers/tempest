@@ -26,3 +26,6 @@ export enum EResourceType {
   TRAINEE_RECORDS = 'traineerecords',
   AUHTORITY_RECORDS = 'authorityrecords',
 }
+export interface ITempestApiError {
+  message: string;
+}
