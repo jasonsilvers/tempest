@@ -172,7 +172,7 @@ let testNextApi = {
       withJwt?: boolean;
       urlId?: string | number;
       urlSlug?: string;
-    }
+    } = {}
   ) => {
     return baseTestNextApi(handler, {
       withJwt,

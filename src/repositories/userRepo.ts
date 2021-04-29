@@ -113,42 +113,6 @@ export const findTrackingRecordsByAuthorityId = (
   });
 };
 
-/**
- * Post Member Tracking Record method to update the PSQL db though the prisma client
- *
- * @param mtr : Member Tracking Record
- * @returns MemberTrackingRecord
- */
-export const createTrackingRecord = async (mtr: MemberTrackingRecord) => {
-  return prisma.memberTrackingRecord.create({
-    data: mtr,
-  });
-};
-
-/**
- * Put Member Tracking Record method to update the PSQL db though the prisma client
- *
- * @param mtr : Member Tracking Record
- * @returns MemberTrackingRecord
- */
-export const updateTrackingRecord = async (mtr: MemberTrackingRecord) => {
-  return prisma.memberTrackingRecord.update({
-    where: { id: mtr.id },
-    data: mtr,
-  });
-};
-
-/**
- * Delete Member Tracking Record method to update the PSQL db though the prisma client
- *
- * @param mtr : Member Tracking Record
- * @returns null
- */
-export const deleteTrackingRecord = async (mtr: MemberTrackingRecord) => {
-  return prisma.memberTrackingRecord.delete({
-    where: { id: mtr.id },
-  });
-};
 export async function createUserFromCommonApi(commonUser: IPerson) {
   const memberRole = await getRoleByName(ERole.MEMBER);
 

@@ -8,6 +8,18 @@ export const grants = [
     role: 'admin',
   },
   {
+    action: 'create:any',
+    attributes: '*',
+    resource: 'tracking_record',
+    role: 'monitor',
+  },
+  {
+    action: 'create:own',
+    attributes: '*, !authorityId, !authoritySignedDate',
+    resource: 'tracking_record',
+    role: 'member',
+  },
+  {
     action: 'delete:any',
     attributes: '*',
     resource: 'tracking_record',

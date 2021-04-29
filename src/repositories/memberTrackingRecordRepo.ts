@@ -35,3 +35,15 @@ export const findMemberTrackingRecordById = async (id: number) => {
     },
   });
 };
+
+/**
+ * Post Member Tracking Record method to update the PSQL db though the prisma client
+ *
+ * @param mtr : Member Tracking Record
+ * @returns MemberTrackingRecord
+ */
+export const createTrackingRecord = async (mtr: MemberTrackingRecord) => {
+  return prisma.memberTrackingRecord.create({
+    data: mtr,
+  });
+};
