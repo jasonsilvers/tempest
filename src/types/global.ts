@@ -8,7 +8,7 @@ export enum EResource {
   RECORD = 'record',
   DASHBOARD = 'dashboard',
   PROFILE = 'profile',
-  TRAINING_RECORD = 'training_record',
+  TRACKING_RECORD = 'tracking_record',
 }
 
 export enum EGrant {
@@ -20,4 +20,9 @@ export enum EPermission {
   CREATE = 'create',
   UPDATE = 'update',
   DELETE = 'delete',
+}
+
+export enum EResourceType {
+  TRAINEE_RECORDS = 'traineerecords',
+  AUHTORITY_RECORDS = 'authorityrecords',
 }

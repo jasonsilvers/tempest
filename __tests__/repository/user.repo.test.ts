@@ -26,6 +26,10 @@ test('Repository User Prisma Mock Test for Update', async () => {
   prisma.user.update.mockImplementationOnce(() => mockUser);
   const returnPutUser = await updateUser({ ...user, id: 1 } as User);
 
+  expect(prisma.user.update).toHaveBeenCalledWith({
+    data: { ...user, id: 1 },
+    where: { id: 1 },
+  });
   expect(returnPutUser).toStrictEqual({ ...user, id: 1 });
 });
 

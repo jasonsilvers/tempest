@@ -1,6 +1,37 @@
 import { P1_JWT } from '@tron/nextjs-auth-p1';
+import dayjs from 'dayjs';
 export const grants = [
-  { action: 'create:any', attributes: '*', resource: 'record', role: 'admin' },
+  {
+    action: 'create:any',
+    attributes: '*',
+    resource: 'tracking_record',
+    role: 'admin',
+  },
+  {
+    action: 'delete:any',
+    attributes: '*',
+    resource: 'tracking_record',
+    role: 'monitor',
+  },
+  {
+    action: 'delete:any',
+    attributes: '*, !authorityId',
+    resource: 'tracking_record',
+    role: 'member',
+  },
+  {
+    action: 'update:any',
+    attributes:
+      'authoritySignedDate, authorityId, traineeSignedDate, traineeId',
+    resource: 'tracking_record',
+    role: 'monitor',
+  },
+  {
+    action: 'update:any',
+    attributes: 'traineeSignedDate, traineeId',
+    resource: 'tracking_record',
+    role: 'member',
+  },
   { action: 'read:any', attributes: '*', resource: 'profile', role: 'member' },
   {
     action: 'read:any',
@@ -12,14 +43,20 @@ export const grants = [
   {
     action: 'read:any',
     attributes: '*',
-    resource: 'training_record',
+    resource: 'tracking_record',
     role: 'monitor',
   },
   {
     action: 'read:any',
     attributes: '*',
-    resource: 'training_record',
+    resource: 'tracking_record',
     role: 'admin',
+  },
+  {
+    action: 'read:any',
+    attributes: '*',
+    resource: 'tracking_record',
+    role: 'norole',
   },
 ];
 

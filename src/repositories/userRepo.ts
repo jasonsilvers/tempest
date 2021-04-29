@@ -9,6 +9,9 @@ type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
 // type === User & { role?: Role };
 export type UserWithRole = ThenArg<ReturnType<typeof findUserByDodId>>;
+export type UserWithTrackingRecord = ThenArg<
+  ReturnType<typeof findTrackingRecordsByAuthorityId>
+>;
 
 /**
  * Get user method to query the PSQL db though the prisma client
@@ -18,7 +21,6 @@ export type UserWithRole = ThenArg<ReturnType<typeof findUserByDodId>>;
  * @returns UserWithRole
  */
 export const findUserByDodId = async (queryString: string) => {
-  console.log(queryString);
   return await prisma.user.findUnique({
     where: {
       dodId: queryString,
@@ -42,7 +44,7 @@ export const findUserById = async (query: string) => {
   });
 };
 
-export const getUsers = async () => {
+export const findUsers = async () => {
   return await prisma.user.findMany();
 };
 
@@ -79,13 +81,45 @@ export const updateUser = async (user: User) => {
   });
 };
 
+export const findTrackingRecordsByTraineeId = (
+  userId: string,
+  includeTrackingItem: boolean = false
+) => {
+  return prisma.memberTrackingRecord.findMany({
+    where: {
+      traineeId: userId,
+    },
+    include: {
+      trackingItem: includeTrackingItem,
+      trainee: true,
+      authority: true,
+    },
+  });
+};
+
+export const findTrackingRecordsByAuthorityId = (
+  userId: string,
+  includeTrackingItem: boolean = false
+) => {
+  return prisma.memberTrackingRecord.findMany({
+    where: {
+      authorityId: userId,
+    },
+    include: {
+      trackingItem: includeTrackingItem,
+      trainee: true,
+      authority: true,
+    },
+  });
+};
+
 /**
  * Post Member Tracking Record method to update the PSQL db though the prisma client
  *
  * @param mtr : Member Tracking Record
  * @returns MemberTrackingRecord
  */
-export const createUserTrackingItems = async (mtr: MemberTrackingRecord) => {
+export const createTrackingRecord = async (mtr: MemberTrackingRecord) => {
   return prisma.memberTrackingRecord.create({
     data: mtr,
   });
@@ -97,7 +131,7 @@ export const createUserTrackingItems = async (mtr: MemberTrackingRecord) => {
  * @param mtr : Member Tracking Record
  * @returns MemberTrackingRecord
  */
-export const updateUserTrackingItems = async (mtr: MemberTrackingRecord) => {
+export const updateTrackingRecord = async (mtr: MemberTrackingRecord) => {
   return prisma.memberTrackingRecord.update({
     where: { id: mtr.id },
     data: mtr,
@@ -110,7 +144,7 @@ export const updateUserTrackingItems = async (mtr: MemberTrackingRecord) => {
  * @param mtr : Member Tracking Record
  * @returns null
  */
-export const deleteUserTrackingItems = async (mtr: MemberTrackingRecord) => {
+export const deleteTrackingRecord = async (mtr: MemberTrackingRecord) => {
   return prisma.memberTrackingRecord.delete({
     where: { id: mtr.id },
   });

@@ -102,26 +102,31 @@ async function main() {
       title: 'this is a new tracking item',
       description: 'This is the description',
       interval: 30,
-      organizations: {
-        connect: {
-          id: organization1.id,
-        },
-      },
     },
   });
 
-  await prisma.trackingItem.update({
-    where: {
-      id: trackingItem1.id,
-    },
-    data: {
-      organizations: {
-        connect: {
-          id: organization2.id,
-        },
-      },
-    },
-  });
+  // await prisma.trackingItem.update({
+  //   where: {
+  //     id: 2384323,
+  //   },
+  //   data: {
+  //     id: trackingItem1.id,
+  //     title: 'This is a new title'
+  //   },
+  // });
+
+  // await prisma.trackingItem.update({
+  //   where: {
+  //     id: trackingItem1.id,
+  //   },
+  //   data: {
+  //     organizations: {
+  //       connect: {
+  //         id: organization2.id,
+  //       },
+  //     },
+  //   },
+  // });
 
   const user1 = createUser(DOD_ID);
 

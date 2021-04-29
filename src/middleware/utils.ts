@@ -1,10 +1,13 @@
 import { AccessControl } from 'accesscontrol';
 import prisma from '../prisma/prisma';
+import { findGrants } from '../repositories/grantsRepo';
 
-export async function getAcList() {
-  const grants = await prisma.grant.findMany({
-    select: { action: true, attributes: true, resource: true, role: true },
-  });
+export async function getAc() {
+  const grants = await findGrants();
 
-  return new AccessControl(grants);
+  if (grants) {
+    return new AccessControl(grants);
+  }
+
+  return null;
 }
