@@ -26,6 +26,10 @@ model User {
   tags                     Tag[]
   traineeTrackingRecords   MemberTrackingRecord[] @relation(name: "TraineeRecords")
   authorityTrackingRecords MemberTrackingRecord[] @relation(name: "AuthorityRecords")
+  rank                     String?
+  afsc                     String?
+  dutyTitle                String?
+  address                  String?
 
   @@map(name: "user")
 }
