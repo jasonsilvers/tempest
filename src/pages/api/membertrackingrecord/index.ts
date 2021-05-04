@@ -5,7 +5,7 @@ import {
 } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc } from '../../../middleware/utils';
-import { createTrackingRecord } from '../../../repositories/memberTrackingRecordRepo';
+import { createTrackingRecord } from '../../../repositories/memberTrackingRepo';
 import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 

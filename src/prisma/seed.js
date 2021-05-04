@@ -155,6 +155,35 @@ async function main() {
       },
     },
   });
+
+  const newMemberTrackingItem = {
+    userId: user1.id,
+    isActive: true,
+    trackingItemId: trackingItem1.id,
+  };
+
+  const memberTrackingItem = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem,
+  });
+
+  const newMemberTrackingRecord = {
+    order: 0,
+    trackingItemId: memberTrackingItem.id,
+  };
+
+  const memberTrackingRecord = await prisma.memberTrackingRecord.create({
+    data: {
+      order: 0,
+      memberTrackingItems: {
+        connect: {
+          userId_trackingItemId: {
+            userId: memberTrackingItem.userId,
+            trackingItemId: memberTrackingItem.trackingItemId,
+          },
+        },
+      },
+    },
+  });
 }
 
 main()

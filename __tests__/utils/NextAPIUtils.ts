@@ -1,4 +1,5 @@
 import http from 'http';
+import queryString from 'querystring';
 import listen from 'test-listen';
 import { NextApiHandler } from 'next';
 import fetch from 'isomorphic-unfetch';
@@ -13,7 +14,18 @@ async function createNextApiServer(handler: any) {
       const urlSplit = req.url.split('/');
       const id = urlSplit[3];
       const slug = urlSplit.slice(3, urlSplit.length);
-      apiResolver(req, res, { slug, id }, handler, undefined, false);
+
+      const urlQuery = req.url.split('?')[1];
+      const queryParams = queryString.parse(urlQuery);
+      console.log('The query string is', queryParams);
+      apiResolver(
+        req,
+        res,
+        { slug, id, query: queryParams },
+        handler,
+        undefined,
+        false
+      );
     }))
   );
 
@@ -44,7 +56,7 @@ const baseTestNextApi = async (
       throw new Error('Must pass only a urlID or urlSlug');
     }
 
-    let urlParams: string;
+    let urlParams: string = '';
 
     if (urlId) {
       urlId = urlId.toString();
@@ -70,7 +82,7 @@ const baseTestNextApi = async (
         }
       : {};
 
-    const response = await fetch(url + '/api/whocares/' + urlParams, {
+    const response = await fetch(url + '/api/whocares' + urlParams, {
       headers: {
         'Content-Type': 'application/json',
         ...authorization,

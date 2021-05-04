@@ -33,14 +33,19 @@ export const grants = [
   },
   {
     action: 'update:any',
-    attributes:
-      'authoritySignedDate, authorityId, traineeSignedDate, traineeId',
+    attributes: 'authoritySignedDate, authorityId',
     resource: 'tracking_record',
     role: 'monitor',
   },
   {
-    action: 'update:any',
-    attributes: 'traineeSignedDate, traineeId',
+    action: 'update:own',
+    attributes: 'traineeSignedDate',
+    resource: 'tracking_record',
+    role: 'monitor',
+  },
+  {
+    action: 'update:own',
+    attributes: 'traineeSignedDate',
     resource: 'tracking_record',
     role: 'member',
   },
@@ -67,7 +72,7 @@ export const grants = [
   {
     action: 'read:any',
     attributes: '*',
-    resource: 'test',
+    resource: 'profile',
     role: 'norole',
   },
 ];

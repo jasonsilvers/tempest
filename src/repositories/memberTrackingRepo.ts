@@ -1,4 +1,4 @@
-import { MemberTrackingRecord } from '.prisma/client';
+import { MemberTrackingItem, MemberTrackingRecord } from '.prisma/client';
 import prisma from '../prisma/prisma';
 
 export const updateMemberTrackingRecord = async (
@@ -42,8 +42,40 @@ export const findMemberTrackingRecordById = async (id: number) => {
  * @param mtr : Member Tracking Record
  * @returns MemberTrackingRecord
  */
-export const createTrackingRecord = async (mtr: MemberTrackingRecord) => {
-  return prisma.memberTrackingRecord.create({
-    data: mtr,
+export const createTrackingRecord = async (
+  newMtr: Partial<MemberTrackingRecord>,
+  { includeTrackingItem } = { includeTrackingItem: false }
+) => {
+  const count = await prisma.memberTrackingRecord.count({
+    where: {
+      trackingItemId: newMtr.trackingItemId,
+    },
   });
+
+  return prisma.memberTrackingRecord.create({
+    data: {
+      order: count + 1,
+      memberTrackingItems: {
+        connect: {
+          userId_trackingItemId: {
+            userId: newMtr.traineeId,
+            trackingItemId: newMtr.trackingItemId,
+          },
+        },
+      },
+    },
+    include: {
+      memberTrackingItems: includeTrackingItem,
+    },
+  });
+};
+
+export const createTrackingItem = async (newMti: MemberTrackingItem) => {
+  return prisma.memberTrackingItem.create({
+    data: newMti,
+  });
+};
+
+export type MemberTrackingItemWithMemberTrackingRecord = MemberTrackingItem & {
+  memberTrackingRecords?: MemberTrackingRecord[];
 };
