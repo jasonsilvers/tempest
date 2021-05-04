@@ -12,13 +12,13 @@
     "test:e2e-ci": "",
     "test:coverage": "jest --coverage",
     "createDevDatabase": "docker-compose up -d",
-    "db:studio": "prisma studio",
-    "db:migrate": "prisma migrate dev",
-    "db:reseed": "prisma migrate reset --preview-feature",
-    "db:seed": "prisma db seed --preview-feature",
+    "db:studio": "prisma studio --schema ./src/prisma/schema.prisma",
+    "db:migrate": "prisma migrate dev --schema ./src/prisma/schema.prisma",
+    "db:reseed": "prisma migrate reset --preview-feature --schema ./src/prisma/schema.prisma",
+    "db:seed": "prisma db seed --preview-feature --schema ./src/prisma/schema.prisma",
     "jwt-proxy": "jwt-proxy 9000 3000 --silent --jwt user.jwt",
-    "db:reset": "prisma db push --force-reset --preview-feature && npm run db:seed",
-    "db:generate": "prisma generate"
+    "db:reset": "prisma db push --schema ./src/prisma/schema.prisma --force-reset --preview-feature && npm run db:seed",
+    "db:generate": "prisma generate --schema ./src/prisma/schema.prisma"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.3",
@@ -76,9 +76,6 @@
     "pretty-quick": "^3.1.0",
     "react-is": "^17.0.1",
     "ts-node": "^9.1.1"
-  },
-  "prisma": {
-    "schema": "./src/prisma/schema.prisma"
   },
   "babelMacros": {
     "twin": {

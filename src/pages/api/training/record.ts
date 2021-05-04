@@ -6,12 +6,12 @@ import {
 import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
 import prisma from '../../../prisma/prisma';
 import { getAcList } from '../../../middleware/utils';
-import { Resource } from '../../../types/global';
+import { EResource } from '../../../types/global';
 
 const canReadRecord = async (user: UserWithRole) => {
   const ac = await getAcList();
 
-  return ac.can(user.role.name).read(Resource.TRAINING_RECORD);
+  return ac.can(user.role.name).read(EResource.TRAINING_RECORD);
 };
 
 const grants = async (
