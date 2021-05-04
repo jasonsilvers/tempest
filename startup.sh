@@ -11,9 +11,9 @@ node timeout.js
 # npx prisma migrate reset --force --skip-generate --preview-feature
 
 # Seed is not very useful since it is run from migrate reset
-# npx prisma db seed --preview-feature
 
 # The normal production work flow
 npx prisma migrate deploy
+npx prisma db seed --preview-feature
 
 node_modules/.bin/next start -p 8080
