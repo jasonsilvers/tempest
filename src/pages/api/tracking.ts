@@ -11,6 +11,14 @@ const trackingHandler = async (
   req: NextApiRequestWithAuthorization<User>,
   res: NextApiResponse
 ) => {
+  if (req.method === 'POST') {
+    const newItem = await prisma.trackingItem.create({
+      data: req.body,
+    });
+
+    return res.status(200).json(newItem);
+  }
+
   const trackingItems = await prisma.trackingItem.findMany();
 
   res.status(200).json(trackingItems);
