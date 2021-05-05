@@ -153,7 +153,7 @@ const MemberRecordTracker: React.FC<{
         </Tab>
       </TabContainer>
 
-      {/* <RecordTable mtr={sortedByCategory[activeCategory]} /> */}
+      <RecordTable mtr={sortedByCategory[activeCategory]} />
       <RecordCards mtr={sortedByCategory[activeCategory]} />
     </div>
   );

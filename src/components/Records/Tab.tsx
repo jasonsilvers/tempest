@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 // Tab navigation animations
 const underline =
   "content[''] absolute height[2px] bg-purple-500 w-full left-0 bottom-0";
-const InactiveTab = tw.div`text-black font-size[18px] relative transition-transform 
+const InactiveTab = tw.div`text-black font-size[18px] relative transition-transform select-none cursor-pointer 
 after:(content[''] absolute w-0 height[2px] left-0 bottom-0 bg-purple-500 transition[ease-in] transition-all) 
 hover:after:(content[''] absolute height[2px] bg-purple-500 w-full left-0 bottom-0)`;
 
