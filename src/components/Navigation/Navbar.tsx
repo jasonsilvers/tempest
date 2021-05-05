@@ -2,32 +2,23 @@ import React from 'react';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { Header, Link } from './Navigation';
 import { User } from '.prisma/client';
-import tw from 'twin.macro';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-
-const Welcome = tw.div`ml-auto mr-4 text-red-500`;
+import { Drawer } from '@material-ui/core';
 
 const Navbar: React.FC = () => {
   const { user } = useUser<User>();
 
   return (
-    <AppBar position="relative">
-      <Toolbar>
-        <Header goToUrl="/">Tempest</Header>
-        {user ? (
-          <>
-            <Link goToUrl="/Dashboard">Dashboard</Link>
-            <Link goToUrl="/Profile">Profile</Link>
-            <Link goToUrl="/Contact">Contact</Link>
-            <Link goToUrl="/Settings">Settings</Link>
-            <Welcome>
-              Welcome - {user.firstName} {user.lastName}
-            </Welcome>
-          </>
-        ) : null}
-      </Toolbar>
-    </AppBar>
+    <Drawer variant="permanent">
+      <Header goToUrl="/">Tempest</Header>
+      {user ? (
+        <div tw="space-y-9">
+          <Link goToUrl="/Dashboard">Dashboard</Link>
+          <Link goToUrl="/Profile">Profile</Link>
+          <Link goToUrl="/Contact">Contact</Link>
+          <Link goToUrl="/Settings">Settings</Link>
+        </div>
+      ) : null}
+    </Drawer>
   );
 };
 

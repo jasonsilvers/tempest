@@ -6,6 +6,7 @@ import {
   UserWithRole,
 } from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/user/[id]';
+import { apiResolver } from 'next/dist/next-server/server/api-utils';
 
 const userTest = {
   name: 'Bob',

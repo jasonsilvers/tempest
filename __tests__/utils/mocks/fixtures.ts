@@ -93,6 +93,7 @@ export const explodedJwt: P1_JWT = {
     '/Impact Level 2 Authorized',
     '/Impact Level 4 Authorized',
     '/Impact Level 5 Authorized',
+    '/tron/roles/admin',
   ],
   organization: 'USAF',
   name: 'Jake Alfred Jones',

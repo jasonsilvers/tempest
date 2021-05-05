@@ -6,6 +6,10 @@ interface IMockedPrisma {
     update: jest.Mock;
     findUnique: jest.Mock;
   };
+  organization: {
+    create: jest.Mock;
+    findMany: jest.Mock;
+  };
 }
 
 jest.mock(
@@ -15,6 +19,10 @@ jest.mock(
       create: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
+    },
+    organization: {
+      create: jest.fn(),
+      findMany: jest.fn(),
     },
   })
 );
