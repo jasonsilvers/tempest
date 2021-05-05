@@ -3,12 +3,12 @@ import React from 'react';
 import tw from 'twin.macro';
 import usePermissions from '../../hooks/usePermissions';
 import { EPermission, EResource } from '../../types/global';
-import RecordRow, { RecordWithTrackingItem } from './RecordRow';
+import RecordCard, { RecordWithTrackingItem } from './RecordCard';
 
 // styled twin elements
-const Table = tw.table`text-black text-left w-full`;
+const Container = tw.div`text-black w-full flex flex-wrap justify-evenly`;
 
-const RecordTable: React.FC<{
+const RecordCards: React.FC<{
   mtr: MemberTrackingRecord[];
 }> = ({ mtr }) => {
   const { userRole, permissionCheck } = usePermissions();
@@ -20,20 +20,20 @@ const RecordTable: React.FC<{
   ).granted;
 
   return (
-    <Table>
+    <Container>
       {/* Map though items and create Table Data Rows */}
       {mtr.map((trackingRecord: RecordWithTrackingItem) => (
         <>
           <br />
-          <RecordRow
+          <RecordCard
             key={trackingRecord.id}
             trackingRecord={trackingRecord}
             canSignAuth={canSignAuth}
           />
         </>
       ))}
-    </Table>
+    </Container>
   );
 };
 
-export default RecordTable;
+export default RecordCards;

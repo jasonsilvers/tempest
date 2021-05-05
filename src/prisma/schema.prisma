@@ -53,8 +53,8 @@ model MemberTrackingRecord {
   order               Int
   trackingItem        TrackingItem?      @relation(fields: [trackingItemId], references: [id])
   memberTrackingItems MemberTrackingItem @relation(fields: [traineeId, trackingItemId], references: [userId, trackingItemId])
-  traineeId           String             @db.Uuid
-  trackingItemId      Int
+  traineeId           String             @map("trainee_id") @db.Uuid
+  trackingItemId      Int                @map("tracking_item_id")
 
   @@map("member_tracking_record")
 }

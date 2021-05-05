@@ -5,12 +5,13 @@ import React, { useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import tw from 'twin.macro';
 import RecordTable from './RecordTable';
-// Error here says it can't find the import but actual running of the code works.  Error is erroneous
-import ErrorIcon from '../../assets/error.svg';
-import CautionIcon from '../../assets/caution.svg';
-import SuccessIcon from '../../assets/success.svg';
-import { RecordWithTrackingItem } from './RecordRow';
+import {
+  RecordWithTrackingItem,
+  RecordWithTrackingItemStatus,
+} from './RecordRow';
 import HeaderUser from './RecordHeader';
+import Tab from './Tab';
+import RecordCards from './RecordCards';
 
 /**
  * Function to get the status text of a tracking item
@@ -34,57 +35,21 @@ export const status = (completedDate: Date, interval: number) => {
   } else if (numberOfDaysAfterCompleted > interval - upComing) {
     return 'Upcoming';
   } else {
-    return 'Completed';
+    return 'Done';
   }
 };
 
-// Base Category style
-const Category = tw.div`text-black font-bold mb-1 flex items-center my-5`;
-
-// text color changes extending the Category Base styles
-const Overdue = tw(Category)`text-red-600`;
-const SignatureRequired = tw(Category)`text-blue-500`;
-const ComingDue = tw(Category)`text-yellow-400`;
-const Completed = tw(Category)`text-green-400`;
-
-// Styled Icons importing svg from the assets folder
-const StyledErrorIcon = tw(ErrorIcon)`ml-3`;
-const StyledCautionIcon = tw(CautionIcon)`ml-3`;
-const StyledSuccessIcon = tw(SuccessIcon)`ml-3`;
-
-// Styled compositions for categories
-const StyledSignatureRequired = () => (
-  <SignatureRequired>
-    Awaiting Signature <StyledCautionIcon />
-  </SignatureRequired>
-);
-
-const StyledOverDue = () => (
-  <Overdue>
-    Overdue <StyledErrorIcon />
-  </Overdue>
-);
-
-const StyledComingDue = () => (
-  <ComingDue>
-    Coming Due <StyledCautionIcon />
-  </ComingDue>
-);
-
-const StyledCompleted = () => (
-  <Completed>
-    Completed
-    <StyledSuccessIcon />
-  </Completed>
-);
-
 // Twin macro styles for table and headers
 const Header = tw.h1`text-2xl font-bold text-black`;
-const Table = tw.table`text-black text-left w-full`;
+
+const TabContainer = tw.div`flex space-x-16 border-b border-color[#AEAEAE]`;
 
 // initial object keyed by tracking item status
-const initSortedCategoryObject = {
-  Completed: [],
+const initSortedCategoryObject: {
+  [K in RecordWithTrackingItemStatus]: RecordWithTrackingItem[];
+} = {
+  All: [],
+  Done: [],
   Upcoming: [],
   Overdue: [],
   SignatureRequired: [],
@@ -99,12 +64,7 @@ const initSortedCategoryObject = {
 const sortMemberTrackingRecordsByCategory = (
   trackingRecord: RecordWithTrackingItem,
   setState: React.Dispatch<
-    React.SetStateAction<{
-      Completed: RecordWithTrackingItem[];
-      Upcoming: RecordWithTrackingItem[];
-      Overdue: RecordWithTrackingItem[];
-      SignatureRequired: RecordWithTrackingItem[];
-    }>
+    React.SetStateAction<typeof initSortedCategoryObject>
   >
 ) => {
   // update state
@@ -115,6 +75,7 @@ const sortMemberTrackingRecordsByCategory = (
       !trackingRecord.traineeSignedDate ||
       !trackingRecord.authoritySignedDate
     ) {
+      trackingRecord.status = 'SignatureRequired';
       temp['SignatureRequired'].push(trackingRecord);
     } else {
       // else grab the text from the status function in order to sort this tracking item accordingly
@@ -122,6 +83,7 @@ const sortMemberTrackingRecordsByCategory = (
         trackingRecord.completedDate,
         trackingRecord.trackingItem.interval
       );
+      trackingRecord.status = category;
       temp[category].push(trackingRecord);
     }
     return { ...temp };
@@ -145,45 +107,53 @@ const MemberRecordTracker: React.FC<{
     initSortedCategoryObject
   );
 
+  const [activeCategory, setActiveCategory] = useState('All');
+
   // sort on initial load
   // and if the tracking Records change then lets re-sort
   useMemo(() => {
     if (trackingRecords) {
+      setSortedByCategory((current) => ({ ...current, All: trackingRecords }));
       trackingRecords.forEach((tr: RecordWithTrackingItem) =>
         sortMemberTrackingRecordsByCategory(tr, setSortedByCategory)
       );
     }
   }, [trackingRecords]);
 
+  const toggleTab = (e: React.MouseEvent) => {
+    setActiveCategory(e.currentTarget.id);
+  };
+
   return (
-    <>
+    <div tw={'mr-5'}>
       <HeaderUser />
       <Header>Training Record</Header>
-      {/* Table here has to wrap all the RecordTables to ensure proper alignment */}
-      <Table>
-        {/* Check if the categories have elements to render */}
-        {sortedByCategory['SignatureRequired'].length > 0 ? (
-          <RecordTable mtr={sortedByCategory['SignatureRequired']}>
-            <StyledSignatureRequired />
-          </RecordTable>
-        ) : undefined}
-        {sortedByCategory['Overdue'].length > 0 ? (
-          <RecordTable mtr={sortedByCategory['Overdue']}>
-            <StyledOverDue />
-          </RecordTable>
-        ) : undefined}
-        {sortedByCategory['Upcoming'].length > 0 ? (
-          <RecordTable mtr={sortedByCategory['Upcoming']}>
-            <StyledComingDue />
-          </RecordTable>
-        ) : undefined}
-        {sortedByCategory['Completed'].length > 0 ? (
-          <RecordTable mtr={sortedByCategory['Completed']}>
-            <StyledCompleted />
-          </RecordTable>
-        ) : undefined}
-      </Table>
-    </>
+      <TabContainer tw={'flex space-x-16'} id="Filter Tabs">
+        <Tab onClick={toggleTab} activeCategory={activeCategory}>
+          All
+        </Tab>
+        <Tab
+          onClick={toggleTab}
+          activeCategory={activeCategory}
+          count={sortedByCategory['Overdue'].length}
+        >
+          Overdue
+        </Tab>
+        <Tab
+          onClick={toggleTab}
+          activeCategory={activeCategory}
+          count={sortedByCategory['Upcoming'].length}
+        >
+          Upcoming
+        </Tab>
+        <Tab onClick={toggleTab} activeCategory={activeCategory}>
+          Done
+        </Tab>
+      </TabContainer>
+
+      {/* <RecordTable mtr={sortedByCategory[activeCategory]} /> */}
+      <RecordCards mtr={sortedByCategory[activeCategory]} />
+    </div>
   );
 };
 

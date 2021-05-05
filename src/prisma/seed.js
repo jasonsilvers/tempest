@@ -153,15 +153,7 @@ async function main() {
       },
     },
   });
-
-  await prisma.memberTrackingRecord.create({
-    data: {
-      traineeId: user1.id,
-      trackingItemId: trackingItem1.id,
-    },
-  });
 }
-
 main()
   .catch((e) => {
     console.error(e);

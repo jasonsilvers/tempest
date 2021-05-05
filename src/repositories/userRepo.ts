@@ -1,10 +1,8 @@
 import { Role, User } from '@prisma/client';
-import { returnUser } from '../pages/api/login';
 import prisma from '../prisma/prisma';
 import { ERole } from '../types/global';
 import { IPerson } from './common/types';
 import { getRoleByName } from './roleRepo';
-import { UserInclude } from '@prisma/client';
 
 // required to infer the return type from the Prisma Client
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;

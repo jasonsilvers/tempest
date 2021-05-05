@@ -34,14 +34,16 @@ const daysToString = {
 // border-radius: 5px;
 // styled twin elements
 // Double box shadow here to avoid border radius issues i was experiencing
-const TableRow = tw.tr`text-black box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm`;
-const TableData = tw.td`py-3 font-size[12px]`;
-
+const Card = tw.div`text-black p-2 h-32 w-5/12 mt-4 box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm flex justify-between relative`;
+const Left = tw.div`flex flex-col h-full justify-between mx-2`;
+const Right = tw.div`flex flex-col items-end`;
+const ItemContainer = tw.div`font-size[12px] height[min-content] flex overflow-ellipsis`;
+const SignatureContainer = tw.div`absolute bottom-0 right-0 origin-bottom-right`;
 // conditional styled twin elements for get Signature functions
 const AwaitSignature = tw.div`font-bold`;
-const SignatureButton = tw.button`p-1.5 w-56 background-color[#A8ADB4] text-white text-center`;
+const SignatureButton = tw.button`p-0.5 ml-1 w-24 background-color[#A8ADB4] text-white text-center`;
 
-const Token = tw.div`rounded h-5 w-5 mx-2`;
+const Token = tw.div`rounded h-5 w-5 mr-2`;
 const Overdue = tw(Token)`background-color[#AB0D0D]`;
 const Done = tw(Token)`background-color[#49C68A]`;
 const All = Token;
@@ -86,9 +88,7 @@ const getTraineeSignature = (
   // if signature date is true and signature owner is true
   // render signature based on the signature owner and date
   if (signatureOwner) {
-    return `Signed by ${signatureOwner.firstName} ${
-      signatureOwner.lastName
-    } ${dayjs(signatureDate).format('MM/DD/YY hh:mm')}`;
+    return `Signed by ${signatureOwner.firstName} ${signatureOwner.lastName}`;
   }
 };
 /**
@@ -121,13 +121,11 @@ const getAuthSignature = (
   // If no cases return above then all signatures are signed
   // render the signature based on date and signature owner
   if (signatureOwner) {
-    return `Signed by ${signatureOwner.firstName} ${
-      signatureOwner.lastName
-    } ${dayjs(authSigDate).format('MM/DD/YY hh:mm')}`;
+    return `Signed by ${signatureOwner.firstName} ${signatureOwner.lastName}`;
   }
 };
 
-const RecordRow: React.FC<{
+const RecordCard: React.FC<{
   trackingRecord: RecordWithTrackingItem;
   canSignAuth: boolean;
 }> = ({ trackingRecord, canSignAuth }) => {
@@ -163,49 +161,56 @@ const RecordRow: React.FC<{
   }
   const DynamicToken = TokenObj[trackingRecord.status];
   return (
-    <TableRow>
-      <TableData tw={'font-size[16px]'}>
-        <div tw={'flex'}>
+    <Card>
+      <Left>
+        <ItemContainer tw={'font-size[16px]'}>
           <DynamicToken />
           {trackingRecord.trackingItem.title}
-        </div>
-      </TableData>
-      <TableData tw={'text-purple-500'}>
-        {/* get the common text for number of days if exits else render '## days' */}
-        {daysToString[trackingRecord.trackingItem.interval] ??
-          `${trackingRecord.trackingItem.interval} days`}
-      </TableData>
-      <TableData>
-        <>
-          <span tw={'opacity-40'}>Completed: </span>
-          {dayjs(trackingRecord.completedDate).format('DD MMM YY')}
-        </>
-      </TableData>
-      <TableData>
-        <>
-          <span tw={'opacity-40'}>Due: </span>
-          {dayjs(trackingRecord.completedDate)
-            .add(trackingRecord.trackingItem.interval, 'days')
-            .format('DD MMM YY')}
-        </>
-      </TableData>
-      <TableData>
-        {getAuthSignature(
-          trackingRecord.authoritySignedDate,
-          users ? users[trackingRecord.authorityId] : undefined,
-          canSignAuth
-        )}
-      </TableData>
-      <TableData>
-        {getTraineeSignature(
-          trackingRecord.traineeSignedDate,
-          // pass undefined if data is still fetching
-          users ? users[trackingRecord.traineeId] : undefined,
-          user.id
-        )}
-      </TableData>
-    </TableRow>
+        </ItemContainer>
+        <ItemContainer tw={'text-purple-500'}>
+          {/* get the common text for number of days if exits else render '## days' */}
+          {daysToString[trackingRecord.trackingItem.interval] ??
+            `${trackingRecord.trackingItem.interval} days`}
+        </ItemContainer>
+      </Left>
+
+      <Right>
+        <ItemContainer>
+          <>
+            <span tw={'opacity-40'}>Completed: </span>
+            {dayjs(trackingRecord.completedDate).format('DD MMM YY')}
+          </>
+        </ItemContainer>
+        <ItemContainer>
+          <>
+            <span tw={'opacity-40'}>Due: </span>
+            {dayjs(trackingRecord.completedDate)
+              .add(trackingRecord.trackingItem.interval, 'days')
+              .format('DD MMM YY')}
+          </>
+        </ItemContainer>
+        <SignatureContainer>
+          {/* <div tw="mx-2">
+            {getAuthSignature(
+              trackingRecord.authoritySignedDate,
+              users ? users[trackingRecord.authorityId] : undefined,
+              canSignAuth
+            )}
+          </div>
+          <div>
+            {getTraineeSignature(
+              trackingRecord.traineeSignedDate,
+              // pass undefined if data is still fetching
+              users ? users[trackingRecord.traineeId] : undefined,
+              user.id
+            )}
+          </div> */}
+          <SignatureButton>Supervisor Signature</SignatureButton>
+          <SignatureButton>Trainner Signature</SignatureButton>
+        </SignatureContainer>
+      </Right>
+    </Card>
   );
 };
 
-export default RecordRow;
+export default RecordCard;

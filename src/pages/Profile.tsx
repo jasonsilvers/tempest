@@ -8,7 +8,6 @@ import { UserWithRole } from '../repositories/userRepo';
 const Profile = () => {
   const { isLoading, userRole, permissionCheck } = usePermissions();
   const { user } = useUser<UserWithRole>();
-  console.log(user);
 
   // const permission = permissionCheck(
   //   userRole,
