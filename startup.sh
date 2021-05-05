@@ -16,8 +16,8 @@ node timeout.js
 # The normal production work flow
 # npx prisma migrate deploy
 
-# npx prisma db push --force-reset
-# npx prisma db seed --preview-feature
+npx prisma db push --force-reset --preview-feature
+npx prisma db seed --preview-feature
 
 
-# node_modules/.bin/next start -p 8080
+node_modules/.bin/next start -p 8080

@@ -4,8 +4,8 @@ import {
   NextApiRequestWithAuthorization,
 } from '@tron/nextjs-auth-p1';
 import { User } from '@prisma/client';
-import { findUserByDodId } from '../../repositories/userRepo';
-import prisma from '../../prisma/prisma';
+import { findUserByDodId } from '../../../repositories/userRepo';
+import prisma from '../../../prisma/prisma';
 
 const trackingHandler = async (
   req: NextApiRequestWithAuthorization<User>,

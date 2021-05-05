@@ -8,38 +8,51 @@ import tw from 'twin.macro';
 const Contact = (props) => {
   const queryClient = useQueryClient();
 
-  const { data: trackingItems } = useQuery<TrackingItem[]>(
-    'tracking',
-    async () => {
-      return axios.get('/api/tracking').then((result) => result.data);
+  const { data: trackingItems } = useQuery<TrackingItem[]>('item', async () => {
+    return axios.get('/api/item').then((result) => result.data);
+  });
+
+  const { mutate: create, isLoading: isLoadingCreate } = useMutation(
+    (newTrackingItem: TrackingItem) =>
+      axios.post<TrackingItem>('/api/item', newTrackingItem),
+    {
+      onSettled: () => {
+        queryClient.invalidateQueries('item');
+      },
     }
   );
 
-  const { mutate } = useMutation(
-    (newTrackingItem: TrackingItem) =>
-      axios.post<TrackingItem>('/api/tracking', newTrackingItem),
+  const { mutate: del, isLoading: isLoadingDelete } = useMutation(
+    async (trackingItemId: number) =>
+      (await axios.delete('/api/item/' + trackingItemId)).data,
     {
       onSettled: () => {
-        queryClient.invalidateQueries('tracking');
+        queryClient.invalidateQueries('item');
       },
     }
   );
 
   const handleCreate = () => {
     const newTrackingItem = {
-      title: 'new tracking item' + new Date(),
+      title: 'new tracking item - ' + new Date(),
       description: 'This is a new tracking item',
       interval: 234,
     } as TrackingItem;
 
-    mutate(newTrackingItem);
+    create(newTrackingItem);
   };
 
   return (
     <>
-      <h1 tw="text-2xl">List of tracking items</h1>
+      <h1 tw="text-2xl">
+        List of tracking items{' '}
+        {isLoadingCreate || isLoadingDelete ? '...loading' : null}
+      </h1>
       {trackingItems?.map((trackingItem) => (
-        <p key={trackingItem.id}>{trackingItem.title}</p>
+        <div key={trackingItem.id}>
+          <p>{trackingItem.title} </p>
+          <button onClick={() => del(trackingItem.id)}>Delete</button>
+        </div>
       ))}
 
       <h2 tw="text-xl pt-4">Create Tracking Item</h2>

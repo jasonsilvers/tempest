@@ -45,8 +45,3 @@ EXPOSE 8080
 
 # REQURIES PRISMA BE IN prod DEPEDENCIES
 CMD ./startup.sh
-RUN npx prisma migrate deploy
-# RUN npx prisma db push --force-reset --preview-feature
-RUN npx prisma db seed --preview-feature
-
-RUN node_modules/.bin/next start -p 8080
