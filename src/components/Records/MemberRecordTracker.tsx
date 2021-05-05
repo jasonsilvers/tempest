@@ -1,7 +1,7 @@
 import { MemberTrackingRecord, User } from '@prisma/client';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import tw from 'twin.macro';
 import RecordTable from './RecordTable';
@@ -10,6 +10,7 @@ import ErrorIcon from '../../assets/error.svg';
 import CautionIcon from '../../assets/caution.svg';
 import SuccessIcon from '../../assets/success.svg';
 import { RecordWithTrackingItem } from './RecordRow';
+import HeaderUser from './RecordHeader';
 
 /**
  * Function to get the status text of a tracking item
@@ -77,7 +78,7 @@ const StyledCompleted = () => (
   </Completed>
 );
 
-// Win macro styles for table and headers
+// Twin macro styles for table and headers
 const Header = tw.h1`text-2xl font-bold text-black`;
 const Table = tw.table`text-black text-left w-full`;
 
@@ -156,6 +157,7 @@ const MemberRecordTracker: React.FC<{
 
   return (
     <>
+      <HeaderUser />
       <Header>Training Record</Header>
       {/* Table here has to wrap all the RecordTables to ensure proper alignment */}
       <Table>

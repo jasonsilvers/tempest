@@ -15,6 +15,20 @@ function createUser(dodId = null) {
       ? dodId
       : faker.datatype.number({ min: 1000000000, max: 1999999999 }).toString(),
     email: faker.internet.email(),
+    dutyTitle:
+      faker.company.bsAdjective() +
+      ' ' +
+      faker.company.bsNoun() +
+      ' ' +
+      faker.company.bsBuzz(),
+    afsc:
+      faker.datatype.number({ min: 1, max: 7 }).toString() +
+      faker.random.alpha().toLocaleUpperCase() +
+      faker.datatype.number({ min: 1, max: 7 }).toString() +
+      'X' +
+      faker.datatype.number({ min: 1, max: 7 }).toString(),
+    rank: 'SSgt/E5',
+    address: '15 WG/WSA Tron, Bldg 1102',
   };
 }
 
@@ -137,6 +151,13 @@ async function main() {
           id: role1.id,
         },
       },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      traineeId: user1.id,
+      trackingItemId: trackingItem1.id,
     },
   });
 }

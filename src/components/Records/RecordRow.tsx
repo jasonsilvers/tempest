@@ -136,7 +136,7 @@ const RecordRow: React.FC<{
       users
     );
   }
-
+  console.log(users);
   return (
     <TableRow>
       <TableData>{trackingRecord.trackingItem.title}</TableData>
