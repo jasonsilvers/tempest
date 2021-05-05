@@ -46,7 +46,9 @@ const TabContainer = tw.div`flex space-x-16 border-b border-color[#AEAEAE]`;
 
 // initial object keyed by tracking item status
 const initSortedCategoryObject: {
-  [K in RecordWithTrackingItemStatus]: RecordWithTrackingItem[];
+  [K in RecordWithTrackingItemStatus]:
+    | RecordWithTrackingItem[]
+    | MemberTrackingRecord[];
 } = {
   All: [],
   Done: [],

@@ -15,7 +15,7 @@ export type RecordWithTrackingItemStatus =
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
-  status: RecordWithTrackingItemStatus;
+  status?: RecordWithTrackingItemStatus;
 };
 
 // object to get common text for amount of days

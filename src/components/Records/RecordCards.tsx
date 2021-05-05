@@ -6,7 +6,7 @@ import { EPermission, EResource } from '../../types/global';
 import RecordCard, { RecordWithTrackingItem } from './RecordCard';
 
 // styled twin elements
-const Container = tw.div`text-black w-full flex flex-wrap justify-evenly`;
+const Container = tw.div`text-black w-full flex flex-wrap`;
 
 const RecordCards: React.FC<{
   mtr: MemberTrackingRecord[];
@@ -20,7 +20,13 @@ const RecordCards: React.FC<{
   ).granted;
 
   return (
-    <Container>
+    <Container
+      style={
+        mtr.length > 1
+          ? { justifyContent: 'space-evenly' }
+          : { justifyContent: 'start' }
+      }
+    >
       {/* Map though items and create Table Data Rows */}
       {mtr.map((trackingRecord: RecordWithTrackingItem) => (
         <>

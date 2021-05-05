@@ -34,10 +34,10 @@ const daysToString = {
 // border-radius: 5px;
 // styled twin elements
 // Double box shadow here to avoid border radius issues i was experiencing
-const Card = tw.div`text-black p-2 h-32 w-5/12 mt-4 box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm flex justify-between relative`;
-const Left = tw.div`flex flex-col h-full justify-between mx-2`;
-const Right = tw.div`flex flex-col items-end`;
-const ItemContainer = tw.div`font-size[12px] height[min-content] flex overflow-ellipsis`;
+const Card = tw.div`text-black p-2 h-32 w-5/12 min-width[360px] max-width[400px] flex[1 1 10rem] mt-4 box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm flex justify-between relative`;
+const Left = tw.div`flex flex-col h-full justify-between mx-2 flex-basis[60%]`;
+const Right = tw.div`flex flex-col items-end width[fit-content]`;
+const ItemContainer = tw.div`font-size[12px] height[min-content] flex`;
 const SignatureContainer = tw.div`absolute bottom-0 right-0 origin-bottom-right`;
 // conditional styled twin elements for get Signature functions
 const AwaitSignature = tw.div`font-bold`;
