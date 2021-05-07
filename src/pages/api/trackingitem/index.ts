@@ -7,7 +7,7 @@ import { User } from '@prisma/client';
 import { findUserByDodId } from '../../../repositories/userRepo';
 import prisma from '../../../prisma/prisma';
 
-const trackingHandler = async (
+const trackingItemHandler = async (
   req: NextApiRequestWithAuthorization<User>,
   res: NextApiResponse
 ) => {
@@ -24,4 +24,4 @@ const trackingHandler = async (
   res.status(200).json(trackingItems);
 };
 
-export default trackingHandler;
+export default trackingItemHandler;
