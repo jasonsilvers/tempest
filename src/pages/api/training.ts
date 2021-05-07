@@ -4,8 +4,8 @@ import {
   NextApiRequestWithAuthorization,
 } from '@tron/nextjs-auth-p1';
 import { User } from '@prisma/client';
-import { findUserByDodId } from '../../prisma/repositories/user';
-import { createTrackingItem } from '../../prisma/repositories/training';
+import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { createMemberTrackingItem } from '../../../src/repositories/memberTrackingRepo';
 
 export const trackingApiHandler = async (
   req: NextApiRequestWithAuthorization<User>,
@@ -21,7 +21,7 @@ export const trackingApiHandler = async (
         break;
       }
       // Call the repository and create the TrackingItem
-      const trackingItem = await createTrackingItem(body);
+      const trackingItem = await createMemberTrackingItem(body);
       res.json(trackingItem);
       res.statusCode = 200;
       break;
