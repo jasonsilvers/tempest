@@ -24,8 +24,10 @@ model User {
   organization             Organization?          @relation(fields: [organizationId], references: [id])
   organizationId           String?                @db.Uuid
   tags                     Tag[]
+  trackingItems            MemberTrackingItem[]
   traineeTrackingRecords   MemberTrackingRecord[] @relation(name: "TraineeRecords")
   authorityTrackingRecords MemberTrackingRecord[] @relation(name: "AuthorityRecords")
+
 
   @@map(name: "user")
 }
@@ -37,21 +39,34 @@ model Tag {
 }
 
 model MemberTrackingRecord {
-  id                  Int                   @id @default(autoincrement())
-  traineeSignedDate   DateTime?             @map("trainee_signed_date")
-  authoritySignedDate DateTime?             @map("authority_signed_date")
-  authority           User?                 @relation(name: "AuthorityRecords", fields: [authorityId], references: [id])
-  authorityId         String?               @map("authority_id") @db.Uuid
-  trainee             User?                 @relation(name: "TraineeRecords", fields: [traineeId], references: [id])
-  traineeId           String?               @map("trainee_id") @db.Uuid
-  completedDate       DateTime?             @map("completed_date")
-  successor           MemberTrackingRecord? @relation(name: "NextTrackingRecord", fields: [successorId], references: [id])
-  predecessor         MemberTrackingRecord? @relation(name: "NextTrackingRecord")
-  successorId         Int?                  @map("next_record_id")
-  trackingItem        TrackingItem          @relation(fields: [trackingItemId], references: [id])
-  trackingItemId      Int                   @map("tracking_item_id")
+  id                  Int                @id @default(autoincrement())
+  traineeSignedDate   DateTime?          @map("trainee_signed_date")
+  authoritySignedDate DateTime?          @map("authority_signed_date")
+  authority           User?              @relation(name: "AuthorityRecords", fields: [authorityId], references: [id])
+  authorityId         String?            @map("authority_id") @db.Uuid
+  trainee             User?              @relation(name: "TraineeRecords", fields: [traineeId], references: [id])
+  completedDate       DateTime?          @map("completed_date")
+  order               Int
+  trackingItem        TrackingItem?      @relation(fields: [trackingItemId], references: [id])
+  memberTrackingItems MemberTrackingItem @relation(fields: [traineeId, trackingItemId], references: [userId, trackingItemId])
+  traineeId           String             @db.Uuid
+  trackingItemId      Int
 
   @@map("member_tracking_record")
+}
+
+model MemberTrackingItem {
+  //Compound key of userId and trackingItemId
+  isActive             Boolean
+  user                 User                   @relation(fields: [userId], references: [id])
+  userId               String                 @db.Uuid
+  trackingItem         TrackingItem           @relation(fields: [trackingItemId], references: [id])
+  trackingItemId       Int
+  memberTrackingRecords MemberTrackingRecord[]
+
+  //compositeid userid_trackingitemids
+  @@id([userId, trackingItemId])
+  @@map("member_tracking_item")
 }
 
 model Organization {
@@ -63,7 +78,7 @@ model Organization {
   children  Organization[] @relation(name: "ParentChildren")
   users     User[]
   templates Template[]
-
+  
   @@map("organization")
 }
 
@@ -75,6 +90,7 @@ model TrackingItem {
   memberTrackingRecord MemberTrackingRecord[]
   templates            TemplateTrackingItem[]
 
+  MemberTrackingItem MemberTrackingItem[]
   @@map("training_record")
 }
 

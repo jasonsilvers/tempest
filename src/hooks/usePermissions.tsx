@@ -33,14 +33,14 @@ const usePermissions = () => {
     [grantsQuery.data]
   );
 
-  let userRole: string;
+  let role: string;
 
   if (grantsQuery.data) {
     ac = new AccessControl(grantsQuery.data);
-    userRole = user.role.name;
+    role = user.role.name;
   }
 
-  return { ...grantsQuery, ac, userRole, permissionCheck };
+  return { ...grantsQuery, ac, role, permissionCheck };
 };
 
 export default usePermissions;

@@ -4,10 +4,10 @@ import { EPermission, EResource } from '../types/global';
 import usePermissions from '../hooks/usePermissions';
 
 const Profile = () => {
-  const { isLoading, userRole, permissionCheck } = usePermissions();
+  const { isLoading, role, permissionCheck } = usePermissions();
 
   const permission = permissionCheck(
-    userRole,
+    role,
     EPermission.CREATE,
     EResource.RECORD
   );

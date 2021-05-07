@@ -25,7 +25,7 @@ test('should return user and new ac list with grants', async () => {
   await waitForValueToChange(() => result.current.data);
 
   expect(result.current.ac).toStrictEqual(testAC);
-  expect(result.current.userRole).toStrictEqual('admin');
+  expect(result.current.role).toStrictEqual('admin');
 });
 
 test('should return permission when checking create resourse', async () => {
@@ -49,7 +49,7 @@ test('should return permission when checking create resourse', async () => {
   const permission = result.current.permissionCheck(
     'admin',
     EPermission.READ,
-    EResource.TRAINING_RECORD
+    EResource.TRACKING_RECORD
   );
 
   waitForNextUpdate();
@@ -78,7 +78,7 @@ test('sets granted to false when ac.can fails', async () => {
   const permission = result.current.permissionCheck(
     'NOROLEINGRANTS',
     EPermission.READ,
-    EResource.TRAINING_RECORD
+    EResource.TRACKING_RECORD
   );
 
   waitForNextUpdate();

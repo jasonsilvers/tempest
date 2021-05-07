@@ -32,7 +32,7 @@ const render = (
     nextJSRoute = '/',
     isLoading = false,
     error = undefined,
-    user = { name: 'test user' } as Partial<User>,
+    user = { firstName: 'test', lastName: 'user' } as Partial<User>,
     ...options
   } = {}
 ) => {

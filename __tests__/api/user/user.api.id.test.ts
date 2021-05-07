@@ -6,8 +6,6 @@ import {
   UserWithRole,
 } from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/user/[id]';
-import { apiResolver } from 'next/dist/next-server/server/api-utils';
-
 
 const userTest = {
   name: 'Bob',
@@ -19,7 +17,6 @@ test('api/user/1:GET--Happy Case', async () => {
   mockMethod<UserWithRole>(findUserById, { ...userTest, id: '1' });
 
   const { req, res } = createMocks({
-    method: 'GET',
     body: userTest,
     query: { id: '1' },
   });

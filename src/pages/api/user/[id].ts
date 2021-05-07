@@ -20,7 +20,6 @@ export default async function userQueryHandler(
     userId = id;
   }
 
-  // Switch off of the different HTTP Methods we expect
   switch (method) {
     // Get Method to return a single user by id
     case 'GET': {
