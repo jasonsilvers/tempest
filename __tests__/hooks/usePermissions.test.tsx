@@ -25,7 +25,7 @@ test('should return user and new ac list with grants', async () => {
   await waitForValueToChange(() => result.current.data);
 
   expect(result.current.ac).toStrictEqual(testAC);
-  expect(result.current.userRole).toStrictEqual('admin');
+  expect(result.current.role).toStrictEqual('admin');
 });
 
 test('should return permission when checking create resourse', async () => {
