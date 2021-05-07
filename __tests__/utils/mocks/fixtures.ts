@@ -1,5 +1,4 @@
 import { P1_JWT } from '@tron/nextjs-auth-p1';
-import dayjs from 'dayjs';
 export const grants = [
   {
     action: 'create:any',

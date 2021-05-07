@@ -17,7 +17,7 @@ import {
 } from '../../../types/global';
 export const memberTrackingItemHandlerSlug = async (
   req: NextApiRequestWithAuthorization<UserWithRole>,
-  res: NextApiResponse<any | ITempestApiError>
+  res: NextApiResponse<ITempestApiError>
 ) => {
   const {
     query: { slug },

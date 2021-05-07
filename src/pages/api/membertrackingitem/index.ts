@@ -1,15 +1,9 @@
-//Add an include request parameter with
-//Can include membertracking
-// - /api/membertrackingitem?include=member_tracking_records&include=another_thing
-
-// POST /api/membertrackingitem?create_member_tracking_record
-
 import { MemberTrackingItem } from '.prisma/client';
 import {
   NextApiRequestWithAuthorization,
   withApiAuth,
 } from '@tron/nextjs-auth-p1';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiResponse } from 'next';
 import { getAc } from '../../../middleware/utils';
 import {
   createMemberTrackingItem,

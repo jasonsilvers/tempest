@@ -166,12 +166,7 @@ async function main() {
     data: newMemberTrackingItem,
   });
 
-  const newMemberTrackingRecord = {
-    order: 0,
-    trackingItemId: memberTrackingItem.id,
-  };
-
-  const memberTrackingRecord = await prisma.memberTrackingRecord.create({
+  await prisma.memberTrackingRecord.create({
     data: {
       order: 0,
       memberTrackingItems: {

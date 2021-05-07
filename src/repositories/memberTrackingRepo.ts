@@ -1,5 +1,4 @@
 import { MemberTrackingItem, MemberTrackingRecord } from '.prisma/client';
-import { Prisma } from '@prisma/client';
 import prisma from '../prisma/prisma';
 
 export const updateMemberTrackingRecord = async (
@@ -17,7 +16,7 @@ export const updateMemberTrackingRecord = async (
 
   return prisma.memberTrackingRecord.update({
     where: { id },
-    data: memberTrackingRecord,
+    data: { ...memberTrackingRecord, completedDate },
   });
 };
 

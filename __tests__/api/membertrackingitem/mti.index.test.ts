@@ -8,7 +8,6 @@ import {
 } from '../../../src/repositories/memberTrackingRepo';
 import testNextApi from '../../utils/NextAPIUtils';
 import memberTrackingItemHandler from '../../../src/pages/api/membertrackingitem';
-import dayjs from 'dayjs';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');

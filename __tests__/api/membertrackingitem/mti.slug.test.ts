@@ -7,7 +7,6 @@ import testNextApi from '../../utils/NextAPIUtils';
 import {
   deleteMemberTrackingItem,
   findMemberTrackingItemById,
-  findMemberTrackingRecordById,
   findMemberTrackingRecords,
 } from '../../../src/repositories/memberTrackingRepo';
 import dayjs from 'dayjs';
@@ -106,19 +105,13 @@ test('should not allow delete if user is a member and does not own the record', 
   const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
 
-  const trackingItemFromDb = {
-    userId,
-    trackingItemId,
-    isActive: true,
-  };
-
   mockMethod(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
 
-  mockMethod(findMemberTrackingItemById, trackingItemFromDb);
+  mockMethod(findMemberTrackingItemById, { trackingItemFromDb, userId });
 
   const { status } = await testNextApi.delete(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,

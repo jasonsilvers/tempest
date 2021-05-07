@@ -1,5 +1,4 @@
 import { AccessControl } from 'accesscontrol';
-import prisma from '../prisma/prisma';
 import { findGrants } from '../repositories/grantsRepo';
 
 export async function getAc() {

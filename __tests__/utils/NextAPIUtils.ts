@@ -1,16 +1,14 @@
 import http from 'http';
 import queryString from 'query-string';
 import listen from 'test-listen';
-import { NextApiHandler } from 'next';
 import fetch from 'isomorphic-unfetch';
 import { apiResolver } from 'next/dist/next-server/server/api-utils';
 import { userJWT } from './mocks/mockJwt';
+import { NextApiHandler } from 'next';
 
-async function createNextApiServer(handler: any) {
+async function createNextApiServer(handler: NextApiHandler) {
   let server: http.Server;
-  let url: string;
-
-  url = await listen(
+  const url = await listen(
     (server = http.createServer((req, res) => {
       const urlSplit = req.url.split('/');
       const id = urlSplit[3];
@@ -36,7 +34,7 @@ async function createNextApiServer(handler: any) {
 type METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 const baseTestNextApi = async (
-  handler: any,
+  handler: NextApiHandler,
   {
     withJwt = true,
     urlId,
@@ -48,18 +46,18 @@ const baseTestNextApi = async (
     urlId?: string | number;
     urlSlug?: string;
     method?: METHOD;
-    body?: any;
+    body?: Record<string, unknown>;
   } = {}
 ) => {
   let serverRef: http.Server;
-  let status: any;
-  let data: any;
+  let status: number;
+  let data: Record<string, unknown>;
   try {
     if (urlId && urlSlug) {
       throw new Error('Must pass only a urlID or urlSlug');
     }
 
-    let urlParams: string = '';
+    let urlParams = '';
 
     if (urlId) {
       urlId = urlId.toString();
@@ -103,9 +101,9 @@ const baseTestNextApi = async (
   return { status, data };
 };
 
-let testNextApi = {
+const testNextApi = {
   get: (
-    handler: any,
+    handler: NextApiHandler,
     {
       withJwt = true,
       urlId,
@@ -126,14 +124,14 @@ let testNextApi = {
   },
 
   put: (
-    handler: any,
+    handler: NextApiHandler,
     {
       body,
       withJwt = true,
       urlId,
       urlSlug,
     }: {
-      body: any;
+      body: Record<string, unknown>;
       withJwt?: boolean;
       urlId?: string | number;
       urlSlug?: string;
@@ -149,14 +147,14 @@ let testNextApi = {
   },
 
   post: (
-    handler: any,
+    handler: NextApiHandler,
     {
       body,
       withJwt = true,
       urlId,
       urlSlug,
     }: {
-      body: any;
+      body: Record<string, unknown>;
       withJwt?: boolean;
       urlId?: string | number;
       urlSlug?: string;
@@ -172,7 +170,7 @@ let testNextApi = {
   },
 
   delete: (
-    handler: any,
+    handler: NextApiHandler,
     {
       withJwt = true,
       urlId,

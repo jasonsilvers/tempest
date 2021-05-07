@@ -8,7 +8,7 @@ import tw from 'twin.macro';
 
 const TempestButton = tw(Button)`bg-purple-300`;
 
-function Home(props) {
+function Home() {
   const { user, isLoading } = useUser();
   const router = useRouter();
 

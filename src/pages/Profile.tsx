@@ -2,7 +2,6 @@ import React from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import { EPermission, EResource } from '../types/global';
 import usePermissions from '../hooks/usePermissions';
-import Link from 'next/link';
 
 const Profile = () => {
   const { isLoading, userRole, permissionCheck } = usePermissions();
