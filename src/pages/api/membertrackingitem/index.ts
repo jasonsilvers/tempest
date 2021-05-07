@@ -4,49 +4,67 @@
 
 // POST /api/membertrackingitem?create_member_tracking_record
 
-import { NextApiRequest, NextApiResponse } from 'next';
+import { MemberTrackingItem } from '.prisma/client';
 import {
-  createTrackingItem,
+  NextApiRequestWithAuthorization,
+  withApiAuth,
+} from '@tron/nextjs-auth-p1';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { getAc } from '../../../middleware/utils';
+import {
+  createMemberTrackingItem,
   createTrackingRecord,
   MemberTrackingItemWithMemberTrackingRecord,
 } from '../../../repositories/memberTrackingRepo';
+import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
+import { EResource, ITempestApiError } from '../../../types/global';
 
 const memberTrackingItemHandler = async (
-  req: NextApiRequest,
-  res: NextApiResponse
+  req: NextApiRequestWithAuthorization<UserWithRole>,
+  res: NextApiResponse<MemberTrackingItem | ITempestApiError>
 ) => {
   //Include can be a string or string[]
-  const { body, method, query } = req;
+  const {
+    body,
+    method,
+    query: { create_member_tracking_record },
+  } = req;
 
-  console.log('the query in the handler is', query);
-  // console.log('The creat member tracking record in the hanlder is', create_member_tracking_record)
+  const ac = await getAc();
+
+  const permission = ac.can(req.user.role.name).create(EResource.TRACKING_ITEM);
+
+  if (!permission.granted) {
+    return res
+      .status(403)
+      .json({ message: 'You do not have the correct permissions' });
+  }
 
   switch (method) {
     case 'POST': {
-      const newMemberTrackingItem: MemberTrackingItemWithMemberTrackingRecord = await createTrackingItem(
+      const newMemberTrackingItem: MemberTrackingItemWithMemberTrackingRecord = await createMemberTrackingItem(
         body
       );
 
-      // if (create_member_tracking_record) {
-      //   const newMemberTrackingRecord = await createTrackingRecord(
-      //     {
-      //       order: 0,
-      //       traineeId: newMemberTrackingItem.userId,
-      //       trackingItemId: newMemberTrackingItem.trackingItemId,
-      //     },
-      //     { includeTrackingItem: true }
-      //   );
+      if (create_member_tracking_record) {
+        const newMemberTrackingRecord = await createTrackingRecord(
+          {
+            traineeId: newMemberTrackingItem.userId,
+            trackingItemId: newMemberTrackingItem.trackingItemId,
+          },
+          { includeTrackingItem: true }
+        );
 
-      //   newMemberTrackingItem.memberTrackingRecords = [newMemberTrackingRecord];
-      // }
+        newMemberTrackingItem.memberTrackingRecords = [newMemberTrackingRecord];
+      }
 
       res.status(200).json(newMemberTrackingItem);
+      break;
     }
     default:
-    //only allow post
+      res.setHeader('Allow', ['POST']);
+      res.status(405).json({ message: `Method ${method} Not Allowed` });
   }
-
-  // res.status(200).json('This is the response');
 };
 
-export default memberTrackingItemHandler;
+export default withApiAuth(memberTrackingItemHandler, findUserByDodId);

@@ -1,5 +1,5 @@
 import http from 'http';
-import queryString from 'querystring';
+import queryString from 'query-string';
 import listen from 'test-listen';
 import { NextApiHandler } from 'next';
 import fetch from 'isomorphic-unfetch';
@@ -14,14 +14,14 @@ async function createNextApiServer(handler: any) {
       const urlSplit = req.url.split('/');
       const id = urlSplit[3];
       const slug = urlSplit.slice(3, urlSplit.length);
-
       const urlQuery = req.url.split('?')[1];
-      const queryParams = queryString.parse(urlQuery);
-      console.log('The query string is', queryParams);
+      const queryParams = queryString.parse(urlQuery, {
+        arrayFormat: 'bracket',
+      });
       apiResolver(
         req,
         res,
-        { slug, id, query: queryParams },
+        { slug, id, ...queryParams },
         handler,
         undefined,
         false
@@ -51,6 +51,8 @@ const baseTestNextApi = async (
   } = {}
 ) => {
   let serverRef: http.Server;
+  let status: any;
+  let data: any;
   try {
     if (urlId && urlSlug) {
       throw new Error('Must pass only a urlID or urlSlug');
@@ -90,20 +92,15 @@ const baseTestNextApi = async (
       method,
       body: JSON.stringify(body),
     });
-    const status = response.status;
-
-    const data = await response.json();
-
-    return { data, status };
+    status = response.status;
+    data = await response.json();
   } catch (error) {
-    if (error.type === 'invalid-json') {
-      console.error('You must pass an object in your API response');
-    }
-
-    console.error(error);
+    data = { message: error };
   } finally {
     serverRef?.close();
   }
+
+  return { status, data };
 };
 
 let testNextApi = {

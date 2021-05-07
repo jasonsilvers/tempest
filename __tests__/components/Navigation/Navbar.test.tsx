@@ -17,7 +17,6 @@ test('should render a navbar with colored link', () => {
   expect(header).toBeInTheDocument;
   const dashLink = getByText(/dashboard/i);
   expect(dashLink.style.color).toBe('blue');
-  expect(getByText(/Don Jones/i)).toBeInTheDocument;
 });
 
 test('should not render navbar with no user', () => {

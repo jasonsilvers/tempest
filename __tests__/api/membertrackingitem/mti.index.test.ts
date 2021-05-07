@@ -3,7 +3,7 @@ import mockMethod from '../../utils/mocks/repository';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import {
-  createTrackingItem,
+  createMemberTrackingItem,
   createTrackingRecord,
 } from '../../../src/repositories/memberTrackingRepo';
 import testNextApi from '../../utils/NextAPIUtils';
@@ -42,7 +42,7 @@ test('POST - should create member tracking item', async () => {
     trackingItemId: 1,
   };
 
-  mockMethod(createTrackingItem, expectedReturnData);
+  mockMethod(createMemberTrackingItem, expectedReturnData);
 
   const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
     body: memberTrackingRecordBody,
@@ -75,7 +75,7 @@ test('POST - should create member tracking item and member tracking record when 
     memberTrackingRecords: [returnedMemberTrackingRecordDB],
   };
 
-  mockMethod(createTrackingItem, returnedMemberTrackingItem);
+  mockMethod(createMemberTrackingItem, returnedMemberTrackingItem);
   mockMethod(createTrackingRecord, returnedMemberTrackingRecordDB);
 
   const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
@@ -83,20 +83,95 @@ test('POST - should create member tracking item and member tracking record when 
     urlId: '?create_member_tracking_record=true',
   });
 
-  //api/mti/23423?include=member_tracking_records&include=tracking_items
-
   expect(status).toBe(200);
   expect(data).toStrictEqual(expectedReturnData);
-
-  //useMemberTrackingItem
-  //useTrackingItem
-  //useMemberTrackingRecord - authorityMemberRecords, traineeMemberRecords
-  //useMemberTrackingRecordMutation
-  //---invalidate useUserTracker
-  //useUser
-  //useUserTracker -- trackingItems, authorityMemberRecords, traineeMemberRecords
-  ///----profile page would subscribe to this data
 });
-test('POST - should return 401 if user is not authorized', async () => {});
+test('POST - should return 401 if user is not authorized', async () => {
+  mockMethod(findUserByDodId, null);
 
-test('POST - should return 403 if user role is not allowed to create member tracking item', async () => {});
+  const body = {
+    userId,
+    trackingItemId: 1,
+  };
+
+  const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
+    body,
+    urlId: '?create_member_tracking_record=true',
+  });
+
+  expect(status).toBe(401);
+  expect(data).toStrictEqual({
+    error: 'Not Authenticated',
+    description: 'You are not authenticated',
+  });
+});
+
+test('POST - should return 403 if user role is not allowed to create member tracking item', async () => {
+  mockMethod(findUserByDodId, {
+    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'norole' },
+  });
+
+  const body = {
+    userId,
+    trackingItemId: 1,
+  };
+
+  const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
+    body,
+    urlId: '?create_member_tracking_record=true',
+  });
+
+  expect(status).toBe(403);
+  expect(data).toStrictEqual({
+    message: 'You do not have the correct permissions',
+  });
+});
+
+test('Should not accept GET', async () => {
+  const traineeId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+
+  mockMethod(findUserByDodId, {
+    id: traineeId,
+    firstName: 'joe',
+    role: { id: '22', name: 'monitor' },
+  });
+  mockMethod(findGrants, grants);
+
+  const { status } = await testNextApi.get(memberTrackingItemHandler);
+
+  expect(status).toEqual(405);
+});
+
+test('Should not accept DELETE', async () => {
+  const traineeId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+
+  mockMethod(findUserByDodId, {
+    id: traineeId,
+    firstName: 'joe',
+    role: { id: '22', name: 'monitor' },
+  });
+  mockMethod(findGrants, grants);
+
+  const { status } = await testNextApi.delete(memberTrackingItemHandler);
+
+  expect(status).toEqual(405);
+});
+
+test('Should not accept PUT', async () => {
+  const traineeId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+
+  mockMethod(findUserByDodId, {
+    id: traineeId,
+    firstName: 'joe',
+    role: { id: '22', name: 'monitor' },
+  });
+  mockMethod(findGrants, grants);
+
+  const { status } = await testNextApi.put(memberTrackingItemHandler, {
+    body: {},
+  });
+
+  expect(status).toEqual(405);
+});

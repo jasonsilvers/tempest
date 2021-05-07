@@ -9,6 +9,9 @@ export enum EResource {
   DASHBOARD = 'dashboard',
   PROFILE = 'profile',
   TRACKING_RECORD = 'tracking_record',
+  TRACKING_ITEM = 'tracking_item',
+  TRAINEE_RECORDS = 'traineerecords',
+  AUHTORITY_RECORDS = 'authorityrecords',
 }
 
 export enum EGrant {
@@ -21,11 +24,10 @@ export enum EPermission {
   UPDATE = 'update',
   DELETE = 'delete',
 }
-
-export enum EResourceType {
-  TRAINEE_RECORDS = 'traineerecords',
-  AUHTORITY_RECORDS = 'authorityrecords',
-}
 export interface ITempestApiError {
   message: string;
 }
+
+export const ErrorMessage403 = {
+  message: 'You do not have the appropriate permissions',
+};

@@ -4,6 +4,12 @@ export const grants = [
   {
     action: 'create:any',
     attributes: '*',
+    resource: 'tracking_item',
+    role: 'monitor',
+  },
+  {
+    action: 'create:any',
+    attributes: '*',
     resource: 'tracking_record',
     role: 'admin',
   },
@@ -29,6 +35,18 @@ export const grants = [
     action: 'delete:any',
     attributes: '*, !authorityId',
     resource: 'tracking_record',
+    role: 'member',
+  },
+  {
+    action: 'delete:any',
+    attributes: '*',
+    resource: 'tracking_item',
+    role: 'monitor',
+  },
+  {
+    action: 'delete:own',
+    attributes: '*',
+    resource: 'tracking_item',
     role: 'member',
   },
   {
