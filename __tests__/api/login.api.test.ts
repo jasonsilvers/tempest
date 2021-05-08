@@ -43,6 +43,7 @@ beforeAll(() => {
   loadEnvConfig(projectDir);
 });
 
+//TODO: Rewrite test with new API Test Utility
 test('login handler returns user when user is found', async () => {
   const { req, res } = createMocks({
     method: 'GET',
