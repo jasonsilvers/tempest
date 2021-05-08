@@ -16,7 +16,9 @@ function withErrorHandling<T extends (...args: any[]) => any>(
       if (process.env.ERROR_DEBUG === 'TRUE') {
         throw new Error(
           e +
-            { ...args } +
+            '  ' +
+            func.name +
+            '  ' +
             process.env.COMMON_API_URL +
             ' - There was an error making the request'
         );
