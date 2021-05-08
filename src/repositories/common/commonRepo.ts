@@ -14,7 +14,12 @@ function withErrorHandling<T extends (...args: any[]) => any>(
       return await func(...args);
     } catch (e) {
       if (process.env.ERROR_DEBUG === 'TRUE') {
-        throw new Error(e + ' - There was an error making the request');
+        throw new Error(
+          e +
+            { ...args } +
+            process.env.COMMON_API_URL +
+            ' - There was an error making the request'
+        );
       } else {
         throw new Error('There was an error making the request');
       }
