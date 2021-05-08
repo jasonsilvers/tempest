@@ -73,8 +73,8 @@ test('login findOrAdduser should create user in tempest if found in commonAPI an
   const expectedUser = { ...userTest, dodId };
 
   server.use(
-    rest.get('http://localhost:8089/api/v1/person', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(persons));
+    rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(persons[0]));
     })
   );
 
@@ -85,18 +85,18 @@ test('login findOrAdduser should create user in tempest if found in commonAPI an
 
   expect(user).toMatchObject(expectedUser);
 });
-test('login findOrAdduser should creater user in commonAPI and in Tempest if not found in either and return user', async () => {
+test('login should creater user in commonAPI and in Tempest if not found in either and return user', async () => {
   const expectedUser = { ...userTest, dodId };
 
   server.use(
-    rest.get('http://localhost:8089/api/v1/person', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(persons));
+    rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
+      return res(ctx.status(404), ctx.json(null));
     })
   );
 
   server.use(
     rest.post('http://localhost:8089/api/v1/person', (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json(persons[1]));
+      return res(ctx.status(200), ctx.json(persons[1]));
     })
   );
 
@@ -106,16 +106,15 @@ test('login findOrAdduser should creater user in commonAPI and in Tempest if not
   const user = await returnUser(dodId, explodedJwt);
   expect(user).toMatchObject(expectedUser);
 });
-test('login findOrAdduser handle error from getPerson', async () => {
+test('login handle error from getPersonFromCommonApi', async () => {
   server.use(
-    rest.get('http://localhost:8089/api/v1/person', (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json(null));
+    rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
+      return res(ctx.status(500), ctx.json({ message: 'error' }));
     })
   );
 
   mockMethod(findUserByDodId, null);
   mockMethod(getRoleByName, { id: 1, name: 'Member' } as Role);
-  mockMethod(createUserFromCommonApi, persons[1]);
 
   const expectedError = new Error('There was an error making the request');
 
@@ -127,7 +126,7 @@ test('login findOrAdduser handle error from getPerson', async () => {
 });
 test('login findOrAdduser should handle error if cannot create commonapi person', async () => {
   server.use(
-    rest.get('http://localhost:8089/api/v1/person', (req, res, ctx) => {
+    rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(null));
     })
   );
@@ -151,27 +150,21 @@ test('login findOrAdduser should handle error if cannot create commonapi person'
 });
 test('login findOrAdduser should handle error if cannot create user in tempest', async () => {
   server.use(
-    rest.get('http://localhost:8089/api/v1/person', (req, res, ctx) => {
+    rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(null));
     })
   );
 
   server.use(
     rest.post('http://localhost:8089/api/v1/person', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(persons[1]));
+      return res(ctx.status(500), ctx.json({ message: 'There was an error' }));
     })
   );
 
   mockMethod(findUserByDodId, null);
   mockMethod(getRoleByName, { id: 1, name: 'Member' } as Role);
-  const createUserMock = mockMethod(createUserFromCommonApi, null);
 
-  const expectedError = new Error(
-    'There was an error making the createUser call'
-  );
-  createUserMock.mockImplementationOnce(() => {
-    throw expectedError;
-  });
+  const expectedError = new Error('There was an error making the request');
 
   try {
     await returnUser(dodId, explodedJwt);
