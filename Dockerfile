@@ -37,7 +37,6 @@ COPY --chown=appuser:appuser --from=builder ${HOME}/build/node_modules ./node_mo
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/.next ./.next
 COPY --chown=appuser:appuser  startup.sh timeout.js ./
 
-
 ENV NODE_ENV=production
 ENV PORT 8080
 ENV NODE_PATH=.
