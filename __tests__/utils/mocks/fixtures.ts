@@ -1,11 +1,27 @@
 import { P1_JWT } from '@tron/nextjs-auth-p1';
-export const grants = [
+
+const memberTrackingItemGrants = [
   {
     action: 'create:any',
     attributes: '*',
-    resource: 'tracking_item',
+    resource: 'member_tracking_item',
     role: 'monitor',
   },
+  {
+    action: 'delete:any',
+    attributes: '*',
+    resource: 'member_tracking_item',
+    role: 'monitor',
+  },
+  {
+    action: 'update:any',
+    attributes: 'isActive',
+    resource: 'member_tracking_item',
+    role: 'monitor',
+  },
+];
+export const grants = [
+  ...memberTrackingItemGrants,
   {
     action: 'create:any',
     attributes: '*',
@@ -37,15 +53,9 @@ export const grants = [
     role: 'member',
   },
   {
-    action: 'delete:any',
-    attributes: '*',
-    resource: 'tracking_item',
-    role: 'monitor',
-  },
-  {
     action: 'delete:own',
     attributes: '*',
-    resource: 'tracking_item',
+    resource: 'member_tracking_item',
     role: 'member',
   },
   {

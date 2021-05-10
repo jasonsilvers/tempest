@@ -98,6 +98,22 @@ export const findMemberTrackingItemById = async (
   });
 };
 
+export const updateMemberTrackingItem = async (
+  trackingItemId: number,
+  userId: string,
+  data: MemberTrackingItem
+) => {
+  return prisma.memberTrackingItem.update({
+    data,
+    where: {
+      userId_trackingItemId: {
+        userId,
+        trackingItemId,
+      },
+    },
+  });
+};
+
 export const deleteMemberTrackingItem = async (
   trackingItemId: number,
   userId: string

@@ -26,7 +26,9 @@ const memberTrackingItemHandler = async (
 
   const ac = await getAc();
 
-  const permission = ac.can(req.user.role.name).create(EResource.TRACKING_ITEM);
+  const permission = ac
+    .can(req.user.role.name)
+    .create(EResource.MEMBER_TRACKING_ITEM);
 
   if (!permission.granted) {
     return res

@@ -4,9 +4,15 @@ import listen from 'test-listen';
 import fetch from 'isomorphic-unfetch';
 import { apiResolver } from 'next/dist/next-server/server/api-utils';
 import { userJWT } from './mocks/mockJwt';
-import { NextApiHandler } from 'next';
+import { NextApiResponse } from 'next';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 
-async function createNextApiServer(handler: NextApiHandler) {
+type ApiHandler = (
+  req: NextApiRequestWithAuthorization<unknown, unknown>,
+  res: NextApiResponse<unknown>
+) => Promise<void>;
+
+async function createNextApiServer(handler: ApiHandler) {
   let server: http.Server;
   const url = await listen(
     (server = http.createServer((req, res) => {
@@ -34,7 +40,7 @@ async function createNextApiServer(handler: NextApiHandler) {
 type METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 const baseTestNextApi = async (
-  handler: NextApiHandler,
+  handler: ApiHandler,
   {
     withJwt = true,
     urlId,
@@ -103,7 +109,7 @@ const baseTestNextApi = async (
 
 const testNextApi = {
   get: (
-    handler: NextApiHandler,
+    handler: ApiHandler,
     {
       withJwt = true,
       urlId,
@@ -124,7 +130,7 @@ const testNextApi = {
   },
 
   put: (
-    handler: NextApiHandler,
+    handler: ApiHandler,
     {
       body,
       withJwt = true,
@@ -147,7 +153,7 @@ const testNextApi = {
   },
 
   post: (
-    handler: NextApiHandler,
+    handler: ApiHandler,
     {
       body,
       withJwt = true,
@@ -170,7 +176,7 @@ const testNextApi = {
   },
 
   delete: (
-    handler: NextApiHandler,
+    handler: ApiHandler,
     {
       withJwt = true,
       urlId,
