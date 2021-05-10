@@ -8,6 +8,7 @@ import {
   deleteMemberTrackingItem,
   findMemberTrackingItemById,
   findMemberTrackingRecords,
+  updateMemberTrackingItem,
 } from '../../../src/repositories/memberTrackingRepo';
 import dayjs from 'dayjs';
 
@@ -138,6 +139,71 @@ test('should return 404 if record is not found', async () => {
   expect(status).toBe(404);
 });
 
+test('Should allow monitor to update isActive', async () => {
+  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const trackingItemId = 2;
+
+  mockMethod(findUserByDodId, {
+    id: userId,
+    firstName: 'joe',
+    role: { id: '22', name: 'monitor' },
+  });
+  mockMethod(findGrants, grants);
+
+  const body = {
+    ...trackingItemFromDb,
+    isActive: false,
+  };
+
+  mockMethod(findMemberTrackingItemById, { ...trackingItemFromDb });
+  mockMethod(updateMemberTrackingItem, body);
+
+  const { status, data } = await testNextApi.put(
+    memberTrackingItemHandlerSlug,
+    {
+      urlSlug: `/${trackingItemId}/user/${userId}`,
+      body,
+    }
+  );
+
+  expect(
+    updateMemberTrackingItem
+  ).toHaveBeenCalledWith(
+    trackingItemFromDb.trackingItemId,
+    trackingItemFromDb.userId,
+    { isActive: false }
+  );
+
+  expect(status).toEqual(200);
+  expect(data).toStrictEqual(body);
+});
+
+test('Should not allow update if role does not have permission', async () => {
+  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const trackingItemId = 2;
+
+  mockMethod(findUserByDodId, {
+    id: userId,
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  mockMethod(findGrants, grants);
+
+  const body = {
+    ...trackingItemFromDb,
+    isActive: false,
+  };
+
+  mockMethod(findMemberTrackingItemById, { ...trackingItemFromDb });
+  mockMethod(updateMemberTrackingItem, body);
+
+  const { status } = await testNextApi.put(memberTrackingItemHandlerSlug, {
+    urlSlug: `/${trackingItemId}/user/${userId}`,
+    body,
+  });
+
+  expect(status).toEqual(403);
+});
 test('Should not accept GET', async () => {
   const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
@@ -148,6 +214,7 @@ test('Should not accept GET', async () => {
     role: { id: '22', name: 'monitor' },
   });
   mockMethod(findGrants, grants);
+  mockMethod(findMemberTrackingItemById, { ...trackingItemFromDb });
 
   const { status } = await testNextApi.get(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
@@ -166,27 +233,9 @@ test('Should not accept POST', async () => {
     role: { id: '22', name: 'monitor' },
   });
   mockMethod(findGrants, grants);
+  mockMethod(findMemberTrackingItemById, { ...trackingItemFromDb });
 
   const { status } = await testNextApi.post(memberTrackingItemHandlerSlug, {
-    urlSlug: `/${trackingItemId}/user/${userId}`,
-    body: {},
-  });
-
-  expect(status).toEqual(405);
-});
-
-test('Should not accept PUT', async () => {
-  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
-  const trackingItemId = 2;
-
-  mockMethod(findUserByDodId, {
-    id: userId,
-    firstName: 'joe',
-    role: { id: '22', name: 'monitor' },
-  });
-  mockMethod(findGrants, grants);
-
-  const { status } = await testNextApi.put(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
     body: {},
   });

@@ -1,51 +1,78 @@
+import { MemberTrackingItem } from '.prisma/client';
 import {
   NextApiRequestWithAuthorization,
   withApiAuth,
 } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { getAc } from '../../../middleware/utils';
+import {
+  getAc,
+  permissionDenied,
+  recordNotFound,
+} from '../../../middleware/utils';
 import {
   deleteMemberTrackingItem,
   findMemberTrackingItemById,
   findMemberTrackingRecords,
+  updateMemberTrackingItem,
 } from '../../../repositories/memberTrackingRepo';
 import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
-import {
-  EResource,
-  ErrorMessage403,
-  ITempestApiError,
-} from '../../../types/global';
+import { EResource, ITempestApiError } from '../../../types/global';
+
 export const memberTrackingItemHandlerSlug = async (
   req: NextApiRequestWithAuthorization<UserWithRole>,
-  res: NextApiResponse<ITempestApiError>
+  res: NextApiResponse<MemberTrackingItem | ITempestApiError>
 ) => {
   const {
     query: { slug },
     method,
+    body,
   } = req;
 
   const trackingItemId = parseInt(slug[0].toString());
   const userId = slug[2].toString();
 
+  const trackingRecordFromDb = await findMemberTrackingItemById(
+    trackingItemId,
+    userId
+  );
+
+  if (!trackingRecordFromDb) {
+    return recordNotFound(res);
+  }
+
+  const ac = await getAc();
+
   switch (method) {
-    case 'DELETE': {
-      const trackingRecordFromDb = await findMemberTrackingItemById(
-        trackingItemId,
-        userId
-      );
-
-      if (!trackingRecordFromDb) {
-        return res.status(404).json({ message: 'Record Not Found' });
-      }
-
-      const ac = await getAc();
-      const permission =
-        trackingRecordFromDb.userId !== req.user.id
-          ? ac.can(req.user.role.name).delete(EResource.TRACKING_ITEM)
-          : ac.can(req.user.role.name).deleteOwn(EResource.TRACKING_ITEM);
+    case 'PUT': {
+      const permission = ac
+        .can(req.user.role.name)
+        .updateAny(EResource.MEMBER_TRACKING_ITEM);
 
       if (!permission.granted) {
-        return res.status(403).json(ErrorMessage403);
+        return permissionDenied(res);
+      }
+
+      const filteredBody = permission.filter(body);
+
+      const updatedMemberTrackingItem = await updateMemberTrackingItem(
+        trackingItemId,
+        userId,
+        filteredBody
+      );
+      res.status(200).json(updatedMemberTrackingItem);
+      break;
+    }
+
+    case 'DELETE': {
+      const permission =
+        trackingRecordFromDb.userId !== req.user.id
+          ? ac.can(req.user.role.name).delete(EResource.MEMBER_TRACKING_ITEM)
+          : ac
+              .can(req.user.role.name)
+              .deleteOwn(EResource.MEMBER_TRACKING_ITEM);
+
+      if (!permission.granted) {
+        return permissionDenied(res);
       }
 
       const memberTrackingRecords = await findMemberTrackingRecords(
@@ -67,7 +94,7 @@ export const memberTrackingItemHandlerSlug = async (
     }
 
     default:
-      res.setHeader('Allow', ['DELETE']);
+      res.setHeader('Allow', ['DELETE, PUT']);
       res.status(405).json({ message: `Method ${method} Not Allowed` });
   }
 };
