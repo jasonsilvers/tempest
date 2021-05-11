@@ -1,5 +1,5 @@
 import { grants } from '../../utils/mocks/fixtures';
-import mockMethod from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import {
@@ -23,12 +23,12 @@ const memberTrackingRecordBody = {
 };
 
 beforeEach(() => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 });
 
 afterEach(() => {
@@ -41,7 +41,7 @@ test('POST - should create member tracking item', async () => {
     trackingItemId: 1,
   };
 
-  mockMethod(createMemberTrackingItem, expectedReturnData);
+  mockMethodAndReturn(createMemberTrackingItem, expectedReturnData);
 
   const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
     body: memberTrackingRecordBody,
@@ -74,8 +74,8 @@ test('POST - should create member tracking item and member tracking record when 
     memberTrackingRecords: [returnedMemberTrackingRecordDB],
   };
 
-  mockMethod(createMemberTrackingItem, returnedMemberTrackingItem);
-  mockMethod(createTrackingRecord, returnedMemberTrackingRecordDB);
+  mockMethodAndReturn(createMemberTrackingItem, returnedMemberTrackingItem);
+  mockMethodAndReturn(createTrackingRecord, returnedMemberTrackingRecordDB);
 
   const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
     body: returnedMemberTrackingItem,
@@ -86,7 +86,7 @@ test('POST - should create member tracking item and member tracking record when 
   expect(data).toStrictEqual(expectedReturnData);
 });
 test('POST - should return 401 if user is not authorized', async () => {
-  mockMethod(findUserByDodId, null);
+  mockMethodAndReturn(findUserByDodId, null);
 
   const body = {
     userId,
@@ -106,7 +106,7 @@ test('POST - should return 401 if user is not authorized', async () => {
 });
 
 test('POST - should return 403 if user role is not allowed to create member tracking item', async () => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
@@ -131,12 +131,12 @@ test('POST - should return 403 if user role is not allowed to create member trac
 test('Should not accept GET', async () => {
   const traineeId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: traineeId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 
   const { status } = await testNextApi.get(memberTrackingItemHandler);
 
@@ -146,12 +146,12 @@ test('Should not accept GET', async () => {
 test('Should not accept DELETE', async () => {
   const traineeId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: traineeId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 
   const { status } = await testNextApi.delete(memberTrackingItemHandler);
 
@@ -161,12 +161,12 @@ test('Should not accept DELETE', async () => {
 test('Should not accept PUT', async () => {
   const traineeId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: traineeId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 
   const { status } = await testNextApi.put(memberTrackingItemHandler, {
     body: {},

@@ -81,6 +81,22 @@ export const updateUser = async (user: User) => {
   });
 };
 
+export const updateTempestUserFromCommonApi = async (
+  commonApiPerson: IPerson,
+  tempestUser: User
+) => {
+  // turns a common api person into a tempest user
+  const tempestUserToUpdate: User = Object.keys(tempestUser).reduce(
+    (acc, k) => ({ ...acc, [k]: commonApiPerson[k] }),
+    tempestUser
+  );
+
+  return prisma.user.update({
+    where: { id: commonApiPerson.id },
+    data: tempestUserToUpdate,
+  });
+};
+
 export const findTrackingRecordsByTraineeId = (
   userId: string,
   includeTrackingItem = false
