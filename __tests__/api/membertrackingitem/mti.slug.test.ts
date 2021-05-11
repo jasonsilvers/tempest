@@ -2,7 +2,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import memberTrackingItemHandlerSlug from '../../../src/pages/api/membertrackingitem/[slug]';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
-import mockMethod from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import testNextApi from '../../utils/NextAPIUtils';
 import {
   deleteMemberTrackingItem,
@@ -23,12 +23,12 @@ const trackingItemFromDb = {
 };
 
 beforeEach(() => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 });
 
 afterEach(() => {
@@ -38,9 +38,9 @@ afterEach(() => {
 test('it should delete the member tracking item', async () => {
   const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
-  mockMethod(findMemberTrackingItemById, trackingItemFromDb);
-  mockMethod(deleteMemberTrackingItem, {});
-  mockMethod(findMemberTrackingRecords, []);
+  mockMethodAndReturn(findMemberTrackingItemById, trackingItemFromDb);
+  mockMethodAndReturn(deleteMemberTrackingItem, {});
+  mockMethodAndReturn(findMemberTrackingRecords, []);
   const { status } = await testNextApi.delete(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
   });
@@ -63,8 +63,8 @@ test('it should not delete the member tracking item if it has any tracking recor
     trackingItemId: 2,
   };
 
-  mockMethod(findMemberTrackingItemById, trackingItemFromDb);
-  mockMethod(findMemberTrackingRecords, [completeRecord]);
+  mockMethodAndReturn(findMemberTrackingItemById, trackingItemFromDb);
+  mockMethodAndReturn(findMemberTrackingRecords, [completeRecord]);
 
   const { status } = await testNextApi.delete(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
@@ -88,13 +88,13 @@ test('should not allow delete if user does not have correct permission', async (
   const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });
 
-  mockMethod(findMemberTrackingItemById, trackingItemFromDb);
+  mockMethodAndReturn(findMemberTrackingItemById, trackingItemFromDb);
 
   const { status } = await testNextApi.delete(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
@@ -106,13 +106,16 @@ test('should not allow delete if user is a member and does not own the record', 
   const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
 
-  mockMethod(findMemberTrackingItemById, { trackingItemFromDb, userId });
+  mockMethodAndReturn(findMemberTrackingItemById, {
+    trackingItemFromDb,
+    userId,
+  });
 
   const { status } = await testNextApi.delete(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
@@ -124,13 +127,13 @@ test('should not allow delete if user is a member and does not own the record', 
 test('should return 404 if record is not found', async () => {
   const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
 
-  mockMethod(findMemberTrackingItemById, null);
+  mockMethodAndReturn(findMemberTrackingItemById, null);
 
   const { status } = await testNextApi.delete(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
@@ -143,20 +146,20 @@ test('Should allow monitor to update isActive', async () => {
   const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 
   const body = {
     ...trackingItemFromDb,
     isActive: false,
   };
 
-  mockMethod(findMemberTrackingItemById, { ...trackingItemFromDb });
-  mockMethod(updateMemberTrackingItem, body);
+  mockMethodAndReturn(findMemberTrackingItemById, { ...trackingItemFromDb });
+  mockMethodAndReturn(updateMemberTrackingItem, body);
 
   const { status, data } = await testNextApi.put(
     memberTrackingItemHandlerSlug,
@@ -182,20 +185,20 @@ test('Should not allow update if role does not have permission', async () => {
   const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 
   const body = {
     ...trackingItemFromDb,
     isActive: false,
   };
 
-  mockMethod(findMemberTrackingItemById, { ...trackingItemFromDb });
-  mockMethod(updateMemberTrackingItem, body);
+  mockMethodAndReturn(findMemberTrackingItemById, { ...trackingItemFromDb });
+  mockMethodAndReturn(updateMemberTrackingItem, body);
 
   const { status } = await testNextApi.put(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
@@ -208,13 +211,13 @@ test('Should not accept GET', async () => {
   const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
-  mockMethod(findMemberTrackingItemById, { ...trackingItemFromDb });
+  mockMethodAndReturn(findGrants, grants);
+  mockMethodAndReturn(findMemberTrackingItemById, { ...trackingItemFromDb });
 
   const { status } = await testNextApi.get(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
@@ -227,13 +230,13 @@ test('Should not accept POST', async () => {
   const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
-  mockMethod(findMemberTrackingItemById, { ...trackingItemFromDb });
+  mockMethodAndReturn(findGrants, grants);
+  mockMethodAndReturn(findMemberTrackingItemById, { ...trackingItemFromDb });
 
   const { status } = await testNextApi.post(memberTrackingItemHandlerSlug, {
     urlSlug: `/${trackingItemId}/user/${userId}`,

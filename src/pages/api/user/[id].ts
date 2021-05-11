@@ -6,19 +6,10 @@ export default async function userQueryHandler(
   req: NextApiRequest,
   res: NextApiResponse<User>
 ) {
-  const {
-    query: { id },
-    method,
-    body,
-  } = req;
+  const { query, method, body } = req;
 
   // Set userId to 0
-  let userId: string;
-
-  // query params are sent as a string.  Lets check then parse the id
-  if (typeof id === 'string') {
-    userId = id;
-  }
+  const userId = query.id as string;
 
   switch (method) {
     // Get Method to return a single user by id

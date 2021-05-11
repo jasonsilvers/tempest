@@ -11,7 +11,7 @@
  */
 /*eslint-disable */
 // This can be any function
-const mockMethod = <E>(method: any, data: Partial<E>) => {
+export const mockMethodAndReturn = <E>(method: any, data: Partial<E>) => {
   try {
     method.mockResolvedValue(data);
   } catch (e) {
@@ -22,5 +22,3 @@ const mockMethod = <E>(method: any, data: Partial<E>) => {
   return method;
 };
 /*eslint-enable */
-
-export default mockMethod;

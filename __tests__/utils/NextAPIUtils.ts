@@ -47,12 +47,14 @@ const baseTestNextApi = async (
     urlSlug,
     method = 'GET',
     body,
+    customHeaders = {},
   }: {
     withJwt?: boolean;
     urlId?: string | number;
     urlSlug?: string;
     method?: METHOD;
     body?: Record<string, unknown>;
+    customHeaders?: { [key: string]: unknown };
   } = {}
 ) => {
   let serverRef: http.Server;
@@ -92,6 +94,7 @@ const baseTestNextApi = async (
       headers: {
         'Content-Type': 'application/json',
         ...authorization,
+        ...customHeaders,
       },
       method,
       body: JSON.stringify(body),
@@ -159,11 +162,13 @@ const testNextApi = {
       withJwt = true,
       urlId,
       urlSlug,
+      customHeaders = {},
     }: {
       body: Record<string, unknown>;
       withJwt?: boolean;
       urlId?: string | number;
       urlSlug?: string;
+      customHeaders?: { [key: string]: unknown };
     }
   ) => {
     return baseTestNextApi(handler, {
@@ -172,6 +177,7 @@ const testNextApi = {
       urlSlug,
       method: 'POST',
       body,
+      customHeaders,
     });
   },
 

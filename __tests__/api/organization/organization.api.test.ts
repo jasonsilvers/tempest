@@ -1,4 +1,4 @@
-import mockMethod from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import {
   createOrganizations,
   findOrganizations,
@@ -25,7 +25,7 @@ jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/organizationRepo');
 
 test('api/organization/GET --Happy Case', async () => {
-  mockMethod(findOrganizations, testOrganizations);
+  mockMethodAndReturn(findOrganizations, testOrganizations);
   const { req, res } = createMocks({
     method: 'GET',
   });
@@ -35,7 +35,7 @@ test('api/organization/GET --Happy Case', async () => {
 });
 
 test('api/organization/POST --Happy Case', async () => {
-  mockMethod(createOrganizations, { id: '1', name: 'test org 3' });
+  mockMethodAndReturn(createOrganizations, { id: '1', name: 'test org 3' });
   const { req, res } = createMocks({
     method: 'POST',
     body: { name: 'test org 3' },

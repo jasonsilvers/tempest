@@ -1,5 +1,5 @@
 import { createMocks } from 'node-mocks-http';
-import mockMethod from '../utils/mocks/repository';
+import { mockMethodAndReturn } from '../utils/mocks/repository';
 import { returnUser, loginHandler } from '../../src/pages/api/login';
 import {
   findUserByDodId,
@@ -11,7 +11,6 @@ import { IPerson } from '../../src/repositories/common/types';
 import { server } from '../utils/mocks/msw';
 import { rest } from 'msw';
 import { Role, User } from '.prisma/client';
-import { loadEnvConfig } from '@next/env';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 
@@ -38,9 +37,14 @@ const persons: Partial<IPerson>[] = [
   },
 ];
 
+// configure process.env variables before all tests
 beforeAll(() => {
-  const projectDir = process.cwd();
-  loadEnvConfig(projectDir);
+  process.env.COMMON_API_URL = 'http://localhost:8089/api/v1';
+});
+
+// remove process.env variables after all tests
+afterAll(() => {
+  delete process.env.COMMON_API_URL;
 });
 
 //TODO: Rewrite test with new API Test Utility
@@ -62,7 +66,7 @@ test('login handler returns user when user is found', async () => {
 
 test('login findOrAdduser should return user if found in tempest', async () => {
   const expectedUser = { ...userTest, dodId };
-  mockMethod(findUserByDodId, expectedUser);
+  mockMethodAndReturn(findUserByDodId, expectedUser);
 
   const user = await returnUser(dodId, explodedJwt);
 
@@ -78,34 +82,14 @@ test('login findOrAdduser should create user in tempest if found in commonAPI an
     })
   );
 
-  mockMethod(findUserByDodId, null);
-  mockMethod(createUserFromCommonApi, expectedUser);
+  mockMethodAndReturn(findUserByDodId, null);
+  mockMethodAndReturn(createUserFromCommonApi, expectedUser);
 
   const user = await returnUser(dodId, explodedJwt);
 
   expect(user).toMatchObject(expectedUser);
 });
-test('login should creater user in commonAPI and in Tempest if not found in either and return user', async () => {
-  const expectedUser = { ...userTest, dodId };
 
-  server.use(
-    rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
-      return res(ctx.status(404), ctx.json(null));
-    })
-  );
-
-  server.use(
-    rest.post('http://localhost:8089/api/v1/person', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(persons[1]));
-    })
-  );
-
-  mockMethod(findUserByDodId, null);
-  mockMethod(createUserFromCommonApi, expectedUser);
-
-  const user = await returnUser(dodId, explodedJwt);
-  expect(user).toMatchObject(expectedUser);
-});
 test('login handle error from getPersonFromCommonApi', async () => {
   server.use(
     rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
@@ -113,8 +97,8 @@ test('login handle error from getPersonFromCommonApi', async () => {
     })
   );
 
-  mockMethod(findUserByDodId, null);
-  mockMethod(getRoleByName, { id: 1, name: 'Member' } as Role);
+  mockMethodAndReturn(findUserByDodId, null);
+  mockMethodAndReturn(getRoleByName, { id: 1, name: 'Member' } as Role);
 
   const expectedError = new Error('There was an error making the request');
 
@@ -137,8 +121,8 @@ test('login findOrAdduser should handle error if cannot create commonapi person'
     })
   );
 
-  mockMethod(findUserByDodId, null);
-  mockMethod(getRoleByName, { id: 1, name: 'Member' } as Role);
+  mockMethodAndReturn(findUserByDodId, null);
+  mockMethodAndReturn(getRoleByName, { id: 1, name: 'Member' } as Role);
 
   const expectedError = new Error('There was an error making the request');
 
@@ -161,8 +145,8 @@ test('login findOrAdduser should handle error if cannot create user in tempest',
     })
   );
 
-  mockMethod(findUserByDodId, null);
-  mockMethod(getRoleByName, { id: 1, name: 'Member' } as Role);
+  mockMethodAndReturn(findUserByDodId, null);
+  mockMethodAndReturn(getRoleByName, { id: 1, name: 'Member' } as Role);
 
   const expectedError = new Error('There was an error making the request');
 
@@ -171,4 +155,25 @@ test('login findOrAdduser should handle error if cannot create user in tempest',
   } catch (error) {
     expect(error).toEqual(expectedError);
   }
+});
+test('login should creater user in commonAPI and in Tempest if not found in either and return user', async () => {
+  const expectedUser = { ...userTest, dodId };
+
+  server.use(
+    rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
+      return res(ctx.status(404), ctx.json(null));
+    })
+  );
+
+  server.use(
+    rest.post('http://localhost:8089/api/v1/person', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(persons[1]));
+    })
+  );
+
+  mockMethodAndReturn(findUserByDodId, null);
+  mockMethodAndReturn(createUserFromCommonApi, expectedUser);
+
+  const user = await returnUser(dodId, explodedJwt);
+  expect(user).toMatchObject(expectedUser);
 });
