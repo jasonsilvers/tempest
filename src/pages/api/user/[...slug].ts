@@ -16,7 +16,7 @@ import {
 } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 
-enum EUserResources {
+enum EUserIncludes {
   MEMBER_TRACKING_ITEMS = 'membertrackingitems',
   MEMBER_TRACKING_RECORDS = 'membertrackingrecords',
   TRACKING_ITEMS = 'trackingitems',
@@ -55,19 +55,19 @@ async function userSlugHandler(
 
       let includeConfig: Record<string, boolean> = {};
 
-      if (resource === EUserResources.MEMBER_TRACKING_ITEMS) {
+      if (resource === EUserIncludes.MEMBER_TRACKING_ITEMS) {
         includeConfig = { withMemberTrackingItems: true };
 
         if (includesQuery) {
           includesQuery.forEach((includeQuery) => {
-            if (includeQuery === EUserResources.MEMBER_TRACKING_RECORDS) {
+            if (includeQuery === EUserIncludes.MEMBER_TRACKING_RECORDS) {
               includeConfig = {
                 ...includeConfig,
                 withMemberTrackingRecords: true,
               };
             }
 
-            if (includeQuery == EUserResources.TRACKING_ITEMS) {
+            if (includeQuery == EUserIncludes.TRACKING_ITEMS) {
               includeConfig = { ...includeConfig, withTrackingItems: true };
             }
           });
@@ -86,7 +86,6 @@ async function userSlugHandler(
     }
 
     default:
-      res.setHeader('Allow', ['GET']);
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 }

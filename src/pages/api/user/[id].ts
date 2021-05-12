@@ -64,7 +64,6 @@ async function userQueryHandler(
     }
     // If this end point is hit with anything other than GET or PUT return a 405 error
     default:
-      res.setHeader('Allow', ['GET', 'PUT']);
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 }
