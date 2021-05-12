@@ -6,7 +6,7 @@ import { EPermission, EResource } from '../../types/global';
 import RecordRow, { RecordWithTrackingItem } from './RecordRow';
 
 // styled twin elements
-const Container = tw.div`text-black text-left w-full`;
+const Container = tw.div`text-black mt-3 text-left flex space-y-5 flex-col flex[0 0 100%]`;
 
 const RecordTable: React.FC<{
   mtr: MemberTrackingRecord[];
@@ -23,14 +23,11 @@ const RecordTable: React.FC<{
     <Container>
       {/* Map though items and create Table Data Rows */}
       {mtr.map((trackingRecord: RecordWithTrackingItem) => (
-        <>
-          <br />
-          <RecordRow
-            key={trackingRecord.id}
-            trackingRecord={trackingRecord}
-            canSignAuth={canSignAuth}
-          />
-        </>
+        <RecordRow
+          key={trackingRecord.id}
+          trackingRecord={trackingRecord}
+          canSignAuth={canSignAuth}
+        />
       ))}
     </Container>
   );

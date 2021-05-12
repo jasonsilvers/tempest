@@ -75,10 +75,6 @@ const getTraineeSignature = (
     return 'Fetching Data...';
   }
 
-  if (!signatureDate && signatureOwner.id !== loggedInUserId) {
-    return 'Awaiting Trainee Signature';
-  }
-
   // if signature date is false and
   // user logged in is the signature owner
   // render button to sign
@@ -89,41 +85,6 @@ const getTraineeSignature = (
   // render signature based on the signature owner and date
   if (signatureOwner) {
     return <DoubleCheckMark />;
-  }
-};
-/**
- * Function to determine render for the Authority Signature Block
- *
- * @param authSigDate      -- required to create signature
- * @param traineeSigDate   -- required to determine button rendering
- * @param canSignAuth      -- permission boolean for update:any Record
- * @returns
- */
-const getAuthSignature = (
-  authSigDate: Date,
-  signatureOwner: User,
-  canSignAuth: boolean
-) => {
-  // if no auth signature date
-  // and member does not have permissions to sign
-  // then render "Awaiting Signature*"
-  if (!authSigDate && !canSignAuth) {
-    return <AwaitSignature>Awaiting Signature*</AwaitSignature>;
-  }
-
-  // if no auth signature date
-  // and user has permissions to sign
-  // render sign button
-  if (!authSigDate && canSignAuth) {
-    return <SignatureButton>Sign & Submit</SignatureButton>;
-  }
-
-  // If no cases return above then all signatures are signed
-  // render the signature based on date and signature owner
-  if (signatureOwner) {
-    return `Signed by ${signatureOwner.firstName} ${
-      signatureOwner.lastName
-    } ${dayjs(authSigDate).format('MM/DD/YY hh:mm')}`;
   }
 };
 
@@ -175,7 +136,7 @@ const RecordRow: React.FC<{
         {daysToString[trackingRecord.trackingItem.interval] ??
           `${trackingRecord.trackingItem.interval} days`}
       </TableData>
-      <div tw="flex w-72">
+      <div tw="flex w-72 justify-between">
         <TableData tw="">
           <>
             <span tw={'opacity-40'}>Completed: </span>

@@ -2,8 +2,8 @@ import React from 'react';
 import { useUser, withPageAuth } from '@tron/nextjs-auth-p1';
 import { EPermission, EResource } from '../types/global';
 import usePermissions from '../hooks/usePermissions';
-import MemberRecordTracker from '../components/Records/MemberRecordTracker';
 import { UserWithRole } from '../repositories/userRepo';
+import MemberRecordTracker from '../components/Records/MemberRecordTracker';
 
 const Profile = () => {
   const { isLoading, role, permissionCheck } = usePermissions();

@@ -12,6 +12,14 @@ import {
 import HeaderUser from './RecordHeader';
 import Tab from './Tab';
 
+enum ECategories {
+  ALL = 'All',
+  DONE = 'Done',
+  UPCOMING = 'Upcoming',
+  OVERDUE = 'Overdue',
+  SIGNATURE_REQUIRED = 'SignatureRequired',
+}
+
 /**
  * Function to get the status text of a tracking item
  * Function will return Completed, Upcoming or overdue based on time since completed date vs the interval
@@ -30,18 +38,18 @@ export const status = (completedDate: Date, interval: number) => {
       : DEFAULT_INTERVAL_MEDIUM;
 
   if (numberOfDaysAfterCompleted > interval) {
-    return 'Overdue';
+    return ECategories.OVERDUE;
   } else if (numberOfDaysAfterCompleted > interval - upComing) {
-    return 'Upcoming';
+    return ECategories.UPCOMING;
   } else {
-    return 'Done';
+    return ECategories.DONE;
   }
 };
 
 // Twin macro styles for table and headers
 const Header = tw.h1`text-2xl font-bold text-black`;
 
-const TabContainer = tw.div`flex space-x-16 border-b border-color[#AEAEAE]`;
+const TabContainer = tw.div`flex space-x-3 justify-between min-w-min border-b border-color[#AEAEAE]`;
 
 // initial object keyed by tracking item status
 const initSortedCategoryObject: {
@@ -49,11 +57,11 @@ const initSortedCategoryObject: {
     | RecordWithTrackingItem[]
     | MemberTrackingRecord[];
 } = {
-  All: [],
-  Done: [],
-  Upcoming: [],
-  Overdue: [],
-  SignatureRequired: [],
+  [ECategories.ALL]: [],
+  [ECategories.DONE]: [],
+  [ECategories.UPCOMING]: [],
+  [ECategories.OVERDUE]: [],
+  [ECategories.SIGNATURE_REQUIRED]: [],
 };
 
 /**
@@ -76,8 +84,8 @@ const sortMemberTrackingRecordsByCategory = (
       !trackingRecord.traineeSignedDate ||
       !trackingRecord.authoritySignedDate
     ) {
-      trackingRecord.status = 'SignatureRequired';
-      temp['SignatureRequired'].push(trackingRecord);
+      trackingRecord.status = ECategories.SIGNATURE_REQUIRED;
+      temp[ECategories.SIGNATURE_REQUIRED].push(trackingRecord);
     } else {
       // else grab the text from the status function in order to sort this tracking item accordingly
       const category = status(
@@ -108,7 +116,7 @@ const MemberRecordTracker: React.FC<{
     initSortedCategoryObject
   );
 
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState(ECategories.ALL);
 
   // sort on initial load
   // and if the tracking Records change then lets re-sort
@@ -121,38 +129,57 @@ const MemberRecordTracker: React.FC<{
     }
   }, [trackingRecords]);
 
-  const toggleTab = (e: React.MouseEvent) => {
-    setActiveCategory(e.currentTarget.id);
+  const toggleTab = (newCategory: ECategories) => {
+    setActiveCategory(newCategory);
   };
 
   return (
-    <div tw={'mr-5'}>
+    <div tw={'mr-5 pr-10 w-9/12'}>
       <HeaderUser />
       <Header>Training Record</Header>
-      <TabContainer tw={'flex space-x-16'} id="Filter Tabs">
-        <Tab onClick={toggleTab} activeCategory={activeCategory}>
-          All
-        </Tab>
-        <Tab
-          onClick={toggleTab}
-          activeCategory={activeCategory}
-          count={sortedByCategory['Overdue'].length}
-        >
-          Overdue
-        </Tab>
-        <Tab
-          onClick={toggleTab}
-          activeCategory={activeCategory}
-          count={sortedByCategory['Upcoming'].length}
-        >
-          Upcoming
-        </Tab>
-        <Tab onClick={toggleTab} activeCategory={activeCategory}>
-          Done
-        </Tab>
-      </TabContainer>
+      <div tw="flex flex-col min-w-min max-w-max">
+        <TabContainer id="Filter Tabs">
+          <Tab
+            category={ECategories.ALL}
+            onClick={toggleTab}
+            activeCategory={activeCategory}
+          >
+            All
+          </Tab>
+          <Tab
+            category={ECategories.OVERDUE}
+            onClick={toggleTab}
+            activeCategory={activeCategory}
+            count={sortedByCategory['Overdue'].length}
+          >
+            Overdue
+          </Tab>
+          <Tab
+            category={ECategories.UPCOMING}
+            onClick={toggleTab}
+            activeCategory={activeCategory}
+            count={sortedByCategory['Upcoming'].length}
+          >
+            Upcoming
+          </Tab>
+          <Tab
+            category={ECategories.DONE}
+            onClick={toggleTab}
+            activeCategory={activeCategory}
+          >
+            Done
+          </Tab>
+          <Tab
+            category={ECategories.SIGNATURE_REQUIRED}
+            onClick={toggleTab}
+            activeCategory={activeCategory}
+          >
+            Awaiting Signature
+          </Tab>
+        </TabContainer>
 
-      <RecordTable mtr={sortedByCategory[activeCategory]} />
+        <RecordTable mtr={sortedByCategory[activeCategory]} />
+      </div>
     </div>
   );
 };

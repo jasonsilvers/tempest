@@ -12,22 +12,23 @@ const ActiveTab = tw(
 )`text-purple-500 transition-transform after:(${underline})`;
 
 // tab container
-const Container = tw.div`relative flex items-center`;
+const Container = tw.div`relative flex items-center w-min min-w-min whitespace-nowrap flex[0 0 auto]`;
 
 // counter styled component
 const Count = tw.div`text-black font-size[12px] background-color[#E2E2E2] border-radius[5px] px-1 ml-2 height[min-content] flex items-center justify-center`;
 
 const Tab: React.FC<{
-  onClick: (e: React.MouseEvent) => void;
+  onClick: (newCategory: string) => void;
   activeCategory: string;
+  category: string;
   count?: number;
-}> = ({ onClick, children, activeCategory, count }) => {
+}> = ({ onClick, children, activeCategory, category, count }) => {
   return (
     <Container>
       {activeCategory === children.toString() ? (
         <ActiveTab>{children}</ActiveTab>
       ) : (
-        <InactiveTab onClick={onClick} id={children.toString()}>
+        <InactiveTab onClick={() => onClick(category)} id={children.toString()}>
           {children}
         </InactiveTab>
       )}
