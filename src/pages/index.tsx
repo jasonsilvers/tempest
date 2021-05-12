@@ -3,6 +3,10 @@ import React from 'react';
 import Link from 'next/link';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useRouter } from 'next/router';
+import Button from '@material-ui/core/Button';
+import tw from 'twin.macro';
+
+const TempestButton = tw(Button)`bg-purple-300`;
 
 function Home() {
   const { user, isLoading } = useUser();
@@ -26,6 +30,7 @@ function Home() {
       <main>
         <h1>Tempest</h1>
         <Link href="/Dashboard"> Go to Dashboard </Link>
+        <TempestButton>Test</TempestButton>
       </main>
     </div>
   );

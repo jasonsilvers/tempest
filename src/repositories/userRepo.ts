@@ -1,4 +1,4 @@
-import { Role, User } from '@prisma/client';
+import { User, Role } from '@prisma/client';
 import prisma from '../prisma/prisma';
 import { ERole } from '../types/global';
 import { IPerson } from './common/types';
@@ -9,6 +9,9 @@ type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
 // type === User & { role?: Role };
 export type UserWithRole = ThenArg<ReturnType<typeof findUserByDodId>>;
+export type UserWithTrackingRecord = ThenArg<
+  ReturnType<typeof findTrackingRecordsByAuthorityId>
+>;
 
 export type UserAll = ThenArg<ReturnType<typeof findUserWithAll>>;
 export const findUserWithAll = async () => {
@@ -53,6 +56,10 @@ export const findUserById = async (query: string) => {
   });
 };
 
+export const findUsers = async () => {
+  return await prisma.user.findMany();
+};
+
 /**
  * Get user method to query the PSQL db though the prisma client
  *
@@ -90,6 +97,54 @@ export const updateUser = async (user: User) => {
   return prisma.user.update({
     where: { id: user.id },
     data: user,
+  });
+};
+
+export const updateTempestUserFromCommonApi = async (
+  commonApiPerson: IPerson,
+  tempestUser: User
+) => {
+  // turns a common api person into a tempest user
+  const tempestUserToUpdate: User = Object.keys(tempestUser).reduce(
+    (acc, k) => ({ ...acc, [k]: commonApiPerson[k] }),
+    tempestUser
+  );
+
+  return prisma.user.update({
+    where: { id: commonApiPerson.id },
+    data: tempestUserToUpdate,
+  });
+};
+
+export const findTrackingRecordsByTraineeId = (
+  userId: string,
+  includeTrackingItem = false
+) => {
+  return prisma.memberTrackingRecord.findMany({
+    where: {
+      traineeId: userId,
+    },
+    include: {
+      trackingItem: includeTrackingItem,
+      trainee: true,
+      authority: true,
+    },
+  });
+};
+
+export const findTrackingRecordsByAuthorityId = (
+  userId: string,
+  includeTrackingItem = false
+) => {
+  return prisma.memberTrackingRecord.findMany({
+    where: {
+      authorityId: userId,
+    },
+    include: {
+      trackingItem: includeTrackingItem,
+      trainee: true,
+      authority: true,
+    },
   });
 };
 

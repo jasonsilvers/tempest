@@ -23,7 +23,6 @@ const Header: React.FC<ILinkProps> = ({
   );
 };
 
-
 const StyledLink = tw.a`mr-6 text-lg flex flex-col`;
 
 const Link: React.FC<ILinkProps> = ({

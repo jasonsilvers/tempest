@@ -1,13 +1,11 @@
 import { createMocks } from 'node-mocks-http';
-import mockMethod from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import {
   findUserById,
   updateUser,
   UserWithRole,
 } from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/user/[id]';
-import { apiResolver } from 'next/dist/next-server/server/api-utils';
-
 
 const userTest = {
   name: 'Bob',
@@ -16,10 +14,9 @@ const userTest = {
 jest.mock('../../../src/repositories/userRepo');
 
 test('api/user/1:GET--Happy Case', async () => {
-  mockMethod<UserWithRole>(findUserById, { ...userTest, id: '1' });
+  mockMethodAndReturn<UserWithRole>(findUserById, { ...userTest, id: '1' });
 
   const { req, res } = createMocks({
-    method: 'GET',
     body: userTest,
     query: { id: '1' },
   });
@@ -37,7 +34,7 @@ test('api/user/1:GET--Happy Case', async () => {
 });
 
 test('api/user/1:PUT--Happy Case', async () => {
-  const spy = mockMethod<UserWithRole>(updateUser, {
+  const spy = mockMethodAndReturn<UserWithRole>(updateUser, {
     ...userTest,
     id: '1',
   });
@@ -59,7 +56,7 @@ test('api/user/1:PUT--Happy Case', async () => {
 });
 
 test('api/user/1:PUT--Body Null Id', async () => {
-  const spy = mockMethod<UserWithRole>(updateUser, {
+  const spy = mockMethodAndReturn<UserWithRole>(updateUser, {
     ...userTest,
     id: '1',
   });
@@ -78,7 +75,7 @@ test('api/user/1:PUT--Body Null Id', async () => {
 });
 
 test('api/user/1:PUT--Query and Body ids', async () => {
-  const spy = mockMethod<UserWithRole>(updateUser, {
+  const spy = mockMethodAndReturn<UserWithRole>(updateUser, {
     ...userTest,
     id: '1',
   });

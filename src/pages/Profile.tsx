@@ -6,19 +6,19 @@ import MemberRecordTracker from '../components/Records/MemberRecordTracker';
 import { UserWithRole } from '../repositories/userRepo';
 
 const Profile = () => {
-  const { isLoading, userRole, permissionCheck } = usePermissions();
+  const { isLoading, role, permissionCheck } = usePermissions();
   const { user } = useUser<UserWithRole>();
-
-  // const permission = permissionCheck(
-  //   userRole,
-  //   EPermission.CREATE,
-  //   EResource.RECORD
-  // );
+  const permission = permissionCheck(
+    role,
+    EPermission.CREATE,
+    EResource.RECORD
+  );
 
   if (isLoading) {
     return null;
   }
 
+  // commented out for dev
   // if (!permission?.granted) {
   //   return <h1>You do not have access to this page</h1>;
   // }

@@ -119,12 +119,28 @@ async function main() {
     },
   });
 
-  await prisma.trackingItem.update({
-    where: {
-      id: trackingItem1.id,
-    },
-    data: {},
-  });
+  // await prisma.trackingItem.update({
+  //   where: {
+  //     id: 2384323,
+  //   },
+  //   data: {
+  //     id: trackingItem1.id,
+  //     title: 'This is a new title'
+  //   },
+  // });
+
+  // await prisma.trackingItem.update({
+  //   where: {
+  //     id: trackingItem1.id,
+  //   },
+  //   data: {
+  //     organizations: {
+  //       connect: {
+  //         id: organization2.id,
+  //       },
+  //     },
+  //   },
+  // });
 
   const user1 = createUser(DOD_ID);
 
@@ -149,6 +165,30 @@ async function main() {
       role: {
         connect: {
           id: role1.id,
+        },
+      },
+    },
+  });
+
+  const newMemberTrackingItem = {
+    userId: user1.id,
+    isActive: true,
+    trackingItemId: trackingItem1.id,
+  };
+
+  const memberTrackingItem = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem,
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 0,
+      memberTrackingItems: {
+        connect: {
+          userId_trackingItemId: {
+            userId: memberTrackingItem.userId,
+            trackingItemId: memberTrackingItem.trackingItemId,
+          },
         },
       },
     },

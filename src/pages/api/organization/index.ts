@@ -36,7 +36,7 @@ export const organizationApiHandler = async (
     default:
       res.setHeader('Allow', ['GET', 'POST']);
       res.status(405).end(`Method ${method} Not Allowed`);
-    }
+  }
 };
 
 export default withApiAuth(organizationApiHandler, findUserByDodId);

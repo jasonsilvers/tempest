@@ -16,6 +16,7 @@ model User {
   dodId                    String?                @unique
   firstName                String?
   lastName                 String?
+  middleName               String?
   email                    String?                @unique
   createdAt                DateTime?              @default(now()) @map("created_at")
   updatedAt                DateTime?              @updatedAt @map("updated_at")
@@ -31,6 +32,7 @@ model User {
   afsc                     String?
   dutyTitle                String?
   address                  String?
+
 
 
   @@map(name: "user")

@@ -8,7 +8,11 @@ export enum EResource {
   RECORD = 'record',
   DASHBOARD = 'dashboard',
   PROFILE = 'profile',
-  TRAINING_RECORD = 'training_record',
+  TRACKING_RECORD = 'tracking_record',
+  TRACKING_ITEM = 'tracking_item',
+  MEMBER_TRACKING_ITEM = 'member_tracking_item',
+  TRAINEE_RECORDS = 'traineerecords',
+  AUHTORITY_RECORDS = 'authorityrecords',
 }
 
 export enum EGrant {
@@ -22,3 +26,10 @@ export enum EPermission {
   UPDATE_OWN = 'updateOwn',
   DELETE = 'delete',
 }
+export interface ITempestApiError {
+  message: string;
+}
+
+export const ErrorMessage403 = {
+  message: 'You do not have the appropriate permissions',
+};

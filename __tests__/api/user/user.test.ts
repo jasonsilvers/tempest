@@ -1,6 +1,6 @@
 import { createMocks } from 'node-mocks-http';
 import { userApiHandler } from '../../../src/pages/api/user';
-import mockMethod from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import { createUser } from '../../../src/repositories/userRepo';
 
 jest.mock('../../../src/repositories/userRepo');
@@ -10,7 +10,7 @@ const userTest = {
 };
 
 test('api/user:POST--Happy Case', async () => {
-  mockMethod(createUser, {
+  mockMethodAndReturn(createUser, {
     ...userTest,
     id: '1',
   });

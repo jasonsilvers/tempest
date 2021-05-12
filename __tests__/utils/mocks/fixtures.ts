@@ -1,6 +1,81 @@
 import { P1_JWT } from '@tron/nextjs-auth-p1';
+
+const memberTrackingItemGrants = [
+  {
+    action: 'create:any',
+    attributes: '*',
+    resource: 'member_tracking_item',
+    role: 'monitor',
+  },
+  {
+    action: 'delete:any',
+    attributes: '*',
+    resource: 'member_tracking_item',
+    role: 'monitor',
+  },
+  {
+    action: 'update:any',
+    attributes: 'isActive',
+    resource: 'member_tracking_item',
+    role: 'monitor',
+  },
+];
 export const grants = [
-  { action: 'create:any', attributes: '*', resource: 'record', role: 'admin' },
+  ...memberTrackingItemGrants,
+  {
+    action: 'create:any',
+    attributes: '*',
+    resource: 'tracking_record',
+    role: 'admin',
+  },
+  {
+    action: 'create:any',
+    attributes: '*',
+    resource: 'tracking_record',
+    role: 'monitor',
+  },
+  {
+    action: 'create:own',
+    attributes: '*, !authorityId, !authoritySignedDate',
+    resource: 'tracking_record',
+    role: 'member',
+  },
+  {
+    action: 'delete:any',
+    attributes: '*',
+    resource: 'tracking_record',
+    role: 'monitor',
+  },
+  {
+    action: 'delete:any',
+    attributes: '*, !authorityId',
+    resource: 'tracking_record',
+    role: 'member',
+  },
+  {
+    action: 'delete:own',
+    attributes: '*',
+    resource: 'member_tracking_item',
+    role: 'member',
+  },
+  {
+    action: 'update:any',
+    attributes: 'authoritySignedDate, authorityId',
+    resource: 'tracking_record',
+    role: 'monitor',
+  },
+  {
+    action: 'update:own',
+    attributes: 'traineeSignedDate',
+    resource: 'tracking_record',
+    role: 'monitor',
+  },
+  {
+    action: 'update:own',
+    attributes: 'traineeSignedDate',
+    resource: 'tracking_record',
+    role: 'member',
+  },
   { action: 'read:any', attributes: '*', resource: 'profile', role: 'member' },
   {
     action: 'read:any',
@@ -12,14 +87,20 @@ export const grants = [
   {
     action: 'read:any',
     attributes: '*',
-    resource: 'training_record',
+    resource: 'tracking_record',
     role: 'monitor',
   },
   {
     action: 'read:any',
     attributes: '*',
-    resource: 'training_record',
+    resource: 'tracking_record',
     role: 'admin',
+  },
+  {
+    action: 'read:any',
+    attributes: '*',
+    resource: 'profile',
+    role: 'norole',
   },
 ];
 
@@ -39,6 +120,7 @@ export const explodedJwt: P1_JWT = {
     '/Impact Level 2 Authorized',
     '/Impact Level 4 Authorized',
     '/Impact Level 5 Authorized',
+    '/tron/roles/admin',
   ],
   organization: 'USAF',
   name: 'Jake Alfred Jones',

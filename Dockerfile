@@ -17,7 +17,7 @@ WORKDIR ${HOME}/build
 ENV NODE_ENV=production
 
 COPY --from=dependencies /home/node/deps/node_modules ./node_modules
-COPY ./src package.json tsconfig.json .babelrc.js next-env.d.ts ./
+COPY ./src package.json tsconfig.json tailwind.config.js .babelrc.js next-env.d.ts ./
 
 RUN npx prisma generate
 RUN npm run build
@@ -36,7 +36,6 @@ COPY .env.production .env
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/node_modules ./node_modules
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/.next ./.next
 COPY --chown=appuser:appuser  startup.sh timeout.js ./
-
 
 ENV NODE_ENV=production
 ENV PORT 8080

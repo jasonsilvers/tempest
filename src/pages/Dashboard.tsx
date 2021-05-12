@@ -1,19 +1,9 @@
-
-
-const Dashboard = () => {
-
+const DashboardPage = () => {
   return (
-    <div>
-      <h1
-        style={{
-          height: '200px',
-        }}
-      >
-        <p>Dashboard</p>
-        
-      </h1>
-    </div>
+    <main>
+      <h1>Dashboard</h1>
+    </main>
   );
 };
 
-export default Dashboard;
+export default DashboardPage;
