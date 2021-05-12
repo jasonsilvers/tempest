@@ -1,4 +1,4 @@
-import mockMethod from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import {
   findUserByDodId,
   findUserById,
@@ -19,12 +19,12 @@ const userFromDb = {
 };
 
 beforeEach(() => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 });
 
 afterEach(() => {
@@ -32,7 +32,7 @@ afterEach(() => {
 });
 
 test('GET - should return user', async () => {
-  mockMethod(findUserById, userFromDb);
+  mockMethodAndReturn(findUserById, userFromDb);
   const { data, status } = await testNextApi.get(userQueryHandler);
 
   expect(status).toBe(200);
@@ -40,7 +40,7 @@ test('GET - should return user', async () => {
 });
 
 test('GET - should return 403 if incorrect permission', async () => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
@@ -51,7 +51,7 @@ test('GET - should return 403 if incorrect permission', async () => {
 });
 
 test('GET - should return 403 if member and does not own record', async () => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'member' },
@@ -64,7 +64,7 @@ test('GET - should return 403 if member and does not own record', async () => {
 });
 
 test('GET - should return 401 if not authorized', async () => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'norole' },

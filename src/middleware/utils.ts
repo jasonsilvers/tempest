@@ -20,3 +20,7 @@ export function permissionDenied(res: NextApiResponse) {
 export function recordNotFound(res: NextApiResponse) {
   return res.status(404).json({ message: 'Record Not Found' });
 }
+
+export function unauthorized(res: NextApiResponse) {
+  return res.status(401).json({ message: 'Unauthorized' });
+}

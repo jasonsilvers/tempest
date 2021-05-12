@@ -17,19 +17,10 @@ async function userQueryHandler(
   req: NextApiRequestWithAuthorization<UserWithRole>,
   res: NextApiResponse<User | ITempestApiError>
 ) {
-  const {
-    query: { id },
-    method,
-    body,
-  } = req;
+  const { query, method, body } = req;
 
   // Set userId to 0
-  let userId: string;
-
-  // query params are sent as a string.  Lets check then parse the id
-  if (typeof id === 'string') {
-    userId = id;
-  }
+  const userId = query.id as string;
 
   const ac = await getAc();
 

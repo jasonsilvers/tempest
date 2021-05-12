@@ -4,7 +4,7 @@ import {
   findUserById,
 } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
-import mockMethod from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import userSlugHandler from '../../../src/pages/api/user/[...slug]';
 import testNextApi from '../../utils/NextAPIUtils';
 import dayjs from 'dayjs';
@@ -31,12 +31,12 @@ const completeRecord = {
 };
 
 beforeEach(() => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 });
 
 afterEach(() => {
@@ -59,7 +59,7 @@ test('GET - should return member tracking items', async () => {
       },
     ],
   };
-  mockMethod(findUserById, recordFromDb);
+  mockMethodAndReturn(findUserById, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
     urlSlug: '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems',
   });
@@ -88,7 +88,7 @@ test('GET - should return member tracking items and member tracking records', as
       },
     ],
   };
-  mockMethod(findUserById, recordFromDb);
+  mockMethodAndReturn(findUserById, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
     urlSlug:
       '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords',
@@ -129,7 +129,7 @@ test('GET - should return member tracking items.  member tracking records and tr
       },
     ],
   };
-  mockMethod(findUserById, recordFromDb);
+  mockMethodAndReturn(findUserById, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
     urlSlug:
       '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
@@ -155,7 +155,7 @@ test('should return 401 if not authorized', async () => {
 });
 
 test('should return 403 if not correct permissions', async () => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
@@ -169,7 +169,7 @@ test('should return 403 if not correct permissions', async () => {
 });
 
 test('should return 403 if member and not own record', async () => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'member' },
@@ -183,7 +183,7 @@ test('should return 403 if member and not own record', async () => {
 });
 
 test('should return user if own record', async () => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'member' },
@@ -214,7 +214,7 @@ test('should return user if own record', async () => {
       },
     ],
   };
-  mockMethod(findUserById, recordFromDb);
+  mockMethodAndReturn(findUserById, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
     urlSlug:
       '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
@@ -238,12 +238,12 @@ test('GET - should return 404 if incorrect resource', async () => {
 });
 
 test('should return 404 if user not found', async () => {
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
-  mockMethod(findUserById, null);
+  mockMethodAndReturn(findUserById, null);
   const { status } = await testNextApi.get(userSlugHandler, {
     urlSlug:
       '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
@@ -255,12 +255,12 @@ test('should return 404 if user not found', async () => {
 test('Should not accept DELETE', async () => {
   const id = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 
   const { status } = await testNextApi.delete(userSlugHandler);
 
@@ -270,12 +270,12 @@ test('Should not accept DELETE', async () => {
 test('Should not accept PUT', async () => {
   const id = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: id,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 
   const { status } = await testNextApi.put(userSlugHandler, {
     body: {},
@@ -287,12 +287,12 @@ test('Should not accept PUT', async () => {
 test('Should not accept POST', async () => {
   const id = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 
-  mockMethod(findUserByDodId, {
+  mockMethodAndReturn(findUserByDodId, {
     id: id,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
-  mockMethod(findGrants, grants);
+  mockMethodAndReturn(findGrants, grants);
 
   const { status } = await testNextApi.post(userSlugHandler, {
     body: {},
