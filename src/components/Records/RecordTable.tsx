@@ -6,7 +6,7 @@ import { EPermission, EResource } from '../../types/global';
 import RecordRow, { RecordWithTrackingItem } from './RecordRow';
 
 // styled twin elements
-const Table = tw.table`text-black text-left w-full`;
+const Container = tw.div`text-black text-left w-full`;
 
 const RecordTable: React.FC<{
   mtr: MemberTrackingRecord[];
@@ -20,7 +20,7 @@ const RecordTable: React.FC<{
   ).granted;
 
   return (
-    <Table>
+    <Container>
       {/* Map though items and create Table Data Rows */}
       {mtr.map((trackingRecord: RecordWithTrackingItem) => (
         <>
@@ -32,7 +32,7 @@ const RecordTable: React.FC<{
           />
         </>
       ))}
-    </Table>
+    </Container>
   );
 };
 
