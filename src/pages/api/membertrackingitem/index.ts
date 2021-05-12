@@ -58,7 +58,6 @@ const memberTrackingItemHandler = async (
       break;
     }
     default:
-      res.setHeader('Allow', ['POST']);
       res.status(405).json({ message: `Method ${method} Not Allowed` });
   }
 };
