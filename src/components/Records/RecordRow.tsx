@@ -5,6 +5,8 @@ import dayjs from 'dayjs';
 import React from 'react';
 import { useQuery } from 'react-query';
 import tw from 'twin.macro';
+import SignatureButton from '../../assets/SignatureButton.svg';
+import DoubleCheckMark from '../../assets/DoubleCheckMark.svg';
 
 export type RecordWithTrackingItemStatus =
   | 'All'
@@ -34,14 +36,14 @@ const daysToString = {
 // border-radius: 5px;
 // styled twin elements
 // Double box shadow here to avoid border radius issues i was experiencing
-const TableRow = tw.tr`text-black box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm`;
-const TableData = tw.td`py-3 font-size[12px]`;
+const TableRow = tw.div`text-black box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm flex items-center flex-wrap min-width[350px]`;
+const TableData = tw.div`py-3 font-size[12px] flex[0 0 auto] mx-3`;
 
 // conditional styled twin elements for get Signature functions
 const AwaitSignature = tw.div`font-bold`;
-const SignatureButton = tw.button`p-1.5 w-56 background-color[#A8ADB4] text-white text-center`;
+// const SignatureButton = tw.button`p-1.5 w-56 background-color[#A8ADB4] text-white text-center`;
 
-const Token = tw.div`rounded h-5 w-5 mx-2`;
+const Token = tw.div`rounded h-5 w-5 mr-2`;
 const Overdue = tw(Token)`background-color[#AB0D0D]`;
 const Done = tw(Token)`background-color[#49C68A]`;
 const All = Token;
@@ -81,14 +83,12 @@ const getTraineeSignature = (
   // user logged in is the signature owner
   // render button to sign
   if (!signatureDate && signatureOwner.id === loggedInUserId) {
-    return <SignatureButton>Sign & Submit to Trainer</SignatureButton>;
+    return <SignatureButton tw="" />;
   }
   // if signature date is true and signature owner is true
   // render signature based on the signature owner and date
   if (signatureOwner) {
-    return `Signed by ${signatureOwner.firstName} ${
-      signatureOwner.lastName
-    } ${dayjs(signatureDate).format('MM/DD/YY hh:mm')}`;
+    return <DoubleCheckMark />;
   }
 };
 /**
@@ -164,39 +164,34 @@ const RecordRow: React.FC<{
   const DynamicToken = TokenObj[trackingRecord.status];
   return (
     <TableRow>
-      <TableData tw={'font-size[16px]'}>
+      <TableData tw={'font-size[16px] overflow-ellipsis w-56'}>
         <div tw={'flex'}>
           <DynamicToken />
           {trackingRecord.trackingItem.title}
         </div>
       </TableData>
-      <TableData tw={'text-purple-500'}>
+      <TableData tw={'text-purple-500 w-20 ml-auto text-right'}>
         {/* get the common text for number of days if exits else render '## days' */}
         {daysToString[trackingRecord.trackingItem.interval] ??
           `${trackingRecord.trackingItem.interval} days`}
       </TableData>
-      <TableData>
-        <>
-          <span tw={'opacity-40'}>Completed: </span>
-          {dayjs(trackingRecord.completedDate).format('DD MMM YY')}
-        </>
-      </TableData>
-      <TableData>
-        <>
-          <span tw={'opacity-40'}>Due: </span>
-          {dayjs(trackingRecord.completedDate)
-            .add(trackingRecord.trackingItem.interval, 'days')
-            .format('DD MMM YY')}
-        </>
-      </TableData>
-      <TableData>
-        {getAuthSignature(
-          trackingRecord.authoritySignedDate,
-          users ? users[trackingRecord.authorityId] : undefined,
-          canSignAuth
-        )}
-      </TableData>
-      <TableData>
+      <div tw="flex w-72">
+        <TableData tw="">
+          <>
+            <span tw={'opacity-40'}>Completed: </span>
+            {dayjs(trackingRecord.completedDate).format('DD MMM YY')}
+          </>
+        </TableData>
+        <TableData tw="">
+          <>
+            <span tw={'opacity-40'}>Due: </span>
+            {dayjs(trackingRecord.completedDate)
+              .add(trackingRecord.trackingItem.interval, 'days')
+              .format('DD MMM YY')}
+          </>
+        </TableData>
+      </div>
+      <TableData tw="ml-auto mr-3 w-10">
         {getTraineeSignature(
           trackingRecord.traineeSignedDate,
           // pass undefined if data is still fetching
