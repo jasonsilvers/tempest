@@ -1,108 +1,77 @@
-import { createMocks } from 'node-mocks-http';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import {
+  findUserByDodId,
   findUserById,
-  updateUser,
-  UserWithRole,
 } from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/user/[id]';
-
-const userTest = {
-  name: 'Bob',
-};
+import { findGrants } from '../../../src/repositories/grantsRepo';
+import { grants } from '../../utils/mocks/fixtures';
+import testNextApi from '../../utils/NextAPIUtils';
 
 jest.mock('../../../src/repositories/userRepo');
+jest.mock('../../../src/repositories/grantsRepo.ts');
 
-test('api/user/1:GET--Happy Case', async () => {
-  mockMethodAndReturn<UserWithRole>(findUserById, { ...userTest, id: '1' });
+const userFromDb = {
+  id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  firstName: 'joe',
+  lastName: 'anderson',
+  role: { id: '22', name: 'monitor' },
+};
 
-  const { req, res } = createMocks({
-    body: userTest,
-    query: { id: '1' },
+beforeEach(() => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'monitor' },
   });
-
-  await userQueryHandler(req, res);
-
-  const expectedUser = { ...userTest, id: '1' };
-
-  expect(res._getStatusCode()).toBe(200);
-  expect(JSON.parse(res._getData())).toEqual(expectedUser);
-  expect(findUserById).toHaveBeenCalled();
-  expect(findUserById).toHaveBeenCalledTimes(1);
-  expect(findUserById).toHaveBeenCalledWith('1');
-  jest.clearAllMocks();
+  mockMethodAndReturn(findGrants, grants);
 });
 
-test('api/user/1:PUT--Happy Case', async () => {
-  const spy = mockMethodAndReturn<UserWithRole>(updateUser, {
-    ...userTest,
-    id: '1',
-  });
-
-  const { req, res } = createMocks({
-    method: 'PUT',
-    body: { ...userTest, id: '1' },
-    query: { id: '1' },
-  });
-
-  await userQueryHandler(req, res);
-
-  const expectedUser = { ...userTest, id: '1' };
-
-  expect(res._getStatusCode()).toBe(200);
-  expect(JSON.parse(res._getData())).toEqual(expectedUser);
-  expect(spy).toHaveBeenCalledWith({ ...userTest, id: '1' });
-  jest.clearAllMocks();
+afterEach(() => {
+  jest.resetAllMocks();
 });
 
-test('api/user/1:PUT--Body Null Id', async () => {
-  const spy = mockMethodAndReturn<UserWithRole>(updateUser, {
-    ...userTest,
-    id: '1',
-  });
+test('GET - should return user', async () => {
+  mockMethodAndReturn(findUserById, userFromDb);
+  const { data, status } = await testNextApi.get(userQueryHandler);
 
-  const { req, res } = createMocks({
-    method: 'PUT',
-    body: userTest,
-    query: { id: '1' },
-  });
-
-  await userQueryHandler(req, res);
-
-  expect(res._getStatusCode()).toBe(400);
-  expect(res._getData()).toEqual('User must have id to update');
-  expect(spy).not.toHaveBeenCalled();
+  expect(status).toBe(200);
+  expect(data).toStrictEqual(userFromDb);
 });
 
-test('api/user/1:PUT--Query and Body ids', async () => {
-  const spy = mockMethodAndReturn<UserWithRole>(updateUser, {
-    ...userTest,
-    id: '1',
+test('GET - should return 403 if incorrect permission', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'norole' },
   });
+  const { status } = await testNextApi.get(userQueryHandler);
 
-  const { req, res } = createMocks({
-    method: 'PUT',
-    body: { ...userTest, id: '2' },
-    query: { id: '1' },
-  });
-
-  await userQueryHandler(req, res);
-
-  expect(spy).toHaveBeenCalledTimes(0);
-  expect(res._getStatusCode()).toBe(400);
-  expect(res._getData()).toEqual('User Obj and Query must match for id');
+  expect(status).toBe(403);
 });
 
-test('api/user/1:POST--Method not allowed', async () => {
-  const { req, res } = createMocks({
-    method: 'POST',
-    body: { ...userTest, id: '1' },
-    query: { id: '1' },
+test('GET - should return 403 if member and does not own record', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
   });
-  await userQueryHandler(req, res);
+  const { status } = await testNextApi.get(userQueryHandler, {
+    urlId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  });
 
-  const expectedUserError = 'Method POST Not Allowed';
+  expect(status).toBe(403);
+});
 
-  expect(res._getStatusCode()).toBe(405);
-  expect(res._getData()).toEqual(expectedUserError);
+test('GET - should return 401 if not authorized', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'norole' },
+  });
+  const { status } = await testNextApi.get(userQueryHandler, {
+    withJwt: false,
+  });
+
+  expect(status).toBe(401);
 });

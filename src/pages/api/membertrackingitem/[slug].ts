@@ -94,7 +94,6 @@ export const memberTrackingItemHandlerSlug = async (
     }
 
     default:
-      res.setHeader('Allow', ['DELETE, PUT']);
       res.status(405).json({ message: `Method ${method} Not Allowed` });
   }
 };
