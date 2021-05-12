@@ -16,13 +16,11 @@ async function createNextApiServer(handler: ApiHandler) {
   let server: http.Server;
   const url = await listen(
     (server = http.createServer((req, res) => {
-      const urlSplit = req.url.split('/');
+      const reqUrl = new URL(req.url, 'http://whocares/');
+      const urlSplit = reqUrl.pathname.split('/');
       const id = urlSplit[3];
       const slug = urlSplit.slice(3, urlSplit.length);
-      const urlQuery = req.url.split('?')[1];
-      const queryParams = queryString.parse(urlQuery, {
-        arrayFormat: 'bracket',
-      });
+      const queryParams = queryString.parse(reqUrl.search);
       apiResolver(
         req,
         res,

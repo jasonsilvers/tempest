@@ -1,10 +1,21 @@
 import { User } from '@prisma/client';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { findUserById, updateUser } from '../../../repositories/userRepo';
+import {
+  NextApiRequestWithAuthorization,
+  withApiAuth,
+} from '@tron/nextjs-auth-p1';
+import { NextApiResponse } from 'next';
+import { getAc, permissionDenied } from '../../../middleware/utils';
+import {
+  findUserByDodId,
+  findUserById,
+  updateUser,
+  UserWithRole,
+} from '../../../repositories/userRepo';
+import { EResource, ITempestApiError } from '../../../types/global';
 
-export default async function userQueryHandler(
-  req: NextApiRequest,
-  res: NextApiResponse<User>
+async function userQueryHandler(
+  req: NextApiRequestWithAuthorization<UserWithRole>,
+  res: NextApiResponse<User | ITempestApiError>
 ) {
   const {
     query: { id },
@@ -20,9 +31,20 @@ export default async function userQueryHandler(
     userId = id;
   }
 
+  const ac = await getAc();
+
   switch (method) {
     // Get Method to return a single user by id
     case 'GET': {
+      const permission =
+        req.user.id !== userId
+          ? ac.can(req.user.role.name).readAny(EResource.USER)
+          : ac.can(req.user.role.name).readOwn(EResource.USER);
+
+      if (!permission.granted) {
+        return permissionDenied(res);
+      }
+
       const user = await findUserById(userId);
       res.status(200).json(user);
       break;
@@ -55,3 +77,5 @@ export default async function userQueryHandler(
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 }
+
+export default withApiAuth(userQueryHandler, findUserByDodId);

@@ -35,12 +35,34 @@ export const findUserByDodId = async (queryString: string) => {
  * @param query unique db id
  * @returns UserWithRole
  */
-export const findUserById = async (query: string) => {
+export const findUserById = async (
+  query: string,
+  {
+    withMemberTrackingItems = false,
+    withMemberTrackingRecords = false,
+    withTrackingItems = false,
+  } = {}
+) => {
   return await prisma.user.findUnique({
     where: {
       id: query,
     },
-    include: { role: true },
+    include: {
+      role: true,
+      memberTrackingItems: withMemberTrackingItems
+        ? {
+            include: {
+              memberTrackingRecords: withMemberTrackingRecords
+                ? {
+                    include: {
+                      trackingItem: withTrackingItems,
+                    },
+                  }
+                : false,
+            },
+          }
+        : false,
+    },
   });
 };
 

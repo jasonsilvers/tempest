@@ -4,24 +4,41 @@ const memberTrackingItemGrants = [
   {
     action: 'create:any',
     attributes: '*',
-    resource: 'member_tracking_item',
+    resource: 'membertrackingitem',
     role: 'monitor',
   },
   {
     action: 'delete:any',
     attributes: '*',
-    resource: 'member_tracking_item',
+    resource: 'membertrackingitem',
     role: 'monitor',
   },
   {
     action: 'update:any',
     attributes: 'isActive',
-    resource: 'member_tracking_item',
+    resource: 'membertrackingitem',
     role: 'monitor',
   },
 ];
+
+const userGrants = [
+  {
+    action: 'read:any',
+    attributes: '*',
+    resource: 'user',
+    role: 'monitor',
+  },
+  {
+    action: 'read:own',
+    attributes: '*',
+    resource: 'user',
+    role: 'member',
+  },
+];
+
 export const grants = [
   ...memberTrackingItemGrants,
+  ...userGrants,
   {
     action: 'create:any',
     attributes: '*',
