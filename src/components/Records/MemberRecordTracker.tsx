@@ -11,7 +11,6 @@ import {
 } from './RecordRow';
 import HeaderUser from './RecordHeader';
 import Tab from './Tab';
-import RecordCards from './RecordCards';
 
 /**
  * Function to get the status text of a tracking item
@@ -154,7 +153,6 @@ const MemberRecordTracker: React.FC<{
       </TabContainer>
 
       <RecordTable mtr={sortedByCategory[activeCategory]} />
-      {/* <RecordCards mtr={sortedByCategory[activeCategory]} /> */}
     </div>
   );
 };
