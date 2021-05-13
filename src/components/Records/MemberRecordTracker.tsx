@@ -1,4 +1,4 @@
-import { MemberTrackingRecord, User } from '@prisma/client';
+import { MemberTrackingItem, MemberTrackingRecord, User } from '@prisma/client';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
@@ -70,7 +70,7 @@ const initSortedCategoryObject: {
  * @param trackingRecord
  * @param setState
  */
-const sortMemberTrackingRecordsByCategory = (
+const sortMemberTrackingItemstrackingItemsByCategory = (
   trackingRecord: RecordWithTrackingItem,
   setState: React.Dispatch<
     React.SetStateAction<typeof initSortedCategoryObject>
@@ -103,14 +103,10 @@ const sortMemberTrackingRecordsByCategory = (
  *
  * Training Record Functional Component
  */
-const MemberRecordTracker: React.FC<{
-  trackingRecords: MemberTrackingRecord[];
-}> = ({ trackingRecords }) => {
+const MemberItemTracker: React.FC<{
+  trackingItems: MemberTrackingItem[];
+}> = ({ trackingItems }) => {
   // Query to fetch all users then save the data keyed by user id
-  const { data } = useQuery<User[]>(
-    'users',
-    async () => await axios.get('/api/user').then((result) => result.data)
-  );
 
   const [sortedByCategory, setSortedByCategory] = useState(
     initSortedCategoryObject
@@ -120,14 +116,6 @@ const MemberRecordTracker: React.FC<{
 
   // sort on initial load
   // and if the tracking Records change then lets re-sort
-  useMemo(() => {
-    if (trackingRecords) {
-      setSortedByCategory((current) => ({ ...current, All: trackingRecords }));
-      trackingRecords.forEach((tr: RecordWithTrackingItem) =>
-        sortMemberTrackingRecordsByCategory(tr, setSortedByCategory)
-      );
-    }
-  }, [trackingRecords]);
 
   const toggleTab = (newCategory: ECategories) => {
     setActiveCategory(newCategory);
@@ -184,4 +172,4 @@ const MemberRecordTracker: React.FC<{
   );
 };
 
-export default MemberRecordTracker;
+export default MemberItemTracker;
