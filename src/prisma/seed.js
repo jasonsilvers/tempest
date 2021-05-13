@@ -211,7 +211,11 @@ async function main() {
 
   await prisma.memberTrackingRecord.create({
     data: {
-      order: 2,
+      order: 3,
+      completedDate: faker.date.recent(20).toISOString(),
+      authoritySignedDate: faker.date.recent(15).toISOString(),
+      traineeSignedDate: faker.date.recent(18).toISOString(),
+      authority: { connect: { id: user2.id } },
       memberTrackingItems: {
         connect: {
           userId_trackingItemId: {
@@ -263,6 +267,20 @@ async function main() {
           userId_trackingItemId: {
             userId: user1.id,
             trackingItemId: memberTrackingItem3.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 2,
+      memberTrackingItems: {
+        connect: {
+          userId_trackingItemId: {
+            userId: user1.id,
+            trackingItemId: memberTrackingItem1.trackingItemId,
           },
         },
       },

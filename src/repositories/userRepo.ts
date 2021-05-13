@@ -87,7 +87,7 @@ export const findUserById = async (
                       trackingItem: withTrackingItems,
                     },
                     orderBy: {
-                      order: 'asc',
+                      order: 'desc',
                     },
                   }
                 : false,
