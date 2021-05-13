@@ -86,6 +86,7 @@ export const findUserById = async (
                       authority: withAuthority,
                       trackingItem: withTrackingItems,
                     },
+                    take: 2,
                     orderBy: {
                       order: 'desc',
                     },

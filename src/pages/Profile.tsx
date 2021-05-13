@@ -12,8 +12,6 @@ const Profile = () => {
   const { user } = useUser<UserWithRole>();
   const { data: profileData } = useProfile(user.id);
 
-  console.log(profileData);
-
   const permission = permissionCheck(
     role,
     EPermission.CREATE,

@@ -7,17 +7,11 @@ import { useQuery } from 'react-query';
 import tw from 'twin.macro';
 import SignatureButton from '../../assets/SignatureButton.svg';
 import DoubleCheckMark from '../../assets/DoubleCheckMark.svg';
-
-export type RecordWithTrackingItemStatus =
-  | 'All'
-  | 'Done'
-  | 'Upcoming'
-  | 'Overdue'
-  | 'SignatureRequired';
+import { ECategories } from './MemberRecordTracker';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
-  status?: RecordWithTrackingItemStatus;
+  status?: ECategories;
 };
 
 // object to get common text for amount of days
@@ -49,12 +43,14 @@ const Done = tw(Token)`background-color[#49C68A]`;
 const All = Token;
 const SignatureRequired = tw(Token)`background-color[#4985c6]`;
 const Upcoming = tw(Token)`background-color[#FAC50A]`;
-const TokenObj: { [K in RecordWithTrackingItemStatus]: any } = {
+const Archived = tw(Token)`bg-black`;
+const TokenObj: { [K in ECategories]: any } = {
   Overdue,
   Done,
   All,
   SignatureRequired,
   Upcoming,
+  Archived,
 };
 /**
  * Function to determine render for the Trainee Signature Block

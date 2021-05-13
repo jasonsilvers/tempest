@@ -1,23 +1,20 @@
-import { MemberTrackingItem, MemberTrackingRecord, User } from '@prisma/client';
-import axios from 'axios';
+import { MemberTrackingItem, MemberTrackingRecord } from '@prisma/client';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
-import { useQuery } from 'react-query';
 import tw from 'twin.macro';
 import RecordTable from './RecordTable';
-import {
-  RecordWithTrackingItem,
-  RecordWithTrackingItemStatus,
-} from './RecordRow';
+import { RecordWithTrackingItem } from './RecordRow';
 import HeaderUser from './RecordHeader';
 import Tab from './Tab';
+import { MemberTrackingItemWithMemberTrackingRecord } from '../../repositories/memberTrackingRepo';
 
-enum ECategories {
+export enum ECategories {
   ALL = 'All',
   DONE = 'Done',
   UPCOMING = 'Upcoming',
   OVERDUE = 'Overdue',
   SIGNATURE_REQUIRED = 'SignatureRequired',
+  ARCHIVED = 'Archived',
 }
 
 /**
@@ -53,15 +50,14 @@ const TabContainer = tw.div`flex space-x-3 justify-between min-w-min border-b bo
 
 // initial object keyed by tracking item status
 const initSortedCategoryObject: {
-  [K in RecordWithTrackingItemStatus]:
-    | RecordWithTrackingItem[]
-    | MemberTrackingRecord[];
+  [K in ECategories]: RecordWithTrackingItem[] | MemberTrackingRecord[];
 } = {
   [ECategories.ALL]: [],
   [ECategories.DONE]: [],
   [ECategories.UPCOMING]: [],
   [ECategories.OVERDUE]: [],
   [ECategories.SIGNATURE_REQUIRED]: [],
+  [ECategories.ARCHIVED]: [],
 };
 
 /**
@@ -104,9 +100,20 @@ const sortMemberTrackingItemstrackingItemsByCategory = (
  * Training Record Functional Component
  */
 const MemberItemTracker: React.FC<{
-  trackingItems: MemberTrackingItem[];
+  trackingItems: MemberTrackingItemWithMemberTrackingRecord[];
 }> = ({ trackingItems }) => {
   // Query to fetch all users then save the data keyed by user id
+
+  useMemo(() => {
+    if (trackingItems) {
+      trackingItems.forEach((item) => {
+        if (item.isActive) {
+          // grab last two records
+          console.log(item);
+        }
+      });
+    }
+  }, [trackingItems]);
 
   const [sortedByCategory, setSortedByCategory] = useState(
     initSortedCategoryObject
