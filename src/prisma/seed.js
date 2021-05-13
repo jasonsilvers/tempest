@@ -60,37 +60,53 @@ async function main() {
     },
   });
 
-  const role1 = await prisma.role.create({
+  const adminRole = await prisma.role.create({
     data: {
       name: 'admin',
     },
   });
 
-  await prisma.role.create({
+  const memberRole = await prisma.role.create({
     data: {
       name: 'member',
     },
   });
 
-  const resource = await prisma.resource.create({
+  const userResource = await prisma.resource.create({
     data: {
-      name: 'record',
+      name: 'user',
     },
   });
 
-  // Permission
   await prisma.grant.create({
     data: {
-      action: 'create:any',
+      action: 'read:any',
       attributes: '*',
       resourceModel: {
         connect: {
-          name: resource.name,
+          name: userResource.name,
         },
       },
       roleModel: {
         connect: {
-          name: role1.name,
+          name: adminRole.name,
+        },
+      },
+    },
+  });
+
+  await prisma.grant.create({
+    data: {
+      action: 'read:own',
+      attributes: '*',
+      resourceModel: {
+        connect: {
+          name: userResource.name,
+        },
+      },
+      roleModel: {
+        connect: {
+          name: memberRole.name,
         },
       },
     },
@@ -135,36 +151,13 @@ async function main() {
     },
   });
 
-  // await prisma.trackingItem.update({
-  //   where: {
-  //     id: 2384323,
-  //   },
-  //   data: {
-  //     id: trackingItem1.id,
-  //     title: 'This is a new title'
-  //   },
-  // });
-
-  // await prisma.trackingItem.update({
-  //   where: {
-  //     id: trackingItem1.id,
-  //   },
-  //   data: {
-  //     organizations: {
-  //       connect: {
-  //         id: organization2.id,
-  //       },
-  //     },
-  //   },
-  // });
-
   const user1 = createUser(DOD_ID);
 
   await prisma.user.create({
     data: {
       ...user1,
       organizationId: organization1.id,
-      roleId: role1.id,
+      roleId: memberRole.id,
     },
   });
 
@@ -180,7 +173,7 @@ async function main() {
       },
       role: {
         connect: {
-          id: role1.id,
+          id: memberRole.id,
         },
       },
     },

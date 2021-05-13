@@ -1,22 +1,37 @@
-import { User, Role } from '@prisma/client';
+import { User, Role, MemberTrackingItem } from '@prisma/client';
 import prisma from '../prisma/prisma';
 import { ERole } from '../types/global';
 import { IPerson } from './common/types';
 import { getRoleByName } from './roleRepo';
+import { Prisma } from '@prisma/client';
 
 // required to infer the return type from the Prisma Client
-type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
-
-// type === User & { role?: Role };
-export type UserWithRole = ThenArg<ReturnType<typeof findUserByDodId>>;
-export type UserWithTrackingRecord = ThenArg<
-  ReturnType<typeof findTrackingRecordsByAuthorityId>
+export type UserWithRole = Prisma.PromiseReturnType<typeof findUserByDodId>;
+export type UserWithTrackingRecord = Prisma.PromiseReturnType<
+  typeof findTrackingRecordsByAuthorityId
 >;
 
-export type UserAll = ThenArg<ReturnType<typeof findUserWithAll>>;
-export const findUserWithAll = async () => {
-  return await prisma.user.findMany({
-    include: {},
+export type UserWithAll = Prisma.PromiseReturnType<
+  typeof findUserByIdReturnAllIncludes
+>;
+
+export const findUserByIdReturnAllIncludes = async (userId: string) => {
+  return await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      memberTrackingItems: {
+        include: {
+          memberTrackingRecords: {
+            include: {
+              authority: true,
+              trackingItem: true,
+            },
+          },
+        },
+      },
+    },
   });
 };
 
@@ -53,6 +68,7 @@ export const findUserById = async (
     withMemberTrackingItems = false,
     withMemberTrackingRecords = false,
     withTrackingItems = false,
+    withAuthority = false,
   } = {}
 ) => {
   return await prisma.user.findUnique({
@@ -67,6 +83,7 @@ export const findUserById = async (
               memberTrackingRecords: withMemberTrackingRecords
                 ? {
                     include: {
+                      authority: withAuthority,
                       trackingItem: withTrackingItems,
                     },
                   }
