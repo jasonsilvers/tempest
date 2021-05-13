@@ -9,7 +9,7 @@ import RecordRow, { RecordWithTrackingItem } from './RecordRow';
 const Container = tw.div`text-black mt-3 text-left flex space-y-5 flex-col flex[0 0 100%]`;
 
 const RecordTable: React.FC<{
-  mtr: MemberTrackingRecord[];
+  mtr: RecordWithTrackingItem[];
 }> = ({ mtr }) => {
   const { userRole, permissionCheck } = usePermissions();
 
@@ -22,7 +22,7 @@ const RecordTable: React.FC<{
   return (
     <Container>
       {/* Map though items and create Table Data Rows */}
-      {mtr.map((trackingRecord: RecordWithTrackingItem) => (
+      {mtr.map((trackingRecord) => (
         <RecordRow
           key={trackingRecord.id}
           trackingRecord={trackingRecord}

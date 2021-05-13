@@ -1,6 +1,6 @@
 import { MemberTrackingItem, MemberTrackingRecord } from '@prisma/client';
 import dayjs from 'dayjs';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import tw from 'twin.macro';
 import RecordTable from './RecordTable';
 import { RecordWithTrackingItem } from './RecordRow';
@@ -49,15 +49,15 @@ const Header = tw.h1`text-2xl font-bold text-black`;
 const TabContainer = tw.div`flex space-x-3 justify-between min-w-min border-b border-color[#AEAEAE]`;
 
 // initial object keyed by tracking item status
-const initSortedCategoryObject: {
+const whatTheFuckityFuckingFuck: {
   [K in ECategories]: RecordWithTrackingItem[] | MemberTrackingRecord[];
 } = {
-  [ECategories.ALL]: [],
-  [ECategories.DONE]: [],
-  [ECategories.UPCOMING]: [],
-  [ECategories.OVERDUE]: [],
-  [ECategories.SIGNATURE_REQUIRED]: [],
-  [ECategories.ARCHIVED]: [],
+  All: [],
+  Done: [],
+  Upcoming: [],
+  Overdue: [],
+  SignatureRequired: [],
+  Archived: [],
 };
 
 /**
@@ -68,31 +68,76 @@ const initSortedCategoryObject: {
  */
 const sortMemberTrackingItemstrackingItemsByCategory = (
   trackingRecord: RecordWithTrackingItem,
-  setState: React.Dispatch<
-    React.SetStateAction<typeof initSortedCategoryObject>
-  >
+  initObj: typeof whatTheFuckityFuckingFuck
 ) => {
   // update state
-  setState((current) => {
-    const temp = { ...current };
-    // if neither signature block is signed sort the item to Signature Required
-    if (
-      !trackingRecord.traineeSignedDate ||
-      !trackingRecord.authoritySignedDate
-    ) {
-      trackingRecord.status = ECategories.SIGNATURE_REQUIRED;
-      temp[ECategories.SIGNATURE_REQUIRED].push(trackingRecord);
-    } else {
-      // else grab the text from the status function in order to sort this tracking item accordingly
-      const category = status(
-        trackingRecord.completedDate,
-        trackingRecord.trackingItem.interval
-      );
-      trackingRecord.status = category;
-      temp[category].push(trackingRecord);
-    }
-    return { ...temp };
-  });
+
+  const temp = { ...initObj };
+  // if neither signature block is signed sort the item to Signature Required
+  if (
+    !trackingRecord.traineeSignedDate ||
+    !trackingRecord.authoritySignedDate
+  ) {
+    trackingRecord.status = ECategories.SIGNATURE_REQUIRED;
+    temp[ECategories.SIGNATURE_REQUIRED].push(trackingRecord);
+  } else {
+    // else grab the text from the status function in order to sort this tracking item accordingly
+    const category = status(
+      trackingRecord.completedDate,
+      trackingRecord.trackingItem.interval
+    );
+    trackingRecord.status = category;
+    temp[category].push(trackingRecord);
+  }
+  // add all to the all category
+  temp[ECategories.ALL].push(trackingRecord);
+  return { ...temp };
+};
+
+const initStateCategories = (
+  trackingItems: MemberTrackingItemWithMemberTrackingRecord[]
+) => {
+  let newState = {
+    All: [],
+    Done: [],
+    Upcoming: [],
+    Overdue: [],
+    SignatureRequired: [],
+    Archived: [],
+  };
+
+  if (trackingItems) {
+    trackingItems.forEach((item) => {
+      if (item.isActive) {
+        // grab last two records
+        // prettier-ignore
+        const firstOrderRecord = item.memberTrackingRecords[0] as RecordWithTrackingItem;
+        // prettier-ignore
+        const secondOrderRecord = item.memberTrackingRecords[1] as RecordWithTrackingItem;
+        // for long if block which is confusing when prettied
+        // prettier-ignore
+        if ( firstOrderRecord.authoritySignedDate && firstOrderRecord.traineeSignedDate) {
+            // if both dates are signed then the secondOrderRecord is irrelevant
+            newState = sortMemberTrackingItemstrackingItemsByCategory(firstOrderRecord, newState)
+        }
+        else{
+        //   // both records are relevant
+          newState = sortMemberTrackingItemstrackingItemsByCategory(firstOrderRecord, newState)
+          secondOrderRecord ? newState = sortMemberTrackingItemstrackingItemsByCategory(secondOrderRecord, newState) : null
+        }
+      }
+      // if not active push to the archive category
+      else {
+        newState = {
+          ...newState,
+          Archived: [...newState.Archived, item[0]],
+        };
+      }
+    });
+  }
+  console.log('newState at end of function: ', newState);
+
+  return newState;
 };
 
 /**
@@ -104,25 +149,14 @@ const MemberItemTracker: React.FC<{
 }> = ({ trackingItems }) => {
   // Query to fetch all users then save the data keyed by user id
 
-  useMemo(() => {
-    if (trackingItems) {
-      trackingItems.forEach((item) => {
-        if (item.isActive) {
-          // grab last two records
-          console.log(item);
-        }
-      });
-    }
-  }, [trackingItems]);
-
-  const [sortedByCategory, setSortedByCategory] = useState(
-    initSortedCategoryObject
+  const [sortedByCategory, setSortedByCategory] = useState(() =>
+    initStateCategories(trackingItems)
   );
-
   const [activeCategory, setActiveCategory] = useState(ECategories.ALL);
 
-  // sort on initial load
-  // and if the tracking Records change then lets re-sort
+  useMemo(() => {
+    setSortedByCategory(initStateCategories(trackingItems));
+  }, [trackingItems]);
 
   const toggleTab = (newCategory: ECategories) => {
     setActiveCategory(newCategory);
@@ -145,7 +179,7 @@ const MemberItemTracker: React.FC<{
             category={ECategories.OVERDUE}
             onClick={toggleTab}
             activeCategory={activeCategory}
-            count={sortedByCategory['Overdue'].length}
+            count={sortedByCategory.Overdue.length}
           >
             Overdue
           </Tab>
@@ -153,7 +187,7 @@ const MemberItemTracker: React.FC<{
             category={ECategories.UPCOMING}
             onClick={toggleTab}
             activeCategory={activeCategory}
-            count={sortedByCategory['Upcoming'].length}
+            count={sortedByCategory.Upcoming.length}
           >
             Upcoming
           </Tab>

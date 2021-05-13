@@ -10,7 +10,9 @@ import { useProfile } from '../hooks/api/profile';
 const Profile = () => {
   const { isLoading, role, permissionCheck } = usePermissions();
   const { user } = useUser<UserWithRole>();
-  const { data: profileData } = useProfile(user.id);
+  const { data: profileData, isLoading: isLoadingProfile } = useProfile(
+    user.id
+  );
 
   const permission = permissionCheck(
     role,
@@ -26,6 +28,10 @@ const Profile = () => {
   // if (!permission?.granted) {
   //   return <h1>You do not have access to this page</h1>;
   // }
+
+  if (isLoadingProfile) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>

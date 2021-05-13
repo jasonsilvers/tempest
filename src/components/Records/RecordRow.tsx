@@ -1,17 +1,18 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
-import { useUser } from '@tron/nextjs-auth-p1';
-import axios from 'axios';
 import dayjs from 'dayjs';
 import React from 'react';
-import { useQuery } from 'react-query';
 import tw from 'twin.macro';
 import SignatureButton from '../../assets/SignatureButton.svg';
 import DoubleCheckMark from '../../assets/DoubleCheckMark.svg';
 import { ECategories } from './MemberRecordTracker';
+import { useProfile } from '../../hooks/api/profile';
+import { UserWithRole } from '../../repositories/userRepo';
+import { useUser } from '@tron/nextjs-auth-p1';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
   status?: ECategories;
+  authority: User;
 };
 
 // object to get common text for amount of days
@@ -87,37 +88,9 @@ const getTraineeSignature = (
 const RecordRow: React.FC<{
   trackingRecord: RecordWithTrackingItem;
   canSignAuth: boolean;
-}> = ({ trackingRecord, canSignAuth }) => {
-  //###############################################################################\\
-  //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\\
-  //⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺ \\
-  // Use Query here is just for development purposes.                              \\
-  // Future versions of app will include the the user object per training record   \\
-  // Data will be fetched via api call to fetch records by trainee or authority id \\
-  // Had to set enabled: false here due to some weird recursive api call repeat    \\
-  //______________________________________________________________________________ \\
-  //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\\
-  // Beautiful ASCII Art by @SnekCode                                              \\
-  //###############################################################################\\
+}> = ({ trackingRecord }) => {
+  const { user } = useUser<UserWithRole>();
 
-  const { data: queryUsers } = useQuery<User[]>(
-    'users',
-    async () => await axios.get('/api/user').then((result) => result.data),
-    { enabled: false }
-  );
-
-  // user id is needed in order to check if button can be signed.
-  const { user } = useUser<User>();
-
-  // Mapping the Users Array into an accessible hash map by user id
-  // Future versions of app will have the complete user object on the Tracking Record
-  let users = {};
-  if (queryUsers) {
-    users = queryUsers.reduce(
-      (acc, currentVal) => ({ ...acc, [currentVal.id]: currentVal }),
-      users
-    );
-  }
   const DynamicToken = TokenObj[trackingRecord.status];
   return (
     <TableRow>
@@ -152,7 +125,7 @@ const RecordRow: React.FC<{
         {getTraineeSignature(
           trackingRecord.traineeSignedDate,
           // pass undefined if data is still fetching
-          users ? users[trackingRecord.traineeId] : undefined,
+          user,
           user.id
         )}
       </TableData>
