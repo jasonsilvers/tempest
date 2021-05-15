@@ -1,6 +1,6 @@
 import { MemberTrackingRecord } from '@prisma/client';
 import dayjs from 'dayjs';
-import React, { useMemo, useState } from 'react';
+import React, { LegacyRef, useMemo, useRef, useState } from 'react';
 import tw from 'twin.macro';
 import RecordTable from './RecordTable';
 import { RecordWithTrackingItem } from './RecordRow';
@@ -131,6 +131,7 @@ const initStateCategories = (
 
   return newState;
 };
+const TabAndTableContainer = tw.div`flex flex-col min-w-min max-w-max`;
 
 /**
  *
@@ -154,11 +155,33 @@ const MemberItemTracker: React.FC<{
     setActiveCategory(newCategory);
   };
 
+  const widthRef = useRef(0);
+  const TabAndTableRef: LegacyRef<HTMLDivElement> = useRef();
+
+  // fixes the container div from collapsing if the list is empty
+  useMemo(() => {
+    if (TabAndTableRef.current) {
+      const width = TabAndTableRef.current.clientWidth;
+      const max_width = TabAndTableRef.current.style.maxWidth;
+      console.log(width, widthRef.current);
+      widthRef.current = width;
+
+      if (
+        sortedByCategory[activeCategory].length > 0 &&
+        max_width !== 'max-content'
+      ) {
+        TabAndTableRef.current.style.maxWidth = 'max-content';
+      } else {
+        TabAndTableRef.current.style.maxWidth = widthRef.current + 'px';
+      }
+    }
+  }, [activeCategory, sortedByCategory]);
+
   return (
     <div tw={'mr-5 pr-10 w-9/12'}>
       <HeaderUser />
       <Header>Training Record</Header>
-      <div tw="flex flex-col min-w-min max-w-max">
+      <TabAndTableContainer ref={TabAndTableRef}>
         <TabContainer id="Filter Tabs">
           <Tab
             category={ECategories.ALL}
@@ -200,7 +223,7 @@ const MemberItemTracker: React.FC<{
         </TabContainer>
 
         <RecordTable mtr={sortedByCategory[activeCategory]} />
-      </div>
+      </TabAndTableContainer>
     </div>
   );
 };
