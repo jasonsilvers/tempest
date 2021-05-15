@@ -1,4 +1,3 @@
-import { MemberTrackingRecord } from '@prisma/client';
 import React from 'react';
 import tw from 'twin.macro';
 import usePermissions from '../../hooks/usePermissions';
@@ -11,13 +10,11 @@ const Container = tw.div`text-black mt-3 text-left flex space-y-5 flex-col flex[
 const RecordTable: React.FC<{
   mtr: RecordWithTrackingItem[];
 }> = ({ mtr }) => {
-  const { userRole, permissionCheck } = usePermissions();
+  const { role, permissionCheck } = usePermissions();
 
-  const canSignAuth = permissionCheck(
-    userRole,
-    EPermission.UPDATE,
-    EResource.RECORD
-  ).granted;
+  const canSignAuth =
+    permissionCheck(role, EPermission.UPDATE, EResource.RECORD)?.granted ??
+    false;
 
   return (
     <Container>

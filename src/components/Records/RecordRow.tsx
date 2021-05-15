@@ -2,10 +2,8 @@ import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import React from 'react';
 import tw from 'twin.macro';
-import SignatureButton from '../../assets/SignatureButton.svg';
-import DoubleCheckMark from '../../assets/DoubleCheckMark.svg';
+import { SignatureButton, DoubleCheckMark } from '../../assets';
 import { ECategories } from './MemberRecordTracker';
-import { useProfile } from '../../hooks/api/profile';
 import { UserWithRole } from '../../repositories/userRepo';
 import { useUser } from '@tron/nextjs-auth-p1';
 
@@ -34,8 +32,6 @@ const daysToString = {
 const TableRow = tw.div`text-black box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm flex items-center flex-wrap min-width[350px]`;
 const TableData = tw.div`py-3 font-size[12px] flex[0 0 auto] mx-3`;
 
-// conditional styled twin elements for get Signature functions
-const AwaitSignature = tw.div`font-bold`;
 // const SignatureButton = tw.button`p-1.5 w-56 background-color[#A8ADB4] text-white text-center`;
 
 const Token = tw.div`rounded h-5 w-5 mr-2`;
@@ -45,7 +41,7 @@ const All = Token;
 const SignatureRequired = tw(Token)`background-color[#4985c6]`;
 const Upcoming = tw(Token)`background-color[#FAC50A]`;
 const Archived = tw(Token)`bg-black`;
-const TokenObj: { [K in ECategories]: any } = {
+const TokenObj: { [K in ECategories]: typeof Token } = {
   Overdue,
   Done,
   All,
@@ -126,7 +122,7 @@ const RecordRow: React.FC<{
           trackingRecord.traineeSignedDate,
           // pass undefined if data is still fetching
           user,
-          user.id
+          user?.id ?? undefined
         )}
       </TableData>
     </TableRow>

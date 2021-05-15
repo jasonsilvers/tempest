@@ -63,7 +63,6 @@ async function userSlugHandler(
             if (includeQuery === EUserIncludes.MEMBER_TRACKING_RECORDS) {
               includeConfig = {
                 ...includeConfig,
-                withAuthority: true,
                 withMemberTrackingRecords: true,
               };
             }

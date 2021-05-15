@@ -1,4 +1,4 @@
-import { User, Role, MemberTrackingItem } from '@prisma/client';
+import { User, Role } from '@prisma/client';
 import prisma from '../prisma/prisma';
 import { ERole } from '../types/global';
 import { IPerson } from './common/types';

@@ -1,6 +1,6 @@
-import { MemberTrackingItem, MemberTrackingRecord } from '@prisma/client';
+import { MemberTrackingRecord } from '@prisma/client';
 import dayjs from 'dayjs';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import tw from 'twin.macro';
 import RecordTable from './RecordTable';
 import { RecordWithTrackingItem } from './RecordRow';
@@ -34,9 +34,9 @@ export const status = (completedDate: Date, interval: number) => {
       ? DEFAULT_INTERVAL_SMALL
       : DEFAULT_INTERVAL_MEDIUM;
 
-  if (numberOfDaysAfterCompleted > interval) {
+  if (numberOfDaysAfterCompleted >= interval) {
     return ECategories.OVERDUE;
-  } else if (numberOfDaysAfterCompleted > interval - upComing) {
+  } else if (numberOfDaysAfterCompleted >= interval - upComing) {
     return ECategories.UPCOMING;
   } else {
     return ECategories.DONE;
@@ -49,15 +49,8 @@ const Header = tw.h1`text-2xl font-bold text-black`;
 const TabContainer = tw.div`flex space-x-3 justify-between min-w-min border-b border-color[#AEAEAE]`;
 
 // initial object keyed by tracking item status
-const whatTheFuckityFuckingFuck: {
+type MemberTrackingRecordCategories = {
   [K in ECategories]: RecordWithTrackingItem[] | MemberTrackingRecord[];
-} = {
-  All: [],
-  Done: [],
-  Upcoming: [],
-  Overdue: [],
-  SignatureRequired: [],
-  Archived: [],
 };
 
 /**
@@ -68,7 +61,7 @@ const whatTheFuckityFuckingFuck: {
  */
 const sortMemberTrackingItemstrackingItemsByCategory = (
   trackingRecord: RecordWithTrackingItem,
-  initObj: typeof whatTheFuckityFuckingFuck
+  initObj: MemberTrackingRecordCategories
 ) => {
   // update state
 
@@ -135,7 +128,6 @@ const initStateCategories = (
       }
     });
   }
-  console.log('newState at end of function: ', newState);
 
   return newState;
 };

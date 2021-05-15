@@ -24,6 +24,13 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", "twin.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "twin.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/assets/svgrMock.tsx",
+    "src/assets/index.d.ts"
+  ],
   "exclude": ["node_modules", "__tests__"]
 }

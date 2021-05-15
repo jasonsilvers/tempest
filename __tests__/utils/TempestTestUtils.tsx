@@ -36,14 +36,18 @@ const render = (
     ...options
   } = {}
 ) => {
-  useTestRouter.mockImplementation(() => ({ route: nextJSRoute }));
-
-  useTestUser.mockImplementationOnce(() => ({
-    user,
-    isError: false,
-    isLoading,
-    error,
+  useTestRouter.mockImplementation(() => ({
+    route: nextJSRoute,
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    prefetch: async () => {},
   }));
+
+  // useTestUser.mockImplementationOnce(() => ({
+  //   user,
+  //   isError: false,
+  //   isLoading,
+  //   error,
+  // }));
 
   return rtlRender(component, {
     wrapper: function withWrapper(props) {

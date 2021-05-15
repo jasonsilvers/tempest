@@ -5,9 +5,9 @@ import tw from 'twin.macro';
 
 const Header = tw.h1`text-2xl text-black mb-3`;
 const Name = tw.h4`text-xl text-black mb-2`;
-const Table = tw.table`text-left mb-14 `;
-const Row = tw.tr``;
-const Base = tw.td`text-xl mb-1 text-hg pr-5 capitalize`;
+const Table = tw.div`text-left mb-14 `;
+const Row = tw.div``;
+const Base = tw.div`text-xl mb-1 text-hg pr-5 capitalize`;
 const Rank = tw(Base)``;
 const Address = tw(Base)``;
 const AFSC = tw(Base)``;
@@ -16,7 +16,7 @@ const DutyTitle = tw(Base)``;
 const HeaderUser = () => {
   const { user } = useUser<User>();
 
-  return (
+  return user ? (
     <>
       <Header>EMPLOYEE SAFETY AND HEALTH RECORD</Header>
       <Name>{`${user.lastName} ${user.firstName}`}</Name>
@@ -31,6 +31,8 @@ const HeaderUser = () => {
         </Row>
       </Table>
     </>
+  ) : (
+    <></>
   );
 };
 
