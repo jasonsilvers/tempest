@@ -7,17 +7,6 @@ import { rest } from 'msw';
 import dayjs from 'dayjs';
 import 'whatwg-fetch';
 
-// rest.get('/api/login', (req, res, ctx) => {
-//     console.log('get login');
-
-//     return res(ctx.status(200), ctx.json({ firstName: 'bob' }));
-//   }),
-//   rest.get('*/grants', (req, res, ctx) => {
-//     console.log('get grants');
-
-//     return res(ctx.status(200), ctx.json(grants));
-//   }),
-
 test('should render a record requiring signature', async () => {
   const trackingItem: MemberTrackingItemWithMemberTrackingRecord[] = [
     {

@@ -10,21 +10,11 @@ const Container = tw.div`text-black mt-3 text-left flex space-y-5 flex-col flex[
 const RecordTable: React.FC<{
   mtr: RecordWithTrackingItem[];
 }> = ({ mtr }) => {
-  const { role, permissionCheck } = usePermissions();
-
-  const canSignAuth =
-    permissionCheck(role, EPermission.UPDATE, EResource.RECORD)?.granted ??
-    false;
-
   return (
     <Container>
       {/* Map though items and create Table Data Rows */}
       {mtr.map((trackingRecord) => (
-        <RecordRow
-          key={trackingRecord.id}
-          trackingRecord={trackingRecord}
-          canSignAuth={canSignAuth}
-        />
+        <RecordRow key={trackingRecord.id} trackingRecord={trackingRecord} />
       ))}
     </Container>
   );

@@ -163,7 +163,6 @@ const MemberItemTracker: React.FC<{
     if (TabAndTableRef.current) {
       const width = TabAndTableRef.current.clientWidth;
       const max_width = TabAndTableRef.current.style.maxWidth;
-      console.log(width, widthRef.current);
       widthRef.current = width;
 
       if (

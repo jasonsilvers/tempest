@@ -83,7 +83,6 @@ const getTraineeSignature = (
 
 const RecordRow: React.FC<{
   trackingRecord: RecordWithTrackingItem;
-  canSignAuth: boolean;
 }> = ({ trackingRecord }) => {
   const { user } = useUser<UserWithRole>();
 
