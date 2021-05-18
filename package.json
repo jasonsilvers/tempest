@@ -10,7 +10,7 @@
     "test": "jest --watchAll",
     "test:unit": "jest",
     "test:e2e-ci": "",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage && open ./coverage/lcov-report/index.html",
     "createDevDatabase": "docker-compose up -d",
     "db:studio": "prisma studio --schema ./src/prisma/schema.prisma",
     "db:migrate": "prisma migrate dev --schema ./src/prisma/schema.prisma",
