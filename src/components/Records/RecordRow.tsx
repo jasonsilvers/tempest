@@ -62,8 +62,6 @@ const getTraineeSignature = (
   signatureOwner: User,
 ) => {
 
-console.log(signatureDate);
-
   // fail back if the signatureOwner:User is false
   // would indicate data is still fetching
   if (!signatureOwner) {

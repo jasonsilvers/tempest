@@ -168,9 +168,7 @@ const MemberItemTracker: React.FC<{
       widthRef.current = width;
 
       if (
-        sortedByCategory[activeCategory].length > 0 &&
-        max_width !== 'max-content'
-      ) {
+        sortedByCategory[activeCategory].length > 0 && max_width !== 'max-content') {
         TabAndTableRef.current.style.maxWidth = 'max-content';
       } else {
         TabAndTableRef.current.style.maxWidth = widthRef.current + 'px';
