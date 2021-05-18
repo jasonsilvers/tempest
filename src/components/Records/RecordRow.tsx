@@ -60,18 +60,21 @@ const TokenObj: { [K in ECategories]: typeof Token } = {
 const getTraineeSignature = (
   signatureDate: Date,
   signatureOwner: User,
-  loggedInUserId: string
 ) => {
+
+console.log(signatureDate);
+
   // fail back if the signatureOwner:User is false
   // would indicate data is still fetching
   if (!signatureOwner) {
     return 'Fetching Data...';
   }
 
+
   // if signature date is false and
   // user logged in is the signature owner
   // render button to sign
-  if (!signatureDate && signatureOwner.id === loggedInUserId) {
+  if (!signatureDate) {
     return <SignatureButton tw="" />;
   }
   // if signature date is true and signature owner is true
@@ -101,13 +104,13 @@ const RecordRow: React.FC<{
           `${trackingRecord.trackingItem.interval} days`}
       </TableData>
       <div tw="flex w-72 justify-between">
-        <TableData tw="">
+        <TableData tw="w-36">
           <>
             <span tw={'opacity-40'}>Completed: </span>
             {dayjs(trackingRecord.completedDate).format('DD MMM YY')}
           </>
         </TableData>
-        <TableData tw="">
+        <TableData tw="w-36">
           <>
             <span tw={'opacity-40'}>Due: </span>
             {dayjs(trackingRecord.completedDate)
@@ -117,12 +120,10 @@ const RecordRow: React.FC<{
         </TableData>
       </div>
       <TableData tw="ml-auto mr-3 w-10">
-        {getTraineeSignature(
+        {!trackingRecord.traineeSignedDate ? getTraineeSignature(
           trackingRecord.traineeSignedDate,
-          // pass undefined if data is still fetching
           user,
-          user?.id ?? undefined
-        )}
+        ): !trackingRecord.authoritySignedDate ? <DoubleCheckMark />: null}
       </TableData>
     </TableRow>
   );

@@ -12,7 +12,6 @@ const Profile = () => {
   const { data: profileData, isLoading: isLoadingProfile } = useProfile(
     user.id
   );
-
   // const permission = permissionCheck(
   //   role,
   //   EPermission.CREATE,
