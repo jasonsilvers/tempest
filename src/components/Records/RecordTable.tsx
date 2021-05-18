@@ -1,7 +1,5 @@
 import React from 'react';
 import tw from 'twin.macro';
-import usePermissions from '../../hooks/usePermissions';
-import { EPermission, EResource } from '../../types/global';
 import RecordRow, { RecordWithTrackingItem } from './RecordRow';
 
 // styled twin elements

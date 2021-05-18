@@ -1,6 +1,6 @@
 import { Organization, Role, User } from '@prisma/client';
 import { UserContextProvider } from '@tron/nextjs-auth-p1/dist/client/UserContextProvider';
-import { useTestRouter, useTestUser } from './mocks/NextMocks';
+import { useTestRouter} from './mocks/NextMocks';
 import * as React from 'react';
 import { render as rtlRender } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -30,9 +30,9 @@ const render = (
   component: JSX.Element,
   {
     nextJSRoute = '/',
-    isLoading = false,
-    error = undefined,
-    user = { firstName: 'test', lastName: 'user' } as Partial<User>,
+    // isLoading = false,
+    // error = undefined,
+    // user = { firstName: 'test', lastName: 'user' } as Partial<User>,
     ...options
   } = {}
 ) => {
