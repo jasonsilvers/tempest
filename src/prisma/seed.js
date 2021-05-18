@@ -15,6 +15,20 @@ function createUser(dodId = null) {
       ? dodId
       : faker.datatype.number({ min: 1000000000, max: 1999999999 }).toString(),
     email: faker.internet.email(),
+    dutyTitle:
+      faker.company.bsAdjective() +
+      ' ' +
+      faker.company.bsNoun() +
+      ' ' +
+      faker.company.bsBuzz(),
+    afsc:
+      faker.datatype.number({ min: 1, max: 7 }).toString() +
+      faker.random.alpha().toLocaleUpperCase() +
+      faker.datatype.number({ min: 1, max: 7 }).toString() +
+      'X' +
+      faker.datatype.number({ min: 1, max: 7 }).toString(),
+    rank: 'SSgt/E5',
+    address: '15 WG/WSA Tron, Bldg 1102',
   };
 }
 
@@ -46,37 +60,53 @@ async function main() {
     },
   });
 
-  const role1 = await prisma.role.create({
+  const adminRole = await prisma.role.create({
     data: {
       name: 'admin',
     },
   });
 
-  await prisma.role.create({
+  const memberRole = await prisma.role.create({
     data: {
       name: 'member',
     },
   });
 
-  const resource = await prisma.resource.create({
+  const userResource = await prisma.resource.create({
     data: {
-      name: 'record',
+      name: 'user',
     },
   });
 
-  // Permission
   await prisma.grant.create({
     data: {
-      action: 'create:any',
+      action: 'read:any',
       attributes: '*',
       resourceModel: {
         connect: {
-          name: resource.name,
+          name: userResource.name,
         },
       },
       roleModel: {
         connect: {
-          name: role1.name,
+          name: adminRole.name,
+        },
+      },
+    },
+  });
+
+  await prisma.grant.create({
+    data: {
+      action: 'read:own',
+      attributes: '*',
+      resourceModel: {
+        connect: {
+          name: userResource.name,
+        },
+      },
+      roleModel: {
+        connect: {
+          name: memberRole.name,
         },
       },
     },
@@ -99,34 +129,27 @@ async function main() {
 
   const trackingItem1 = await prisma.trackingItem.create({
     data: {
-      title: 'this is a new tracking item',
-      description: 'This is the description',
-      interval: 30,
+      title: 'Fire Safety',
+      description: 'How to be SAFE when using Fire',
+      interval: 60,
     },
   });
 
-  // await prisma.trackingItem.update({
-  //   where: {
-  //     id: 2384323,
-  //   },
-  //   data: {
-  //     id: trackingItem1.id,
-  //     title: 'This is a new title'
-  //   },
-  // });
+  const trackingItem2 = await prisma.trackingItem.create({
+    data: {
+      title: 'Big Bug Safety',
+      description: 'There are big bugs in Hawaii!  Be careful!',
+      interval: 365,
+    },
+  });
 
-  // await prisma.trackingItem.update({
-  //   where: {
-  //     id: trackingItem1.id,
-  //   },
-  //   data: {
-  //     organizations: {
-  //       connect: {
-  //         id: organization2.id,
-  //       },
-  //     },
-  //   },
-  // });
+  const trackingItem3 = await prisma.trackingItem.create({
+    data: {
+      title: 'Keyboard Warrior Training',
+      description: 'How to be a true keyboard warrior via writing code',
+      interval: 180,
+    },
+  });
 
   const user1 = createUser(DOD_ID);
 
@@ -134,7 +157,7 @@ async function main() {
     data: {
       ...user1,
       organizationId: organization1.id,
-      roleId: role1.id,
+      roleId: memberRole.id,
     },
   });
 
@@ -150,37 +173,120 @@ async function main() {
       },
       role: {
         connect: {
-          id: role1.id,
+          id: memberRole.id,
         },
       },
     },
   });
 
-  const newMemberTrackingItem = {
+  const newMemberTrackingItem1 = {
     userId: user1.id,
     isActive: true,
     trackingItemId: trackingItem1.id,
   };
 
-  const memberTrackingItem = await prisma.memberTrackingItem.create({
-    data: newMemberTrackingItem,
+  const newMemberTrackingItem2 = {
+    userId: user1.id,
+    isActive: true,
+    trackingItemId: trackingItem2.id,
+  };
+
+  const newMemberTrackingItem3 = {
+    userId: user1.id,
+    isActive: true,
+    trackingItemId: trackingItem3.id,
+  };
+
+  const memberTrackingItem1 = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem1,
+  });
+
+  const memberTrackingItem2 = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem2,
+  });
+
+  const memberTrackingItem3 = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem3,
   });
 
   await prisma.memberTrackingRecord.create({
     data: {
-      order: 0,
+      order: 2,
+      completedDate: faker.date.recent(20).toISOString(),
+      authoritySignedDate: faker.date.recent(15).toISOString(),
+      traineeSignedDate: faker.date.recent(18).toISOString(),
+      authority: { connect: { id: user2.id } },
       memberTrackingItems: {
         connect: {
           userId_trackingItemId: {
-            userId: memberTrackingItem.userId,
-            trackingItemId: memberTrackingItem.trackingItemId,
+            userId: user1.id,
+            trackingItemId: memberTrackingItem1.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 1,
+      completedDate: faker.date.recent(20).toISOString(),
+      authoritySignedDate: faker.date.recent(15).toISOString(),
+      traineeSignedDate: faker.date.recent(18).toISOString(),
+      authority: { connect: { id: user2.id } },
+      memberTrackingItems: {
+        connect: {
+          userId_trackingItemId: {
+            userId: user1.id,
+            trackingItemId: memberTrackingItem1.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 1,
+      memberTrackingItems: {
+        connect: {
+          userId_trackingItemId: {
+            userId: user1.id,
+            trackingItemId: memberTrackingItem2.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 1,
+      memberTrackingItems: {
+        connect: {
+          userId_trackingItemId: {
+            userId: user1.id,
+            trackingItemId: memberTrackingItem3.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 3,
+      memberTrackingItems: {
+        connect: {
+          userId_trackingItemId: {
+            userId: user1.id,
+            trackingItemId: memberTrackingItem1.trackingItemId,
           },
         },
       },
     },
   });
 }
-
 main()
   .catch((e) => {
     console.error(e);

@@ -10,7 +10,7 @@
     "test": "jest --watchAll",
     "test:unit": "jest",
     "test:e2e-ci": "",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage && open ./coverage/lcov-report/index.html",
     "createDevDatabase": "docker-compose up -d",
     "db:studio": "prisma studio --schema ./src/prisma/schema.prisma",
     "db:migrate": "prisma migrate dev --schema ./src/prisma/schema.prisma",
@@ -42,6 +42,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "next": "10.0.5",
+    "node-fetch": "^2.6.1",
     "postcss": "^8.2.8",
     "prisma": "^2.22.0",
     "react": "17.0.1",
@@ -81,7 +82,8 @@
     "query-string": "^7.0.0",
     "react-is": "^17.0.1",
     "test-listen": "^1.1.0",
-    "ts-node": "^9.1.1"
+    "ts-node": "^9.1.1",
+    "whatwg-fetch": "^3.6.2"
   },
   "babelMacros": {
     "twin": {

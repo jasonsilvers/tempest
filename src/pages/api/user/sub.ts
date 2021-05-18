@@ -32,7 +32,7 @@ export const userSubscriptionHandler = async (
     headers: IncomingHttpHeaders;
   } = req;
 
-  await message.personIds.forEach(async (id) => {
+  message.personIds.forEach(async (id) => {
     const tempestUser = await findUserById(id);
     if (!tempestUser) {
       return;

@@ -1,4 +1,8 @@
-import { MemberTrackingItem, MemberTrackingRecord } from '.prisma/client';
+import {
+  MemberTrackingItem,
+  MemberTrackingRecord,
+  TrackingItem,
+} from '.prisma/client';
 import prisma from '../prisma/prisma';
 
 export const updateMemberTrackingRecord = async (
@@ -134,6 +138,10 @@ export const createMemberTrackingItem = async (newMti: MemberTrackingItem) => {
   });
 };
 
+type MemberTrackingRecordWithTrackingItem = MemberTrackingRecord & {
+  trackingItem: TrackingItem;
+};
+
 export type MemberTrackingItemWithMemberTrackingRecord = MemberTrackingItem & {
-  memberTrackingRecords?: MemberTrackingRecord[];
+  memberTrackingRecords?: MemberTrackingRecordWithTrackingItem[];
 };

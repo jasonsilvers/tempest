@@ -4,11 +4,15 @@ import {
   NextApiRequestWithAuthorization,
 } from '@tron/nextjs-auth-p1';
 import { User } from '@prisma/client';
-import { findUserByDodId, createUser } from '../../repositories/userRepo';
+import {
+  findUserByDodId,
+  createUser,
+  getUsers,
+} from '../../repositories/userRepo';
 
 export const userApiHandler = async (
   req: NextApiRequestWithAuthorization<User, User>,
-  res: NextApiResponse
+  res: NextApiResponse<User | User[]>
 ) => {
   const { body, method }: { body: User; method?: string } = req;
   switch (method) {
@@ -25,10 +29,16 @@ export const userApiHandler = async (
       res.statusCode = 200;
       break;
     }
+    case 'GET': {
+      const users: User[] = await getUsers();
+      res.json(users);
+      res.statusCode = 200;
+      break;
+    }
 
     // Disallow all methods except POST
     default:
-      res.setHeader('Allow', ['POST']);
+      res.setHeader('Allow', ['POST', 'GET']);
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 };
