@@ -6,12 +6,12 @@ import RecordRow, { RecordWithTrackingItem } from './RecordRow';
 const Container = tw.div`text-black mt-3 text-left flex space-y-5 flex-col flex[0 0 100%]`;
 
 const RecordTable: React.FC<{
-  mtr: RecordWithTrackingItem[];
-}> = ({ mtr }) => {
+  memberTrackingRecords: RecordWithTrackingItem[];
+}> = ({ memberTrackingRecords }) => {
   return (
     <Container>
       {/* Map though items and create Table Data Rows */}
-      {mtr.map((trackingRecord) => (
+      {memberTrackingRecords.map((trackingRecord) => (
         <RecordRow key={trackingRecord.id} trackingRecord={trackingRecord} />
       ))}
     </Container>
