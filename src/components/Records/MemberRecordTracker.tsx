@@ -116,7 +116,9 @@ const initStateCategories = (
         else{
         //   // both records are relevant
           newState = sortMemberTrackingItemstrackingItemsByCategory(firstOrderRecord, newState)
-          secondOrderRecord ? newState = sortMemberTrackingItemstrackingItemsByCategory(secondOrderRecord, newState) : null
+          if(secondOrderRecord){
+          newState = sortMemberTrackingItemstrackingItemsByCategory(secondOrderRecord, newState)
+          }
         }
       }
       // if not active push to the archive category
