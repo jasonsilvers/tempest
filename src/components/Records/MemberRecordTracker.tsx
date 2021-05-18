@@ -177,7 +177,7 @@ const MemberItemTracker: React.FC<{
   }, [activeCategory, sortedByCategory]);
 
   return (
-    <div tw={'mr-5 pr-10 w-9/12'}>
+    <div tw='mr-5 pr-10 w-9/12'>
       <HeaderUser />
       <Header>Training Record</Header>
       <TabAndTableContainer ref={TabAndTableRef}>
@@ -221,7 +221,7 @@ const MemberItemTracker: React.FC<{
           </Tab>
         </TabContainer>
 
-        <RecordTable mtr={sortedByCategory[activeCategory]} />
+        <RecordTable memberTrackingRecords={sortedByCategory[activeCategory]} />
       </TabAndTableContainer>
     </div>
   );
