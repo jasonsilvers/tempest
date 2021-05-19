@@ -32,3 +32,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Local Dependency Checks
+
+Install dependency-check from brew
+* `brew install dependency-check`
+
+Run the npm script to check for issues.  This will auto open the report in HTML.  Other report formats are located in the .dependency-check folder.
+* `npm run dcheck`

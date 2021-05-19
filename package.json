@@ -18,7 +18,8 @@
     "db:seed": "prisma db seed --preview-feature --schema ./src/prisma/schema.prisma",
     "jwt-proxy": "jwt-proxy 9000 3000 --silent --jwt user.jwt",
     "db:reset": "prisma db push --schema ./src/prisma/schema.prisma --force-reset && npm run db:seed",
-    "db:generate": "prisma generate --schema ./src/prisma/schema.prisma"
+    "db:generate": "prisma generate --schema ./src/prisma/schema.prisma",
+    "dcheck": "mkdir -p .dependency-check && dependency-check --project .next --scan package-lock.json --format 'ALL' --out .dependency-check && open ./.dependency-check/dependency-check-report.html"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.3",
@@ -41,9 +42,9 @@
     "faker": "^5.5.3",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
-    "next": "10.0.5",
+    "next": "10.2.0",
     "node-fetch": "^2.6.1",
-    "postcss": "^8.2.8",
+    "postcss": "^8.2.15",
     "prisma": "^2.22.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
@@ -51,8 +52,8 @@
     "react-query": "^3.13.10",
     "styled-components": "^5.2.1",
     "superjson": "^1.7.2",
-    "tailwindcss": "^2.0.4",
-    "twin.macro": "^2.3.0",
+    "tailwindcss": "^2.1.2",
+    "twin.macro": "^2.4.1",
     "typeface-dm-sans": "^1.1.13",
     "typescript": "^4.2.2"
   },
