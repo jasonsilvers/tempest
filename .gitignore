@@ -5,6 +5,8 @@
 /.pnp
 .pnp.js
 postgres-data
+.dependency-check
+
 
 # testing
 /coverage
