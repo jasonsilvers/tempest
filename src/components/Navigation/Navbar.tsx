@@ -5,11 +5,7 @@ import { User } from '.prisma/client';
 import { TempestDrawer } from '../../lib/ui';
 
 const Navbar: React.FC = () => {
-  const { user, isLoading } = useUser<User>();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { user } = useUser<User>();
 
   return (
     <TempestDrawer>
@@ -18,7 +14,7 @@ const Navbar: React.FC = () => {
         <div tw="space-y-9">
           <Link goToUrl="/Dashboard">Dashboard</Link>
           <Link goToUrl="/Profile">Profile</Link>
-          <Link goToUrl="/Contact">Contact</Link>
+          <Link goToUrl="/Contact">Tracking Items</Link>
           <Link goToUrl="/Settings">Settings</Link>
         </div>
       ) : null}

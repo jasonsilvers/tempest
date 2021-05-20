@@ -7,8 +7,9 @@ import { NextApiResponse } from 'next';
 import { getAc } from '../../../middleware/utils';
 import {
   createMemberTrackingItem,
-  createTrackingRecord,
+  createMemberTrackingRecord,
   MemberTrackingItemWithMemberTrackingRecord,
+  MemberTrackingRecordWithTrackingItem,
 } from '../../../repositories/memberTrackingRepo';
 import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
@@ -43,7 +44,7 @@ const memberTrackingItemHandler = async (
       );
 
       if (create_member_tracking_record) {
-        const newMemberTrackingRecord = await createTrackingRecord(
+        const newMemberTrackingRecord: MemberTrackingRecordWithTrackingItem = await createMemberTrackingRecord(
           {
             traineeId: newMemberTrackingItem.userId,
             trackingItemId: newMemberTrackingItem.trackingItemId,

@@ -1,23 +1,20 @@
 import Head from 'next/head';
 import React from 'react';
-import Link from 'next/link';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useRouter } from 'next/router';
-import Button from '@material-ui/core/Button';
-import tw from 'twin.macro';
-
-const TempestButton = tw(Button)`bg-purple-300`;
+import { UserWithRole } from '../repositories/userRepo';
+import { ERole } from '../types/global';
 
 function Home() {
-  const { user, isLoading } = useUser();
+  const { user, isLoading } = useUser<UserWithRole>();
   const router = useRouter();
 
-  if (isLoading) {
-    return <div>We are logging you in... please stand by</div>;
+  if (!user && !isLoading) {
+    router.push('/Unauthenticated');
   }
 
-  if (!user) {
-    router.push('/Unauthenticated');
+  if (user?.role.name === ERole.MEMBER) {
+    router.push('/Profile');
   }
 
   return (
@@ -28,9 +25,7 @@ function Home() {
       </Head>
 
       <main>
-        <h1>Tempest</h1>
-        <Link href="/Dashboard"> Go to Dashboard </Link>
-        <TempestButton>Test</TempestButton>
+        <div>We are logging you in... please stand by</div>
       </main>
     </div>
   );

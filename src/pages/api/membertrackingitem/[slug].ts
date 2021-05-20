@@ -18,7 +18,7 @@ import {
 import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 
-export const memberTrackingItemHandlerSlug = async (
+const memberTrackingItemHandlerSlug = async (
   req: NextApiRequestWithAuthorization<UserWithRole>,
   res: NextApiResponse<MemberTrackingItem | ITempestApiError>
 ) => {

@@ -14,10 +14,80 @@ const memberTrackingItemGrants = [
     role: 'monitor',
   },
   {
+    action: 'delete:own',
+    attributes: '*',
+    resource: 'membertrackingitem',
+    role: 'member',
+  },
+  {
     action: 'update:any',
     attributes: 'isActive',
     resource: 'membertrackingitem',
     role: 'monitor',
+  },
+];
+
+const memberTrackingRecordsGrants = [
+  {
+    action: 'create:any',
+    attributes: '*',
+    resource: 'membertrackingrecord',
+    role: 'admin',
+  },
+  {
+    action: 'create:any',
+    attributes: '*',
+    resource: 'membertrackingrecord',
+    role: 'monitor',
+  },
+  {
+    action: 'create:own',
+    attributes: '*, !authorityId, !authoritySignedDate',
+    resource: 'membertrackingrecord',
+    role: 'member',
+  },
+  {
+    action: 'delete:any',
+    attributes: '*',
+    resource: 'membertrackingrecord',
+    role: 'monitor',
+  },
+  {
+    action: 'delete:any',
+    attributes: '*, !authorityId',
+    resource: 'membertrackingrecord',
+    role: 'member',
+  },
+
+  {
+    action: 'update:any',
+    attributes: 'authoritySignedDate, authorityId',
+    resource: 'membertrackingrecord',
+    role: 'monitor',
+  },
+  {
+    action: 'update:own',
+    attributes: 'traineeSignedDate',
+    resource: 'membertrackingrecord',
+    role: 'monitor',
+  },
+  {
+    action: 'update:own',
+    attributes: 'traineeSignedDate',
+    resource: 'membertrackingrecord',
+    role: 'member',
+  },
+  {
+    action: 'read:any',
+    attributes: '*',
+    resource: 'membertrackingrecord',
+    role: 'monitor',
+  },
+  {
+    action: 'read:any',
+    attributes: '*',
+    resource: 'membertrackingrecord',
+    role: 'admin',
   },
 ];
 
@@ -39,60 +109,7 @@ const userGrants = [
 export const grants = [
   ...memberTrackingItemGrants,
   ...userGrants,
-  {
-    action: 'create:any',
-    attributes: '*',
-    resource: 'tracking_record',
-    role: 'admin',
-  },
-  {
-    action: 'create:any',
-    attributes: '*',
-    resource: 'tracking_record',
-    role: 'monitor',
-  },
-  {
-    action: 'create:own',
-    attributes: '*, !authorityId, !authoritySignedDate',
-    resource: 'tracking_record',
-    role: 'member',
-  },
-  {
-    action: 'delete:any',
-    attributes: '*',
-    resource: 'tracking_record',
-    role: 'monitor',
-  },
-  {
-    action: 'delete:any',
-    attributes: '*, !authorityId',
-    resource: 'tracking_record',
-    role: 'member',
-  },
-  {
-    action: 'delete:own',
-    attributes: '*',
-    resource: 'member_tracking_item',
-    role: 'member',
-  },
-  {
-    action: 'update:any',
-    attributes: 'authoritySignedDate, authorityId',
-    resource: 'tracking_record',
-    role: 'monitor',
-  },
-  {
-    action: 'update:own',
-    attributes: 'traineeSignedDate',
-    resource: 'tracking_record',
-    role: 'monitor',
-  },
-  {
-    action: 'update:own',
-    attributes: 'traineeSignedDate',
-    resource: 'tracking_record',
-    role: 'member',
-  },
+  ...memberTrackingRecordsGrants,
   { action: 'read:any', attributes: '*', resource: 'profile', role: 'member' },
   {
     action: 'read:any',
@@ -101,18 +118,6 @@ export const grants = [
     role: 'monitor',
   },
   { action: 'read:any', attributes: '*', resource: 'profile', role: 'admin' },
-  {
-    action: 'read:any',
-    attributes: '*',
-    resource: 'tracking_record',
-    role: 'monitor',
-  },
-  {
-    action: 'read:any',
-    attributes: '*',
-    resource: 'tracking_record',
-    role: 'admin',
-  },
   {
     action: 'read:any',
     attributes: '*',
