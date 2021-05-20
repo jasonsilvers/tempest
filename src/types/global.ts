@@ -9,7 +9,7 @@ export enum EResource {
   RECORD = 'record',
   DASHBOARD = 'dashboard',
   PROFILE = 'profile',
-  TRACKING_RECORD = 'tracking_record',
+  MEMBER_TRACKING_RECORD = 'membertrackingrecord',
   TRACKING_ITEM = 'tracking_item',
   MEMBER_TRACKING_ITEM = 'membertrackingitem',
   TRAINEE_RECORDS = 'traineerecords',

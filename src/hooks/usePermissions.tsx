@@ -8,7 +8,8 @@ import { UserWithRole } from '../repositories/userRepo';
 import { EPermission, EResource } from '../types/global';
 
 const usePermissions = () => {
-  const { user } = useUser<UserWithRole>();
+  const { user, isLoading: userIsLoading } = useUser<UserWithRole>();
+  let isLoading = true;
 
   const grantsQuery = useQuery<Grant[]>(
     'grants',
@@ -37,10 +38,14 @@ const usePermissions = () => {
 
   if (grantsQuery.data) {
     ac = new AccessControl(grantsQuery.data);
-    role = user.role.name;
+    role = user.role?.name;
   }
 
-  return { ...grantsQuery, ac, role, permissionCheck };
+  if (!userIsLoading && !grantsQuery.isLoading) {
+    isLoading = false;
+  }
+
+  return { ...grantsQuery, isLoading, ac, role, permissionCheck, user };
 };
 
 export default usePermissions;

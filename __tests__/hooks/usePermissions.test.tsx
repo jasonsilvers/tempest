@@ -49,7 +49,7 @@ test('should return permission when checking create resourse', async () => {
   const permission = result.current.permissionCheck(
     'admin',
     EPermission.READ,
-    EResource.TRACKING_RECORD
+    EResource.MEMBER_TRACKING_RECORD
   );
 
   waitForNextUpdate();
@@ -78,7 +78,7 @@ test('sets granted to false when ac.can fails', async () => {
   const permission = result.current.permissionCheck(
     'NOROLEINGRANTS',
     EPermission.READ,
-    EResource.TRACKING_RECORD
+    EResource.MEMBER_TRACKING_RECORD
   );
 
   waitForNextUpdate();

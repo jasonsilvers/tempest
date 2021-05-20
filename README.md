@@ -36,7 +36,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ## Local Dependency Checks
 
 Install dependency-check from brew
-* `brew install dependency-check`
 
-Run the npm script to check for issues.  This will auto open the report in HTML.  Other report formats are located in the .dependency-check folder.
-* `npm run dcheck`
+- `brew install dependency-check`
+
+Run the npm script to check for issues. This will auto open the report in HTML. Other report formats are located in the .dependency-check folder.
+
+- `npm run dcheck`

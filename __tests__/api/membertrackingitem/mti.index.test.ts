@@ -4,7 +4,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import {
   createMemberTrackingItem,
-  createTrackingRecord,
+  createMemberTrackingRecord,
 } from '../../../src/repositories/memberTrackingRepo';
 import testNextApi from '../../utils/NextAPIUtils';
 import memberTrackingItemHandler from '../../../src/pages/api/membertrackingitem';
@@ -75,7 +75,10 @@ test('POST - should create member tracking item and member tracking record when 
   };
 
   mockMethodAndReturn(createMemberTrackingItem, returnedMemberTrackingItem);
-  mockMethodAndReturn(createTrackingRecord, returnedMemberTrackingRecordDB);
+  mockMethodAndReturn(
+    createMemberTrackingRecord,
+    returnedMemberTrackingRecordDB
+  );
 
   const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
     body: returnedMemberTrackingItem,

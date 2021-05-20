@@ -2,10 +2,14 @@ import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import React from 'react';
 import tw from 'twin.macro';
-import { SignatureButton, DoubleCheckMark } from '../../assets';
+// import { DoubleCheckMark } from '../../assets';
+import { SignatureButtonIcon, DoneAllIcon } from '../../assets/Icons';
 import { ECategories } from './MemberRecordTracker';
 import { UserWithRole } from '../../repositories/userRepo';
 import { useUser } from '@tron/nextjs-auth-p1';
+import { CircularProgress, IconButton } from '../../lib/ui';
+import { useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
+import { UseMutateFunction } from 'react-query';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -24,16 +28,10 @@ const daysToString = {
   365: 'Annual',
 };
 
-// box-sizing: border-box;
-// box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
-// border-radius: 5px;
-// styled twin elements
-// Double box shadow here to avoid border radius issues i was experiencing
-const TableRow = tw.div`text-black box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm flex items-center flex-wrap min-width[350px]`;
+const TableRow = tw.div`text-black box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm flex items-center flex-wrap min-width[350px] min-height[55px]`;
 const TableData = tw.div`py-3 font-size[12px] flex[0 0 auto] mx-3`;
 
-// const SignatureButton = tw.button`p-1.5 w-56 background-color[#A8ADB4] text-white text-center`;
-
+const SignatureButtonIconStyled = tw(SignatureButtonIcon)`text-gray-600`;
 const Token = tw.div`rounded h-5 w-5 mr-2`;
 const Overdue = tw(Token)`background-color[#AB0D0D]`;
 const Done = tw(Token)`background-color[#49C68A]`;
@@ -58,34 +56,47 @@ const TokenObj: { [K in ECategories]: typeof Token } = {
  * @returns
  */
 const getTraineeSignature = (
+  memberTrackingRecord: MemberTrackingRecord,
   signatureDate: Date,
-  signatureOwner: User,
+  loggedInUser: User,
+  signRecordFor: UseMutateFunction<
+    MemberTrackingRecord,
+    unknown,
+    { memberTrackingRecord: MemberTrackingRecord; userId: string }
+  >
 ) => {
-
   // fail back if the signatureOwner:User is false
   // would indicate data is still fetching
-  if (!signatureOwner) {
+  if (!loggedInUser) {
     return 'Fetching Data...';
   }
 
+  const handleSignTrainee = () => {
+    signRecordFor({ memberTrackingRecord, userId: loggedInUser.id });
+  };
 
   // if signature date is false and
   // user logged in is the signature owner
   // render button to sign
-  if (!signatureDate) {
-    return <SignatureButton tw="" />;
+  if (!signatureDate && memberTrackingRecord.traineeId === loggedInUser.id) {
+    return (
+      <IconButton size="small" onClick={handleSignTrainee}>
+        <SignatureButtonIconStyled size="32" />
+      </IconButton>
+    );
   }
   // if signature date is true and signature owner is true
   // render signature based on the signature owner and date
-  if (signatureOwner) {
-    return <DoubleCheckMark />;
+  if (loggedInUser) {
+    return <DoneAllIcon />;
   }
 };
 
 const RecordRow: React.FC<{
   trackingRecord: RecordWithTrackingItem;
 }> = ({ trackingRecord }) => {
-  const { user } = useUser<UserWithRole>();
+  const { user: LoggedInUser } = useUser<UserWithRole>();
+  const { mutate, isLoading } = useUpdateMemberTrackingRecord('sign_trainee');
 
   const DynamicToken = TokenObj[trackingRecord.status];
   return (
@@ -118,10 +129,18 @@ const RecordRow: React.FC<{
         </TableData>
       </div>
       <TableData tw="ml-auto mr-3 w-10">
-        {!trackingRecord.traineeSignedDate ? getTraineeSignature(
-          trackingRecord.traineeSignedDate,
-          user,
-        ): !trackingRecord.authoritySignedDate ? <DoubleCheckMark />: null}
+        {isLoading ? (
+          <CircularProgress tw="ml-2" size={18} />
+        ) : !trackingRecord.traineeSignedDate ? (
+          getTraineeSignature(
+            trackingRecord,
+            trackingRecord.traineeSignedDate,
+            LoggedInUser,
+            mutate
+          )
+        ) : !trackingRecord.authoritySignedDate ? (
+          <DoneAllIcon />
+        ) : null}
       </TableData>
     </TableRow>
   );

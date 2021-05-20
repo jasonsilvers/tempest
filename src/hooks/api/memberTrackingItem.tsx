@@ -8,13 +8,19 @@ const fetchUserWithTrackingItems = async (
   const { data } = await axios.get(
     `/api/user/${userId}/membertrackingitems?include=membertrackingrecords&include=trackingitems`
   );
+
   return data;
 };
 
-const useProfile = (userId: string) => {
-  return useQuery<UserWithAll, Error>(['profile', userId], () =>
-    fetchUserWithTrackingItems(userId)
+const useMemberTrackingItems = (userId: string) => {
+  return useQuery(
+    ['profile', userId],
+    () => fetchUserWithTrackingItems(userId),
+    {
+      select: (user) => user.memberTrackingItems,
+      enabled: !!userId,
+    }
   );
 };
 
-export { useProfile };
+export { useMemberTrackingItems };

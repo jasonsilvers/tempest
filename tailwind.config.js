@@ -5,7 +5,7 @@ module.exports = {
     extend: {
       colors: {
         primary: '#2D2270',
-        gray: '#F8F8F8',
+        tempestgray: '#F8F8F8',
         hg: '#7B7B7B',
       },
       fontFamily: {

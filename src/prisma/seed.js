@@ -78,6 +78,29 @@ async function main() {
     },
   });
 
+  const memberTrackingRecordResource = await prisma.resource.create({
+    data: {
+      name: 'membertrackingrecord',
+    },
+  });
+
+  await prisma.grant.create({
+    data: {
+      action: 'update:own',
+      attributes: 'traineeSignedDate',
+      resourceModel: {
+        connect: {
+          name: memberTrackingRecordResource.name,
+        },
+      },
+      roleModel: {
+        connect: {
+          name: memberRole.name,
+        },
+      },
+    },
+  });
+
   await prisma.grant.create({
     data: {
       action: 'read:any',

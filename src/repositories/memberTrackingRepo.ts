@@ -60,7 +60,7 @@ export const findMemberTrackingRecordById = async (id: number) => {
  * @param mtr : Member Tracking Record
  * @returns MemberTrackingRecord
  */
-export const createTrackingRecord = async (
+export const createMemberTrackingRecord = async (
   newMtr: Partial<MemberTrackingRecord>,
   { includeTrackingItem } = { includeTrackingItem: false }
 ) => {
@@ -83,7 +83,7 @@ export const createTrackingRecord = async (
       },
     },
     include: {
-      memberTrackingItems: includeTrackingItem,
+      trackingItem: includeTrackingItem,
     },
   });
 };
@@ -138,7 +138,7 @@ export const createMemberTrackingItem = async (newMti: MemberTrackingItem) => {
   });
 };
 
-type MemberTrackingRecordWithTrackingItem = MemberTrackingRecord & {
+export type MemberTrackingRecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
 };
 

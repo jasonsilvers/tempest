@@ -7,6 +7,7 @@ import { RecordWithTrackingItem } from './RecordRow';
 import HeaderUser from './RecordHeader';
 import Tab from './Tab';
 import { MemberTrackingItemWithMemberTrackingRecord } from '../../repositories/memberTrackingRepo';
+import { useProfile } from '../../hooks/api/profile';
 
 export enum ECategories {
   ALL = 'All',
@@ -139,19 +140,21 @@ const TabAndTableContainer = tw.div`flex flex-col min-w-min max-w-max`;
  *
  * Training Record Functional Component
  */
-const MemberItemTracker: React.FC<{
-  trackingItems: MemberTrackingItemWithMemberTrackingRecord[];
-}> = ({ trackingItems }) => {
+const MemberItemTracker: React.FC<{ userId: string }> = ({ userId }) => {
   // Query to fetch all users then save the data keyed by user id
 
+  const { data: profileData } = useProfile(userId);
+
+  const memberTrackingItems = profileData?.memberTrackingItems;
+
   const [sortedByCategory, setSortedByCategory] = useState(() =>
-    initStateCategories(trackingItems)
+    initStateCategories(memberTrackingItems)
   );
   const [activeCategory, setActiveCategory] = useState(ECategories.ALL);
 
   useMemo(() => {
-    setSortedByCategory(initStateCategories(trackingItems));
-  }, [trackingItems]);
+    setSortedByCategory(initStateCategories(memberTrackingItems));
+  }, [memberTrackingItems]);
 
   const toggleTab = (newCategory: ECategories) => {
     setActiveCategory(newCategory);
@@ -168,7 +171,9 @@ const MemberItemTracker: React.FC<{
       widthRef.current = width;
 
       if (
-        sortedByCategory[activeCategory].length > 0 && max_width !== 'max-content') {
+        sortedByCategory[activeCategory].length > 0 &&
+        max_width !== 'max-content'
+      ) {
         TabAndTableRef.current.style.maxWidth = 'max-content';
       } else {
         TabAndTableRef.current.style.maxWidth = widthRef.current + 'px';
@@ -177,7 +182,7 @@ const MemberItemTracker: React.FC<{
   }, [activeCategory, sortedByCategory]);
 
   return (
-    <div tw='mr-5 pr-10 w-9/12'>
+    <div tw="mr-5 pr-10 w-9/12">
       <HeaderUser />
       <Header>Training Record</Header>
       <TabAndTableContainer ref={TabAndTableRef}>
