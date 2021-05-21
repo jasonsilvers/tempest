@@ -3,7 +3,6 @@ import NavBar from '../components/Navigation/Navbar';
 import GlobalStyles from '../styles/GlobalStyles';
 import AppProviders from '../components/AppProviders';
 import tw from 'twin.macro';
-import 'typeface-dm-sans';
 
 const MainContent = tw.div`ml-80 mt-9`;
 
