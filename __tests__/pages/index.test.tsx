@@ -1,4 +1,4 @@
-import { render, waitFor } from '../utils/TempestTestUtils';
+import { render } from '../utils/TempestTestUtils';
 import Index from '../../src/pages/index';
 import { useTestUser } from '../utils/mocks/NextMocks';
 import { ERole } from '../../src/types/global';
