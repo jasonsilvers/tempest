@@ -10,7 +10,7 @@ it('routes the user to the Unauthenticated app', async () => {
   expect(push).toBeCalledWith('/Unauthenticated');
 });
 
-it('routes the user to the Unauthenticated app when loading', () => {
+it('routes the user to the Profile page if they have the role member', () => {
   useTestUser.mockImplementationOnce(() => ({
     isLoading: true,
     user: { firstName: 'bob', role: { name: ERole.MEMBER, id: 1 } },
