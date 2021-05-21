@@ -1,7 +1,7 @@
-import { User } from '@prisma/client';
 import { IUserContext } from '@tron/nextjs-auth-p1/dist/client/UserContextProvider';
 import * as router from 'next/router';
 import { NextRouter } from 'next/router';
+import { UserWithRole } from '../../../src/repositories/userRepo';
 
 export const useTestRouter: jest.SpyInstance<Partial<NextRouter>> = jest.spyOn(
   router,
@@ -9,6 +9,5 @@ export const useTestRouter: jest.SpyInstance<Partial<NextRouter>> = jest.spyOn(
 );
 
 export const useTestUser: jest.SpyInstance<
-  IUserContext<Partial<User>>
+  IUserContext<Partial<UserWithRole>>
 > = jest.spyOn(require('@tron/nextjs-auth-p1'), 'useUser');
-
