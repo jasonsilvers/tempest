@@ -25,7 +25,7 @@ const Tab: React.FC<{
 }> = ({ onClick, children, activeCategory, category, count }) => {
   return (
     <Container>
-      {activeCategory === children.toString() ? (
+      {activeCategory === category ? (
         <ActiveTab>{children}</ActiveTab>
       ) : (
         <InactiveTab onClick={() => onClick(category)} id={children.toString()}>

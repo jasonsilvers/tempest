@@ -38,6 +38,7 @@ const Done = tw(Token)`background-color[#49C68A]`;
 const All = Token;
 const SignatureRequired = tw(Token)`background-color[#4985c6]`;
 const Upcoming = tw(Token)`background-color[#FAC50A]`;
+const Draft = tw(Token)`background-color[#8b5cf6]`;
 const Archived = tw(Token)`bg-black`;
 const TokenObj: { [K in ECategories]: typeof Token } = {
   Overdue,
@@ -46,6 +47,7 @@ const TokenObj: { [K in ECategories]: typeof Token } = {
   SignatureRequired,
   Upcoming,
   Archived,
+  Draft,
 };
 /**
  * Function to determine render for the Trainee Signature Block
@@ -80,7 +82,11 @@ const getTraineeSignature = (
   // render button to sign
   if (!signatureDate && memberTrackingRecord.traineeId === loggedInUser.id) {
     return (
-      <IconButton size="small" onClick={handleSignTrainee}>
+      <IconButton
+        aria-label="signature-button"
+        size="small"
+        onClick={handleSignTrainee}
+      >
         <SignatureButtonIconStyled size="32" />
       </IconButton>
     );

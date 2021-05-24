@@ -84,6 +84,46 @@ async function main() {
     },
   });
 
+  const memberTrackingItemResource = await prisma.resource.create({
+    data: {
+      name: 'membertrackingitem',
+    },
+  });
+
+  await prisma.grant.create({
+    data: {
+      action: 'create:own',
+      attributes: '*',
+      resourceModel: {
+        connect: {
+          name: memberTrackingRecordResource.name,
+        },
+      },
+      roleModel: {
+        connect: {
+          name: memberRole.name,
+        },
+      },
+    },
+  });
+
+  await prisma.grant.create({
+    data: {
+      action: 'create:own',
+      attributes: '*',
+      resourceModel: {
+        connect: {
+          name: memberTrackingItemResource.name,
+        },
+      },
+      roleModel: {
+        connect: {
+          name: memberRole.name,
+        },
+      },
+    },
+  });
+
   await prisma.grant.create({
     data: {
       action: 'update:own',

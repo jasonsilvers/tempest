@@ -1,5 +1,6 @@
-import axios from 'axios';
-import { useQuery } from 'react-query';
+import { MemberTrackingItem } from '.prisma/client';
+import axios, { AxiosResponse } from 'axios';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { UserWithAll } from '../../repositories/userRepo';
 
 const fetchUserWithTrackingItems = async (
@@ -14,7 +15,7 @@ const fetchUserWithTrackingItems = async (
 
 const useMemberTrackingItems = (userId: string) => {
   return useQuery(
-    ['profile', userId],
+    ['membertrackingitems', userId],
     () => fetchUserWithTrackingItems(userId),
     {
       select: (user) => user.memberTrackingItems,
@@ -23,4 +24,28 @@ const useMemberTrackingItems = (userId: string) => {
   );
 };
 
-export { useMemberTrackingItems };
+const useCreateMemberTrackingItemAndRecord = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    AxiosResponse<MemberTrackingItem>,
+    unknown,
+    { newMemberTrackingItem: MemberTrackingItem; completedDate: string }
+  >(
+    ({ newMemberTrackingItem, completedDate }) =>
+      axios
+        .post(`/api/membertrackingitem`, newMemberTrackingItem, {
+          params: {
+            create_member_tracking_record: true,
+            complete_date: completedDate,
+          },
+        })
+        .then((result) => result.data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('profile');
+      },
+    }
+  );
+};
+
+export { useMemberTrackingItems, useCreateMemberTrackingItemAndRecord };

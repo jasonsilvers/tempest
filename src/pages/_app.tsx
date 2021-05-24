@@ -5,7 +5,6 @@ import AppProviders from '../components/AppProviders';
 import tw from 'twin.macro';
 
 const MainContent = tw.div`ml-80 mt-9`;
-
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');

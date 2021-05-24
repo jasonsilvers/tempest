@@ -3,6 +3,7 @@ import {
   NextApiRequestWithAuthorization,
   withApiAuth,
 } from '@tron/nextjs-auth-p1';
+import dayjs from 'dayjs';
 import { NextApiResponse } from 'next';
 import { getAc } from '../../../middleware/utils';
 import {
@@ -22,14 +23,17 @@ const memberTrackingItemHandler = async (
   const {
     body,
     method,
-    query: { create_member_tracking_record },
+    query: { create_member_tracking_record, complete_date },
   } = req;
+
+  const memberTrackingRecordCompleteDate = complete_date?.toString();
 
   const ac = await getAc();
 
-  const permission = ac
-    .can(req.user.role.name)
-    .create(EResource.MEMBER_TRACKING_ITEM);
+  const permission =
+    req.user.id !== body.userId
+      ? ac.can(req.user.role.name).create(EResource.MEMBER_TRACKING_ITEM)
+      : ac.can(req.user.role.name).createOwn(EResource.MEMBER_TRACKING_ITEM);
 
   if (!permission.granted) {
     return res
@@ -48,6 +52,7 @@ const memberTrackingItemHandler = async (
           {
             traineeId: newMemberTrackingItem.userId,
             trackingItemId: newMemberTrackingItem.trackingItemId,
+            completedDate: dayjs(memberTrackingRecordCompleteDate).toDate(),
           },
           { includeTrackingItem: true }
         );

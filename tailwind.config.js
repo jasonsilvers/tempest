@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 module.exports = {
   purge: [],
   darkMode: false, // or 'media' or 'class'
@@ -9,24 +11,8 @@ module.exports = {
         hg: '#7B7B7B',
       },
       fontFamily: {
-        sans: [
-          'ui-sans-serif',
-          'system-ui',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          '"Segoe UI"',
-          'Roboto',
-          '"Helvetica Neue"',
-          'Arial',
-          '"Noto Sans"',
-          'sans-serif',
-          '"Apple Color Emoji"',
-          '"Segoe UI Emoji"',
-          '"Segoe UI Symbol"',
-          '"Noto Color Emoji"',
-        ],
-        default: ['DM Sans'],
-        tempest: ['Reross'],
+        sans: ['Roboto', ...defaultTheme.fontFamily.sans],
+        default: ['Roboto'],
       },
       screens: {
         sm: '640px',

@@ -8,6 +8,8 @@ import HeaderUser from './RecordHeader';
 import Tab from './Tab';
 import { MemberTrackingItemWithMemberTrackingRecord } from '../../repositories/memberTrackingRepo';
 import { useProfile } from '../../hooks/api/profile';
+import { Link } from '../../lib/ui';
+import { AddMemberTrackingItemDialog } from './AddMemberTrackingItemDialog';
 
 export enum ECategories {
   ALL = 'All',
@@ -16,6 +18,7 @@ export enum ECategories {
   OVERDUE = 'Overdue',
   SIGNATURE_REQUIRED = 'SignatureRequired',
   ARCHIVED = 'Archived',
+  DRAFT = 'Draft',
 }
 
 /**
@@ -68,7 +71,10 @@ const sortMemberTrackingItemstrackingItemsByCategory = (
 
   const temp = { ...initObj };
   // if neither signature block is signed sort the item to Signature Required
-  if (
+  if (!trackingRecord?.completedDate) {
+    trackingRecord.status = ECategories.DRAFT;
+    temp[ECategories.DRAFT].push(trackingRecord);
+  } else if (
     !trackingRecord.traineeSignedDate ||
     !trackingRecord.authoritySignedDate
   ) {
@@ -98,6 +104,7 @@ const initStateCategories = (
     Overdue: [],
     SignatureRequired: [],
     Archived: [],
+    Draft: [],
   };
 
   if (trackingItems) {
@@ -110,7 +117,7 @@ const initStateCategories = (
         const secondOrderRecord = item.memberTrackingRecords[1] as RecordWithTrackingItem;
         // for long if block which is confusing when prettied
         // prettier-ignore
-        if ( firstOrderRecord.authoritySignedDate && firstOrderRecord.traineeSignedDate) {
+        if ( firstOrderRecord?.authoritySignedDate && firstOrderRecord?.traineeSignedDate) {
             // if both dates are signed then the secondOrderRecord is irrelevant
             newState = sortMemberTrackingItemstrackingItemsByCategory(firstOrderRecord, newState)
         }
@@ -151,6 +158,7 @@ const MemberItemTracker: React.FC<{ userId: string }> = ({ userId }) => {
     initStateCategories(memberTrackingItems)
   );
   const [activeCategory, setActiveCategory] = useState(ECategories.ALL);
+  const [openAddNewModal, setAddNewModal] = useState(false);
 
   useMemo(() => {
     setSortedByCategory(initStateCategories(memberTrackingItems));
@@ -224,10 +232,34 @@ const MemberItemTracker: React.FC<{ userId: string }> = ({ userId }) => {
           >
             Awaiting Signature
           </Tab>
+          <Tab
+            category={ECategories.DRAFT}
+            onClick={toggleTab}
+            activeCategory={activeCategory}
+            count={sortedByCategory.Draft.length}
+          >
+            Drafts
+          </Tab>
+          <Link
+            tw="italic font-semibold"
+            component="button"
+            variant="body2"
+            onClick={() => {
+              setAddNewModal(true);
+            }}
+          >
+            Add New +
+          </Link>
         </TabContainer>
 
         <RecordTable memberTrackingRecords={sortedByCategory[activeCategory]} />
       </TabAndTableContainer>
+      {openAddNewModal ? (
+        <AddMemberTrackingItemDialog
+          forMemberId={userId}
+          handleClose={() => setAddNewModal(false)}
+        ></AddMemberTrackingItemDialog>
+      ) : null}
     </div>
   );
 };
