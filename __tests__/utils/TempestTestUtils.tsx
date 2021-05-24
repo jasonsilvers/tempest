@@ -53,12 +53,13 @@ const Wrapper: React.FC<IWrapperProps> = (props) => {
 
 const render = (
   component: JSX.Element,
-  { nextJSRoute = '/', ...options } = {}
+  { nextJSRoute = '/', push = jest.fn(), ...options } = {}
 ) => {
   useTestRouter.mockImplementation(() => ({
     route: nextJSRoute,
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     prefetch: async () => {},
+    push,
   }));
 
   return rtlRender(component, {
