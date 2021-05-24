@@ -5,7 +5,7 @@ import {
   findUserById,
   updateTempestUserFromCommonApi,
 } from '../../../repositories/userRepo';
-import { IncomingHttpHeaders } from 'node:http';
+import { IncomingHttpHeaders } from 'http';
 import signatureRequired from '../../../middleware/signatureRequired';
 import { getPersonFromCommonApiById } from '../../../repositories/common/commonRepo';
 
