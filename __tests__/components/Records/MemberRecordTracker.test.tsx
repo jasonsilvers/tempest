@@ -44,7 +44,7 @@ test('should render a record requiring signature - authority signed', async () =
           traineeId: '123',
           authorityId: '321',
           authoritySignedDate: dayjs().toDate(),
-          completedDate: null,
+          completedDate: dayjs().toDate(),
           traineeSignedDate: null,
         },
       ],
@@ -159,6 +159,52 @@ test('should render a record that is done', async () => {
 
   expect(fire).toBeInTheDocument();
   fireEvent.click(doneTab);
+  expect(fire).toBeInTheDocument();
+});
+
+test('should render a record that is in draft', async () => {
+  const memberTrackingItems: MemberTrackingItemWithMemberTrackingRecord[] = [
+    {
+      isActive: true,
+      trackingItemId: 1,
+      userId: '123',
+      memberTrackingRecords: [
+        {
+          id: 1,
+          order: 0,
+          trackingItemId: 1,
+          trackingItem: {
+            id: 1,
+            title: 'Fire Safety',
+            interval: 365,
+            description: 'how to be safe with fire',
+          },
+          traineeId: '123',
+          authorityId: '321',
+          authoritySignedDate: null,
+          completedDate: null,
+          traineeSignedDate: null,
+        },
+      ],
+    },
+  ];
+
+  server.use(
+    rest.get('/api/user/*', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
+    })
+  );
+
+  const { getByText } = render(<MemberRecordTracker userId={user.id} />);
+
+  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
+  await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
+
+  const fire = getByText(/fire/i);
+  const draftTab = getByText(/drafts/i);
+
+  expect(fire).toBeInTheDocument();
+  fireEvent.click(draftTab);
   expect(fire).toBeInTheDocument();
 });
 
@@ -465,9 +511,11 @@ test('should sign record as trainee and mark as done', async () => {
     })
   );
 
-  const signatureButton = getByRole('button');
+  const signatureButton = getByRole('button', { name: 'signature-button' });
   fireEvent.click(signatureButton);
-  await waitForElementToBeRemoved(() => getByRole('button'));
+  await waitForElementToBeRemoved(() =>
+    getByRole('button', { name: 'signature-button' })
+  );
 
   const loadingSpinner = getByRole('progressbar');
   expect(loadingSpinner).toBeInTheDocument();
@@ -476,7 +524,9 @@ test('should sign record as trainee and mark as done', async () => {
   expect(loadingSpinner).not.toBeInTheDocument();
 
   //Have to await the invalidation of profile from signing
-  await waitForElementToBeRemoved(() => getByRole('button'));
+  await waitForElementToBeRemoved(() =>
+    getByRole('button', { name: 'signature-button' })
+  );
 
   const fire = queryByText(/fire/i);
   const doneTab = getByText(/done/i);
