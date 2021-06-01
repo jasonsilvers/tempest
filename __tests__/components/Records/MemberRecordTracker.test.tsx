@@ -1,114 +1,125 @@
-import {
-  fireEvent,
-  render,
-  waitFor,
-  waitForElementToBeRemoved,
-  rtlRender,
-  createWrapper,
-  createTestQueryClient,
-} from '../../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
 import React from 'react';
 import MemberRecordTracker from '../../../src/components/Records/MemberRecordTracker';
-import { MemberTrackingItemWithMemberTrackingRecord } from '../../../src/repositories/memberTrackingRepo';
-import { server } from '../../utils/mocks/msw';
 import { rest } from 'msw';
 import dayjs from 'dayjs';
 import 'whatwg-fetch';
-import { ERole } from '../../../src/types/global';
+import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';
+import { TrackingItem } from '.prisma/client';
+import { User } from '@prisma/client';
+import { server } from '../../utils/mocks/msw';
 
-const user = {
+const testUser: Partial<User> = {
   id: '123',
   firstName: 'bob',
   lastName: 'jones',
-  role: ERole.MEMBER,
-  memberTrackingItems: [],
 };
 
+const fireSafetyItem: TrackingItem = {
+  id: 1,
+  title: 'Fire Safety',
+  interval: 365,
+  description: 'how to be safe with fire',
+};
+
+// use Member tracking items
+const memberTrackingItemsGet = (user, memberTrackingItems) =>
+  rest.get(`/api/user/${user.id}/membertrackingitems`, (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
+  });
+// use member tracking item single
+const memberTrackingItemGet = (memberTrackingItem) =>
+  rest.get(`/api/membertrackingitem`, (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(memberTrackingItem));
+  });
+// use member tracking record
+const memberTrackingRecordGet = (memberTrackingRecord) =>
+  rest.get(`/api/membertrackingrecord/${memberTrackingRecord.id}`, (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(memberTrackingRecord));
+  });
+
 test('should render a record requiring signature - authority signed', async () => {
-  const memberTrackingItems: MemberTrackingItemWithMemberTrackingRecord[] = [
+  const memberTrackingItems_authSigned: MemberTrackingItemWithAll[] = [
     {
       isActive: true,
       trackingItemId: 1,
       userId: '123',
+      trackingItem: fireSafetyItem,
+      user: testUser as User,
       memberTrackingRecords: [
         {
           id: 1,
           order: 0,
           trackingItemId: 1,
-          trackingItem: {
-            id: 1,
-            title: 'Fire Safety',
-            interval: 365,
-            description: 'how to be safe with fire',
-          },
+          trackingItem: fireSafetyItem,
           traineeId: '123',
           authorityId: '321',
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs().toDate(),
           traineeSignedDate: null,
+          trainee: null,
+          authority: null,
         },
       ],
     },
   ];
 
   server.use(
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
-    })
+    memberTrackingItemsGet(testUser, memberTrackingItems_authSigned),
+    memberTrackingItemGet(memberTrackingItems_authSigned[0]),
+    memberTrackingRecordGet(memberTrackingItems_authSigned[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={user.id} />);
+  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
   await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
-
-  const fire = getByText(/fire/i);
+  const fire = await waitFor(() => getByText(/fire/i));
   const signatureTab = getByText(/sign/i);
 
   expect(fire).toBeInTheDocument();
   fireEvent.click(signatureTab);
+
   expect(fire).toBeInTheDocument();
 });
 
 test('should render a record requiring signature - trainee signed', async () => {
-  const memberTrackingItems: MemberTrackingItemWithMemberTrackingRecord[] = [
+  const memberTrackingItems_traineeSigned: MemberTrackingItemWithAll[] = [
     {
       isActive: true,
       trackingItemId: 1,
-      userId: '123',
+      userId: testUser.id,
+      trackingItem: fireSafetyItem,
+      user: testUser as User,
       memberTrackingRecords: [
         {
-          id: 1,
+          id: 2,
           order: 0,
           trackingItemId: 1,
-          trackingItem: {
-            id: 1,
-            title: 'Fire Safety',
-            interval: 365,
-            description: 'how to be safe with fire',
-          },
+          trackingItem: fireSafetyItem,
           traineeId: '123',
-          authorityId: null,
+          authorityId: '321',
           authoritySignedDate: null,
           completedDate: dayjs().toDate(),
           traineeSignedDate: dayjs().toDate(),
+          trainee: null,
+          authority: null,
         },
       ],
     },
   ];
 
   server.use(
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
-    })
+    memberTrackingItemsGet(testUser, memberTrackingItems_traineeSigned),
+    memberTrackingItemGet(memberTrackingItems_traineeSigned[0]),
+    memberTrackingRecordGet(memberTrackingItems_traineeSigned[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={user.id} />);
+  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
   await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
-
-  const fire = getByText(/fire/i);
+  const fire = await waitFor(() => getByText(/fire/i));
   const signatureTab = getByText(/sign/i);
 
   expect(fire).toBeInTheDocument();
@@ -117,366 +128,207 @@ test('should render a record requiring signature - trainee signed', async () => 
 });
 
 test('should render a record that is done', async () => {
-  const memberTrackingItems: MemberTrackingItemWithMemberTrackingRecord[] = [
+  const memberTrackingItems_done: MemberTrackingItemWithAll[] = [
     {
       isActive: true,
       trackingItemId: 1,
-      userId: '123',
+      userId: testUser.id,
+      trackingItem: fireSafetyItem,
+      user: testUser as User,
       memberTrackingRecords: [
         {
-          id: 1,
+          id: 3,
           order: 0,
           trackingItemId: 1,
-          trackingItem: {
-            id: 1,
-            title: 'Fire Safety',
-            interval: 365,
-            description: 'how to be safe with fire',
-          },
+          trackingItem: fireSafetyItem,
           traineeId: '123',
           authorityId: '321',
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs().toDate(),
           traineeSignedDate: dayjs().toDate(),
+          trainee: null,
+          authority: null,
         },
       ],
     },
   ];
 
   server.use(
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
-    })
+    memberTrackingItemsGet(testUser, memberTrackingItems_done),
+    memberTrackingItemGet(memberTrackingItems_done[0]),
+    memberTrackingRecordGet(memberTrackingItems_done[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={user.id} />);
+  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
   await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
 
-  const fire = getByText(/fire/i);
+  const fire = await waitFor(() => getByText(/fire/i));
   const doneTab = getByText(/done/i);
+  const overdue = getByText(/over/i);
 
   expect(fire).toBeInTheDocument();
   fireEvent.click(doneTab);
   expect(fire).toBeInTheDocument();
-});
-
-test('should render a record that is in draft', async () => {
-  const memberTrackingItems: MemberTrackingItemWithMemberTrackingRecord[] = [
-    {
-      isActive: true,
-      trackingItemId: 1,
-      userId: '123',
-      memberTrackingRecords: [
-        {
-          id: 1,
-          order: 0,
-          trackingItemId: 1,
-          trackingItem: {
-            id: 1,
-            title: 'Fire Safety',
-            interval: 365,
-            description: 'how to be safe with fire',
-          },
-          traineeId: '123',
-          authorityId: '321',
-          authoritySignedDate: null,
-          completedDate: null,
-          traineeSignedDate: null,
-        },
-      ],
-    },
-  ];
-
-  server.use(
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
-    })
-  );
-
-  const { getByText } = render(<MemberRecordTracker userId={user.id} />);
-
-  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-  await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
-
-  const fire = getByText(/fire/i);
-  const draftTab = getByText(/drafts/i);
-
-  expect(fire).toBeInTheDocument();
-  fireEvent.click(draftTab);
-  expect(fire).toBeInTheDocument();
+  fireEvent.click(overdue);
+  expect(fire).not.toBeInTheDocument();
 });
 
 test('should render a record that is coming due', async () => {
-  const memberTrackingItems: MemberTrackingItemWithMemberTrackingRecord[] = [
+  const memberTrackingItems_upcoming: MemberTrackingItemWithAll[] = [
     {
       isActive: true,
       trackingItemId: 1,
-      userId: '123',
+      userId: testUser.id,
+      trackingItem: fireSafetyItem,
+      user: testUser as User,
       memberTrackingRecords: [
         {
-          id: 1,
+          id: 3,
           order: 0,
           trackingItemId: 1,
-          trackingItem: {
-            id: 1,
-            title: 'Fire Safety',
-            interval: 365,
-            description: 'how to be safe with fire',
-          },
+          trackingItem: fireSafetyItem,
           traineeId: '123',
           authorityId: '321',
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs()
-            .subtract(365 - 30, 'days')
+            .subtract(365 - 10, 'days')
             .toDate(),
           traineeSignedDate: dayjs().toDate(),
+          trainee: null,
+          authority: null,
         },
       ],
     },
   ];
 
   server.use(
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
-    })
+    memberTrackingItemsGet(testUser, memberTrackingItems_upcoming),
+    memberTrackingItemGet(memberTrackingItems_upcoming[0]),
+    memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={user.id} />);
+  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
   await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
 
-  const fire = getByText(/fire/i);
-  const comingTab = getByText(/coming/i);
+  const fire = await waitFor(() => getByText(/fire/i));
+  const upcomingTab = getByText(/upcoming/i);
+  const overdue = getByText(/over/i);
 
   expect(fire).toBeInTheDocument();
-  fireEvent.click(comingTab);
+  fireEvent.click(upcomingTab);
   expect(fire).toBeInTheDocument();
+  fireEvent.click(overdue);
+  expect(fire).not.toBeInTheDocument();
 });
 
 test('should render a record that is overdue', async () => {
-  const memberTrackingItems: MemberTrackingItemWithMemberTrackingRecord[] = [
+  const memberTrackingItems_upcoming: MemberTrackingItemWithAll[] = [
     {
       isActive: true,
       trackingItemId: 1,
-      userId: '123',
+      userId: testUser.id,
+      trackingItem: fireSafetyItem,
+      user: testUser as User,
       memberTrackingRecords: [
         {
-          id: 1,
+          id: 3,
           order: 0,
           trackingItemId: 1,
-          trackingItem: {
-            id: 1,
-            title: 'Fire Safety',
-            interval: 365,
-            description: 'how to be safe with fire',
-          },
+          trackingItem: fireSafetyItem,
           traineeId: '123',
           authorityId: '321',
           authoritySignedDate: dayjs().toDate(),
-          completedDate: dayjs().subtract(370, 'days').toDate(),
+          completedDate: dayjs().subtract(366, 'days').toDate(),
           traineeSignedDate: dayjs().toDate(),
+          trainee: null,
+          authority: null,
         },
       ],
     },
   ];
 
   server.use(
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
-    })
+    memberTrackingItemsGet(testUser, memberTrackingItems_upcoming),
+    memberTrackingItemGet(memberTrackingItems_upcoming[0]),
+    memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={user.id} />);
+  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
   await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
 
-  const fire = getByText(/fire/i);
+  const fire = await waitFor(() => getByText(/fire/i));
   const overdueTab = getByText(/overdue/i);
+  const upcomingTab = getByText(/upcoming/i);
 
   expect(fire).toBeInTheDocument();
   fireEvent.click(overdueTab);
   expect(fire).toBeInTheDocument();
-});
-
-test('should render a record that is overdue', async () => {
-  const memberTrackingItems: MemberTrackingItemWithMemberTrackingRecord[] = [
-    {
-      isActive: false,
-      trackingItemId: 1,
-      userId: '123',
-      memberTrackingRecords: [
-        {
-          id: 1,
-          order: 0,
-          trackingItemId: 1,
-          trackingItem: {
-            id: 1,
-            title: 'Fire Safety',
-            interval: 365,
-            description: 'how to be safe with fire',
-          },
-          traineeId: '123',
-          authorityId: '321',
-          authoritySignedDate: dayjs().toDate(),
-          completedDate: dayjs().subtract(370, 'days').toDate(),
-          traineeSignedDate: dayjs().toDate(),
-        },
-      ],
-    },
-  ];
-
-  server.use(
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
-    })
-  );
-
-  const { queryByText } = render(<MemberRecordTracker userId={user.id} />);
-
-  await waitFor(() => expect(queryByText(/all/i)).toBeInTheDocument());
-  await waitFor(() => expect(queryByText(/bob/i)).toBeInTheDocument());
-
-  const fire = queryByText(/fire/i);
-
+  fireEvent.click(upcomingTab);
   expect(fire).not.toBeInTheDocument();
 });
 
-test('should render old and new record if not signed by both yet', async () => {
-  const memberTrackingItems: MemberTrackingItemWithMemberTrackingRecord[] = [
+test('should sign record as trainee and mark as done', async () => {
+  const memberTrackingItems_upcoming: MemberTrackingItemWithAll[] = [
     {
-      // false here
       isActive: true,
       trackingItemId: 1,
-      userId: '123',
+      userId: testUser.id,
+      trackingItem: fireSafetyItem,
+      user: testUser as User,
       memberTrackingRecords: [
         {
-          id: 2,
-          order: 1,
-          trackingItemId: 1,
-          trackingItem: {
-            id: 1,
-            title: 'Fire Safety',
-            interval: 365,
-            description: 'how to be safe with fire',
-          },
-          traineeId: '123',
-          authorityId: '321',
-          authoritySignedDate: null,
-          completedDate: dayjs().subtract(10, 'days').toDate(),
-          traineeSignedDate: dayjs().toDate(),
-        },
-        {
-          id: 1,
+          id: 3,
           order: 0,
           trackingItemId: 1,
-          trackingItem: {
-            id: 1,
-            title: 'Fire Safety',
-            interval: 365,
-            description: 'how to be safe with fire',
-          },
+          trackingItem: fireSafetyItem,
           traineeId: '123',
           authorityId: '321',
           authoritySignedDate: dayjs().toDate(),
-          completedDate: dayjs().subtract(370, 'days').toDate(),
-          traineeSignedDate: dayjs().toDate(),
+          completedDate: dayjs().toDate(),
+          traineeSignedDate: null,
+          trainee: null,
+          authority: null,
         },
       ],
     },
   ];
 
-  server.use(
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
-    })
-  );
-
-  const { getAllByText, getByText } = render(
-    <MemberRecordTracker userId={user.id} />
-  );
-
-  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-  await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
-
-  const fire = getAllByText(/fire/i);
-  expect(fire.length).toBe(2);
-});
-
-test('should sign record as trainee and mark as done', async () => {
-  const userToBeReturnedFirstTime = {
-    id: '123',
-    firstName: 'bob',
-    lastName: 'jones',
-    role: ERole.MEMBER,
-    memberTrackingItems: [
-      {
-        isActive: true,
-        trackingItemId: 1,
-        userId: '123',
-        memberTrackingRecords: [
-          {
-            id: 1,
-            order: 0,
-            trackingItemId: 1,
-            trackingItem: {
-              id: 1,
-              title: 'Fire Safety',
-              interval: 365,
-              description: 'how to be safe with fire',
-            },
-            traineeId: '123',
-            authorityId: '321',
-            authoritySignedDate: dayjs('2021-04-14').toDate(),
-            completedDate: dayjs().toDate(),
-            traineeSignedDate: null,
-          },
-        ],
-      },
-    ],
-  };
-
-  const userToBeReturnedTheSecondTime = {
-    id: '123',
-    firstName: 'bob',
-    lastName: 'jones',
-    role: ERole.MEMBER,
-    memberTrackingItems: [
-      {
-        isActive: true,
-        trackingItemId: 1,
-        userId: '123',
-        memberTrackingRecords: [
-          {
-            id: 1,
-            order: 0,
-            trackingItemId: 1,
-            trackingItem: {
-              id: 1,
-              title: 'Fire Safety',
-              interval: 365,
-              description: 'how to be safe with fire',
-            },
-            traineeId: '123',
-            authorityId: '321',
-            authoritySignedDate: dayjs('2021-04-14').toDate(),
-            completedDate: dayjs().toDate(),
-            traineeSignedDate: dayjs().toDate(),
-          },
-        ],
-      },
-    ],
-  };
+  const memberTrackingItems_Done: MemberTrackingItemWithAll[] = [
+    {
+      ...memberTrackingItems_upcoming[0],
+      memberTrackingRecords: [
+        { ...memberTrackingItems_upcoming[0].memberTrackingRecords[0], traineeSignedDate: dayjs().toDate() },
+      ],
+    },
+  ];
 
   server.use(
+    memberTrackingItemsGet(testUser, memberTrackingItems_upcoming),
+    memberTrackingItemGet(memberTrackingItems_upcoming[0]),
+    memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
+  );
+
+  const { getByText, getByRole, queryByText } = render(<MemberRecordTracker userId={testUser.id} />);
+
+  await waitFor(() => getByText(/fire/i));
+  await waitFor(() => getByText(/completed/i));
+  const signatureButton = getByRole('button', { name: 'signature-button' });
+
+  server.use(
+    memberTrackingItemsGet(testUser, memberTrackingItems_Done),
+    memberTrackingItemGet(memberTrackingItems_Done[0]),
+    memberTrackingRecordGet(memberTrackingItems_Done[0].memberTrackingRecords[0]),
     rest.post('/api/membertrackingrecord/*', (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
-          id: 1,
+          id: 3,
           order: 0,
           trackingItemId: 1,
           traineeId: '123',
@@ -486,52 +338,21 @@ test('should sign record as trainee and mark as done', async () => {
           traineeSignedDate: dayjs().toDate(),
         })
       );
-    }),
-
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userToBeReturnedFirstTime));
     })
   );
 
-  const queryClient = createTestQueryClient();
-  queryClient.setQueryData(['profile', '123'], userToBeReturnedFirstTime);
-
-  const { getByText, getByRole, queryByText } = rtlRender(
-    <MemberRecordTracker userId={user.id} />,
-    {
-      wrapper: createWrapper(queryClient),
-    }
-  );
-
-  await waitForElementToBeRemoved(() => getByText(/Fetching Data.../i));
-
-  server.use(
-    rest.get('/api/user/*', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userToBeReturnedTheSecondTime));
-    })
-  );
-
-  const signatureButton = getByRole('button', { name: 'signature-button' });
   fireEvent.click(signatureButton);
-  await waitForElementToBeRemoved(() =>
-    getByRole('button', { name: 'signature-button' })
-  );
+  await waitForElementToBeRemoved(() => getByRole('button', { name: 'signature-button' }));
 
   const loadingSpinner = getByRole('progressbar');
   expect(loadingSpinner).toBeInTheDocument();
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
+  await waitForElementToBeRemoved(() => getByRole('button', { name: 'signature-button' }));
 
-  expect(loadingSpinner).not.toBeInTheDocument();
-
-  //Have to await the invalidation of profile from signing
-  await waitForElementToBeRemoved(() =>
-    getByRole('button', { name: 'signature-button' })
-  );
-
-  const fire = queryByText(/fire/i);
   const doneTab = getByText(/done/i);
 
   fireEvent.click(doneTab);
+  const fire = queryByText(/fire/i);
 
   expect(fire).toBeInTheDocument();
 });

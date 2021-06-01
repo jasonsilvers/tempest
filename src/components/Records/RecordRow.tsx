@@ -1,15 +1,16 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { useLayoutEffect, useMemo } from 'react';
 import tw from 'twin.macro';
-// import { DoubleCheckMark } from '../../assets';
-import { SignatureButtonIcon, DoneAllIcon } from '../../assets/Icons';
-import { ECategories } from './MemberRecordTracker';
+import { SignatureButtonIcon, DoneIcon } from '../../assets/Icons';
 import { UserWithRole } from '../../repositories/userRepo';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { CircularProgress, IconButton } from '../../lib/ui';
-import { useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
+import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 import { UseMutateFunction } from 'react-query';
+import { useMemberRecordTrackerState } from '../../hooks/uiState';
+import { getCategory } from '../../utils/Status';
+import { ECategories } from '../../types/global';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -80,13 +81,9 @@ const getTraineeSignature = (
   // if signature date is false and
   // user logged in is the signature owner
   // render button to sign
-  if (!signatureDate && memberTrackingRecord.traineeId === loggedInUser.id) {
+  if (!signatureDate && memberTrackingRecord?.traineeId === loggedInUser?.id) {
     return (
-      <IconButton
-        aria-label="signature-button"
-        size="small"
-        onClick={handleSignTrainee}
-      >
+      <IconButton aria-label="signature-button" size="small" onClick={handleSignTrainee}>
         <SignatureButtonIconStyled size="32" />
       </IconButton>
     );
@@ -94,58 +91,86 @@ const getTraineeSignature = (
   // if signature date is true and signature owner is true
   // render signature based on the signature owner and date
   if (loggedInUser) {
-    return <DoneAllIcon />;
+    return <DoneIcon />;
   }
 };
 
 const RecordRow: React.FC<{
-  trackingRecord: RecordWithTrackingItem;
-}> = ({ trackingRecord }) => {
+  memberTrackingRecordId: number;
+  trackingItem: TrackingItem;
+}> = ({ memberTrackingRecordId, trackingItem }) => {
   const { user: LoggedInUser } = useUser<UserWithRole>();
   const { mutate, isLoading } = useUpdateMemberTrackingRecord('sign_trainee');
+  const [activeCategory, increaseCountOfTheEnumPassedHere] = useMemberRecordTrackerState((state) => [
+    state.activeCategory,
+    state.increaseCategoryCount,
+  ]);
 
-  const DynamicToken = TokenObj[trackingRecord.status];
+  const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
+
+  // increase count
+  useLayoutEffect(() => {
+    if (trackingRecordQuery.data) {
+      increaseCountOfTheEnumPassedHere(getCategory(trackingRecordQuery.data, trackingItem?.interval));
+    }
+  }, [trackingRecordQuery.data]);
+
+  const status = useMemo(() => {
+    if (trackingRecordQuery.data) {
+      return getCategory(trackingRecordQuery.data, trackingItem?.interval);
+    }
+  }, [trackingRecordQuery.data, trackingItem?.interval]);
+
+  if (activeCategory !== ECategories.ALL) {
+    if (activeCategory !== status) {
+      return null;
+    }
+  }
+
+  if (trackingRecordQuery.isLoading) {
+    return <div>...Loading</div>;
+  }
+
+  const DynamicToken = TokenObj[status];
   return (
     <TableRow>
       <TableData tw={'font-size[16px] overflow-ellipsis w-56'}>
         <div tw={'flex'}>
           <DynamicToken />
-          {trackingRecord.trackingItem.title}
+          {trackingItem?.title}
+          {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
         </div>
       </TableData>
       <TableData tw={'text-purple-500 w-20 ml-auto text-right'}>
         {/* get the common text for number of days if exits else render '## days' */}
-        {daysToString[trackingRecord.trackingItem.interval] ??
-          `${trackingRecord.trackingItem.interval} days`}
+        {daysToString[trackingItem?.interval] ?? `${trackingItem?.interval} days`}
       </TableData>
       <div tw="flex w-72 justify-between">
         <TableData tw="w-36">
           <>
             <span tw={'opacity-40'}>Completed: </span>
-            {dayjs(trackingRecord.completedDate).format('DD MMM YY')}
+            {dayjs(trackingRecordQuery.data?.completedDate).format('DD MMM YY')}
           </>
         </TableData>
         <TableData tw="w-36">
           <>
             <span tw={'opacity-40'}>Due: </span>
-            {dayjs(trackingRecord.completedDate)
-              .add(trackingRecord.trackingItem.interval, 'days')
-              .format('DD MMM YY')}
+            {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}
           </>
         </TableData>
       </div>
       <TableData tw="ml-auto mr-3 w-10">
         {isLoading ? (
           <CircularProgress tw="ml-2" size={18} />
-        ) : !trackingRecord.traineeSignedDate ? (
+        ) : !trackingRecordQuery.data?.traineeSignedDate ? (
           getTraineeSignature(
-            trackingRecord,
-            trackingRecord.traineeSignedDate,
+            trackingRecordQuery.data,
+            trackingRecordQuery.data?.traineeSignedDate,
             LoggedInUser,
             mutate
           )
-        ) : !trackingRecord.authoritySignedDate ? (
-          <DoneAllIcon />
+        ) : !trackingRecordQuery.data?.authoritySignedDate ? (
+          <DoneIcon />
         ) : null}
       </TableData>
     </TableRow>

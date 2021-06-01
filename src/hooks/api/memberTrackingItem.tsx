@@ -1,36 +1,73 @@
-import { MemberTrackingItem } from '.prisma/client';
-import axios, { AxiosResponse } from 'axios';
+import { MemberTrackingItem, TrackingItem } from '.prisma/client';
+import { MemberTrackingRecord } from '@prisma/client';
+import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { MemberTrackingItemWithAll } from '../../repositories/memberTrackingRepo';
 import { UserWithAll } from '../../repositories/userRepo';
 
-const fetchUserWithTrackingItems = async (
-  userId: string
-): Promise<UserWithAll> => {
-  const { data } = await axios.get(
-    `/api/user/${userId}/membertrackingitems?include=membertrackingrecords&include=trackingitems`
-  );
+export const mtiQueryKeys = {
+  memberTrackingItems: (userId: string) => ['membertrackingitems', userId],
+  memberTrackingItem: (userId: string, trackingItemId: number) => ['membertrackingitem', userId, trackingItemId],
+};
+
+const fetchUserWithMemberTrackingItems = async (userId: string): Promise<UserWithAll> => {
+  const { data } = await axios.get(`/api/user/${userId}/membertrackingitems`);
 
   return data;
 };
 
+/**
+ * Array MTI Query
+ * @param userId
+ * @returns
+ */
 const useMemberTrackingItems = (userId: string) => {
-  return useQuery(
-    ['membertrackingitems', userId],
-    () => fetchUserWithTrackingItems(userId),
+  return useQuery<UserWithAll, unknown, MemberTrackingItem[]>(
+    mtiQueryKeys.memberTrackingItems(userId),
+    () => fetchUserWithMemberTrackingItems(userId),
     {
-      select: (user) => user.memberTrackingItems,
+      select: (user) => {
+        return user.memberTrackingItems;
+      },
       enabled: !!userId,
+    }
+  );
+};
+
+type MemberTrackingItemData = MemberTrackingItem & {
+  trackingItem: TrackingItem;
+  memberTrackingRecords: Pick<MemberTrackingRecord, 'id'>[];
+};
+/**
+ * Single MTI Query
+ * @param userId
+ * @param trackingItemId
+ * @returns
+ */
+export const useMemberTrackingItem = (userId: string, trackingItemId: number) => {
+  return useQuery<MemberTrackingItemWithAll, unknown, MemberTrackingItemData>(
+    mtiQueryKeys.memberTrackingItem(userId, trackingItemId),
+    () =>
+      axios
+        .get(
+          `/api/membertrackingitem?userId=${userId}&trackingItemId=${trackingItemId}&include=membertrackingrecords&include=trackingitems`
+        )
+        .then((response) => response.data),
+    {
+      enabled: !!userId && !!trackingItemId,
+      select: (memberTrackingItem): MemberTrackingItemData => {
+        return {
+          ...memberTrackingItem,
+          memberTrackingRecords: memberTrackingItem.memberTrackingRecords.map((i) => ({ id: i.id })),
+        };
+      },
     }
   );
 };
 
 const useCreateMemberTrackingItemAndRecord = () => {
   const queryClient = useQueryClient();
-  return useMutation<
-    AxiosResponse<MemberTrackingItem>,
-    unknown,
-    { newMemberTrackingItem: MemberTrackingItem; completedDate: string }
-  >(
+  return useMutation<MemberTrackingItem, unknown, { newMemberTrackingItem: MemberTrackingItem; completedDate: string }>(
     ({ newMemberTrackingItem, completedDate }) =>
       axios
         .post(`/api/membertrackingitem`, newMemberTrackingItem, {
@@ -41,8 +78,8 @@ const useCreateMemberTrackingItemAndRecord = () => {
         })
         .then((result) => result.data),
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries('profile');
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId));
       },
     }
   );

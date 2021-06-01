@@ -1,20 +1,10 @@
 import { User } from '@prisma/client';
-import {
-  NextApiRequestWithAuthorization,
-  withApiAuth,
-} from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import {
-  getAc,
-  permissionDenied,
-  recordNotFound,
-} from '../../../middleware/utils';
-import {
-  findUserByDodId,
-  findUserById,
-  UserWithRole,
-} from '../../../repositories/userRepo';
+import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
+import { findUserByDodId, findUserById, UserWithRole } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
+import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
 
 enum EUserIncludes {
   MEMBER_TRACKING_ITEMS = 'membertrackingitems',
@@ -34,11 +24,7 @@ async function userSlugHandler(
   const userId = slug[0];
   const resource = slug[1];
 
-  const includesQuery = Array.isArray(include)
-    ? include
-    : include !== undefined
-    ? [include]
-    : undefined;
+  const includesQuery = getIncludesQueryArray(include);
 
   const ac = await getAc();
 
@@ -53,29 +39,11 @@ async function userSlugHandler(
         return permissionDenied(res);
       }
 
-      let includeConfig: Record<string, boolean> = {};
-
-      if (resource === EUserIncludes.MEMBER_TRACKING_ITEMS) {
-        includeConfig = { withMemberTrackingItems: true };
-
-        if (includesQuery) {
-          includesQuery.forEach((includeQuery) => {
-            if (includeQuery === EUserIncludes.MEMBER_TRACKING_RECORDS) {
-              includeConfig = {
-                ...includeConfig,
-                withMemberTrackingRecords: true,
-              };
-            }
-
-            if (includeQuery == EUserIncludes.TRACKING_ITEMS) {
-              includeConfig = { ...includeConfig, withTrackingItems: true };
-            }
-          });
-        }
-      } else {
-        return recordNotFound(res);
-      }
-      const user = await findUserById(userId, includeConfig);
+      const user = await findUserById(userId, {
+        withTrackingItems: includesQuery.includes(EUserIncludes.TRACKING_ITEMS),
+        withMemberTrackingRecords: includesQuery.includes(EUserIncludes.MEMBER_TRACKING_RECORDS),
+        withMemberTrackingItems: resource === EUserIncludes.MEMBER_TRACKING_ITEMS,
+      });
 
       if (!user) {
         return recordNotFound(res);

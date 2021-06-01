@@ -11,16 +11,9 @@ function createUser(dodId = null) {
     id: faker.datatype.uuid(),
     firstName: faker.name.firstName(gender),
     lastName: faker.name.lastName(gender),
-    dodId: dodId
-      ? dodId
-      : faker.datatype.number({ min: 1000000000, max: 1999999999 }).toString(),
+    dodId: dodId ? dodId : faker.datatype.number({ min: 1000000000, max: 1999999999 }).toString(),
     email: faker.internet.email(),
-    dutyTitle:
-      faker.company.bsAdjective() +
-      ' ' +
-      faker.company.bsNoun() +
-      ' ' +
-      faker.company.bsBuzz(),
+    dutyTitle: faker.company.bsAdjective() + ' ' + faker.company.bsNoun() + ' ' + faker.company.bsBuzz(),
     afsc:
       faker.datatype.number({ min: 1, max: 7 }).toString() +
       faker.random.alpha().toLocaleUpperCase() +
@@ -97,6 +90,23 @@ async function main() {
       resourceModel: {
         connect: {
           name: memberTrackingRecordResource.name,
+        },
+      },
+      roleModel: {
+        connect: {
+          name: memberRole.name,
+        },
+      },
+    },
+  });
+
+  await prisma.grant.create({
+    data: {
+      action: 'read:own',
+      attributes: '*',
+      resourceModel: {
+        connect: {
+          name: memberTrackingItemResource.name,
         },
       },
       roleModel: {
