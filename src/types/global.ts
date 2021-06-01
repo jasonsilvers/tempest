@@ -27,10 +27,16 @@ export enum EPermission {
   UPDATE_OWN = 'updateOwn',
   DELETE = 'delete',
 }
+
+export enum ECategories {
+  ALL = 'All',
+  DONE = 'Done',
+  UPCOMING = 'Upcoming',
+  OVERDUE = 'Overdue',
+  SIGNATURE_REQUIRED = 'SignatureRequired',
+  ARCHIVED = 'Archived',
+  DRAFT = 'Draft',
+}
 export interface ITempestApiError {
   message: string;
 }
-
-export const ErrorMessage403 = {
-  message: 'You do not have the appropriate permissions',
-};

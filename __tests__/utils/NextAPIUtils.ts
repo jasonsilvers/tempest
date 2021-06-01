@@ -21,21 +21,14 @@ async function createNextApiServer(handler: ApiHandler) {
       const id = urlSplit[3];
       const slug = urlSplit.slice(3, urlSplit.length);
       const queryParams = queryString.parse(reqUrl.search);
-      apiResolver(
-        req,
-        res,
-        { slug, id, ...queryParams },
-        handler,
-        undefined,
-        false
-      );
+      apiResolver(req, res, { slug, id, ...queryParams }, handler, undefined, false);
     }))
   );
 
   return { url, server };
 }
 
-type METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type METHOD = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 const baseTestNextApi = async (
   handler: ApiHandler,
@@ -196,6 +189,26 @@ const testNextApi = {
       urlId,
       urlSlug,
       method: 'DELETE',
+    });
+  },
+
+  patch: (
+    handler: ApiHandler,
+    {
+      withJwt = true,
+      urlId,
+      urlSlug,
+    }: {
+      withJwt?: boolean;
+      urlId?: string | number;
+      urlSlug?: string;
+    } = {}
+  ) => {
+    return baseTestNextApi(handler, {
+      withJwt,
+      urlId,
+      urlSlug,
+      method: 'PATCH',
     });
   },
 };

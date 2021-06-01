@@ -1,15 +1,8 @@
-import {
-  MemberTrackingItem,
-  MemberTrackingRecord,
-  Prisma,
-  TrackingItem,
-} from '.prisma/client';
+import { MemberTrackingItem, MemberTrackingRecord, Prisma } from '.prisma/client';
 import prisma from '../prisma/prisma';
+import { ECategories } from '../types/global';
 
-export const updateMemberTrackingRecord = async (
-  id: number,
-  memberTrackingRecord: MemberTrackingRecord
-) => {
+export const updateMemberTrackingRecord = async (id: number, memberTrackingRecord: MemberTrackingRecord) => {
   return prisma.memberTrackingRecord.update({
     where: { id },
     data: { ...memberTrackingRecord },
@@ -24,10 +17,7 @@ export const deleteMemberTrackingRecord = async (id: number) => {
   });
 };
 
-export const findMemberTrackingRecords = async (
-  trackingItemId: number,
-  userId: string
-) => {
+export const findMemberTrackingRecords = async (trackingItemId: number, userId: string) => {
   return await prisma.memberTrackingRecord.findMany({
     where: {
       memberTrackingItems: {
@@ -38,10 +28,13 @@ export const findMemberTrackingRecords = async (
   });
 };
 
-export const findMemberTrackingRecordById = async (id: number) => {
+export const findMemberTrackingRecordById = async (id: number, withTrackingItem = false) => {
   return await prisma.memberTrackingRecord.findUnique({
     where: {
       id,
+    },
+    include: {
+      trackingItem: withTrackingItem,
     },
   });
 };
@@ -88,7 +81,8 @@ export const createMemberTrackingRecord = async (
 
 export const findMemberTrackingItemById = async (
   trackingItemId: number,
-  userId: string
+  userId: string,
+  { withMemberTrackingRecords = false, withTrackingItems = false } = {}
 ) => {
   return prisma.memberTrackingItem.findUnique({
     where: {
@@ -97,14 +91,25 @@ export const findMemberTrackingItemById = async (
         trackingItemId,
       },
     },
+    include: {
+      trackingItem: withTrackingItems,
+      memberTrackingRecords: withMemberTrackingRecords
+        ? {
+            include: {
+              authority: true,
+              trackingItem: withTrackingItems,
+            },
+            take: 2,
+            orderBy: {
+              order: 'desc',
+            },
+          }
+        : false,
+    },
   });
 };
 
-export const updateMemberTrackingItem = async (
-  trackingItemId: number,
-  userId: string,
-  data: MemberTrackingItem
-) => {
+export const updateMemberTrackingItem = async (trackingItemId: number, userId: string, data: MemberTrackingItem) => {
   return prisma.memberTrackingItem.update({
     data,
     where: {
@@ -116,10 +121,7 @@ export const updateMemberTrackingItem = async (
   });
 };
 
-export const deleteMemberTrackingItem = async (
-  trackingItemId: number,
-  userId: string
-) => {
+export const deleteMemberTrackingItem = async (trackingItemId: number, userId: string) => {
   return prisma.memberTrackingItem.delete({
     where: {
       userId_trackingItemId: {
@@ -133,13 +135,43 @@ export const deleteMemberTrackingItem = async (
 export const createMemberTrackingItem = async (newMti: MemberTrackingItem) => {
   return prisma.memberTrackingItem.create({
     data: newMti,
+    include: {
+      memberTrackingRecords: true,
+    },
   });
 };
 
-export type MemberTrackingRecordWithTrackingItem = MemberTrackingRecord & {
-  trackingItem: TrackingItem;
+/**
+ * GIVE ME EVERYTHING TYPE
+ */
+export type MemberTrackingItemWithAll = Prisma.PromiseReturnType<typeof findMemberTrackingItemByIdAll>;
+
+export const findMemberTrackingItemByIdAll = async (userId: string, trackingItemId: number) => {
+  return await prisma.memberTrackingItem.findUnique({
+    where: {
+      userId_trackingItemId: { trackingItemId, userId },
+    },
+    include: {
+      memberTrackingRecords: {
+        include: {
+          trackingItem: true,
+          authority: true,
+          trainee: true,
+        },
+      },
+      trackingItem: true,
+      user: true,
+    },
+  });
 };
 
-export type MemberTrackingItemWithMemberTrackingRecord = MemberTrackingItem & {
-  memberTrackingRecords?: MemberTrackingRecordWithTrackingItem[];
+export type MemberTrackingItemWithMTRStatus = MemberTrackingItemWithAll & {
+  status: {
+    [ECategories.OVERDUE]: number;
+    [ECategories.DONE]: number;
+    [ECategories.SIGNATURE_REQUIRED]: number;
+    [ECategories.UPCOMING]: number;
+    [ECategories.DRAFT]: number;
+    [ECategories.ARCHIVED]: number;
+  };
 };

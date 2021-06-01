@@ -7,13 +7,9 @@ import { Prisma } from '@prisma/client';
 
 // required to infer the return type from the Prisma Client
 export type UserWithRole = Prisma.PromiseReturnType<typeof findUserByDodId>;
-export type UserWithTrackingRecord = Prisma.PromiseReturnType<
-  typeof findTrackingRecordsByAuthorityId
->;
+export type UserWithTrackingRecord = Prisma.PromiseReturnType<typeof findTrackingRecordsByAuthorityId>;
 
-export type UserWithAll = Prisma.PromiseReturnType<
-  typeof findUserByIdReturnAllIncludes
->;
+export type UserWithAll = Prisma.PromiseReturnType<typeof findUserByIdReturnAllIncludes>;
 
 export const findUserByIdReturnAllIncludes = async (userId: string) => {
   return await prisma.user.findUnique({
@@ -25,10 +21,13 @@ export const findUserByIdReturnAllIncludes = async (userId: string) => {
         include: {
           memberTrackingRecords: {
             include: {
-              authority: true,
               trackingItem: true,
+              authority: true,
+              trainee: true,
             },
           },
+          trackingItem: true,
+          user: true,
         },
       },
     },
@@ -56,21 +55,27 @@ export const findUserByDodId = async (queryString: string) => {
   });
 };
 
+export interface IUserIncludeConfig {
+  withMemberTrackingItems: boolean;
+  withMemberTrackingRecords: boolean;
+  withTrackingItems: boolean;
+  // withAuthority: boolean;
+}
+
+const defaultConfig: IUserIncludeConfig = {
+  withMemberTrackingItems: false,
+  withMemberTrackingRecords: false,
+  withTrackingItems: false,
+};
+
 /**
  * Get user method to query the PSQL db though the prisma client
  *
  * @param query unique db id
  * @returns UserWithRole
  */
-export const findUserById = async (
-  query: string,
-  {
-    withMemberTrackingItems = false,
-    withMemberTrackingRecords = false,
-    withTrackingItems = false,
-    withAuthority = false,
-  } = {}
-) => {
+export const findUserById = async (query: string, config?: IUserIncludeConfig) => {
+  const { withMemberTrackingItems, withMemberTrackingRecords, withTrackingItems } = config ?? defaultConfig;
   return await prisma.user.findUnique({
     where: {
       id: query,
@@ -80,10 +85,12 @@ export const findUserById = async (
       memberTrackingItems: withMemberTrackingItems
         ? {
             include: {
+              trackingItem: withTrackingItems,
               memberTrackingRecords: withMemberTrackingRecords
                 ? {
                     include: {
-                      authority: withAuthority,
+                      authority: true,
+
                       trackingItem: withTrackingItems,
                     },
                     take: 2,
@@ -143,10 +150,7 @@ export const updateUser = async (user: User) => {
   });
 };
 
-export const updateTempestUserFromCommonApi = async (
-  commonApiPerson: IPerson,
-  tempestUser: User
-) => {
+export const updateTempestUserFromCommonApi = async (commonApiPerson: IPerson, tempestUser: User) => {
   // turns a common api person into a tempest user
   const tempestUserToUpdate: User = Object.keys(tempestUser).reduce(
     (acc, k) => ({ ...acc, [k]: commonApiPerson[k] }),
@@ -159,10 +163,7 @@ export const updateTempestUserFromCommonApi = async (
   });
 };
 
-export const findTrackingRecordsByTraineeId = (
-  userId: string,
-  includeTrackingItem = false
-) => {
+export const findTrackingRecordsByTraineeId = (userId: string, includeTrackingItem = false) => {
   return prisma.memberTrackingRecord.findMany({
     where: {
       traineeId: userId,
@@ -175,10 +176,7 @@ export const findTrackingRecordsByTraineeId = (
   });
 };
 
-export const findTrackingRecordsByAuthorityId = (
-  userId: string,
-  includeTrackingItem = false
-) => {
+export const findTrackingRecordsByAuthorityId = (userId: string, includeTrackingItem = false) => {
   return prisma.memberTrackingRecord.findMany({
     where: {
       authorityId: userId,

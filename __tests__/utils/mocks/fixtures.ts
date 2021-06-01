@@ -2,10 +2,28 @@ import { P1_JWT } from '@tron/nextjs-auth-p1';
 
 const memberTrackingItemGrants = [
   {
+    action: 'read:any',
+    attributes: '*',
+    resource: 'membertrackingitem',
+    role: 'monitor',
+  },
+  {
+    action: 'read:own',
+    attributes: '*',
+    resource: 'membertrackingitem',
+    role: 'member',
+  },
+  {
     action: 'create:any',
     attributes: '*',
     resource: 'membertrackingitem',
     role: 'monitor',
+  },
+  {
+    action: 'create:own',
+    attributes: '*',
+    resource: 'membertrackingitem',
+    role: 'member',
   },
   {
     action: 'delete:any',
@@ -129,11 +147,7 @@ export const grants = [
 export const explodedJwt: P1_JWT = {
   acr: '1',
   email_verified: true,
-  'group-simple': [
-    'Impact Level 2 Authorized',
-    'Impact Level 4 Authorized',
-    'Impact Level 5 Authorized',
-  ],
+  'group-simple': ['Impact Level 2 Authorized', 'Impact Level 4 Authorized', 'Impact Level 5 Authorized'],
   preferred_username: 'jake.a.jones',
   given_name: 'Jake',
   activecac: '',

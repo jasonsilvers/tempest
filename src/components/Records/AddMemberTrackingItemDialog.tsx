@@ -13,17 +13,10 @@ import {
 } from '../../lib/ui';
 import tw from 'twin.macro';
 import { useTrackingItems } from '../../hooks/api/trackingItem';
-import {
-  MemberTrackingItem,
-  MemberTrackingRecord,
-  TrackingItem,
-} from '.prisma/client';
+import { MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '.prisma/client';
 import dayjs from 'dayjs';
 import { DeleteIcon } from '../../assets/Icons';
-import {
-  useCreateMemberTrackingItemAndRecord,
-  useMemberTrackingItems,
-} from '../../hooks/api/memberTrackingItem';
+import { useCreateMemberTrackingItemAndRecord, useMemberTrackingItems } from '../../hooks/api/memberTrackingItem';
 import { useCreateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 
 type IMemberTrackingItemsToAdd = {
@@ -49,22 +42,14 @@ const StyledDeleteIcon = tw(DeleteIcon)`text-xl`;
 //TODO: Might need to change this based on the sidebar
 const Paper = tw.div`ml-80`;
 
-const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = ({
-  handleClose,
-  forMemberId,
-}) => {
+const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = ({ handleClose, forMemberId }) => {
   const trackingItemsQuery = useTrackingItems();
   const addMemberTrackingItemAndRecord = useCreateMemberTrackingItemAndRecord();
   const addMemberTrackingRecord = useCreateMemberTrackingRecord();
   const memberTrackingItemsQuery = useMemberTrackingItems(forMemberId);
 
-  const [
-    memberTrackingItemsToAdd,
-    setMemberTrackingItemsToAdd,
-  ] = useState<IMemberTrackingItemsToAdd>([]);
-  const [trackingItemOptions, setTrackingItemOptions] = useState<
-    TrackingItem[]
-  >([]);
+  const [memberTrackingItemsToAdd, setMemberTrackingItemsToAdd] = useState<IMemberTrackingItemsToAdd>([]);
+  const [trackingItemOptions, setTrackingItemOptions] = useState<TrackingItem[]>([]);
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -74,13 +59,9 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
 
   const addMemberTrackingItems = () => {
     setIsSaving(true);
-    for (const memberTrackingItemToAdd of Object.values(
-      memberTrackingItemsToAdd
-    )) {
+    for (const memberTrackingItemToAdd of Object.values(memberTrackingItemsToAdd)) {
       const shouldCreateMemberTrackingRecord = memberTrackingItemsQuery.data?.some(
-        (memberTrackingItem) =>
-          memberTrackingItem.trackingItemId ===
-          memberTrackingItemToAdd.trackingItem.id
+        (memberTrackingItem) => memberTrackingItem.trackingItemId === memberTrackingItemToAdd.trackingItem.id
       );
 
       if (shouldCreateMemberTrackingRecord) {
@@ -91,7 +72,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
         };
 
         addMemberTrackingRecord.mutate(newMemberTrackingRecord, {
-          onSuccess: () => {
+          onSettled: () => {
             setIsSaving(false);
             handleClose();
           },
@@ -109,7 +90,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
             completedDate: memberTrackingItemToAdd.completedDate,
           },
           {
-            onSuccess: () => {
+            onSettled: () => {
               setIsSaving(false);
               handleClose();
             },
@@ -120,19 +101,13 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   };
 
   return (
-    <Dialog
-      PaperProps={{ component: Paper }}
-      onClose={handleClose}
-      open
-      aria-labelledby="ammembertracking-dialog"
-    >
+    <Dialog PaperProps={{ component: Paper }} onClose={handleClose} open aria-labelledby="ammembertracking-dialog">
       {isSaving ? <LoadingOverlay /> : null}
       <DialogTitle>Add New Training</DialogTitle>
       <DialogContent>
         <p tw="text-xs pb-4">
-          Select one or more training from the below dropdown and insert
-          completion date. If completion date is unknown, training will go into
-          draft tab
+          Select one or more training from the below dropdown and insert completion date. If completion date is unknown,
+          training will go into draft tab
         </p>
         <Autocomplete
           id="tracking-items-dropdown"
@@ -143,9 +118,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           getOptionLabel={(options) => options.title}
           onChange={(event, value) => {
             const selectedTrackingItem = value as TrackingItem;
-            const filteredOptions = trackingItemOptions.filter(
-              (tio) => tio.id !== selectedTrackingItem.id
-            );
+            const filteredOptions = trackingItemOptions.filter((tio) => tio.id !== selectedTrackingItem.id);
 
             setTrackingItemOptions(filteredOptions);
 
@@ -169,9 +142,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
                 ...params.InputProps,
                 endAdornment: (
                   <React.Fragment>
-                    {trackingItemsQuery?.isLoading ? (
-                      <CircularProgress color="inherit" size={20} />
-                    ) : null}
+                    {trackingItemsQuery?.isLoading ? <CircularProgress color="inherit" size={20} /> : null}
                     {params.InputProps.endAdornment}
                   </React.Fragment>
                 ),
@@ -188,21 +159,14 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           <TableData>Date Completed</TableData>
           <div></div>
         </TableRowHeader>
-        {Object.keys(memberTrackingItemsToAdd).length === 0 ? (
-          <div>Nothing to add</div>
-        ) : null}
+        {Object.keys(memberTrackingItemsToAdd).length === 0 ? <div>Nothing to add</div> : null}
         {Object.keys(memberTrackingItemsToAdd).map((key) => {
-          const memberTrackingItemToAdd: IMemberTrackingItemToAdd =
-            memberTrackingItemsToAdd[key];
+          const memberTrackingItemToAdd: IMemberTrackingItemToAdd = memberTrackingItemsToAdd[key];
 
           return (
             <TableRow key={memberTrackingItemToAdd.trackingItem.id}>
-              <TableData tw="text-sm w-1/3">
-                {memberTrackingItemToAdd.trackingItem.title}
-              </TableData>
-              <TableData tw="text-sm w-1/5 text-center">
-                {memberTrackingItemToAdd.trackingItem.interval}
-              </TableData>
+              <TableData tw="text-sm w-1/3">{memberTrackingItemToAdd.trackingItem.title}</TableData>
+              <TableData tw="text-sm w-1/5 text-center">{memberTrackingItemToAdd.trackingItem.interval}</TableData>
               <TableData>
                 <TextField
                   InputProps={{ style: { fontSize: 14 } }}
@@ -212,9 +176,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
                         ...currentValues,
                         [key]: {
                           ...currentValues[key],
-                          completedDate: dayjs(event.target.value).format(
-                            'YYYY-MM-DD'
-                          ),
+                          completedDate: dayjs(event.target.value).format('YYYY-MM-DD'),
                         } as IMemberTrackingItemToAdd,
                       };
                     })
@@ -238,10 +200,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
                       delete newMemberTrackingItemsToAdd[key];
                       return newMemberTrackingItemsToAdd;
                     });
-                    setTrackingItemOptions((oldTIs) => [
-                      ...oldTIs,
-                      memberTrackingItemsToAdd[key].trackingItem,
-                    ]);
+                    setTrackingItemOptions((oldTIs) => [...oldTIs, memberTrackingItemsToAdd[key].trackingItem]);
                   }}
                 >
                   <StyledDeleteIcon />
