@@ -15,13 +15,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 const TempestPaper = tw.div`bg-primary text-white w-64 pl-6 pt-9`;
 
 const TempestDrawer = (props) => {
-  return (
-    <Drawer
-      variant="permanent"
-      PaperProps={{ component: TempestPaper }}
-      {...props}
-    />
-  );
+  return <Drawer variant="permanent" PaperProps={{ component: TempestPaper }} {...props} />;
 };
 
 type TempestModalProps = {
@@ -39,10 +33,7 @@ const TempestOverlay = tw.div`bg-white absolute top-0 left-0 w-full h-full backd
 const LoadingOverlay = () => {
   return (
     <TempestOverlay>
-      <LinearProgress
-        style={{ borderRadius: '4rem 4rem 0 0', paddingTop: 5 }}
-        variant="indeterminate"
-      />
+      <LinearProgress style={{ borderRadius: '4rem 4rem 0 0', paddingTop: 5 }} variant="indeterminate" />
     </TempestOverlay>
   );
 };
@@ -56,6 +47,7 @@ export {
   DialogContent,
   DialogActions,
   DialogButton,
+  Button,
   Dialog,
   TextField,
   Autocomplete,

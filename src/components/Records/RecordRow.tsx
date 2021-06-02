@@ -11,6 +11,7 @@ import { UseMutateFunction } from 'react-query';
 import { useMemberRecordTrackerState } from '../../hooks/uiState';
 import { getCategory } from '../../utils/Status';
 import { ECategories } from '../../types/global';
+import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -66,7 +67,8 @@ const getTraineeSignature = (
     MemberTrackingRecord,
     unknown,
     { memberTrackingRecord: MemberTrackingRecord; userId: string }
-  >
+  >,
+  enqueueSnackbar: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
 ) => {
   // fail back if the signatureOwner:User is false
   // would indicate data is still fetching
@@ -75,7 +77,14 @@ const getTraineeSignature = (
   }
 
   const handleSignTrainee = () => {
-    signRecordFor({ memberTrackingRecord, userId: loggedInUser.id });
+    signRecordFor(
+      { memberTrackingRecord, userId: loggedInUser.id },
+      {
+        onSuccess: () => {
+          enqueueSnackbar('A record was successfully addded', { variant: 'success' });
+        },
+      }
+    );
   };
 
   // if signature date is false and
@@ -105,6 +114,7 @@ const RecordRow: React.FC<{
     state.activeCategory,
     state.increaseCategoryCount,
   ]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
 
@@ -167,7 +177,8 @@ const RecordRow: React.FC<{
             trackingRecordQuery.data,
             trackingRecordQuery.data?.traineeSignedDate,
             LoggedInUser,
-            mutate
+            mutate,
+            enqueueSnackbar
           )
         ) : !trackingRecordQuery.data?.authoritySignedDate ? (
           <DoneIcon />

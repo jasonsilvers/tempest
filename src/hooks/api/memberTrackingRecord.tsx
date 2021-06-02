@@ -35,6 +35,7 @@ export const useMemberTrackingRecord = (memberTrackingRecordId: number) => {
 };
 export const useUpdateMemberTrackingRecord = (verb: Verb) => {
   const queryClient = useQueryClient();
+
   const [decreaseCategoryCount, increaseCategoryCound] = useMemberRecordTrackerState((state) => [
     state.decreaseCategoryCount,
     state.increaseCategoryCount,
@@ -50,6 +51,7 @@ export const useUpdateMemberTrackingRecord = (verb: Verb) => {
         const category = getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
         decreaseCategoryCount(category);
       },
+
       onSuccess: (data) => {
         //This will need to be updated when signing for authority
         queryClient.invalidateQueries(mtrQueryKeys.memberTrackingRecord(data.id));

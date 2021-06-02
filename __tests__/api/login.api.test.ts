@@ -1,10 +1,7 @@
 import { createMocks } from 'node-mocks-http';
 import { mockMethodAndReturn } from '../utils/mocks/repository';
 import { returnUser, loginHandler } from '../../src/pages/api/login';
-import {
-  findUserByDodId,
-  createUserFromCommonApi,
-} from '../../src/repositories/userRepo';
+import { findUserByDodId, createUserFromCommonApi } from '../../src/repositories/userRepo';
 import { getRoleByName } from '../../src/repositories/roleRepo';
 import { explodedJwt } from '../utils/mocks/fixtures';
 import { IPerson } from '../../src/repositories/common/types';
@@ -55,10 +52,7 @@ test('login handler returns user when user is found', async () => {
 
   req.user = userTest;
 
-  await loginHandler(
-    (req as unknown) as NextApiRequestWithAuthorization<User>,
-    (res as unknown) as NextApiResponse
-  );
+  await loginHandler((req as unknown) as NextApiRequestWithAuthorization<User>, (res as unknown) as NextApiResponse);
 
   expect(res._getStatusCode()).toBe(200);
   expect(JSON.parse(res._getData())).toEqual(userTest);
@@ -77,7 +71,7 @@ test('login findOrAdduser should create user in tempest if found in commonAPI an
   const expectedUser = { ...userTest, dodId };
 
   server.use(
-    rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
+    rest.get('http://localhost:8089/api/v1/person/*', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(persons[0]));
     })
   );
@@ -160,7 +154,7 @@ test('login should creater user in commonAPI and in Tempest if not found in eith
   const expectedUser = { ...userTest, dodId };
 
   server.use(
-    rest.get('http://localhost:8089/api/v1/person/find/*', (req, res, ctx) => {
+    rest.get('http://localhost:8089/api/v1/person/*', (req, res, ctx) => {
       return res(ctx.status(404), ctx.json(null));
     })
   );

@@ -18,6 +18,7 @@ import dayjs from 'dayjs';
 import { DeleteIcon } from '../../assets/Icons';
 import { useCreateMemberTrackingItemAndRecord, useMemberTrackingItems } from '../../hooks/api/memberTrackingItem';
 import { useCreateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
+import { useSnackbar } from 'notistack';
 
 type IMemberTrackingItemsToAdd = {
   [key: number]: IMemberTrackingItemToAdd;
@@ -50,6 +51,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
 
   const [memberTrackingItemsToAdd, setMemberTrackingItemsToAdd] = useState<IMemberTrackingItemsToAdd>([]);
   const [trackingItemOptions, setTrackingItemOptions] = useState<TrackingItem[]>([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -72,6 +74,9 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
         };
 
         addMemberTrackingRecord.mutate(newMemberTrackingRecord, {
+          onSuccess: () => {
+            enqueueSnackbar('A record was successfully addded', { variant: 'success' });
+          },
           onSettled: () => {
             setIsSaving(false);
             handleClose();
@@ -90,6 +95,9 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
             completedDate: memberTrackingItemToAdd.completedDate,
           },
           {
+            onSuccess: () => {
+              enqueueSnackbar('A record was successfully addded', { variant: 'success' });
+            },
             onSettled: () => {
               setIsSaving(false);
               handleClose();

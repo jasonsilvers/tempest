@@ -1,19 +1,6 @@
-//This adds a header to every page response
-// module.exports = {
-//   async headers() {
-//     return [
-//       {
-//         source: '/(.*?)',
-//         headers: [
-//           {
-//             key: 'X-About-Custom-Header',
-//             value: 'about_header_value',
-//           },
-//         ],
-//       },
-//     ]
-//   },
-// }
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+//   enabled: process.env.ANALYZE === 'true',
+// });
 
 module.exports = {
   webpack: (config, { isServer }) => {
@@ -26,13 +13,5 @@ module.exports = {
   },
 };
 
-module.exports = {
-  webpack(config) {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack'],
-    });
-
-    return config;
-  },
-};
+//Comment above and uncomment below to run bundle analzyer on build
+// module.exports = withBundleAnalyzer({});
