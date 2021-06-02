@@ -15,14 +15,7 @@ function withErrorHandling<T extends (...args: any[]) => any>(
       return await func(...args);
     } catch (e) {
       if (process.env.ERROR_DEBUG === 'TRUE') {
-        throw new Error(
-          e +
-            '  ' +
-            func.name +
-            '  ' +
-            getCommonURL() +
-            ' - There was an error making the request'
-        );
+        throw new Error(e + '  ' + func.name + '  ' + getCommonURL() + ' - There was an error making the request');
       } else {
         throw new Error('There was an error making the request');
       }
@@ -41,18 +34,13 @@ async function createPersonFromJwt_(jwt: P1_JWT) {
     branch: jwt.affiliation,
   };
 
-  const response = await axios.post<IPerson, { data: IPerson }>(
-    `${getCommonURL()}/${RESOURCE}`,
-    newCommonUser
-  );
+  const response = await axios.post<IPerson, { data: IPerson }>(`${getCommonURL()}/${RESOURCE}`, newCommonUser);
 
   return response.data;
 }
 
 async function getPersons_() {
-  const response = await axios.get<string, { data: IPerson[] }>(
-    `${getCommonURL()}/${RESOURCE}`
-  );
+  const response = await axios.get<string, { data: IPerson[] }>(`${getCommonURL()}/${RESOURCE}`);
   return response.data;
 }
 
@@ -70,18 +58,14 @@ async function getPersonFromCommonApi_(query: string) {
       return null;
     }
 
-    throw new Error(
-      'There was an error creating the user account in common api'
-    );
+    throw new Error('There was an error creating the user account in common api');
   }
 
   return response.data;
 }
 
 async function getPersonFromCommonApiById(id) {
-  const person = await axios.get<string, { data: IPerson }>(
-    `${getCommonURL()}/${RESOURCE}/${id}`
-  );
+  const person = await axios.get<string, { data: IPerson }>(`${getCommonURL()}/${RESOURCE}/${id}`);
 
   return person.data;
 }
@@ -89,9 +73,4 @@ const getPersonFromCommonApi = withErrorHandling(getPersonFromCommonApi_);
 
 const createPersonFromJwt = withErrorHandling(createPersonFromJwt_);
 
-export {
-  createPersonFromJwt,
-  getPersons,
-  getPersonFromCommonApi,
-  getPersonFromCommonApiById,
-};
+export { createPersonFromJwt, getPersons, getPersonFromCommonApi, getPersonFromCommonApiById };

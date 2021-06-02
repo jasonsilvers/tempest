@@ -1,4 +1,4 @@
-import { MemberTrackingItem } from '@prisma/client';
+import { MemberTrackingItem } from '.prisma/client';
 import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import dayjs from 'dayjs';
 import { NextApiResponse } from 'next';
@@ -109,7 +109,7 @@ async function memberTrackingItemHandler(
           {
             traineeId: newMemberTrackingItem.userId,
             trackingItemId: newMemberTrackingItem.trackingItemId,
-            completedDate: dayjs(memberTrackingRecordCompleteDate).toDate(),
+            completedDate: memberTrackingRecordCompleteDate ? dayjs(memberTrackingRecordCompleteDate).toDate() : null,
           },
           { includeTrackingItem: true }
         );

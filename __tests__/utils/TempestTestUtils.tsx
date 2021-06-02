@@ -4,6 +4,8 @@ import { useTestRouter } from './mocks/NextMocks';
 import * as React from 'react';
 import { render as rtlRender } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { SnackbarProvider } from 'notistack';
+import { Button } from '../../src/lib/ui';
 
 const createTestQueryClient = () => {
   const queryClientInit = new QueryClient({
@@ -26,16 +28,25 @@ interface IWrapperProps {
   children?: React.ReactNode;
 }
 
+const notistackRef = React.createRef<SnackbarProvider>();
+const onClickDismiss = (key: string) => () => {
+  notistackRef.current.closeSnackbar(key);
+};
+
 const createWrapper = (queryClient?: QueryClient) => {
   const testQueryClient = createTestQueryClient();
 
   return function Wrapper(props) {
     return (
-      <QueryClientProvider client={queryClient ? queryClient : testQueryClient}>
-        <UserContextProvider loginUrl="/api/login">
-          {props.children}
-        </UserContextProvider>
-      </QueryClientProvider>
+      <SnackbarProvider
+        maxSnack={3}
+        ref={notistackRef}
+        action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
+      >
+        <QueryClientProvider client={queryClient ? queryClient : testQueryClient}>
+          <UserContextProvider loginUrl="/api/login">{props.children}</UserContextProvider>
+        </QueryClientProvider>
+      </SnackbarProvider>
     );
   };
 };
@@ -43,18 +54,21 @@ const createWrapper = (queryClient?: QueryClient) => {
 const Wrapper: React.FC<IWrapperProps> = (props) => {
   const testQueryClient = createTestQueryClient();
   return (
-    <QueryClientProvider client={testQueryClient}>
-      <UserContextProvider user={props.user} loginUrl="/api/login">
-        {props.children}
-      </UserContextProvider>
-    </QueryClientProvider>
+    <SnackbarProvider
+      maxSnack={3}
+      ref={notistackRef}
+      action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
+    >
+      <QueryClientProvider client={testQueryClient}>
+        <UserContextProvider user={props.user} loginUrl="/api/login">
+          {props.children}
+        </UserContextProvider>
+      </QueryClientProvider>
+    </SnackbarProvider>
   );
 };
 
-const render = (
-  component: JSX.Element,
-  { nextJSRoute = '/', push = jest.fn(), ...options } = {}
-) => {
+const render = (component: JSX.Element, { nextJSRoute = '/', push = jest.fn(), ...options } = {}) => {
   useTestRouter.mockImplementation(() => ({
     route: nextJSRoute,
     // eslint-disable-next-line @typescript-eslint/no-empty-function
