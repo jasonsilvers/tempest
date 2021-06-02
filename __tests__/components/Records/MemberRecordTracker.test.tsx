@@ -73,7 +73,6 @@ test('should render a record requiring signature - authority signed', async () =
   const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-  await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
   const fire = await waitFor(() => getByText(/fire/i));
   const signatureTab = getByText(/sign/i);
 
@@ -118,7 +117,6 @@ test('should render a record requiring signature - trainee signed', async () => 
   const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-  await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
   const fire = await waitFor(() => getByText(/fire/i));
   const signatureTab = getByText(/sign/i);
 
@@ -162,7 +160,6 @@ test('should render a record that is done', async () => {
   const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-  await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
 
   const fire = await waitFor(() => getByText(/fire/i));
   const doneTab = getByText(/done/i);
@@ -212,7 +209,6 @@ test('should render a record that is coming due', async () => {
   const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-  await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
 
   const fire = await waitFor(() => getByText(/fire/i));
   const upcomingTab = getByText(/upcoming/i);
@@ -260,7 +256,6 @@ test('should render a record that is overdue', async () => {
   const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-  await waitFor(() => expect(getByText(/bob/i)).toBeInTheDocument());
 
   const fire = await waitFor(() => getByText(/fire/i));
   const overdueTab = getByText(/overdue/i);

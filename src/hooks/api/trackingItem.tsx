@@ -2,8 +2,12 @@ import { TrackingItem } from '@prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
+export const tiQueryKeys = {
+  memberTrackingItems: () => ['trackingitems'],
+};
+
 const useTrackingItems = () => {
-  return useQuery<TrackingItem[]>('trackingitems', async () => {
+  return useQuery<TrackingItem[]>(tiQueryKeys.memberTrackingItems(), async () => {
     return axios.get('/api/trackingitem').then((result) => result.data);
   });
 };
@@ -14,7 +18,7 @@ const useAddTrackingItem = () => {
     (newTrackingItem: TrackingItem) => axios.post<TrackingItem>('/api/trackingitem', newTrackingItem),
     {
       onSettled: () => {
-        queryClient.invalidateQueries('trackingitem');
+        queryClient.invalidateQueries(tiQueryKeys.memberTrackingItems());
       },
     }
   );
@@ -27,7 +31,7 @@ const useDeleteTrackingItem = () => {
     async (trackingItemId: number) => (await axios.delete('/api/trackingitem/' + trackingItemId)).data,
     {
       onSettled: () => {
-        queryClient.invalidateQueries('trackingitem');
+        queryClient.invalidateQueries(tiQueryKeys.memberTrackingItems());
       },
     }
   );

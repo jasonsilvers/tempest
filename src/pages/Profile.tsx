@@ -4,6 +4,7 @@ import usePermissions from '../hooks/usePermissions';
 import MemberItemTracker from '../components/Records/MemberRecordTracker';
 import { UserWithRole } from '../repositories/userRepo';
 import { useMemberRecordTrackerState } from '../hooks/uiState';
+import HeaderUser from '../components/Records/RecordHeader';
 
 const Profile = () => {
   const { isLoading } = usePermissions();
@@ -19,7 +20,12 @@ const Profile = () => {
     return null;
   }
 
-  return <MemberItemTracker userId={user.id} />;
+  return (
+    <>
+      <HeaderUser />
+      <MemberItemTracker userId={user.id} />
+    </>
+  );
 };
 
 export default withPageAuth(Profile);

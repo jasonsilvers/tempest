@@ -11,11 +11,7 @@ interface ILinkProps {
 
 const StyledHeader = tw.a` mr-8 mb-12 uppercase text-4xl`;
 
-const Header: React.FC<ILinkProps> = ({
-  children,
-  goToUrl = '/',
-  className = '',
-}) => {
+const Header: React.FC<ILinkProps> = ({ children, goToUrl = '/', className = '' }) => {
   return (
     <NextLink href={goToUrl}>
       <StyledHeader className={className}>{children}</StyledHeader>
@@ -23,23 +19,16 @@ const Header: React.FC<ILinkProps> = ({
   );
 };
 
-const StyledLink = tw.a`mr-6 text-lg flex flex-col`;
+const StyledLink = tw.a`mr-6 mb-5 text-lg flex flex-col uppercase text-gray-500`;
 
-const Link: React.FC<ILinkProps> = ({
-  children,
-  goToUrl,
-  className,
-  activeLinkStyle,
-}) => {
+const Link: React.FC<ILinkProps> = ({ children, goToUrl, className, activeLinkStyle }) => {
   const router = useRouter();
 
   return (
     <NextLink href={goToUrl}>
       <StyledLink
         className={className}
-        style={
-          router.route === goToUrl ? activeLinkStyle ?? { color: 'blue' } : {}
-        }
+        style={router.route === goToUrl ? activeLinkStyle ?? { color: 'white', fontWeight: 'bolder' } : {}}
       >
         {children}
       </StyledLink>
