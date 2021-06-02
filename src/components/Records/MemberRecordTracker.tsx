@@ -1,7 +1,6 @@
 import React, { LegacyRef, useRef, useState } from 'react';
 import tw from 'twin.macro';
 import MemberTrackingItemTable from './MemberTrackingItemTable';
-import HeaderUser from './RecordHeader';
 import Tab from './Tab';
 import { Link } from '../../lib/ui';
 import { ECategories } from '../../types/global';
@@ -9,7 +8,7 @@ import { AddMemberTrackingItemDialog } from './AddMemberTrackingItemDialog';
 import { useMemberRecordTrackerState } from '../../hooks/uiState';
 
 // Twin macro styles for table and headers
-const Header = tw.h1`text-2xl font-bold text-black`;
+const Header = tw.h1`text-xl font-bold text-black mb-2`;
 
 const TabContainer = tw.div`flex space-x-3 justify-between min-w-min border-b border-color[#AEAEAE]`;
 
@@ -32,7 +31,6 @@ const MemberItemTracker: React.FC<{ userId: string }> = ({ userId }) => {
 
   return (
     <div tw="mr-5 pr-10 w-9/12">
-      <HeaderUser />
       <Header>Training Record</Header>
       <TabAndTableContainer ref={TabAndTableRef}>
         <TabContainer id="Filter Tabs">

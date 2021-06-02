@@ -23,5 +23,5 @@ test('should render the Link comp with blue colors', () => {
   const link = getByText(/Tempest/);
 
   expect(link);
-  expect(link.style.color).toBe('blue');
+  expect(link.style.color).toBe('white');
 });
