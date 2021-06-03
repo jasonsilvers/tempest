@@ -36,11 +36,13 @@ const persons: Partial<IPerson>[] = [
 
 // configure process.env variables before all tests
 beforeAll(() => {
+  process.env.ERROR_DEBUG = 'FALSE';
   process.env.COMMON_API_URL = 'http://localhost:8089/api/v1';
 });
 
 // remove process.env variables after all tests
 afterAll(() => {
+  process.env.ERROR_DEBUG = 'TRUE';
   delete process.env.COMMON_API_URL;
 });
 
