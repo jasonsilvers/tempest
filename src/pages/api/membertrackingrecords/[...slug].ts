@@ -1,19 +1,9 @@
 import { MemberTrackingRecord } from '.prisma/client';
-import {
-  NextApiRequestWithAuthorization,
-  withApiAuth,
-} from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import dayjs from 'dayjs';
 import { NextApiResponse } from 'next';
-import {
-  getAc,
-  permissionDenied,
-  recordNotFound,
-} from '../../../middleware/utils';
-import {
-  findMemberTrackingRecordById,
-  updateMemberTrackingRecord,
-} from '../../../repositories/memberTrackingRepo';
+import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
+import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../../../repositories/memberTrackingRepo';
 import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 
@@ -43,9 +33,7 @@ async function memberTrackingRecordSlugHandler(
 
   switch (method) {
     case 'POST': {
-      const recordFromDb = await findMemberTrackingRecordById(
-        memberTrackingRecordId
-      );
+      const recordFromDb = await findMemberTrackingRecordById(memberTrackingRecordId);
 
       if (!recordFromDb) {
         return recordNotFound(res);
@@ -53,12 +41,8 @@ async function memberTrackingRecordSlugHandler(
 
       const permission =
         req.user.id !== recordFromDb.traineeId
-          ? ac
-              .can(req.user.role.name)
-              .updateAny(EResource.MEMBER_TRACKING_RECORD)
-          : ac
-              .can(req.user.role.name)
-              .updateOwn(EResource.MEMBER_TRACKING_RECORD);
+          ? ac.can(req.user.role.name).updateAny(EResource.MEMBER_TRACKING_RECORD)
+          : ac.can(req.user.role.name).updateOwn(EResource.MEMBER_TRACKING_RECORD);
 
       if (!permission.granted) {
         return permissionDenied(res);
@@ -68,9 +52,7 @@ async function memberTrackingRecordSlugHandler(
 
       if (verb === EMtrVerb.SIGN_TRAINEE) {
         if (req.user.id === recordFromDb.authorityId) {
-          return res
-            .status(409)
-            .json({ message: 'Cannot sign as both authority and trainee' });
+          return res.status(409).json({ message: 'Cannot sign as both authority and trainee' });
         }
 
         updatedRecord = {
@@ -81,9 +63,7 @@ async function memberTrackingRecordSlugHandler(
 
       if (verb === EMtrVerb.SIGN_AUTHORITY) {
         if (req.user.id === recordFromDb.traineeId) {
-          return res
-            .status(409)
-            .json({ message: 'Cannot sign as both authority and trainee' });
+          return res.status(409).json({ message: 'Cannot sign as both authority and trainee' });
         }
         updatedRecord = {
           ...recordFromDb,
@@ -91,10 +71,7 @@ async function memberTrackingRecordSlugHandler(
         };
       }
 
-      const updatedRecordFromDb = await updateMemberTrackingRecord(
-        memberTrackingRecordId,
-        updatedRecord
-      );
+      const updatedRecordFromDb = await updateMemberTrackingRecord(memberTrackingRecordId, updatedRecord);
 
       res.status(200).json(updatedRecordFromDb);
       break;

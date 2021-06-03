@@ -1,12 +1,9 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import {
-  findMemberTrackingRecordById,
-  updateMemberTrackingRecord,
-} from '../../../src/repositories/memberTrackingRepo';
+import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../../../src/repositories/memberTrackingRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import memberTrackingRecordSlugHandler from '../../../src/pages/api/membertrackingrecord/[...slug]';
+import memberTrackingRecordSlugHandler from '../../../src/pages/api/membertrackingrecords/[...slug]';
 import dayjs from 'dayjs';
 import testNextApi from '../../utils/NextAPIUtils';
 import MockDate from 'mockdate';
@@ -52,31 +49,17 @@ test('should sign trainee', async () => {
     traineeSignedDate: dayjs().toDate(),
   };
 
-  mockMethodAndReturn(
-    findMemberTrackingRecordById,
-    returnedMemberTrackingRecordDB
-  );
-  mockMethodAndReturn(
-    updateMemberTrackingRecord,
-    updatedMemberTrackingRecordFromDb
-  );
+  mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
+  mockMethodAndReturn(updateMemberTrackingRecord, updatedMemberTrackingRecordFromDb);
 
-  const { status, data } = await testNextApi.post(
-    memberTrackingRecordSlugHandler,
-    {
-      body: {},
-      urlSlug: '/23/sign_trainee',
-    }
-  );
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: {},
+    urlSlug: '23/sign_trainee',
+  });
 
-  expect(updateMemberTrackingRecord).toBeCalledWith(
-    23,
-    updatedMemberTrackingRecordFromDb
-  );
+  expect(updateMemberTrackingRecord).toBeCalledWith(23, updatedMemberTrackingRecordFromDb);
   expect(status).toBe(200);
-  expect(JSON.stringify(data)).toEqual(
-    JSON.stringify(updatedMemberTrackingRecordFromDb)
-  );
+  expect(JSON.stringify(data)).toEqual(JSON.stringify(updatedMemberTrackingRecordFromDb));
 });
 test('should sign authority', async () => {
   const returnedMemberTrackingRecordDB = {
@@ -94,31 +77,17 @@ test('should sign authority', async () => {
     authoritySignedDate: dayjs().toDate(),
   };
 
-  mockMethodAndReturn(
-    findMemberTrackingRecordById,
-    returnedMemberTrackingRecordDB
-  );
-  mockMethodAndReturn(
-    updateMemberTrackingRecord,
-    updatedMemberTrackingRecordFromDb
-  );
+  mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
+  mockMethodAndReturn(updateMemberTrackingRecord, updatedMemberTrackingRecordFromDb);
 
-  const { status, data } = await testNextApi.post(
-    memberTrackingRecordSlugHandler,
-    {
-      body: {},
-      urlSlug: '/23/sign_authority',
-    }
-  );
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: {},
+    urlSlug: '23/sign_authority',
+  });
 
-  expect(updateMemberTrackingRecord).toBeCalledWith(
-    23,
-    updatedMemberTrackingRecordFromDb
-  );
+  expect(updateMemberTrackingRecord).toBeCalledWith(23, updatedMemberTrackingRecordFromDb);
   expect(status).toBe(200);
-  expect(JSON.stringify(data)).toEqual(
-    JSON.stringify(updatedMemberTrackingRecordFromDb)
-  );
+  expect(JSON.stringify(data)).toEqual(JSON.stringify(updatedMemberTrackingRecordFromDb));
 });
 test('should not sign trainee if already signed as authority', async () => {
   const returnedMemberTrackingRecordDB = {
@@ -131,18 +100,12 @@ test('should not sign trainee if already signed as authority', async () => {
     completedDate: dayjs('2020-5-14').toDate(),
   };
 
-  mockMethodAndReturn(
-    findMemberTrackingRecordById,
-    returnedMemberTrackingRecordDB
-  );
+  mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
 
-  const { status, data } = await testNextApi.post(
-    memberTrackingRecordSlugHandler,
-    {
-      body: {},
-      urlSlug: '/23/sign_trainee',
-    }
-  );
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: {},
+    urlSlug: '23/sign_trainee',
+  });
 
   expect(updateMemberTrackingRecord).not.toBeCalled();
   expect(status).toBe(409);
@@ -161,18 +124,12 @@ test('should not sign authoritey if already signed as trainee', async () => {
     completedDate: dayjs('2020-5-14').toDate(),
   };
 
-  mockMethodAndReturn(
-    findMemberTrackingRecordById,
-    returnedMemberTrackingRecordDB
-  );
+  mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
 
-  const { status, data } = await testNextApi.post(
-    memberTrackingRecordSlugHandler,
-    {
-      body: {},
-      urlSlug: '/23/sign_authority',
-    }
-  );
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: {},
+    urlSlug: '23/sign_authority',
+  });
 
   expect(updateMemberTrackingRecord).not.toBeCalled();
   expect(status).toBe(409);
@@ -196,18 +153,12 @@ test('should not be able to sign trainee if does not own record', async () => {
     completedDate: dayjs('2020-5-14').toDate(),
   };
 
-  mockMethodAndReturn(
-    findMemberTrackingRecordById,
-    returnedMemberTrackingRecordDB
-  );
+  mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
 
-  const { status, data } = await testNextApi.post(
-    memberTrackingRecordSlugHandler,
-    {
-      body: {},
-      urlSlug: '/23/sign_trainee',
-    }
-  );
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: {},
+    urlSlug: '23/sign_trainee',
+  });
 
   expect(updateMemberTrackingRecord).not.toBeCalled();
   expect(status).toBe(403);
@@ -231,18 +182,12 @@ test('should not be able to sign authority without correct role', async () => {
     completedDate: dayjs('2020-5-14').toDate(),
   };
 
-  mockMethodAndReturn(
-    findMemberTrackingRecordById,
-    returnedMemberTrackingRecordDB
-  );
+  mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
 
-  const { status, data } = await testNextApi.post(
-    memberTrackingRecordSlugHandler,
-    {
-      body: {},
-      urlSlug: '/23/sign_trainee',
-    }
-  );
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: {},
+    urlSlug: '23/sign_trainee',
+  });
 
   expect(updateMemberTrackingRecord).not.toBeCalled();
   expect(status).toBe(403);
@@ -253,7 +198,7 @@ test('should not be able to sign authority without correct role', async () => {
 test('should return 400 if url is incorrect', async () => {
   const { status } = await testNextApi.post(memberTrackingRecordSlugHandler, {
     body: {},
-    urlSlug: '/23/doesnotexisst',
+    urlSlug: '23/doesnotexisst',
   });
 
   expect(status).toBe(400);
@@ -261,13 +206,10 @@ test('should return 400 if url is incorrect', async () => {
 test('should return 404 if record is not found', async () => {
   mockMethodAndReturn(findMemberTrackingRecordById, null);
 
-  const { status, data } = await testNextApi.post(
-    memberTrackingRecordSlugHandler,
-    {
-      body: {},
-      urlSlug: '/23/sign_authority',
-    }
-  );
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: {},
+    urlSlug: '23/sign_authority',
+  });
 
   expect(updateMemberTrackingRecord).not.toBeCalled();
   expect(status).toBe(404);
@@ -285,7 +227,7 @@ test('Should not accept GET', async () => {
   });
 
   const { status } = await testNextApi.get(memberTrackingRecordSlugHandler, {
-    urlSlug: '/23/sign_authority',
+    urlSlug: '23/sign_authority',
   });
 
   expect(status).toEqual(405);

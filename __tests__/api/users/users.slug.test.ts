@@ -2,7 +2,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId, findUserById, IUserIncludeConfig } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import userSlugHandler from '../../../src/pages/api/user/[...slug]';
+import userSlugHandler from '../../../src/pages/api/users/[...slug]';
 import testNextApi from '../../utils/NextAPIUtils';
 import dayjs from 'dayjs';
 
@@ -58,7 +58,7 @@ test('GET - should return member tracking items', async () => {
   };
   mockMethodAndReturn(findUserById, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems',
+    urlSlug: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems',
   });
 
   expect(findUserById).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', {
@@ -89,7 +89,7 @@ test('GET - should return member tracking items and member tracking records', as
   };
   mockMethodAndReturn(findUserById, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords',
+    urlSlug: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords',
   });
 
   expect(findUserById).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', {
@@ -131,7 +131,7 @@ test('GET - should return member tracking items.  member tracking records and tr
   mockMethodAndReturn(findUserById, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
     urlSlug:
-      '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
+      'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
   });
 
   expect(findUserById).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', {
@@ -172,7 +172,7 @@ test('should return 403 if member and not own record', async () => {
     role: { id: '22', name: 'member' },
   });
   const { status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '/b100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords',
+    urlSlug: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords',
   });
 
   expect(status).toBe(403);
@@ -213,7 +213,7 @@ test('should return user if own record', async () => {
   mockMethodAndReturn(findUserById, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
     urlSlug:
-      '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
+      'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
   });
 
   expect(findUserById).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', {
@@ -242,7 +242,7 @@ test('should return 404 if user not found', async () => {
   mockMethodAndReturn(findUserById, null);
   const { status } = await testNextApi.get(userSlugHandler, {
     urlSlug:
-      '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
+      'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
   });
 
   expect(status).toBe(404);

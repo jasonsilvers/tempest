@@ -1,19 +1,10 @@
 import { NextApiResponse } from 'next';
-import {
-  withApiAuth,
-  NextApiRequestWithAuthorization,
-} from '@tron/nextjs-auth-p1';
+import { withApiAuth, NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { User } from '@prisma/client';
 import { findUserByDodId } from '../../../repositories/userRepo';
-import {
-  createOrganizations,
-  findOrganizations,
-} from '../../../repositories/organizationRepo';
+import { createOrganizations, findOrganizations } from '../../../repositories/organizationRepo';
 
-export const organizationApiHandler = async (
-  req: NextApiRequestWithAuthorization<User>,
-  res: NextApiResponse
-) => {
+export const organizationApiHandler = async (req: NextApiRequestWithAuthorization<User>, res: NextApiResponse) => {
   const { body, method } = req;
   switch (method) {
     case 'GET': {

@@ -1,13 +1,10 @@
 import testNextApi from '../../utils/NextAPIUtils';
-import userSubscriptionHandler from '../../../src/pages/api/user/sub';
+import userSubscriptionHandler from '../../../src/pages/api/users/sub';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import verifySignature from '../../../src/utils/Crypto';
 import { server } from '../../utils/mocks/msw';
 import { rest } from 'msw';
-import {
-  findUserById,
-  updateTempestUserFromCommonApi,
-} from '../../../src/repositories/userRepo';
+import { findUserById, updateTempestUserFromCommonApi } from '../../../src/repositories/userRepo';
 import { getPersonFromCommonApiById } from '../../../src/repositories/common/commonRepo';
 
 jest.mock('../../../src/utils/Crypto');
@@ -43,10 +40,7 @@ describe('User Subscription Endpoint Tests', () => {
     expect(findUserById).toBeCalledTimes(1);
     //verify that the user was updated
     expect(updateTempestUserFromCommonApi).toBeCalledTimes(1);
-    expect(updateTempestUserFromCommonApi).toBeCalledWith(
-      commonPerson,
-      tempestUser
-    );
+    expect(updateTempestUserFromCommonApi).toBeCalledWith(commonPerson, tempestUser);
     expect(status).toBe(202);
     expect(data.message).toBe('Got It');
   });

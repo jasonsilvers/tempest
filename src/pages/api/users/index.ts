@@ -1,15 +1,9 @@
 import { User } from '@prisma/client';
-import {
-  NextApiRequestWithAuthorization,
-  withApiAuth,
-} from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { findUserByDodId, findUsers } from '../../repositories/userRepo';
+import { findUserByDodId, findUsers } from '../../../repositories/userRepo';
 
-export const usersApiHandler = async (
-  req: NextApiRequestWithAuthorization<User>,
-  res: NextApiResponse
-) => {
+export const usersApiHandler = async (req: NextApiRequestWithAuthorization<User>, res: NextApiResponse) => {
   const { method } = req;
   switch (method) {
     case 'GET': {
