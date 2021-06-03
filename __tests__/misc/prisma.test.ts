@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
+jest.mock('@prisma/client');
+
 beforeEach(() => {
   jest.resetModules();
 });

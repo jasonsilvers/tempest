@@ -1,6 +1,6 @@
 import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { findUserByDodId, UserWithAll, UserWithRole } from '../../../repositories/userRepo';
+import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
 import { findMemberTrackingRecordById } from '../../../repositories/memberTrackingRepo';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
