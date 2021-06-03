@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied } from '../../../middleware/utils';
-import { findUserByDodId, findUserById, updateUser, UserWithRole } from '../../../repositories/userRepo';
+import { findUserByDodId, findUserById, UserWithRole } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 
 async function userQueryHandler(

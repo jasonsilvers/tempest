@@ -4,7 +4,6 @@ import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import memberTrackingRecordIdHandler from '../../../src/pages/api/membertrackingrecords/[id]';
 import testNextApi from '../../utils/NextAPIUtils';
-import dayjs from 'dayjs';
 import { findMemberTrackingRecordById } from '../../../src/repositories/memberTrackingRepo';
 
 jest.mock('../../../src/repositories/userRepo.ts');
@@ -81,7 +80,7 @@ test('GET - should return 403 if not correct permissions', async () => {
   });
   const expectedResult = { ...memberTrackingRecordFromDb, trackingItem: trackingItemFromDb };
   mockMethodAndReturn(findMemberTrackingRecordById, expectedResult);
-  const { status, data } = await testNextApi.get(memberTrackingRecordIdHandler, { urlId: 1 });
+  const { status } = await testNextApi.get(memberTrackingRecordIdHandler, { urlId: 1 });
 
   expect(status).toBe(403);
 });
