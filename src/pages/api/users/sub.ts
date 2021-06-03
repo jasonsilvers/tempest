@@ -1,10 +1,7 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { User } from '@prisma/client';
-import {
-  findUserById,
-  updateTempestUserFromCommonApi,
-} from '../../../repositories/userRepo';
+import { findUserById, updateTempestUserFromCommonApi } from '../../../repositories/userRepo';
 import { IncomingHttpHeaders } from 'http';
 import signatureRequired from '../../../middleware/signatureRequired';
 import { getPersonFromCommonApiById } from '../../../repositories/common/commonRepo';

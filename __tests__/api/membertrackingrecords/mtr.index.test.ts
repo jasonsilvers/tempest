@@ -2,7 +2,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import memberTrackingRecordIndexHandler from '../../../src/pages/api/membertrackingrecord/index';
+import memberTrackingRecordIndexHandler from '../../../src/pages/api/membertrackingrecords/index';
 import testNextApi from '../../utils/NextAPIUtils';
 import dayjs from 'dayjs';
 import { createMemberTrackingRecord } from '../../../src/repositories/memberTrackingRepo';
@@ -42,17 +42,11 @@ test('POST - should create member tracking record', async () => {
     completedDate: dayjs('2020-5-14').toISOString(),
   };
 
-  mockMethodAndReturn(
-    createMemberTrackingRecord,
-    returnedMemberTrackingRecordDB
-  );
+  mockMethodAndReturn(createMemberTrackingRecord, returnedMemberTrackingRecordDB);
 
-  const { status, data } = await testNextApi.post(
-    memberTrackingRecordIndexHandler,
-    {
-      body: returnedMemberTrackingRecordDB,
-    }
-  );
+  const { status, data } = await testNextApi.post(memberTrackingRecordIndexHandler, {
+    body: returnedMemberTrackingRecordDB,
+  });
 
   expect(status).toBe(200);
   expect(data).toStrictEqual(returnedMemberTrackingRecordDB);
@@ -83,4 +77,10 @@ test('POST - should return 403 if member does not own record', async () => {
   });
 
   expect(status).toBe(403);
+});
+
+test('should only allow post', async () => {
+  const { status } = await testNextApi.get(memberTrackingRecordIndexHandler);
+
+  expect(status).toBe(405);
 });

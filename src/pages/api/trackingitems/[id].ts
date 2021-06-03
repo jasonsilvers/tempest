@@ -3,10 +3,7 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { User } from '@prisma/client';
 import prisma from '../../../prisma/prisma';
 
-const trackingItemHandler = async (
-  req: NextApiRequestWithAuthorization<User>,
-  res: NextApiResponse
-) => {
+const trackingItemHandler = async (req: NextApiRequestWithAuthorization<User>, res: NextApiResponse) => {
   if (req.method === 'DELETE') {
     const newItem = await prisma.trackingItem.delete({
       where: {

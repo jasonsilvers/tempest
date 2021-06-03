@@ -24,17 +24,17 @@ const fireSafetyItem: TrackingItem = {
 
 // use Member tracking items
 const memberTrackingItemsGet = (user, memberTrackingItems) =>
-  rest.get(`/api/user/${user.id}/membertrackingitems`, (req, res, ctx) => {
+  rest.get(`/api/users/${user.id}/membertrackingitems`, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
   });
 // use member tracking item single
 const memberTrackingItemGet = (memberTrackingItem) =>
-  rest.get(`/api/membertrackingitem`, (req, res, ctx) => {
+  rest.get(`/api/membertrackingitems`, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(memberTrackingItem));
   });
 // use member tracking record
 const memberTrackingRecordGet = (memberTrackingRecord) =>
-  rest.get(`/api/membertrackingrecord/${memberTrackingRecord.id}`, (req, res, ctx) => {
+  rest.get(`/api/membertrackingrecords/${memberTrackingRecord.id}`, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(memberTrackingRecord));
   });
 
@@ -319,7 +319,7 @@ test('should sign record as trainee and mark as done', async () => {
     memberTrackingItemsGet(testUser, memberTrackingItems_Done),
     memberTrackingItemGet(memberTrackingItems_Done[0]),
     memberTrackingRecordGet(memberTrackingItems_Done[0].memberTrackingRecords[0]),
-    rest.post('/api/membertrackingrecord/*', (req, res, ctx) => {
+    rest.post('/api/membertrackingrecords/*', (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({

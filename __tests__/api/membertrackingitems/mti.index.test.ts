@@ -11,7 +11,7 @@ import {
   updateMemberTrackingItem,
 } from '../../../src/repositories/memberTrackingRepo';
 import testNextApi from '../../utils/NextAPIUtils';
-import memberTrackingItemHandler from '../../../src/pages/api/membertrackingitem';
+import memberTrackingItemHandler from '../../../src/pages/api/membertrackingitems';
 import dayjs from 'dayjs';
 
 jest.mock('../../../src/repositories/userRepo.ts');

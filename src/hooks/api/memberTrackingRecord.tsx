@@ -8,7 +8,7 @@ import { mtiQueryKeys } from './memberTrackingItem';
 
 type Verb = 'sign_trainee' | 'sign_authority';
 
-const MEMBER_TRACKING_RECORD_RESOURCE = 'membertrackingrecord';
+const MEMBER_TRACKING_RECORD_RESOURCE = 'membertrackingrecords';
 
 export const mtrQueryKeys = {
   memberTrackingRecord: (memberTrackingRecordId: number) => [MEMBER_TRACKING_RECORD_RESOURCE, memberTrackingRecordId],
@@ -17,7 +17,8 @@ export const mtrQueryKeys = {
 export const useMemberTrackingRecord = (memberTrackingRecordId: number) => {
   return useQuery<MemberTrackingRecord>(
     mtrQueryKeys.memberTrackingRecord(memberTrackingRecordId),
-    () => axios.get(`/api/membertrackingrecord/${memberTrackingRecordId}`).then((response) => response.data),
+    () =>
+      axios.get(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}/${memberTrackingRecordId}`).then((response) => response.data),
     {
       enabled: !!memberTrackingRecordId,
       // placeholderData: {

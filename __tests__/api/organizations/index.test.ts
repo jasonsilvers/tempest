@@ -1,9 +1,6 @@
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import {
-  createOrganizations,
-  findOrganizations,
-} from '../../../src/repositories/organizationRepo';
-import { organizationApiHandler } from '../../../src/pages/api/organization/index';
+import { createOrganizations, findOrganizations } from '../../../src/repositories/organizationRepo';
+import { organizationApiHandler } from '../../../src/pages/api/organizations/index';
 import { createMocks } from 'node-mocks-http';
 
 afterAll = () => {

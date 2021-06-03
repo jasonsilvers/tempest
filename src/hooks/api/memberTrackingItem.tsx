@@ -5,13 +5,15 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { MemberTrackingItemWithAll } from '../../repositories/memberTrackingRepo';
 import { UserWithAll } from '../../repositories/userRepo';
 
+const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
+
 export const mtiQueryKeys = {
   memberTrackingItems: (userId: string) => ['membertrackingitems', userId],
   memberTrackingItem: (userId: string, trackingItemId: number) => ['membertrackingitem', userId, trackingItemId],
 };
 
 const fetchUserWithMemberTrackingItems = async (userId: string): Promise<UserWithAll> => {
-  const { data } = await axios.get(`/api/user/${userId}/membertrackingitems`);
+  const { data } = await axios.get(`/api/users/${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}`);
 
   return data;
 };
@@ -50,7 +52,7 @@ export const useMemberTrackingItem = (userId: string, trackingItemId: number) =>
     () =>
       axios
         .get(
-          `/api/membertrackingitem?userId=${userId}&trackingItemId=${trackingItemId}&include=membertrackingrecords&include=trackingitems`
+          `/api/${MEMBER_TRACKING_ITEM_RESOURCE}?userId=${userId}&trackingItemId=${trackingItemId}&include=membertrackingrecords&include=trackingitems`
         )
         .then((response) => response.data),
     {
@@ -70,7 +72,7 @@ const useCreateMemberTrackingItemAndRecord = () => {
   return useMutation<MemberTrackingItem, unknown, { newMemberTrackingItem: MemberTrackingItem; completedDate: string }>(
     ({ newMemberTrackingItem, completedDate }) =>
       axios
-        .post(`/api/membertrackingitem`, newMemberTrackingItem, {
+        .post(`/api/${MEMBER_TRACKING_ITEM_RESOURCE}`, newMemberTrackingItem, {
           params: {
             create_member_tracking_record: true,
             complete_date: completedDate,

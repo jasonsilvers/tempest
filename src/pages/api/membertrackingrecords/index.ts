@@ -1,8 +1,5 @@
 import { MemberTrackingRecord } from '.prisma/client';
-import {
-  NextApiRequestWithAuthorization,
-  withApiAuth,
-} from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { createMemberTrackingRecord } from '../../../repositories/memberTrackingRepo';
@@ -21,12 +18,8 @@ async function memberTrackingRecordIndexHandler(
     case 'POST': {
       const permission =
         req.user.id !== body.traineeId
-          ? ac
-              .can(req.user.role.name)
-              .createAny(EResource.MEMBER_TRACKING_RECORD)
-          : ac
-              .can(req.user.role.name)
-              .createOwn(EResource.MEMBER_TRACKING_RECORD);
+          ? ac.can(req.user.role.name).createAny(EResource.MEMBER_TRACKING_RECORD)
+          : ac.can(req.user.role.name).createOwn(EResource.MEMBER_TRACKING_RECORD);
 
       if (!permission.granted) {
         return permissionDenied(res);

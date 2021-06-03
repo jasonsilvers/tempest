@@ -61,11 +61,8 @@ const baseTestNextApi = async (
     if (urlId) {
       urlId = urlId.toString();
       const urlSplit = urlId.split('/');
-      if (urlSplit.length > 1) {
-        throw new Error('urlId should be a single param. Use urlSlug instead');
-      }
 
-      urlParams = urlId;
+      urlParams = urlSplit.length > 1 ? urlSplit[1] : urlSplit[0];
     }
 
     if (urlSlug) {
@@ -81,7 +78,9 @@ const baseTestNextApi = async (
         }
       : {};
 
-    const response = await fetch(url + '/api/whocares' + urlParams, {
+    const base = urlParams.charAt[0] === '?' ? '/api/whocares' : '/api/whocares/';
+
+    const response = await fetch(url + base + urlParams, {
       headers: {
         'Content-Type': 'application/json',
         ...authorization,
