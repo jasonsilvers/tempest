@@ -11,6 +11,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Fab from '@material-ui/core/Fab';
 
 const TempestPaper = tw.div`bg-primary text-white w-64 pl-6 pt-9`;
 
@@ -52,6 +53,8 @@ export {
   TextField,
   Autocomplete,
   LoadingOverlay,
+  Fab,
+  Drawer,
 };
 
 export type { TempestModalProps };

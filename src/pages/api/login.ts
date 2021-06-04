@@ -1,24 +1,14 @@
 import { NextApiResponse } from 'next';
-import {
-  withApiAuth,
-  NextApiRequestWithAuthorization,
-  P1_JWT,
-} from '@tron/nextjs-auth-p1';
+import { withApiAuth, NextApiRequestWithAuthorization, P1_JWT } from '@tron/nextjs-auth-p1';
 import { User } from '@prisma/client';
-import {
-  findUserByDodId,
-  createUserFromCommonApi,
-} from '../../repositories/userRepo';
-import {
-  createPersonFromJwt,
-  getPersonFromCommonApi,
-} from '../../repositories/common/commonRepo';
+import { findUserByDodId, createUserFromCommonApi, updateLastLogin } from '../../repositories/userRepo';
+import { createPersonFromJwt, getPersonFromCommonApi } from '../../repositories/common/commonRepo';
 
-export const loginHandler = async (
-  req: NextApiRequestWithAuthorization<User>,
-  res: NextApiResponse
-) => {
+export const loginHandler = async (req: NextApiRequestWithAuthorization<User>, res: NextApiResponse) => {
   res.statusCode = 200;
+
+  await updateLastLogin(req.user.id);
+
   res.json(req.user);
 };
 
