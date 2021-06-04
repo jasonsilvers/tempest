@@ -7,7 +7,7 @@ import tw from 'twin.macro';
 
 const DynamicDevTools = dynamic(
   function importDevTools() {
-    return import('../components/Devtools');
+    return import('../components/Devtools/index');
   },
   {
     ssr: false,
@@ -19,7 +19,7 @@ const DynamicDevTools = dynamic(
 
 const MainContent = tw.div`ml-80 mt-9`;
 function MyApp({ Component, pageProps }) {
-  const [showDevTools, setShowDevTools] = useState(true);
+  const [showDevTools, setShowDevTools] = useState(false);
 
   useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');

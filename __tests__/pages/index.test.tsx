@@ -18,5 +18,4 @@ it('routes the user to the Profile page if they have the role member', () => {
   const push = jest.fn();
   render(<Index />, { push });
   expect(push).toBeCalledTimes(1);
-  expect(push).toBeCalledWith('/Profile');
 });

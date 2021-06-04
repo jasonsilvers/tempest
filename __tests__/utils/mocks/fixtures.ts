@@ -1,5 +1,20 @@
 import { P1_JWT } from '@tron/nextjs-auth-p1';
 
+const pageGrants = [
+  {
+    action: 'read:any',
+    attributes: '*',
+    resource: 'profile',
+    role: 'monitor',
+  },
+  {
+    action: 'read:own',
+    attributes: '*',
+    resource: 'profile',
+    role: 'member',
+  },
+];
+
 const memberTrackingItemGrants = [
   {
     action: 'read:any',
@@ -125,6 +140,7 @@ const userGrants = [
 ];
 
 export const grants = [
+  ...pageGrants,
   ...memberTrackingItemGrants,
   ...userGrants,
   ...memberTrackingRecordsGrants,

@@ -23,12 +23,11 @@ const StyledLink = tw.a`mr-6 mb-5 text-lg flex flex-col uppercase text-gray-500`
 
 const Link: React.FC<ILinkProps> = ({ children, goToUrl, className, activeLinkStyle }) => {
   const router = useRouter();
-
   return (
     <NextLink href={goToUrl}>
       <StyledLink
         className={className}
-        style={router.route === goToUrl ? activeLinkStyle ?? { color: 'white', fontWeight: 'bolder' } : {}}
+        style={router.asPath === goToUrl ? activeLinkStyle ?? { color: 'white', fontWeight: 'bolder' } : {}}
       >
         {children}
       </StyledLink>

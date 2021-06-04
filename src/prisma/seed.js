@@ -71,6 +71,12 @@ async function main() {
     },
   });
 
+  const profileResource = await prisma.resource.create({
+    data: {
+      name: 'profile',
+    },
+  });
+
   const memberTrackingRecordResource = await prisma.resource.create({
     data: {
       name: 'membertrackingrecord',
@@ -80,6 +86,23 @@ async function main() {
   const memberTrackingItemResource = await prisma.resource.create({
     data: {
       name: 'membertrackingitem',
+    },
+  });
+
+  await prisma.grant.create({
+    data: {
+      action: 'read:own',
+      attributes: '*',
+      resourceModel: {
+        connect: {
+          name: profileResource.name,
+        },
+      },
+      roleModel: {
+        connect: {
+          name: memberRole.name,
+        },
+      },
     },
   });
 
