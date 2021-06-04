@@ -2,6 +2,7 @@ import { SvgIcon } from '@material-ui/core';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
+import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
 
 function SignatureButtonIcon(props) {
@@ -12,4 +13,4 @@ function SignatureButtonIcon(props) {
   );
 }
 
-export { SignatureButtonIcon, DoneAllIcon, DeleteIcon, DoneIcon };
+export { SignatureButtonIcon, DoneAllIcon, DeleteIcon, DoneIcon, SecurityIcon };

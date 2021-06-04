@@ -4,6 +4,7 @@ import { ERole } from '../types/global';
 import { IPerson } from './common/types';
 import { getRoleByName } from './roleRepo';
 import { Prisma } from '@prisma/client';
+import dayjs from 'dayjs';
 
 // required to infer the return type from the Prisma Client
 export type UserWithRole = Prisma.PromiseReturnType<typeof findUserByDodId>;
@@ -207,4 +208,15 @@ export async function createUserFromCommonApi(commonUser: IPerson) {
     ...newTempestUser,
     role: memberRole,
   } as UserWithRole;
+}
+
+export async function updateLastLogin(id: string) {
+  return await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      lastLogin: dayjs().toDate(),
+    },
+  });
 }
