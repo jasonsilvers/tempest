@@ -14,7 +14,7 @@ function Home() {
   }
 
   if (user?.role.name === ERole.MEMBER) {
-    router.push('/Profile');
+    router.push(`/Profile/${user.id}`);
   }
 
   return (

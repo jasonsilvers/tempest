@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
       {user ? (
         <div tw="space-y-9">
           <Link goToUrl="/Dashboard">Dashboard</Link>
-          <Link goToUrl="/Profile">Profile</Link>
+          <Link goToUrl={`/Profile/${user.id}`}>Profile</Link>
           <Link goToUrl="/Trackingitems">Tracking Items</Link>
         </div>
       ) : null}

@@ -5,7 +5,7 @@ import { server } from '../utils/mocks/msw';
 import { renderHook } from '@testing-library/react-hooks';
 import { Wrapper } from '../utils/TempestTestUtils';
 import { AccessControl } from 'accesscontrol';
-import { EPermission, EResource } from '../../src/types/global';
+import { EGrant, EResource } from '../../src/types/global';
 
 test('should return user and new ac list with grants', async () => {
   server.use(
@@ -34,23 +34,16 @@ test('should return permission when checking create resourse', async () => {
       return res(ctx.status(200), ctx.json(grants));
     })
   );
-  const { result, waitForValueToChange, waitForNextUpdate } = renderHook(
-    () => usePermissions(),
-    {
-      wrapper: Wrapper,
-      initialProps: {
-        user: { firstName: 'joe', role: { name: 'admin' } },
-      },
-    }
-  );
+  const { result, waitForValueToChange, waitForNextUpdate } = renderHook(() => usePermissions(), {
+    wrapper: Wrapper,
+    initialProps: {
+      user: { firstName: 'joe', role: { name: 'admin' } },
+    },
+  });
 
   await waitForValueToChange(() => result.current.ac);
 
-  const permission = result.current.permissionCheck(
-    'admin',
-    EPermission.READ,
-    EResource.MEMBER_TRACKING_RECORD
-  );
+  const permission = result.current.permissionCheck('admin', EGrant.READ, EResource.MEMBER_TRACKING_RECORD);
 
   waitForNextUpdate();
 
@@ -63,23 +56,16 @@ test('sets granted to false when ac.can fails', async () => {
       return res(ctx.status(200), ctx.json(grants));
     })
   );
-  const { result, waitForValueToChange, waitForNextUpdate } = renderHook(
-    () => usePermissions(),
-    {
-      wrapper: Wrapper,
-      initialProps: {
-        user: { firstName: 'joe', role: { name: 'admin' } },
-      },
-    }
-  );
+  const { result, waitForValueToChange, waitForNextUpdate } = renderHook(() => usePermissions(), {
+    wrapper: Wrapper,
+    initialProps: {
+      user: { firstName: 'joe', role: { name: 'admin' } },
+    },
+  });
 
   await waitForValueToChange(() => result.current.ac);
 
-  const permission = result.current.permissionCheck(
-    'NOROLEINGRANTS',
-    EPermission.READ,
-    EResource.MEMBER_TRACKING_RECORD
-  );
+  const permission = result.current.permissionCheck('NOROLEINGRANTS', EGrant.READ, EResource.MEMBER_TRACKING_RECORD);
 
   waitForNextUpdate();
 

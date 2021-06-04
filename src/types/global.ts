@@ -16,12 +16,14 @@ export enum EResource {
   AUHTORITY_RECORDS = 'authorityrecords',
 }
 
-export enum EGrant {
+export enum EAttribute {
   ALL = '*',
 }
 
-export enum EPermission {
+export enum EGrant {
   READ = 'read',
+  READ_ANY = 'readAny',
+  READ_OWN = 'readOwn',
   CREATE = 'create',
   UPDATE = 'update',
   UPDATE_OWN = 'updateOwn',

@@ -5,25 +5,21 @@ import axios from 'axios';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import { UserWithRole } from '../repositories/userRepo';
-import { EPermission, EResource } from '../types/global';
+import { EGrant, EResource } from '../types/global';
 
 const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<UserWithRole>();
   let isLoading = true;
 
-  const grantsQuery = useQuery<Grant[]>(
-    'grants',
-    () => axios.get('/api/grants').then((result) => result.data),
-    {
-      enabled: !!user,
-      staleTime: 100000,
-    }
-  );
+  const grantsQuery = useQuery<Grant[]>('grants', () => axios.get('/api/grants').then((result) => result.data), {
+    enabled: !!user,
+    staleTime: 100000,
+  });
 
   let ac: AccessControl;
 
   const permissionCheck = useCallback(
-    (userRole: string, permission: EPermission, resource: EResource) => {
+    (userRole: string, permission: EGrant, resource: EResource) => {
       try {
         const type = ac?.can(userRole)[permission](resource);
         return type;
