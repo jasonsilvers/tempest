@@ -30,8 +30,8 @@ const daysToString = {
   365: 'Annual',
 };
 
-const TableRow = tw.div`text-black box-shadow[0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #D3D3D3] border-radius[5px] text-sm flex items-center flex-wrap min-width[350px] min-height[55px]`;
-const TableData = tw.div`py-3 font-size[12px] flex[0 0 auto] mx-3`;
+const TableRow = tw.div`text-black border-b text-sm flex flex-wrap min-width[350px] min-height[45px]`;
+const TableData = tw.div`font-size[12px] flex[0 0 auto] mx-3`;
 
 const SignatureButtonIconStyled = tw(SignatureButtonIcon)`text-gray-600`;
 const Token = tw.div`rounded h-5 w-5 mr-2`;
@@ -42,6 +42,24 @@ const SignatureRequired = tw(Token)`background-color[#4985c6]`;
 const Upcoming = tw(Token)`background-color[#FAC50A]`;
 const Draft = tw(Token)`background-color[#8b5cf6]`;
 const Archived = tw(Token)`bg-black`;
+
+const RecordRowSkeleton = () => {
+  return (
+    <div tw="border border-gray-300 ">
+      <div tw="animate-pulse flex h-12 justify-items-center items-center px-2">
+        <Token tw="bg-gray-400 pr-2" />
+        <div tw="h-4 w-40 bg-gray-400 rounded-sm"></div>
+        <div tw="ml-auto flex space-x-4">
+          <div tw="h-2 w-14 bg-gray-400"></div>
+          <div tw="h-2 w-14 bg-gray-400"></div>
+          <div tw="h-2 w-14 bg-gray-400"></div>
+          <div tw="h-2 w-14 bg-gray-400"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const TokenObj: { [K in ECategories]: typeof Token } = {
   Overdue,
   Done,
@@ -59,6 +77,7 @@ const TokenObj: { [K in ECategories]: typeof Token } = {
  * @param loggedInUserId  -- required to render the signature button for the correct user
  * @returns
  */
+
 const getTraineeSignature = (
   memberTrackingRecord: MemberTrackingRecord,
   signatureDate: Date,
@@ -138,7 +157,7 @@ const RecordRow: React.FC<{
   }
 
   if (trackingRecordQuery.isLoading) {
-    return <div>...Loading</div>;
+    return <RecordRowSkeleton />;
   }
 
   const DynamicToken = TokenObj[status];
