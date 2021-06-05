@@ -15,7 +15,7 @@ const Profile = () => {
 
   const { permissionCheck, role, isLoading, user } = usePermissions();
 
-  const userId = id.toString();
+  const userId = id?.toString();
   //Used to prevent the count for the tabs incrementing each time the page is loaded
   useEffect(() => {
     return () => resetCount();

@@ -30,6 +30,7 @@ const DialogButton = tw(Button)`w-32 normal-case bg-primary text-white`;
 const Dialog = tw(MuiDialog)``;
 
 const TempestOverlay = tw.div`bg-white absolute top-0 left-0 w-full h-full backdrop-filter backdrop-blur-3xl opacity-50 z-10`;
+const TempestSkeleton = tw.div`border border-gray-300 shadow rounded-md`;
 
 const LoadingOverlay = () => {
   return (
@@ -55,6 +56,7 @@ export {
   LoadingOverlay,
   Fab,
   Drawer,
+  TempestSkeleton,
 };
 
 export type { TempestModalProps };
