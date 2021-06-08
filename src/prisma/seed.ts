@@ -1,5 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 var faker = require('faker');
+
 const prisma = new PrismaClient();
 
 const DOD_ID = '2223332221';

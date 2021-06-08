@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import { UserWithRole } from '../repositories/userRepo';
-import { EGrant, EResource } from '../types/global';
+import { EAction, EResource } from '../types/global';
 
 const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<UserWithRole>();
@@ -19,7 +19,7 @@ const usePermissions = () => {
   let ac: AccessControl;
 
   const permissionCheck = useCallback(
-    (userRole: string, permission: EGrant, resource: EResource) => {
+    (userRole: string, permission: EAction, resource: EResource) => {
       try {
         const type = ac?.can(userRole)[permission](resource);
         return type;
