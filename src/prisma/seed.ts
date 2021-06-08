@@ -1,5 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-var faker = require('faker');
+import { Grant, PrismaClient } from '@prisma/client';
+import { EAction, EResource, ERole } from '../types/global';
+import { grants } from '../utils/Grants';
+const faker = require('faker');
 
 const prisma = new PrismaClient();
 
@@ -26,7 +28,7 @@ function createUser(dodId = null) {
   };
 }
 
-async function main() {
+async function seedDev() {
   const organization1 = await prisma.organization.create({
     data: {
       id: '292bbadf-8f08-49ff-afec-d18b9d84ec07',
@@ -50,190 +52,6 @@ async function main() {
       name: 'Vaccinations Squadron',
       parent: {
         connect: { id: organization1.id },
-      },
-    },
-  });
-
-  const adminRole = await prisma.role.create({
-    data: {
-      name: 'admin',
-    },
-  });
-
-  const memberRole = await prisma.role.create({
-    data: {
-      name: 'member',
-    },
-  });
-
-  const monitorRole = await prisma.role.create({
-    data: {
-      name: 'monitor',
-    },
-  });
-
-  const userResource = await prisma.resource.create({
-    data: {
-      name: 'user',
-    },
-  });
-
-  const profileResource = await prisma.resource.create({
-    data: {
-      name: 'profile',
-    },
-  });
-
-  const organizationResource = await prisma.resource.create({
-    data: {
-      name: 'organization',
-    },
-  });
-
-  const memberTrackingRecordResource = await prisma.resource.create({
-    data: {
-      name: 'membertrackingrecord',
-    },
-  });
-
-  const memberTrackingItemResource = await prisma.resource.create({
-    data: {
-      name: 'membertrackingitem',
-    },
-  });
-
-  await prisma.grant.create({
-    data: {
-      action: 'read:own',
-      attributes: '*',
-      resourceModel: {
-        connect: {
-          name: organizationResource.name,
-        },
-      },
-      roleModel: {
-        connect: {
-          name: monitorRole.name,
-        },
-      },
-    },
-  });
-
-  await prisma.grant.create({
-    data: {
-      action: 'read:own',
-      attributes: '*',
-      resourceModel: {
-        connect: {
-          name: profileResource.name,
-        },
-      },
-      roleModel: {
-        connect: {
-          name: memberRole.name,
-        },
-      },
-    },
-  });
-
-  await prisma.grant.create({
-    data: {
-      action: 'create:own',
-      attributes: '*',
-      resourceModel: {
-        connect: {
-          name: memberTrackingRecordResource.name,
-        },
-      },
-      roleModel: {
-        connect: {
-          name: memberRole.name,
-        },
-      },
-    },
-  });
-
-  await prisma.grant.create({
-    data: {
-      action: 'read:own',
-      attributes: '*',
-      resourceModel: {
-        connect: {
-          name: memberTrackingItemResource.name,
-        },
-      },
-      roleModel: {
-        connect: {
-          name: memberRole.name,
-        },
-      },
-    },
-  });
-
-  await prisma.grant.create({
-    data: {
-      action: 'create:own',
-      attributes: '*',
-      resourceModel: {
-        connect: {
-          name: memberTrackingItemResource.name,
-        },
-      },
-      roleModel: {
-        connect: {
-          name: memberRole.name,
-        },
-      },
-    },
-  });
-
-  await prisma.grant.create({
-    data: {
-      action: 'update:own',
-      attributes: 'traineeSignedDate',
-      resourceModel: {
-        connect: {
-          name: memberTrackingRecordResource.name,
-        },
-      },
-      roleModel: {
-        connect: {
-          name: memberRole.name,
-        },
-      },
-    },
-  });
-
-  await prisma.grant.create({
-    data: {
-      action: 'read:any',
-      attributes: '*',
-      resourceModel: {
-        connect: {
-          name: userResource.name,
-        },
-      },
-      roleModel: {
-        connect: {
-          name: adminRole.name,
-        },
-      },
-    },
-  });
-
-  await prisma.grant.create({
-    data: {
-      action: 'read:own',
-      attributes: '*',
-      resourceModel: {
-        connect: {
-          name: userResource.name,
-        },
-      },
-      roleModel: {
-        connect: {
-          name: memberRole.name,
-        },
       },
     },
   });
@@ -278,6 +96,12 @@ async function main() {
   });
 
   const user1 = createUser(DOD_ID);
+
+  const memberRole = await prisma.role.findFirst({
+    where: {
+      name: ERole.MEMBER,
+    },
+  });
 
   await prisma.user.create({
     data: {
@@ -413,6 +237,64 @@ async function main() {
     },
   });
 }
+
+async function seedResources() {
+  const resourcesData = Object.values(EResource).map((name) => {
+    return { name };
+  });
+
+  await prisma.resource.createMany({
+    data: resourcesData,
+  });
+}
+
+async function seedRoles() {
+  const rolesData = Object.values(ERole).map((name) => {
+    return { name };
+  });
+
+  await prisma.role.createMany({
+    data: rolesData,
+  });
+}
+
+async function seedGrants() {
+  const baseGrantsData = grants.map((grant) => {
+    return {
+      action: grant.action,
+      attributes: grant.attributes,
+      resource: grant.resource,
+      role: grant.role,
+    } as Grant;
+  });
+
+  const adminGrants = Object.values(EResource).map((resource) => {
+    return Object.values(EAction).map((action) => {
+      return {
+        action,
+        attributes: '*',
+        resource,
+        role: ERole.ADMIN,
+      } as Grant;
+    });
+  });
+
+  const adminGrantsData = adminGrants.flat();
+
+  const grantsData = [...baseGrantsData, ...adminGrantsData];
+
+  await prisma.grant.createMany({
+    data: grantsData,
+  });
+}
+
+async function main() {
+  await seedResources();
+  await seedRoles();
+  await seedGrants();
+  await seedDev();
+}
+
 main()
   .catch((e) => {
     console.error(e);

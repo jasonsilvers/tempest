@@ -2,6 +2,7 @@ export enum ERole {
   ADMIN = 'admin',
   MEMBER = 'member',
   MONITOR = 'monitor',
+  NOROLE = 'norole',
 }
 
 export enum EResource {
@@ -34,6 +35,21 @@ export enum EAction {
   DELETE = 'delete',
   DELETE_ANY = 'delete:any',
   DELETE_OWN = 'delete:own',
+}
+
+export enum EFuncAction {
+  READ = 'read',
+  READ_ANY = 'readAny',
+  READ_OWN = 'readOwn',
+  CREATE = 'create',
+  CREATE_OWN = 'createOwn',
+  CREATE_ANY = 'createAny',
+  UPDATE = 'update',
+  UPDATE_OWN = 'updateOwn',
+  UPDATE_ANY = 'updateAny',
+  DELETE = 'delete',
+  DELETE_ANY = 'deleteAny',
+  DELETE_OWN = 'deleteOwn',
 }
 
 export enum ECategories {

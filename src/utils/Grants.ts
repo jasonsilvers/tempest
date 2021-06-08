@@ -1,6 +1,13 @@
 import { EAction, EResource, ERole } from '../types/global';
 
-const pageGrants = [
+export type Grants = {
+  action: EAction;
+  attributes: string;
+  resource: EResource;
+  role: string;
+};
+
+const pageGrants: Grants[] = [
   {
     action: EAction.READ_ANY,
     attributes: '*',
@@ -28,7 +35,7 @@ const pageGrants = [
   },
 ];
 
-const memberTrackingItemGrants = [
+const memberTrackingItemGrants: Grants[] = [
   {
     action: EAction.READ_ANY,
     attributes: '*',
@@ -73,7 +80,7 @@ const memberTrackingItemGrants = [
   },
 ];
 
-const memberTrackingRecordsGrants = [
+const memberTrackingRecordsGrants: Grants[] = [
   {
     action: EAction.CREATE_ANY,
     attributes: '*',
@@ -137,7 +144,7 @@ const memberTrackingRecordsGrants = [
   },
 ];
 
-const userGrants = [
+const userGrants: Grants[] = [
   {
     action: EAction.READ_ANY,
     attributes: '*',
@@ -152,7 +159,7 @@ const userGrants = [
   },
 ];
 
-const organizationGrants = [
+const organizationGrants: Grants[] = [
   {
     action: EAction.READ_OWN,
     attributes: '*',
@@ -161,7 +168,7 @@ const organizationGrants = [
   },
 ];
 
-export const grants = [
+export const grants: Grants[] = [
   ...pageGrants,
   ...memberTrackingItemGrants,
   ...userGrants,
