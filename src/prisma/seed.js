@@ -65,6 +65,12 @@ async function main() {
     },
   });
 
+  const monitorRole = await prisma.role.create({
+    data: {
+      name: 'monitor',
+    },
+  });
+
   const userResource = await prisma.resource.create({
     data: {
       name: 'user',
@@ -77,6 +83,12 @@ async function main() {
     },
   });
 
+  const organizationResource = await prisma.resource.create({
+    data: {
+      name: 'organization',
+    },
+  });
+
   const memberTrackingRecordResource = await prisma.resource.create({
     data: {
       name: 'membertrackingrecord',
@@ -86,6 +98,23 @@ async function main() {
   const memberTrackingItemResource = await prisma.resource.create({
     data: {
       name: 'membertrackingitem',
+    },
+  });
+
+  await prisma.grant.create({
+    data: {
+      action: 'read:own',
+      attributes: '*',
+      resourceModel: {
+        connect: {
+          name: organizationResource.name,
+        },
+      },
+      roleModel: {
+        connect: {
+          name: monitorRole.name,
+        },
+      },
     },
   });
 
