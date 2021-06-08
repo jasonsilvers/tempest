@@ -5,15 +5,16 @@ export enum ERole {
 }
 
 export enum EResource {
-  USER = 'user',
-  RECORD = 'record',
+  AUHTORITY_RECORDS = 'authorityrecords',
   DASHBOARD = 'dashboard',
   PROFILE = 'profile',
   MEMBER_TRACKING_RECORD = 'membertrackingrecord',
-  TRACKING_ITEM = 'tracking_item',
   MEMBER_TRACKING_ITEM = 'membertrackingitem',
+  ORGANIZATION = 'organization',
+  RECORD = 'record',
   TRAINEE_RECORDS = 'traineerecords',
-  AUHTORITY_RECORDS = 'authorityrecords',
+  TRACKING_ITEM = 'tracking_item',
+  USER = 'user',
 }
 
 export enum EAttribute {

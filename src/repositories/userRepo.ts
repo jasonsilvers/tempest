@@ -11,6 +11,7 @@ export type UserWithRole = Prisma.PromiseReturnType<typeof findUserByDodId>;
 export type UserWithTrackingRecord = Prisma.PromiseReturnType<typeof findTrackingRecordsByAuthorityId>;
 
 export type UserWithAll = Prisma.PromiseReturnType<typeof findUserByIdReturnAllIncludes>;
+export type LoggedInUser = Prisma.PromiseReturnType<typeof findUserByDodId>;
 
 export const findUserByIdReturnAllIncludes = async (userId: string) => {
   return await prisma.user.findUnique({
@@ -49,9 +50,7 @@ export const findUserByDodId = async (queryString: string) => {
     },
     include: {
       role: true,
-      traineeTrackingRecords: {
-        include: { trackingItem: true },
-      },
+      organization: true,
     },
   });
 };

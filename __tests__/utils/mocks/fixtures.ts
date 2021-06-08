@@ -139,11 +139,21 @@ const userGrants = [
   },
 ];
 
+const organizationGrants = [
+  {
+    action: 'read:own',
+    attributes: '*',
+    resource: 'organization',
+    role: 'monitor',
+  },
+];
+
 export const grants = [
   ...pageGrants,
   ...memberTrackingItemGrants,
   ...userGrants,
   ...memberTrackingRecordsGrants,
+  ...organizationGrants,
   { action: 'read:any', attributes: '*', resource: 'profile', role: 'member' },
   {
     action: 'read:any',
