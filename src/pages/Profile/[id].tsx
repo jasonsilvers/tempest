@@ -5,7 +5,7 @@ import MemberItemTracker from '../../components/Records/MemberRecordTracker';
 import { useMemberRecordTrackerState } from '../../hooks/uiState';
 import HeaderUser from '../../components/Records/RecordHeader';
 import { useRouter } from 'next/router';
-import { EGrant, EResource } from '../../types/global';
+import { EFuncAction, EResource } from '../../types/global';
 
 const Profile = () => {
   const {
@@ -27,8 +27,8 @@ const Profile = () => {
 
   const persmission =
     user.id !== id
-      ? permissionCheck(role, EGrant.READ_ANY, EResource.PROFILE)
-      : permissionCheck(role, EGrant.READ_OWN, EResource.PROFILE);
+      ? permissionCheck(role, EFuncAction.READ_ANY, EResource.PROFILE)
+      : permissionCheck(role, EFuncAction.READ_OWN, EResource.PROFILE);
 
   if (!persmission?.granted) {
     return <div>You do not have permission to view that profile</div>;
