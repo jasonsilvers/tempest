@@ -29,9 +29,12 @@ FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/base-image/hard
 USER appuser
 WORKDIR /app
 
-
 COPY ./public ./public
 COPY ./src/prisma ./prisma
+COPY ./src/types ./types
+COPY ./src/utils ./utils
+COPY  tsconfig.json ./
+COPY  package.json ./
 COPY .env.production .env
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/node_modules ./node_modules
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/.next ./.next
