@@ -1,7 +1,7 @@
 import { Grant, PrismaClient } from '@prisma/client';
 import { EAction, EResource, ERole } from '../types/global';
 import { grants } from '../utils/Grants';
-const faker = require('faker');
+import faker from 'faker';
 
 const prisma = new PrismaClient();
 
@@ -289,10 +289,24 @@ async function seedGrants() {
 }
 
 async function main() {
-  await seedResources();
-  await seedRoles();
-  await seedGrants();
-  await seedDev();
+  await prisma.role.create({
+    data: {
+      name: 'member',
+    },
+  });
+
+  const trackingItem3 = await prisma.trackingItem.create({
+    data: {
+      title: 'Keyboard Warrior Training',
+      description: 'How to be a true keyboard warrior via writing code',
+      interval: 180,
+    },
+  });
+
+  // await seedResources();
+  // await seedRoles();
+  // await seedGrants();
+  // await seedDev();
 }
 
 main()
