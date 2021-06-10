@@ -12,7 +12,7 @@ const DynamicDevTools = dynamic(
   {
     ssr: false,
     loading: function LoadingDevTools() {
-      return <div>...loading dev tools</div>;
+      return <div tw="absolute bottom-5 right-5">...loading dev tools</div>;
     },
   }
 );
@@ -31,7 +31,6 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     // @ts-expect-error
     window.toggleDevtools = () => {
-      console.log(showDevTools);
       setShowDevTools((old) => !old);
     };
   });

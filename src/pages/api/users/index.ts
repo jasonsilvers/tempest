@@ -1,12 +1,22 @@
-import { User } from '@prisma/client';
 import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { findUserByDodId, findUsers } from '../../../repositories/userRepo';
+import { getAc, permissionDenied } from '../../../middleware/utils';
+import { findUserByDodId, findUsers, UserWithRole } from '../../../repositories/userRepo';
+import { EResource } from '../../../types/global';
 
-export const usersApiHandler = async (req: NextApiRequestWithAuthorization<User>, res: NextApiResponse) => {
+export const usersApiHandler = async (req: NextApiRequestWithAuthorization<UserWithRole>, res: NextApiResponse) => {
   const { method } = req;
+
+  const ac = await getAc();
+
   switch (method) {
     case 'GET': {
+      const permission = ac.can(req.user.role.name).readAny(EResource.USER);
+
+      if (!permission.granted) {
+        return permissionDenied(res);
+      }
+
       const users = await findUsers();
       res.json(users);
       break;

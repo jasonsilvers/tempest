@@ -26,6 +26,10 @@ function AppProviders({ children, pageProps = null }) {
         maxSnack={3}
         ref={notistackRef}
         action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
       >
         <QueryClientProvider client={queryClientRef.current}>
           <Hydrate state={pageProps?.dehydratedState}>

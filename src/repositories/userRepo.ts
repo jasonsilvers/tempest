@@ -107,7 +107,12 @@ export const findUserById = async (query: string, config?: IUserIncludeConfig) =
 };
 
 export const findUsers = async () => {
-  return await prisma.user.findMany();
+  return await prisma.user.findMany({
+    include: {
+      role: true,
+      organization: true,
+    },
+  });
 };
 
 /**
@@ -216,6 +221,31 @@ export async function updateLastLogin(id: string) {
     },
     data: {
       lastLogin: dayjs().toDate(),
+    },
+    include: {
+      role: true,
+      organization: true,
+    },
+  });
+}
+
+export async function updateUserRole(id: string, roleName: string) {
+  const role = await prisma.role.findUnique({
+    where: {
+      name: roleName,
+    },
+  });
+
+  return await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      roleId: role.id,
+    },
+    include: {
+      role: true,
+      organization: true,
     },
   });
 }

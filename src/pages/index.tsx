@@ -13,8 +13,12 @@ function Home() {
     router.push('/Unauthenticated');
   }
 
-  if (user?.role.name === ERole.MEMBER) {
+  if (user && user.role.name === ERole.MEMBER) {
     router.push(`/Profile/${user.id}`);
+  }
+
+  if (user && user.role.name !== ERole.MEMBER) {
+    router.push('/Dashboard');
   }
 
   return (
