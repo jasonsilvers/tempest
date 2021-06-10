@@ -4,6 +4,7 @@ import GlobalStyles from '../styles/GlobalStyles';
 import AppProviders from '../components/AppProviders';
 import dynamic from 'next/dynamic';
 import tw from 'twin.macro';
+import Head from 'next/head';
 
 const DynamicDevTools = dynamic(
   function importDevTools() {
@@ -36,14 +37,19 @@ function MyApp({ Component, pageProps }) {
   });
 
   return (
-    <AppProviders pageProps={pageProps}>
-      <GlobalStyles />
-      <NavBar />
-      <MainContent>
-        <Component {...pageProps} />
-        {showDevTools ? <DynamicDevTools /> : null}
-      </MainContent>
-    </AppProviders>
+    <>
+      <Head>
+        <title>Tempest</title>
+      </Head>
+      <AppProviders pageProps={pageProps}>
+        <GlobalStyles />
+        <NavBar />
+        <MainContent>
+          <Component {...pageProps} />
+          {showDevTools ? <DynamicDevTools /> : null}
+        </MainContent>
+      </AppProviders>
+    </>
   );
 }
 
