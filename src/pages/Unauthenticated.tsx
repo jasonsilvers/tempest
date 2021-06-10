@@ -1,7 +1,16 @@
+import { useUser } from '@tron/nextjs-auth-p1';
 import Head from 'next/head';
+import { useSnackbar } from 'notistack';
 import React from 'react';
 
 const UnauthenticatedApp = () => {
+  const { error } = useUser();
+  const { enqueueSnackbar } = useSnackbar();
+
+  if (error) {
+    enqueueSnackbar('There was an error getting your account, please contact a system admin', { variant: 'error' });
+  }
+
   return (
     <div>
       <Head>
