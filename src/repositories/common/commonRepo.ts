@@ -30,8 +30,9 @@ async function createPersonFromJwt_(jwt: P1_JWT) {
     lastName: jwt.family_name,
     email: jwt.email,
     dodid: jwt.dod_id,
-    rank: jwt.rank,
-    branch: jwt.affiliation,
+    //TODO: Fix once common-api updates api
+    rank: null,
+    branch: 'USAF',
   };
 
   const response = await axios.post<IPerson, { data: IPerson }>(`${getCommonURL()}/${RESOURCE}`, newCommonUser);

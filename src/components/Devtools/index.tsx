@@ -68,6 +68,8 @@ const UsersList = () => {
               <div>|</div>
               <Data>last login: {user.lastLogin ?? 'Never'}</Data>
               <div>|</div>
+              <Data>{user.organization ? user.organization.name : 'No Org'}</Data>
+              <div>|</div>
               <div tw="flex flex-row items-center space-x-2">
                 <Data>Role:</Data>
                 {rolesListQuery.isLoading ? (
