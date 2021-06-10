@@ -33,7 +33,7 @@ COPY ./src/prisma/migrations ./prisma/migrations
 COPY ./src/prisma/prisma.ts ./src/prisma/schema.prisma ./prisma/
 COPY tsconfig.json ./
 COPY package.json ./
-COPY .env.compose .env
+COPY .env.production .env
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/node_modules ./node_modules
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/.next ./.next
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/prisma/seed.js ./prisma/
