@@ -5,7 +5,7 @@ import { server } from '../utils/mocks/msw';
 import { renderHook } from '@testing-library/react-hooks';
 import { Wrapper } from '../utils/TempestTestUtils';
 import { AccessControl } from 'accesscontrol';
-import { EAction, EResource } from '../../src/types/global';
+import { ERole, EFuncAction, EResource } from '../../src/types/global';
 
 test('should return user and new ac list with grants', async () => {
   server.use(
@@ -37,13 +37,17 @@ test('should return permission when checking create resourse', async () => {
   const { result, waitForValueToChange, waitForNextUpdate } = renderHook(() => usePermissions(), {
     wrapper: Wrapper,
     initialProps: {
-      user: { firstName: 'joe', role: { name: 'admin' } },
+      user: { firstName: 'joe', role: { name: ERole.MEMBER } },
     },
   });
 
   await waitForValueToChange(() => result.current.ac);
 
-  const permission = result.current.permissionCheck('admin', EAction.READ, EResource.MEMBER_TRACKING_RECORD);
+  const permission = result.current.permissionCheck(
+    ERole.MEMBER,
+    EFuncAction.READ_OWN,
+    EResource.MEMBER_TRACKING_RECORD
+  );
 
   waitForNextUpdate();
 
@@ -65,7 +69,11 @@ test('sets granted to false when ac.can fails', async () => {
 
   await waitForValueToChange(() => result.current.ac);
 
-  const permission = result.current.permissionCheck('NOROLEINGRANTS', EAction.READ, EResource.MEMBER_TRACKING_RECORD);
+  const permission = result.current.permissionCheck(
+    'NOROLEINGRANTS',
+    EFuncAction.READ,
+    EResource.MEMBER_TRACKING_RECORD
+  );
 
   waitForNextUpdate();
 

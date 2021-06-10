@@ -16,6 +16,7 @@ export enum EResource {
   TRAINEE_RECORDS = 'traineerecords',
   TRACKING_ITEM = 'trackingitem',
   USER = 'user',
+  ROLE = 'role',
 }
 
 export enum EAttribute {
@@ -23,16 +24,12 @@ export enum EAttribute {
 }
 
 export enum EAction {
-  READ = 'read',
   READ_ANY = 'read:any',
   READ_OWN = 'read:own',
-  CREATE = 'create',
   CREATE_OWN = 'create:own',
   CREATE_ANY = 'create:any',
-  UPDATE = 'update',
   UPDATE_OWN = 'update:own',
   UPDATE_ANY = 'update:any',
-  DELETE = 'delete',
   DELETE_ANY = 'delete:any',
   DELETE_OWN = 'delete:own',
 }

@@ -137,10 +137,10 @@ const memberTrackingRecordsGrants: Grants[] = [
     role: ERole.MONITOR,
   },
   {
-    action: EAction.READ_ANY,
+    action: EAction.READ_OWN,
     attributes: '*',
     resource: EResource.MEMBER_TRACKING_RECORD,
-    role: 'admin',
+    role: ERole.MEMBER,
   },
 ];
 
@@ -150,6 +150,12 @@ const userGrants: Grants[] = [
     attributes: '*',
     resource: EResource.USER,
     role: ERole.MONITOR,
+  },
+  {
+    action: EAction.UPDATE_OWN,
+    attributes: '*',
+    resource: EResource.USER,
+    role: ERole.MEMBER,
   },
   {
     action: EAction.READ_OWN,
