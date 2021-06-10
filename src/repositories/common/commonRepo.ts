@@ -50,9 +50,10 @@ async function getPersonFromCommonApi_(query: string) {
   let response;
 
   try {
-    response = await axios.get<string, { data: IPerson }>(
-      `${getCommonURL()}/${RESOURCE}/find/?findByField=dodid&value=${query}`
-    );
+    response = await axios.post<string, { data: IPerson }>(`${getCommonURL()}/${RESOURCE}/find`, {
+      findType: 'DODID',
+      value: query,
+    });
   } catch (error) {
     if (error.response.status === 404) {
       return null;
@@ -64,7 +65,7 @@ async function getPersonFromCommonApi_(query: string) {
   return response.data;
 }
 
-async function getPersonFromCommonApiById(id) {
+async function getPersonFromCommonApiById(id: string) {
   const person = await axios.get<string, { data: IPerson }>(`${getCommonURL()}/${RESOURCE}/${id}`);
 
   return person.data;
