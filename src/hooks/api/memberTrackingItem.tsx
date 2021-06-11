@@ -12,7 +12,7 @@ export const mtiQueryKeys = {
   memberTrackingItem: (userId: string, trackingItemId: number) => ['membertrackingitem', userId, trackingItemId],
 };
 
-const fetchUserWithMemberTrackingItems = async (userId: string): Promise<UserWithAll> => {
+export const fetchUserWithMemberTrackingItems = async (userId: string): Promise<UserWithAll> => {
   const { data } = await axios.get(`/api/users/${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}`);
 
   return data;
