@@ -56,9 +56,9 @@ export const findUserByDodId = async (queryString: string) => {
 };
 
 export interface IUserIncludeConfig {
-  withMemberTrackingItems: boolean;
-  withMemberTrackingRecords: boolean;
-  withTrackingItems: boolean;
+  withMemberTrackingItems?: boolean;
+  withMemberTrackingRecords?: boolean;
+  withTrackingItems?: boolean;
   // withAuthority: boolean;
 }
 
