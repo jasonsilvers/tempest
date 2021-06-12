@@ -212,4 +212,4 @@ const testNextApi = {
   },
 };
 
-export default testNextApi;
+export { testNextApi };

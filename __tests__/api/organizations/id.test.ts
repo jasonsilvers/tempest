@@ -3,7 +3,7 @@ import { findUserByDodId } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import organizationsIdApiHandler from '../../../src/pages/api/organizations/[id]';
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import { findOrganizationById, OrganizationWithChildren } from '../../../src/repositories/organizationRepo';
 import { User } from '@prisma/client';
 import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';
@@ -93,7 +93,7 @@ test('should not allow user to get any organization - read any', async () => {
   mockMethodAndReturn(findUserByDodId, {
     id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
-    role: { id: '22', name: 'monitor' },
+    role: { id: '22', name: 'member' },
     organizationId: 'uiaewniwefnu',
   });
 

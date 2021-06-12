@@ -1,11 +1,16 @@
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import { createOrganizations, findOrganizations } from '../../../src/repositories/organizationRepo';
-import { organizationApiHandler } from '../../../src/pages/api/organizations/index';
-import { createMocks } from 'node-mocks-http';
+import { findOrganizations } from '../../../src/repositories/organizationRepo';
+import organizationApiHandler from '../../../src/pages/api/organizations/index';
+import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findGrants } from '../../../src/repositories/grantsRepo';
+import { grants } from '../../utils/mocks/fixtures';
+import { testNextApi } from '../../utils/NextAPIUtils';
 
-afterAll = () => {
-  jest.clearAllMocks();
-};
+jest.mock('../../../src/repositories/userRepo');
+jest.mock('../../../src/repositories/organizationRepo');
+jest.mock('../../../src/repositories/grantsRepo');
+
+const globalUserId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 
 const testOrganizations = [
   {
@@ -18,46 +23,38 @@ const testOrganizations = [
   },
 ];
 
-jest.mock('../../../src/repositories/userRepo');
-jest.mock('../../../src/repositories/organizationRepo');
+beforeEach(() => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: globalUserId,
+    firstName: 'joe',
+    role: { id: '22', name: 'monitor' },
+  });
+  mockMethodAndReturn(findGrants, grants);
+});
 
-test('api/organization/GET --Happy Case', async () => {
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
+test('should return organizations', async () => {
   mockMethodAndReturn(findOrganizations, testOrganizations);
-  const { req, res } = createMocks({
-    method: 'GET',
-  });
-  await organizationApiHandler(req, res);
-  expect(res._getStatusCode()).toBe(200);
-  expect(JSON.parse(res._getData())).toEqual(testOrganizations);
+  const { status, data } = await testNextApi.get(organizationApiHandler);
+  expect(status).toBe(200);
+  expect(data).toStrictEqual(testOrganizations);
 });
 
-test('api/organization/POST --Happy Case', async () => {
-  mockMethodAndReturn(createOrganizations, { id: '1', name: 'test org 3' });
-  const { req, res } = createMocks({
-    method: 'POST',
-    body: { name: 'test org 3' },
-  });
-  await organizationApiHandler(req, res);
-  expect(res._getStatusCode()).toBe(200);
-  expect(JSON.parse(res._getData())).toEqual({ id: '1', name: 'test org 3' });
+test('should return 401 if not authorized', async () => {
+  mockMethodAndReturn(findOrganizations, testOrganizations);
+  const { status } = await testNextApi.get(organizationApiHandler, { withJwt: false });
+  expect(status).toBe(401);
 });
-
-test('api/organization/POST --Sad Case', async () => {
-  const { req, res } = createMocks({
-    method: 'POST',
-    body: { id: '1', name: 'test org 3' },
+test('should return 403 if incorrect permission', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: globalUserId,
+    firstName: 'joe',
+    role: { id: '22', name: 'norole' },
   });
-  await organizationApiHandler(req, res);
-  expect(res._getStatusCode()).toBe(400);
-  expect(res._getData()).toEqual('ID Must Be null');
-});
-
-test('api/organization/:PUT --Not Allowed', async () => {
-  const { req, res } = createMocks({
-    method: 'PUT',
-  });
-  await organizationApiHandler(req, res);
-  expect(res._getStatusCode()).toBe(405);
-  expect(res._getData()).toEqual('Method PUT Not Allowed');
-  expect(res._getHeaders()).toEqual({ allow: ['GET', 'POST'] });
+  mockMethodAndReturn(findOrganizations, testOrganizations);
+  const { status } = await testNextApi.get(organizationApiHandler);
+  expect(status).toBe(403);
 });

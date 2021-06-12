@@ -31,14 +31,12 @@ function createUser(dodId = null) {
 async function seedDev() {
   const organization1 = await prisma.organization.create({
     data: {
-      id: '292bbadf-8f08-49ff-afec-d18b9d84ec07',
       name: '15th MDG',
     },
   });
 
   const organization2 = await prisma.organization.create({
     data: {
-      id: 'd61cc8c2-93eb-41cf-927e-a1fb88a8eead',
       name: 'Dental Squadron',
       parent: {
         connect: { id: organization1.id },

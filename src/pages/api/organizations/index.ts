@@ -1,19 +1,34 @@
 import { NextApiResponse } from 'next';
 import { withApiAuth, NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { User } from '@prisma/client';
-import { findUserByDodId } from '../../../repositories/userRepo';
+import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
 import { createOrganizations, findOrganizations } from '../../../repositories/organizationRepo';
+import { getAc, permissionDenied } from '../../../middleware/utils';
+import { EResource } from '../../../types/global';
 
-export const organizationApiHandler = async (req: NextApiRequestWithAuthorization<User>, res: NextApiResponse) => {
+const organizationApiHandler = async (req: NextApiRequestWithAuthorization<UserWithRole>, res: NextApiResponse) => {
   const { body, method } = req;
+
+  const ac = await getAc();
+
   switch (method) {
     case 'GET': {
-      const findOrgData = await findOrganizations();
-      res.status(200);
-      res.json(findOrgData);
+      const permission = ac.can(req.user.role.name).readAny(EResource.ORGANIZATION);
+
+      if (!permission.granted) {
+        return permissionDenied(res);
+      }
+
+      const organizations = await findOrganizations();
+      res.status(200).json(organizations);
       break;
     }
     case 'POST': {
+      const permission = ac.can(req.user.role.name).createAny(EResource.ORGANIZATION);
+
+      if (!permission.granted) {
+        return permissionDenied(res);
+      }
+
       if (body.id) {
         res.status(400).end(`ID Must Be null`);
         break;

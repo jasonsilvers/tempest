@@ -3,7 +3,7 @@ import loginHandler from '../../src/pages/api/login';
 import { updateLastLogin } from '../../src/repositories/userRepo';
 import { findGrants } from '../../src/repositories/grantsRepo';
 import { returnUser } from '../../src/repositories/loginRepo';
-import testNextApi from '../utils/NextAPIUtils';
+import { testNextApi } from '../utils/NextAPIUtils';
 import { grants } from '../utils/mocks/fixtures';
 
 jest.mock('../../src/repositories/userRepo');

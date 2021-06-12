@@ -10,7 +10,7 @@ import {
   findMemberTrackingRecords,
   updateMemberTrackingItem,
 } from '../../../src/repositories/memberTrackingRepo';
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import memberTrackingItemHandler from '../../../src/pages/api/membertrackingitems';
 import dayjs from 'dayjs';
 
