@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import signatureRequired from '../../src/middleware/signatureRequired';
 import { getSignature } from '../../src/utils/Crypto';
-import testNextApi from '../utils/NextAPIUtils';
+import { testNextApi } from '../utils/NextAPIUtils';
 
 process.env.COMMON_API_SUB_SECRET = '123';
 

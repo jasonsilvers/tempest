@@ -23,7 +23,7 @@ model User {
   role                     Role?                  @relation(fields: [roleId], references: [id])
   roleId                   Int?
   organization             Organization?          @relation(fields: [organizationId], references: [id])
-  organizationId           String?                @db.Uuid
+  organizationId           String?
   tags                     Tag[]
   memberTrackingItems      MemberTrackingItem[]
   traineeTrackingRecords   MemberTrackingRecord[] @relation(name: "TraineeRecords")
@@ -76,11 +76,11 @@ model MemberTrackingItem {
 }
 
 model Organization {
-  id        String         @id @db.Uuid
+  id        String         @id @default(uuid())
   name      String
   //Self reference
   parent    Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
-  parentId  String?        @db.Uuid
+  parentId  String?
   children  Organization[] @relation(name: "ParentChildren")
   users     User[]
   templates Template[]

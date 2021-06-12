@@ -2,7 +2,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId, findUsers } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import userHandler from '../../../src/pages/api/users/index';
 
 jest.mock('../../../src/repositories/userRepo');

@@ -1,4 +1,4 @@
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import userSubscriptionHandler from '../../../src/pages/api/users/sub';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import verifySignature from '../../../src/utils/Crypto';

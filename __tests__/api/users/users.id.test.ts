@@ -3,7 +3,7 @@ import { findUserByDodId, findUserById } from '../../../src/repositories/userRep
 import userQueryHandler from '../../../src/pages/api/users/[id]';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../utils/mocks/fixtures';
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';
 
 jest.mock('../../../src/repositories/userRepo');

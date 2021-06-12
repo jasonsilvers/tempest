@@ -167,7 +167,7 @@ const userGrants: Grants[] = [
 
 const organizationGrants: Grants[] = [
   {
-    action: EAction.READ_OWN,
+    action: EAction.READ_ANY,
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.MONITOR,

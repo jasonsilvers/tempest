@@ -5,7 +5,7 @@ import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import memberTrackingRecordSlugHandler from '../../../src/pages/api/membertrackingrecords/[...slug]';
 import dayjs from 'dayjs';
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import MockDate from 'mockdate';
 
 jest.mock('../../../src/repositories/userRepo.ts');

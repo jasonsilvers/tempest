@@ -3,7 +3,7 @@ import { findUserByDodId, findUserById, IUserIncludeConfig } from '../../../src/
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import userSlugHandler from '../../../src/pages/api/users/[...slug]';
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import dayjs from 'dayjs';
 
 jest.mock('../../../src/repositories/userRepo');

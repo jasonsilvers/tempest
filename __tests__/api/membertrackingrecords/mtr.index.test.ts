@@ -3,7 +3,7 @@ import { findUserByDodId } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import memberTrackingRecordIndexHandler from '../../../src/pages/api/membertrackingrecords/index';
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import dayjs from 'dayjs';
 import { createMemberTrackingRecord } from '../../../src/repositories/memberTrackingRepo';
 

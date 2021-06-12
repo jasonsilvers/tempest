@@ -3,7 +3,7 @@ import { findUserByDodId } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import memberTrackingRecordIdHandler from '../../../src/pages/api/membertrackingrecords/[id]';
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import { findMemberTrackingRecordById } from '../../../src/repositories/memberTrackingRepo';
 
 jest.mock('../../../src/repositories/userRepo.ts');

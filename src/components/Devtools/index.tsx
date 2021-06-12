@@ -8,11 +8,13 @@ import usePermissions from '../../hooks/usePermissions';
 import { ERole } from '../../types/global';
 import { UserWithRole } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
-import { Role, User } from '.prisma/client';
+import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
+import dayjs from 'dayjs';
 
 const Data = tw.div`font-light text-gray-400`;
 type RoleFormEvent = React.ChangeEvent<{ value: number }>;
+type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 
 const UsersList = () => {
   const queryClient = useQueryClient();
@@ -21,6 +23,9 @@ const UsersList = () => {
   );
 
   const rolesListQuery = useQuery<Role[]>('roles', () => axios.get('/api/roles').then((response) => response.data));
+  const orgsListQuery = useQuery<Organization[]>('organizations', () =>
+    axios.get('/api/organizations').then((response) => response.data)
+  );
 
   const mutateUser = useMutation<User, unknown, User>(
     (user: User) => axios.put(`/api/users/${user.id}`, user).then((response) => response.data),
@@ -32,6 +37,23 @@ const UsersList = () => {
   );
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const updateUsersOrg = (event: OrgFormEvent, user: UserWithRole) => {
+    const selectedOrgId = event.target.value;
+
+    if (selectedOrgId !== user.organizationId) {
+      const { organization, role, ...userToUpdate } = user; // eslint-disable-line
+      const updatedUser: User = {
+        ...userToUpdate,
+        organizationId: selectedOrgId,
+      };
+      mutateUser.mutate(updatedUser, {
+        onSuccess: () => {
+          enqueueSnackbar('Organization Changed', { variant: 'success' });
+        },
+      });
+    }
+  };
 
   const updateUsersRole = (event: RoleFormEvent, user: UserWithRole) => {
     const selectedRoleId = event.target.value;
@@ -66,9 +88,26 @@ const UsersList = () => {
                 {user.firstName} {user.lastName}
               </Data>
               <div>|</div>
-              <Data>last login: {user.lastLogin ?? 'Never'}</Data>
+              <Data>last login: {dayjs(user.lastLogin).format('D MMM YYYY @ HH:mm') ?? 'Never'}</Data>
               <div>|</div>
-              <Data>{user.organization ? user.organization.name : 'No Org'}</Data>
+              <div tw="flex flex-row items-center space-x-2">
+                <Data>Org:</Data>
+                {orgsListQuery.isLoading ? (
+                  <div>...loading</div>
+                ) : (
+                  <Select
+                    onChange={(event: OrgFormEvent) => updateUsersOrg(event, user)}
+                    tw="text-gray-400"
+                    value={user.organizationId}
+                  >
+                    {orgsListQuery.data.map((org) => (
+                      <MenuItem key={org.id} value={org.id}>
+                        {org.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              </div>
               <div>|</div>
               <div tw="flex flex-row items-center space-x-2">
                 <Data>Role:</Data>

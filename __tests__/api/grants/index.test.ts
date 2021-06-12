@@ -1,4 +1,4 @@
-import testNextApi from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../utils/NextAPIUtils';
 import grantsHandler from '../../../src/pages/api/grants';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
