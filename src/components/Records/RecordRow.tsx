@@ -12,6 +12,7 @@ import { useMemberRecordTrackerState } from '../../hooks/uiState';
 import { getCategory } from '../../utils/Status';
 import { ECategories } from '../../types/global';
 import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
+import { useMemberItemTrackerContext } from './MemberRecordTracker';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -129,10 +130,7 @@ const RecordRow: React.FC<{
 }> = ({ memberTrackingRecordId, trackingItem }) => {
   const { user: LoggedInUser } = useUser<UserWithRole>();
   const { mutate, isLoading } = useUpdateMemberTrackingRecord('sign_trainee');
-  const [activeCategory, increaseCountOfTheEnumPassedHere] = useMemberRecordTrackerState((state) => [
-    state.activeCategory,
-    state.increaseCategoryCount,
-  ]);
+  const { activeCategory, increaseCategoryCount } = useMemberItemTrackerContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
@@ -140,7 +138,7 @@ const RecordRow: React.FC<{
   // increase count
   useLayoutEffect(() => {
     if (trackingRecordQuery.data) {
-      increaseCountOfTheEnumPassedHere(getCategory(trackingRecordQuery.data, trackingItem?.interval));
+      increaseCategoryCount(getCategory(trackingRecordQuery.data, trackingItem?.interval));
     }
   }, [trackingRecordQuery.data]);
 
@@ -151,7 +149,15 @@ const RecordRow: React.FC<{
   }, [trackingRecordQuery.data, trackingItem?.interval]);
 
   if (activeCategory !== ECategories.ALL) {
-    if (activeCategory !== status) {
+    // WIP filter
+    // Tied to business logic
+    if (
+      activeCategory === ECategories.ALLWIP &&
+      !(status === ECategories.DRAFT || status === ECategories.SIGNATURE_REQUIRED)
+    ) {
+      return null;
+    }
+    if (activeCategory !== status && activeCategory !== ECategories.ALLWIP) {
       return null;
     }
   }

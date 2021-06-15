@@ -5,12 +5,13 @@ import MemberItemTracker from '../../components/Records/MemberRecordTracker';
 import { useMemberRecordTrackerState } from '../../hooks/uiState';
 import HeaderUser from '../../components/Records/RecordHeader';
 import { useRouter } from 'next/router';
-import { EFuncAction, EResource } from '../../types/global';
+import { ECategories, EFuncAction, EResource } from '../../types/global';
 import { QueryClient } from 'react-query';
 import { mtiQueryKeys } from '../../hooks/api/memberTrackingItem';
 import { GetStaticPropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
 import { findUserById } from '../../repositories/userRepo';
+import Tab from '../../components/Records/Tab';
 
 const Profile = () => {
   const {
@@ -42,7 +43,17 @@ const Profile = () => {
   return (
     <>
       <HeaderUser />
-      <MemberItemTracker userId={userId} />
+      <MemberItemTracker title="Work In Progress" userId={userId} initialActiveCategory={ECategories.ALLWIP}>
+        <Tab category={ECategories.ALLWIP}>All</Tab>
+        <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+        <Tab category={ECategories.DRAFT}>To Do</Tab>
+      </MemberItemTracker>
+      <MemberItemTracker title="Official Training Records" userId={userId} initialActiveCategory={ECategories.ALL}>
+        <Tab category={ECategories.ALL}>All</Tab>
+        <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+        <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
+        <Tab category={ECategories.DONE}>Done</Tab>
+      </MemberItemTracker>
     </>
   );
 };

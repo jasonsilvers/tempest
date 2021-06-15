@@ -51,6 +51,7 @@ export enum EFuncAction {
 
 export enum ECategories {
   ALL = 'All',
+  ALLWIP = 'AllWorkInProgress',
   DONE = 'Done',
   UPCOMING = 'Upcoming',
   OVERDUE = 'Overdue',
