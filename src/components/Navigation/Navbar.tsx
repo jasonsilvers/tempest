@@ -3,6 +3,7 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { Header, Link } from './Navigation';
 import { User } from '.prisma/client';
 import { TempestDrawer } from '../../lib/ui';
+import { DashboardIcon, DescriptionIcon, PersonIcon } from '../../assets/Icons';
 
 const Navbar: React.FC = () => {
   const { user } = useUser<User>();
@@ -12,9 +13,18 @@ const Navbar: React.FC = () => {
       <Header goToUrl="/">Tempest</Header>
       {user ? (
         <div tw="space-y-9">
-          <Link goToUrl="/Dashboard">Dashboard</Link>
-          <Link goToUrl={`/Profile/${user.id}`}>Profile</Link>
-          <Link goToUrl="/Trackingitems">Tracking Items</Link>
+          <Link goToUrl="/Dashboard">
+            <DashboardIcon />
+            <div>Dashboard</div>
+          </Link>
+          <Link goToUrl={`/Profile/${user.id}`}>
+            <PersonIcon />
+            <div>Profile</div>
+          </Link>
+          <Link goToUrl="/Trackingitems">
+            <DescriptionIcon />
+            <div>Tracking Items</div>
+          </Link>
         </div>
       ) : null}
     </TempestDrawer>
