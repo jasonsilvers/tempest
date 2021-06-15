@@ -26,7 +26,7 @@ export const getStatus = (completedDate: Date, interval: number) => {
 
 export const getCategory = (memberTrackingRecord: MemberTrackingRecord, trackingItemInterval: number) => {
   if (!memberTrackingRecord.completedDate) {
-    return ECategories.DRAFT;
+    return ECategories.TODO;
   }
 
   if (!memberTrackingRecord.authoritySignedDate || !memberTrackingRecord.traineeSignedDate) {

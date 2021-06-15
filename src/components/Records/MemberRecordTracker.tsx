@@ -24,6 +24,7 @@ interface IMemberTrackerContextState {
   };
   resetCount: () => void;
   activeCategory: ECategories;
+  categories: ECategories[];
   setActiveCategory: (activeCategory: ECategories) => void;
   increaseCategoryCount: (category: ECategories) => void;
   decreaseCategoryCount: (category: ECategories) => void;
@@ -31,9 +32,10 @@ interface IMemberTrackerContextState {
 
 const MemberItemTrackerContext = createContext<IMemberTrackerContextState>(null);
 
-const MemberItemTrackerContextProvider: React.FC<{ initialActiveCategory: ECategories }> = ({
+const MemberItemTrackerContextProvider: React.FC<{ initialActiveCategory: ECategories; categories: ECategories[] }> = ({
   children,
   initialActiveCategory,
+  categories,
 }) => {
   const [count, setCount] = useState({
     Archived: 0,
@@ -59,7 +61,15 @@ const MemberItemTrackerContextProvider: React.FC<{ initialActiveCategory: ECateg
     setCount((state) => ({ ...state, [category]: state[category] - 1 }));
   return (
     <MemberItemTrackerContext.Provider
-      value={{ count, activeCategory, setActiveCategory, resetCount, increaseCategoryCount, decreaseCategoryCount }}
+      value={{
+        count,
+        activeCategory,
+        setActiveCategory,
+        categories,
+        resetCount,
+        increaseCategoryCount,
+        decreaseCategoryCount,
+      }}
     >
       {children}
     </MemberItemTrackerContext.Provider>
@@ -76,18 +86,23 @@ const MemberItemTracker: React.FC<{
   userId: string;
   title: string;
   initialActiveCategory: ECategories;
-}> = ({ userId, children, title, initialActiveCategory }) => {
+  tabs: ECategories[];
+}> = ({ userId, title, initialActiveCategory, tabs }) => {
   const [openAddNewModal, setAddNewModal] = useState(false);
 
   const TabAndTableRef: LegacyRef<HTMLDivElement> = useRef();
 
   return (
-    <MemberItemTrackerContextProvider initialActiveCategory={initialActiveCategory}>
+    <MemberItemTrackerContextProvider initialActiveCategory={initialActiveCategory} categories={tabs}>
       <div tw="mr-5 pr-10 w-9/12">
         <Header>{title}</Header>
         <TabAndTableContainer ref={TabAndTableRef}>
           <TabContainer id="Filter Tabs">
-            {children}
+            {tabs.map((tab) => (
+              <Tab key={title + tab} category={tab}>
+                {tab.replace(/_/, ' ')}
+              </Tab>
+            ))}
             <Link
               tw="italic font-semibold"
               component="button"

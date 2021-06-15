@@ -51,13 +51,12 @@ export enum EFuncAction {
 
 export enum ECategories {
   ALL = 'All',
-  ALLWIP = 'AllWorkInProgress',
   DONE = 'Done',
   UPCOMING = 'Upcoming',
   OVERDUE = 'Overdue',
-  SIGNATURE_REQUIRED = 'SignatureRequired',
+  SIGNATURE_REQUIRED = 'Awaiting_Signature',
   ARCHIVED = 'Archived',
-  DRAFT = 'Draft',
+  TODO = 'To_Do',
 }
 export interface ITempestApiError {
   message: string;

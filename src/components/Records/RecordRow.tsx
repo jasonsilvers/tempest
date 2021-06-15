@@ -8,7 +8,6 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { CircularProgress, IconButton } from '../../lib/ui';
 import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 import { UseMutateFunction } from 'react-query';
-import { useMemberRecordTrackerState } from '../../hooks/uiState';
 import { getCategory } from '../../utils/Status';
 import { ECategories } from '../../types/global';
 import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
@@ -39,9 +38,9 @@ const Token = tw.div`rounded h-5 w-5 mr-2`;
 const Overdue = tw(Token)`background-color[#AB0D0D]`;
 const Done = tw(Token)`background-color[#49C68A]`;
 const All = Token;
-const SignatureRequired = tw(Token)`background-color[#4985c6]`;
+const Awaiting_Signature = tw(Token)`background-color[#4985c6]`;
 const Upcoming = tw(Token)`background-color[#FAC50A]`;
-const Draft = tw(Token)`background-color[#8b5cf6]`;
+const To_Do = tw(Token)`background-color[#8b5cf6]`;
 const Archived = tw(Token)`bg-black`;
 
 const RecordRowSkeleton = () => {
@@ -65,10 +64,10 @@ const TokenObj: { [K in ECategories]: typeof Token } = {
   Overdue,
   Done,
   All,
-  SignatureRequired,
+  Awaiting_Signature,
   Upcoming,
   Archived,
-  Draft,
+  To_Do,
 };
 /**
  * Function to determine render for the Trainee Signature Block
@@ -130,7 +129,7 @@ const RecordRow: React.FC<{
 }> = ({ memberTrackingRecordId, trackingItem }) => {
   const { user: LoggedInUser } = useUser<UserWithRole>();
   const { mutate, isLoading } = useUpdateMemberTrackingRecord('sign_trainee');
-  const { activeCategory, increaseCategoryCount } = useMemberItemTrackerContext();
+  const { activeCategory, increaseCategoryCount, categories } = useMemberItemTrackerContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
@@ -148,16 +147,18 @@ const RecordRow: React.FC<{
     }
   }, [trackingRecordQuery.data, trackingItem?.interval]);
 
+  // fallback case to ensure the activeCategory is in the category array
+  if (!categories.includes(activeCategory)) {
+    return null;
+  }
+
+  // Filter statuses
+  if (!categories.includes(status)) {
+    return null;
+  }
+  // display all filter
   if (activeCategory !== ECategories.ALL) {
-    // WIP filter
-    // Tied to business logic
-    if (
-      activeCategory === ECategories.ALLWIP &&
-      !(status === ECategories.DRAFT || status === ECategories.SIGNATURE_REQUIRED)
-    ) {
-      return null;
-    }
-    if (activeCategory !== status && activeCategory !== ECategories.ALLWIP) {
+    if (activeCategory !== status) {
       return null;
     }
   }

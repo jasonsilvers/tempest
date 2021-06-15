@@ -43,17 +43,18 @@ const Profile = () => {
   return (
     <>
       <HeaderUser />
-      <MemberItemTracker title="Work In Progress" userId={userId} initialActiveCategory={ECategories.ALLWIP}>
-        <Tab category={ECategories.ALLWIP}>All</Tab>
-        <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
-        <Tab category={ECategories.DRAFT}>To Do</Tab>
-      </MemberItemTracker>
-      <MemberItemTracker title="Official Training Records" userId={userId} initialActiveCategory={ECategories.ALL}>
-        <Tab category={ECategories.ALL}>All</Tab>
-        <Tab category={ECategories.OVERDUE}>Overdue</Tab>
-        <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
-        <Tab category={ECategories.DONE}>Done</Tab>
-      </MemberItemTracker>
+      <MemberItemTracker
+        title="Work In Progress"
+        userId={userId}
+        initialActiveCategory={ECategories.ALL}
+        tabs={[ECategories.ALL, ECategories.SIGNATURE_REQUIRED, ECategories.TODO]}
+      />
+      <MemberItemTracker
+        title="Official Training Records"
+        userId={userId}
+        initialActiveCategory={ECategories.ALL}
+        tabs={[ECategories.ALL, ECategories.DONE, ECategories.OVERDUE, ECategories.UPCOMING]}
+      />
     </>
   );
 };
