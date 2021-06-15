@@ -25,17 +25,7 @@ function withErrorHandling<T extends (...args: any[]) => any>(
 /*eslint-enable */
 
 async function createPersonFromJwt_(jwt: P1_JWT) {
-  const newCommonUser = {
-    firstName: jwt.given_name,
-    lastName: jwt.family_name,
-    email: jwt.email,
-    dodid: jwt.dod_id,
-    //TODO: Fix once common-api updates api
-    rank: null,
-    branch: 'USAF',
-  };
-
-  const response = await axios.post<IPerson, { data: IPerson }>(`${getCommonURL()}/${RESOURCE}`, newCommonUser);
+  const response = await axios.post<IPerson, { data: IPerson }>(`${getCommonURL()}/${RESOURCE}/person-jwt`, jwt);
 
   return response.data;
 }
@@ -60,7 +50,7 @@ async function getPersonFromCommonApi_(query: string) {
       return null;
     }
 
-    throw new Error('There was an error creating the user account in common api');
+    throw new Error('There was an error finding the user account in common api');
   }
 
   return response.data;
