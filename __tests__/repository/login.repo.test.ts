@@ -124,32 +124,8 @@ test('login findOrAdduser should handle error if cannot create commonapi person'
   );
 
   server.use(
-    rest.post('http://localhost:8089/api/v2/person', (req, res, ctx) => {
+    rest.post('http://localhost:8089/api/v2/person/person-jwt', (req, res, ctx) => {
       return res(ctx.status(500), ctx.json(null));
-    })
-  );
-
-  mockMethodAndReturn(findUserByDodId, null);
-  mockMethodAndReturn(getRoleByName, { id: 1, name: 'Member' } as Role);
-
-  const expectedError = new Error('There was an error making the request');
-
-  try {
-    await returnUser(dodId, explodedJwt);
-  } catch (error) {
-    expect(error).toEqual(expectedError);
-  }
-});
-test('login findOrAdduser should handle error if cannot create user in tempest', async () => {
-  server.use(
-    rest.post('http://localhost:8089/api/v2/person/find', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(null));
-    })
-  );
-
-  server.use(
-    rest.post('http://localhost:8089/api/v2/person', (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({ message: 'There was an error' }));
     })
   );
 
@@ -168,13 +144,13 @@ test('login should creater user in commonAPI and in Tempest if not found in eith
   const expectedUser = { ...returnedUser, dodId };
 
   server.use(
-    rest.post('http://localhost:8089/api/v2/person/*', (req, res, ctx) => {
+    rest.post('http://localhost:8089/api/v2/person/find', (req, res, ctx) => {
       return res(ctx.status(404), ctx.json(null));
     })
   );
 
   server.use(
-    rest.post('http://localhost:8089/api/v2/person', (req, res, ctx) => {
+    rest.post('http://localhost:8089/api/v2/person/person-jwt', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(peopleFromCommonApi[1]));
     })
   );
