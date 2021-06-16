@@ -171,7 +171,7 @@ export type MemberTrackingItemWithMTRStatus = MemberTrackingItemWithAll & {
     [ECategories.DONE]: number;
     [ECategories.SIGNATURE_REQUIRED]: number;
     [ECategories.UPCOMING]: number;
-    [ECategories.DRAFT]: number;
+    [ECategories.TODO]: number;
     [ECategories.ARCHIVED]: number;
   };
 };

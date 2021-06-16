@@ -8,10 +8,10 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { CircularProgress, IconButton } from '../../lib/ui';
 import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 import { UseMutateFunction } from 'react-query';
-import { useMemberRecordTrackerState } from '../../hooks/uiState';
 import { getCategory } from '../../utils/Status';
 import { ECategories } from '../../types/global';
 import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
+import { useMemberItemTrackerContext } from './MemberRecordTracker';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -30,17 +30,17 @@ const daysToString = {
   365: 'Annual',
 };
 
-const TableRow = tw.div`text-black border-b text-sm flex flex-wrap min-width[350px] min-height[45px]`;
-const TableData = tw.div`font-size[12px] flex[0 0 auto] mx-3`;
+const TableRow = tw.div`text-black border-b text-sm flex flex-wrap max-width[1440px] min-width[1080px] min-height[45px]`;
+const TableData = tw.div`font-size[12px] mx-3`;
 
 const SignatureButtonIconStyled = tw(SignatureButtonIcon)`text-gray-600`;
 const Token = tw.div`rounded h-5 w-5 mr-2`;
 const Overdue = tw(Token)`background-color[#AB0D0D]`;
 const Done = tw(Token)`background-color[#49C68A]`;
 const All = Token;
-const SignatureRequired = tw(Token)`background-color[#4985c6]`;
+const Awaiting_Signature = tw(Token)`background-color[#4985c6]`;
 const Upcoming = tw(Token)`background-color[#FAC50A]`;
-const Draft = tw(Token)`background-color[#8b5cf6]`;
+const To_Do = tw(Token)`background-color[#8b5cf6]`;
 const Archived = tw(Token)`bg-black`;
 
 const RecordRowSkeleton = () => {
@@ -64,10 +64,10 @@ const TokenObj: { [K in ECategories]: typeof Token } = {
   Overdue,
   Done,
   All,
-  SignatureRequired,
+  Awaiting_Signature,
   Upcoming,
   Archived,
-  Draft,
+  To_Do,
 };
 /**
  * Function to determine render for the Trainee Signature Block
@@ -129,10 +129,7 @@ const RecordRow: React.FC<{
 }> = ({ memberTrackingRecordId, trackingItem }) => {
   const { user: LoggedInUser } = useUser<UserWithRole>();
   const { mutate, isLoading } = useUpdateMemberTrackingRecord('sign_trainee');
-  const [activeCategory, increaseCountOfTheEnumPassedHere] = useMemberRecordTrackerState((state) => [
-    state.activeCategory,
-    state.increaseCategoryCount,
-  ]);
+  const { activeCategory, increaseCategoryCount, categories } = useMemberItemTrackerContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
@@ -140,7 +137,7 @@ const RecordRow: React.FC<{
   // increase count
   useLayoutEffect(() => {
     if (trackingRecordQuery.data) {
-      increaseCountOfTheEnumPassedHere(getCategory(trackingRecordQuery.data, trackingItem?.interval));
+      increaseCategoryCount(getCategory(trackingRecordQuery.data, trackingItem?.interval));
     }
   }, [trackingRecordQuery.data]);
 
@@ -150,6 +147,16 @@ const RecordRow: React.FC<{
     }
   }, [trackingRecordQuery.data, trackingItem?.interval]);
 
+  // fallback case to ensure the activeCategory is in the category array
+  if (!categories.includes(activeCategory)) {
+    return null;
+  }
+
+  // Filter statuses
+  if (!categories.includes(status)) {
+    return null;
+  }
+  // display all filter
   if (activeCategory !== ECategories.ALL) {
     if (activeCategory !== status) {
       return null;
@@ -163,25 +170,25 @@ const RecordRow: React.FC<{
   const DynamicToken = TokenObj[status];
   return (
     <TableRow>
-      <TableData tw={'font-size[16px] overflow-ellipsis w-56'}>
+      <TableData tw={'font-size[16px] overflow-ellipsis w-72'}>
         <div tw={'flex'}>
           <DynamicToken />
           {trackingItem?.title}
           {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
         </div>
       </TableData>
-      <TableData tw={'text-purple-500 w-20 ml-auto text-right'}>
+      <TableData tw={'text-purple-500 w-20 ml-10'}>
         {/* get the common text for number of days if exits else render '## days' */}
         {daysToString[trackingItem?.interval] ?? `${trackingItem?.interval} days`}
       </TableData>
-      <div tw="flex w-72 justify-between">
-        <TableData tw="w-36">
+      <div tw="flex w-80 justify-between">
+        <TableData tw="w-40">
           <>
             <span tw={'opacity-40'}>Completed: </span>
             {dayjs(trackingRecordQuery.data?.completedDate).format('DD MMM YY')}
           </>
         </TableData>
-        <TableData tw="w-36">
+        <TableData tw="w-40">
           <>
             <span tw={'opacity-40'}>Due: </span>
             {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}

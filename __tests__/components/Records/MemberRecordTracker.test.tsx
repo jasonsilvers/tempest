@@ -8,6 +8,8 @@ import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrack
 import { TrackingItem } from '.prisma/client';
 import { User } from '@prisma/client';
 import { server } from '../../utils/mocks/msw';
+import Tab from '../../../src/components/Records/Tab';
+import { ECategories } from '../../../src/types/global';
 
 // Establish API mocking before tests.
 beforeAll(() => {
@@ -84,7 +86,14 @@ test('should render a record requiring signature - authority signed', async () =
     memberTrackingRecordGet(memberTrackingItems_authSigned[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
+  const { getByText } = render(
+    <MemberRecordTracker userId={testUser.id} title="Test Records">
+      <Tab category={ECategories.ALL}>All</Tab>
+      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+    </MemberRecordTracker>
+  );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
   const fire = await waitFor(() => getByText(/fire/i));
@@ -128,7 +137,14 @@ test('should render a record requiring signature - trainee signed', async () => 
     memberTrackingRecordGet(memberTrackingItems_traineeSigned[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
+  const { getByText } = render(
+    <MemberRecordTracker userId={testUser.id} title="Test Records">
+      <Tab category={ECategories.ALL}>All</Tab>
+      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+    </MemberRecordTracker>
+  );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
   const fire = await waitFor(() => getByText(/fire/i));
@@ -171,7 +187,14 @@ test('should render a record that is done', async () => {
     memberTrackingRecordGet(memberTrackingItems_done[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
+  const { getByText } = render(
+    <MemberRecordTracker userId={testUser.id} title="Test Records">
+      <Tab category={ECategories.ALL}>All</Tab>
+      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategories.DONE}>Done</Tab>
+    </MemberRecordTracker>
+  );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
 
@@ -220,7 +243,13 @@ test('should render a record that is coming due', async () => {
     memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
+  const { getByText } = render(
+    <MemberRecordTracker userId={testUser.id} title="Test Records">
+      <Tab category={ECategories.ALL}>All</Tab>
+      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+    </MemberRecordTracker>
+  );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
 
@@ -267,7 +296,13 @@ test('should render a record that is overdue', async () => {
     memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(<MemberRecordTracker userId={testUser.id} />);
+  const { getByText } = render(
+    <MemberRecordTracker userId={testUser.id} title="Test Records">
+      <Tab category={ECategories.ALL}>All</Tab>
+      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+    </MemberRecordTracker>
+  );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
 
@@ -323,7 +358,15 @@ test('should sign record as trainee and mark as done', async () => {
     memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
   );
 
-  const { getByText, getByRole, queryByText } = render(<MemberRecordTracker userId={testUser.id} />);
+  const { getByText, getByRole, queryByText } = render(
+    <MemberRecordTracker userId={testUser.id} title="Test Records">
+      <Tab category={ECategories.ALL}>All</Tab>
+      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategories.DONE}>Done</Tab>
+      <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+    </MemberRecordTracker>
+  );
 
   await waitFor(() => getByText(/fire/i));
   await waitFor(() => getByText(/completed/i));
