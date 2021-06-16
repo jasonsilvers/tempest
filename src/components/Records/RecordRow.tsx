@@ -30,8 +30,8 @@ const daysToString = {
   365: 'Annual',
 };
 
-const TableRow = tw.div`text-black border-b text-sm flex flex-wrap min-width[350px] min-height[45px]`;
-const TableData = tw.div`font-size[12px] flex[0 0 auto] mx-3`;
+const TableRow = tw.div`text-black border-b text-sm flex flex-wrap max-width[1440px] min-width[1080px] min-height[45px]`;
+const TableData = tw.div`font-size[12px] mx-3`;
 
 const SignatureButtonIconStyled = tw(SignatureButtonIcon)`text-gray-600`;
 const Token = tw.div`rounded h-5 w-5 mr-2`;
@@ -170,25 +170,25 @@ const RecordRow: React.FC<{
   const DynamicToken = TokenObj[status];
   return (
     <TableRow>
-      <TableData tw={'font-size[16px] overflow-ellipsis w-56'}>
+      <TableData tw={'font-size[16px] overflow-ellipsis w-72'}>
         <div tw={'flex'}>
           <DynamicToken />
           {trackingItem?.title}
           {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
         </div>
       </TableData>
-      <TableData tw={'text-purple-500 w-20 ml-auto text-right'}>
+      <TableData tw={'text-purple-500 w-20 ml-10'}>
         {/* get the common text for number of days if exits else render '## days' */}
         {daysToString[trackingItem?.interval] ?? `${trackingItem?.interval} days`}
       </TableData>
-      <div tw="flex w-72 justify-between">
-        <TableData tw="w-36">
+      <div tw="flex w-80 justify-between">
+        <TableData tw="w-40">
           <>
             <span tw={'opacity-40'}>Completed: </span>
             {dayjs(trackingRecordQuery.data?.completedDate).format('DD MMM YY')}
           </>
         </TableData>
-        <TableData tw="w-36">
+        <TableData tw="w-40">
           <>
             <span tw={'opacity-40'}>Due: </span>
             {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}

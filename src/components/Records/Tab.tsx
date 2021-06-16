@@ -16,10 +16,12 @@ const Container = tw.div`relative flex items-center w-min min-w-min whitespace-n
 // counter styled component
 const Count = tw.div`text-black font-size[12px] background-color[#E2E2E2] border-radius[5px] px-1 ml-2 height[min-content] flex items-center justify-center`;
 
-const Tab: React.FC<{
+export interface ITabProps {
   category: ECategories;
   showCount?: boolean;
-}> = ({ children, category, showCount }) => {
+}
+
+const Tab: React.FC<ITabProps> = ({ children, category, showCount }) => {
   const { count, setActiveCategory, activeCategory } = useMemberItemTrackerContext();
   return (
     <Container>

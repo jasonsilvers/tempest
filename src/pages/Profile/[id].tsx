@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import usePermissions from '../../hooks/usePermissions';
 import MemberItemTracker from '../../components/Records/MemberRecordTracker';
-import { useMemberRecordTrackerState } from '../../hooks/uiState';
 import HeaderUser from '../../components/Records/RecordHeader';
 import { useRouter } from 'next/router';
 import { ECategories, EFuncAction, EResource } from '../../types/global';
@@ -12,20 +11,23 @@ import { GetStaticPropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
 import { findUserById } from '../../repositories/userRepo';
 import Tab from '../../components/Records/Tab';
+import { AddMemberTrackingItemDialog } from '../../components/Records/AddMemberTrackingItemDialog';
+import { Link } from '../../lib/ui';
+import tw from 'twin.macro';
 
 const Profile = () => {
   const {
     query: { id },
   } = useRouter();
-  const resetCount = useMemberRecordTrackerState((state) => state.resetCount);
 
   const { permissionCheck, role, isLoading, user } = usePermissions();
+  const [openAddNewModal, setAddNewModal] = useState(false);
 
   const userId = id?.toString();
   //Used to prevent the count for the tabs incrementing each time the page is loaded
-  useEffect(() => {
-    return () => resetCount();
-  }, []);
+  // useEffect(() => {
+  //   return () => resetCount();
+  // }, []);
 
   if (isLoading) {
     return <div>Loading Profile</div>;
@@ -40,22 +42,41 @@ const Profile = () => {
     return <div>You do not have permission to view that profile</div>;
   }
 
+  const AddNewButton = tw(Link)`italic absolute -bottom-10 right-10`;
+
   return (
-    <>
+    <div tw="relative min-w-min max-width[1440px]">
       <HeaderUser />
-      <MemberItemTracker
-        title="Work In Progress"
-        userId={userId}
-        initialActiveCategory={ECategories.ALL}
-        tabs={[ECategories.ALL, ECategories.SIGNATURE_REQUIRED, ECategories.TODO]}
-      />
-      <MemberItemTracker
-        title="Official Training Records"
-        userId={userId}
-        initialActiveCategory={ECategories.ALL}
-        tabs={[ECategories.ALL, ECategories.DONE, ECategories.OVERDUE, ECategories.UPCOMING]}
-      />
-    </>
+      <MemberItemTracker title="Training in Progress" userId={userId}>
+        <Tab category={ECategories.ALL}>All</Tab>
+        <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+        <Tab category={ECategories.TODO}>To Do</Tab>
+      </MemberItemTracker>
+      <br />
+      <MemberItemTracker title="Official Training Record" userId={userId}>
+        <Tab category={ECategories.ALL}>All</Tab>
+        <Tab category={ECategories.DONE}>Current</Tab>
+        <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
+        <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+      </MemberItemTracker>
+
+      <AddNewButton
+        component="button"
+        variant="body2"
+        onClick={() => {
+          setAddNewModal(true);
+        }}
+      >
+        Add New +
+      </AddNewButton>
+
+      {openAddNewModal ? (
+        <AddMemberTrackingItemDialog
+          forMemberId={userId}
+          handleClose={() => setAddNewModal(false)}
+        ></AddMemberTrackingItemDialog>
+      ) : null}
+    </div>
   );
 };
 

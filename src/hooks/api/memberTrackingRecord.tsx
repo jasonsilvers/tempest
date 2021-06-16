@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RecordWithTrackingItem } from '../../components/Records/RecordRow';
 import { getCategory } from '../../utils/Status';
-import { useMemberRecordTrackerState } from '../uiState';
 import { mtiQueryKeys } from './memberTrackingItem';
 
 type Verb = 'sign_trainee' | 'sign_authority';
@@ -37,11 +36,6 @@ export const useMemberTrackingRecord = (memberTrackingRecordId: number) => {
 export const useUpdateMemberTrackingRecord = (verb: Verb) => {
   const queryClient = useQueryClient();
 
-  const [decreaseCategoryCount, increaseCategoryCound] = useMemberRecordTrackerState((state) => [
-    state.decreaseCategoryCount,
-    state.increaseCategoryCount,
-  ]);
-
   return useMutation<MemberTrackingRecord, unknown, { memberTrackingRecord: RecordWithTrackingItem; userId: string }>(
     ({ memberTrackingRecord }) =>
       axios
@@ -50,7 +44,6 @@ export const useUpdateMemberTrackingRecord = (verb: Verb) => {
     {
       onMutate: ({ memberTrackingRecord }) => {
         const category = getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
-        decreaseCategoryCount(category);
       },
 
       onSuccess: (data) => {
@@ -59,7 +52,6 @@ export const useUpdateMemberTrackingRecord = (verb: Verb) => {
       },
       onError: ({ memberTrackingRecord }) => {
         const category = getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
-        increaseCategoryCound(category);
       },
     }
   );

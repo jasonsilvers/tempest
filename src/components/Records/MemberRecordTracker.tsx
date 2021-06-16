@@ -1,17 +1,15 @@
 import React, { createContext, LegacyRef, useContext, useRef, useState } from 'react';
 import tw from 'twin.macro';
 import MemberTrackingItemTable from './MemberTrackingItemTable';
-import { Link } from '../../lib/ui';
 import { ECategories } from '../../types/global';
-import { AddMemberTrackingItemDialog } from './AddMemberTrackingItemDialog';
-import Tab from './Tab';
+import { ITabProps } from './Tab';
 
 // Twin macro styles for table and headers
 const Header = tw.h1`text-xl font-bold text-black mb-2`;
 
-const TabContainer = tw.div`flex space-x-3 justify-between min-w-min border-b border-color[#AEAEAE]`;
+const TabContainer = tw.div`flex space-x-10 border-b border-color[#AEAEAE]`;
 
-const TabAndTableContainer = tw.div`flex flex-col min-w-min max-w-max`;
+const TabAndTableContainer = tw.div`flex flex-col `;
 
 interface IMemberTrackerContextState {
   count: {
@@ -32,11 +30,7 @@ interface IMemberTrackerContextState {
 
 const MemberItemTrackerContext = createContext<IMemberTrackerContextState>(null);
 
-const MemberItemTrackerContextProvider: React.FC<{ initialActiveCategory: ECategories; categories: ECategories[] }> = ({
-  children,
-  initialActiveCategory,
-  categories,
-}) => {
+const MemberItemTrackerContextProvider: React.FC<{ categories: ECategories[] }> = ({ children, categories }) => {
   const [count, setCount] = useState({
     Archived: 0,
     Done: 0,
@@ -45,7 +39,7 @@ const MemberItemTrackerContextProvider: React.FC<{ initialActiveCategory: ECateg
     SignatureRequired: 0,
     Upcoming: 0,
   });
-  const [activeCategory, setActiveCategory] = useState(initialActiveCategory ?? ECategories.ALL);
+  const [activeCategory, setActiveCategory] = useState(ECategories.ALL);
   const resetCount = () =>
     setCount({
       Archived: 0,
@@ -85,44 +79,22 @@ export const useMemberItemTrackerContext = () => useContext(MemberItemTrackerCon
 const MemberItemTracker: React.FC<{
   userId: string;
   title: string;
-  initialActiveCategory: ECategories;
-  tabs: ECategories[];
-}> = ({ userId, title, initialActiveCategory, tabs }) => {
-  const [openAddNewModal, setAddNewModal] = useState(false);
-
+}> = ({ userId, title, children }) => {
   const TabAndTableRef: LegacyRef<HTMLDivElement> = useRef();
 
+  const categories = React.Children.map(children, (child: React.ReactElement<ITabProps>) => child.props.category);
+
+  console.log(categories);
+
   return (
-    <MemberItemTrackerContextProvider initialActiveCategory={initialActiveCategory} categories={tabs}>
-      <div tw="mr-5 pr-10 w-9/12">
+    <MemberItemTrackerContextProvider categories={categories}>
+      <div tw="mr-5 pr-10 w-full">
         <Header>{title}</Header>
         <TabAndTableContainer ref={TabAndTableRef}>
-          <TabContainer id="Filter Tabs">
-            {tabs.map((tab) => (
-              <Tab key={title + tab} category={tab}>
-                {tab.replace(/_/, ' ')}
-              </Tab>
-            ))}
-            <Link
-              tw="italic font-semibold"
-              component="button"
-              variant="body2"
-              onClick={() => {
-                setAddNewModal(true);
-              }}
-            >
-              Add New +
-            </Link>
-          </TabContainer>
+          <TabContainer id="Filter Tabs">{children}</TabContainer>
 
           <MemberTrackingItemTable userId={userId} />
         </TabAndTableContainer>
-        {openAddNewModal ? (
-          <AddMemberTrackingItemDialog
-            forMemberId={userId}
-            handleClose={() => setAddNewModal(false)}
-          ></AddMemberTrackingItemDialog>
-        ) : null}
       </div>
     </MemberItemTrackerContextProvider>
   );
