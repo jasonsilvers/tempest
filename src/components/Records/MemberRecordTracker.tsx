@@ -84,8 +84,6 @@ const MemberItemTracker: React.FC<{
 
   const categories = React.Children.map(children, (child: React.ReactElement<ITabProps>) => child.props.category);
 
-  console.log(categories);
-
   return (
     <MemberItemTrackerContextProvider categories={categories}>
       <div tw="mr-5 pr-10 w-full">
