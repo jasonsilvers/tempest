@@ -235,8 +235,8 @@ test('DELETE - it should delete the member tracking item (delete own)', async ()
   });
 
   mockMethodAndReturn(findMemberTrackingItemById, memberTrackingItemFromDb);
-  mockMethodAndReturn(deleteMemberTrackingItem, {});
   mockMethodAndReturn(findMemberTrackingRecords, []);
+  mockMethodAndReturn(deleteMemberTrackingItem, {});
   const { status } = await testNextApi.delete(memberTrackingItemHandler, {
     urlId: `?userId=${userId}&trackingItemId=${trackingItemId}`,
   });

@@ -30,7 +30,7 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<UserW
       }
 
       if (body.id) {
-        res.status(400).end(`ID Must Be null`);
+        res.status(400).json({ message: `ID Must Be null` });
         break;
       }
       const createOrgData = await createOrganizations(body);
@@ -41,7 +41,7 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<UserW
     // If this end point is hit with anything other than GET or PUT return a 405 error
     default:
       res.setHeader('Allow', ['GET', 'POST']);
-      res.status(405).end(`Method ${method} Not Allowed`);
+      res.status(405).json({ message: `Method ${method} Not Allowed` });
   }
 };
 

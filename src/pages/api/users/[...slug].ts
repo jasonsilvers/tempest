@@ -54,7 +54,7 @@ async function userSlugHandler(
     }
 
     default:
-      res.status(405).end(`Method ${method} Not Allowed`);
+      res.status(405).json({ message: `Method ${method} Not Allowed` });
   }
 }
 

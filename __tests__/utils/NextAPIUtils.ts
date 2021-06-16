@@ -6,6 +6,7 @@ import { apiResolver } from 'next/dist/next-server/server/api-utils';
 import { userJWT } from './mocks/mockJwt';
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
+import 'setimmediate';
 
 type ApiHandler = (
   req: NextApiRequestWithAuthorization<unknown, unknown>,
@@ -90,7 +91,11 @@ const baseTestNextApi = async (
       body: JSON.stringify(body),
     });
     status = response.status;
-    data = await response.json();
+    if (status === 204) {
+      data = null;
+    } else {
+      data = await response.json();
+    }
   } catch (error) {
     data = { message: error };
   } finally {
