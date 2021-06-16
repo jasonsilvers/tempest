@@ -86,7 +86,7 @@ test('should render a record requiring signature - authority signed', async () =
     memberTrackingRecordGet(memberTrackingItems_authSigned[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(
+  const { getByText, getByRole } = render(
     <MemberRecordTracker userId={testUser.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
@@ -97,7 +97,7 @@ test('should render a record requiring signature - authority signed', async () =
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
   const fire = await waitFor(() => getByText(/fire/i));
-  const signatureTab = getByText(/sign/i);
+  const signatureTab = getByRole('awaiting_signature_tab');
 
   expect(fire).toBeInTheDocument();
   fireEvent.click(signatureTab);
@@ -137,7 +137,7 @@ test('should render a record requiring signature - trainee signed', async () => 
     memberTrackingRecordGet(memberTrackingItems_traineeSigned[0].memberTrackingRecords[0])
   );
 
-  const { getByText } = render(
+  const { getByText, getByRole } = render(
     <MemberRecordTracker userId={testUser.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
@@ -148,7 +148,7 @@ test('should render a record requiring signature - trainee signed', async () => 
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
   const fire = await waitFor(() => getByText(/fire/i));
-  const signatureTab = getByText(/sign/i);
+  const signatureTab = getByRole('awaiting_signature_tab');
 
   expect(fire).toBeInTheDocument();
   fireEvent.click(signatureTab);
@@ -370,7 +370,7 @@ test('should sign record as trainee and mark as done', async () => {
 
   await waitFor(() => getByText(/fire/i));
   await waitFor(() => getByText(/completed/i));
-  const signatureButton = getByRole('button', { name: 'signature-button' });
+  const signatureButton = getByRole('signature_button');
 
   server.use(
     memberTrackingItemsGet(testUser, memberTrackingItems_Done),
@@ -394,12 +394,12 @@ test('should sign record as trainee and mark as done', async () => {
   );
 
   fireEvent.click(signatureButton);
-  await waitForElementToBeRemoved(() => getByRole('button', { name: 'signature-button' }));
+  await waitForElementToBeRemoved(() => getByRole('signature_button'));
 
   const loadingSpinner = getByRole('progressbar');
   expect(loadingSpinner).toBeInTheDocument();
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
-  await waitForElementToBeRemoved(() => getByRole('button', { name: 'signature-button' }));
+  await waitForElementToBeRemoved(() => getByRole('signature_button'));
 
   const doneTab = getByText(/done/i);
 

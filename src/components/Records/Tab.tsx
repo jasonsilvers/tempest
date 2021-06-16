@@ -1,5 +1,6 @@
 import tw from 'twin.macro';
 import { ECategories } from '../../types/global';
+import setDomRole from '../../utils/SetDomRole';
 import { useMemberItemTrackerContext } from './MemberRecordTracker';
 
 // Tab navigation animations
@@ -26,9 +27,13 @@ const Tab: React.FC<ITabProps> = ({ children, category, showCount }) => {
   return (
     <Container>
       {activeCategory === category ? (
-        <ActiveTab>{children}</ActiveTab>
+        <ActiveTab role={setDomRole(children as string, 'Tab')}>{children}</ActiveTab>
       ) : (
-        <InactiveTab onClick={() => setActiveCategory(category)} id={children.toString()}>
+        <InactiveTab
+          role={setDomRole(children as string, 'Tab')}
+          onClick={() => setActiveCategory(category)}
+          id={children.toString()}
+        >
           {children}
         </InactiveTab>
       )}
