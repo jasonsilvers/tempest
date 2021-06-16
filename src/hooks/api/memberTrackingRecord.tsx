@@ -43,7 +43,7 @@ export const useUpdateMemberTrackingRecord = (verb: Verb) => {
         .then((response) => response.data),
     {
       onMutate: ({ memberTrackingRecord }) => {
-        const category = getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
+        getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
       },
 
       onSuccess: (data) => {
@@ -51,7 +51,7 @@ export const useUpdateMemberTrackingRecord = (verb: Verb) => {
         queryClient.invalidateQueries(mtrQueryKeys.memberTrackingRecord(data.id));
       },
       onError: ({ memberTrackingRecord }) => {
-        const category = getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
+        getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
       },
     }
   );
