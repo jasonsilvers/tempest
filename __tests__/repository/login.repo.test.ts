@@ -41,11 +41,15 @@ const peopleFromCommonApi: Partial<IPerson>[] = [
 
 // configure process.env variables before all tests
 beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: 'bypass',
+  });
   process.env.ERROR_DEBUG = 'FALSE';
   process.env.COMMON_API_URL = 'http://localhost:8089/api/v2';
 });
 
 afterEach(() => {
+  server.resetHandlers();
   jest.resetAllMocks();
 });
 
@@ -56,6 +60,7 @@ beforeEach(() => {
 
 // remove process.env variables after all tests
 afterAll(() => {
+  server.close();
   process.env.ERROR_DEBUG = 'TRUE';
   delete process.env.COMMON_API_URL;
 });

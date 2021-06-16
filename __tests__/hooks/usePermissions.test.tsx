@@ -7,6 +7,20 @@ import { Wrapper } from '../utils/TempestTestUtils';
 import { AccessControl } from 'accesscontrol';
 import { ERole, EFuncAction, EResource } from '../../src/types/global';
 
+// Establish API mocking before tests.
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: 'bypass',
+  });
+});
+// Reset any request handlers that we may add during the tests,
+// so they don't affect other tests.
+afterEach(() => {
+  server.resetHandlers();
+});
+// // Clean up after the tests are finished.
+afterAll(() => server.close());
+
 test('should return user and new ac list with grants', async () => {
   server.use(
     rest.get('/api/grants/', (req, res, ctx) => {
