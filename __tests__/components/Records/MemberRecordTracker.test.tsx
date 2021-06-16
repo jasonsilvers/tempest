@@ -11,6 +11,20 @@ import { server } from '../../utils/mocks/msw';
 import Tab from '../../../src/components/Records/Tab';
 import { ECategories } from '../../../src/types/global';
 
+// Establish API mocking before tests.
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: 'bypass',
+  });
+});
+// Reset any request handlers that we may add during the tests,
+// so they don't affect other tests.
+afterEach(() => {
+  server.resetHandlers();
+});
+// // Clean up after the tests are finished.
+afterAll(() => server.close());
+
 const testUser: Partial<User> = {
   id: '123',
   firstName: 'bob',

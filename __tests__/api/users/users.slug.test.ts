@@ -274,7 +274,7 @@ test('Should not accept PUT', async () => {
   mockMethodAndReturn(findGrants, grants);
 
   const { status } = await testNextApi.put(userSlugHandler, {
-    body: {},
+    body: { test: 'test' },
   });
 
   expect(status).toEqual(405);

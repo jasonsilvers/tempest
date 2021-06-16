@@ -9,7 +9,7 @@ interface ILinkProps {
   className?: string;
 }
 
-const StyledHeader = tw.a` mr-8 mb-12 uppercase text-4xl`;
+const StyledHeader = tw.a` mr-8 mb-6 uppercase text-4xl`;
 
 const Header: React.FC<ILinkProps> = ({ children, goToUrl = '/', className = '' }) => {
   return (
@@ -19,7 +19,7 @@ const Header: React.FC<ILinkProps> = ({ children, goToUrl = '/', className = '' 
   );
 };
 
-const StyledLink = tw.a`mr-6 mb-5 text-lg flex flex-col uppercase text-gray-500`;
+const StyledLink = tw.a`mr-6 mb-5 text-lg uppercase text-gray-500 flex flex-row items-center space-x-4 cursor-pointer`;
 
 const Link: React.FC<ILinkProps> = ({ children, goToUrl, className, activeLinkStyle }) => {
   const router = useRouter();

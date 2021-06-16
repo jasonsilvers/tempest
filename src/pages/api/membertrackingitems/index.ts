@@ -146,7 +146,7 @@ async function memberTrackingItemHandler(
 
       await deleteMemberTrackingItem(trackingItemIdParam, userId);
 
-      res.status(204).end();
+      res.status(204).json({ message: 'Record deleted' });
       break;
     }
 
