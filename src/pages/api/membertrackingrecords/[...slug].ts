@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
 import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../../../repositories/memberTrackingRepo';
-import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
+import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 
 enum EMtrVerb {
@@ -14,7 +14,7 @@ enum EMtrVerb {
 }
 
 async function memberTrackingRecordSlugHandler(
-  req: NextApiRequestWithAuthorization<UserWithRole>,
+  req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<MemberTrackingRecord | ITempestApiError>
 ) {
   const {

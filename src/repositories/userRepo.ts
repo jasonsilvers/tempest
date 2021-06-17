@@ -1,20 +1,12 @@
-import { User, Role } from '@prisma/client';
+import { User, Role, Prisma } from '@prisma/client';
 import prisma from '../prisma/prisma';
-import { ERole } from '../types/global';
+import { ERole, EUserIncludes } from '../types/global';
 import { IPerson } from './common/types';
 import { getRoleByName } from './roleRepo';
-import { Prisma } from '@prisma/client';
 import dayjs from 'dayjs';
 
-// required to infer the return type from the Prisma Client
-export type UserWithRole = Prisma.PromiseReturnType<typeof findUserByDodId>;
-export type UserWithTrackingRecord = Prisma.PromiseReturnType<typeof findTrackingRecordsByAuthorityId>;
-
-export type UserWithAll = Prisma.PromiseReturnType<typeof findUserByIdReturnAllIncludes>;
-export type LoggedInUser = Prisma.PromiseReturnType<typeof findUserByDodId>;
-
 export const findUserByIdReturnAllIncludes = async (userId: string) => {
-  return await prisma.user.findUnique({
+  return prisma.user.findUnique({
     where: {
       id: userId,
     },
@@ -43,8 +35,32 @@ export const findUserByIdReturnAllIncludes = async (userId: string) => {
  * @param queryString dodid
  * @returns UserWithRole
  */
+
+export const findUserById = async (id: string) => {
+  return prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+};
+
+export const findUserByIdWithMemberTrackingItems = async (id: string, variant: EUserIncludes) => {
+  return prisma.user.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      memberTrackingItems: {
+        include: {
+          trackingItem: variant === EUserIncludes.TRACKING_ITEMS,
+        },
+      },
+    },
+  });
+};
+
 export const findUserByDodId = async (queryString: string) => {
-  return await prisma.user.findUnique({
+  return prisma.user.findUnique({
     where: {
       dodId: queryString,
     },
@@ -55,59 +71,15 @@ export const findUserByDodId = async (queryString: string) => {
   });
 };
 
-export interface IUserIncludeConfig {
-  withMemberTrackingItems?: boolean;
-  withMemberTrackingRecords?: boolean;
-  withTrackingItems?: boolean;
-  // withAuthority: boolean;
-}
-
-const defaultConfig: IUserIncludeConfig = {
-  withMemberTrackingItems: false,
-  withMemberTrackingRecords: false,
-  withTrackingItems: false,
-};
-
 /**
- * Get user method to query the PSQL db though the prisma client
+ * Get user method to query the PSQL db though tπuhe prisma client
  *
  * @param query unique db id
  * @returns UserWithRole
  */
-export const findUserById = async (query: string, config?: IUserIncludeConfig) => {
-  const { withMemberTrackingItems, withMemberTrackingRecords, withTrackingItems } = config ?? defaultConfig;
-  return await prisma.user.findUnique({
-    where: {
-      id: query,
-    },
-    include: {
-      role: true,
-      memberTrackingItems: withMemberTrackingItems
-        ? {
-            include: {
-              trackingItem: withTrackingItems,
-              memberTrackingRecords: withMemberTrackingRecords
-                ? {
-                    include: {
-                      authority: true,
-
-                      trackingItem: withTrackingItems,
-                    },
-                    take: 2,
-                    orderBy: {
-                      order: 'desc',
-                    },
-                  }
-                : false,
-            },
-          }
-        : false,
-    },
-  });
-};
 
 export const findUsers = async () => {
-  return await prisma.user.findMany({
+  return prisma.user.findMany({
     include: {
       role: true,
       organization: true,
@@ -137,7 +109,7 @@ export const createUser = async (user: User, role?: Role) => {
     };
   }
 
-  return await prisma.user.create({
+  return prisma.user.create({
     data: { ...user, ...roleConnect },
   });
 };
@@ -211,11 +183,11 @@ export async function createUserFromCommonApi(commonUser: IPerson) {
   return {
     ...newTempestUser,
     role: memberRole,
-  } as UserWithRole;
+  } as LoggedInUser;
 }
 
 export async function updateLastLogin(id: string) {
-  return await prisma.user.update({
+  return prisma.user.update({
     where: {
       id,
     },
@@ -236,7 +208,7 @@ export async function updateUserRole(id: string, roleName: string) {
     },
   });
 
-  return await prisma.user.update({
+  return prisma.user.update({
     where: {
       id,
     },
@@ -249,3 +221,8 @@ export async function updateUserRole(id: string, roleName: string) {
     },
   });
 }
+
+// required to infer the return type from the Prisma Client
+export type UserWithMemberTrackingItems = Prisma.PromiseReturnType<typeof findUserByIdWithMemberTrackingItems>;
+export type UserWithAll = Prisma.PromiseReturnType<typeof findUserByIdReturnAllIncludes>;
+export type LoggedInUser = Prisma.PromiseReturnType<typeof findUserByDodId>;

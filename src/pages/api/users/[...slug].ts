@@ -2,18 +2,17 @@ import { User } from '@prisma/client';
 import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
-import { findUserByDodId, findUserById, UserWithRole } from '../../../repositories/userRepo';
-import { EResource, ITempestApiError } from '../../../types/global';
+import {
+  findUserByDodId,
+  findUserByIdWithMemberTrackingItems,
+  UserWithMemberTrackingItems,
+  LoggedInUser,
+} from '../../../repositories/userRepo';
+import { EResource, EUserIncludes, EUserResources, ITempestApiError } from '../../../types/global';
 import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
 
-enum EUserIncludes {
-  MEMBER_TRACKING_ITEMS = 'membertrackingitems',
-  MEMBER_TRACKING_RECORDS = 'membertrackingrecords',
-  TRACKING_ITEMS = 'trackingitems',
-}
-
 async function userSlugHandler(
-  req: NextApiRequestWithAuthorization<UserWithRole>,
+  req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiError>
 ) {
   const {
@@ -39,11 +38,14 @@ async function userSlugHandler(
         return permissionDenied(res);
       }
 
-      const user = await findUserById(userId, {
-        withTrackingItems: includesQuery.includes(EUserIncludes.TRACKING_ITEMS),
-        withMemberTrackingRecords: includesQuery.includes(EUserIncludes.MEMBER_TRACKING_RECORDS),
-        withMemberTrackingItems: resource === EUserIncludes.MEMBER_TRACKING_ITEMS,
-      });
+      let user: UserWithMemberTrackingItems;
+
+      if (resource === EUserResources.MEMBER_TRACKING_ITEMS) {
+        user = await findUserByIdWithMemberTrackingItems(
+          userId,
+          includesQuery.includes(EUserIncludes.TRACKING_ITEMS) ? EUserIncludes.TRACKING_ITEMS : null
+        );
+      }
 
       if (!user) {
         return recordNotFound(res);

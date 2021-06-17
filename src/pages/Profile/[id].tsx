@@ -4,16 +4,18 @@ import usePermissions from '../../hooks/usePermissions';
 import MemberItemTracker from '../../components/Records/MemberRecordTracker';
 import HeaderUser from '../../components/Records/RecordHeader';
 import { useRouter } from 'next/router';
-import { ECategories, EFuncAction, EResource } from '../../types/global';
+import { ECategories, EFuncAction, EResource, EUserIncludes } from '../../types/global';
 import { QueryClient } from 'react-query';
 import { mtiQueryKeys } from '../../hooks/api/memberTrackingItem';
 import { GetStaticPropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
-import { findUserById } from '../../repositories/userRepo';
+import { findUserByIdWithMemberTrackingItems } from '../../repositories/userRepo';
 import Tab from '../../components/Records/Tab';
 import { AddMemberTrackingItemDialog } from '../../components/Records/AddMemberTrackingItemDialog';
 import { Link } from '../../lib/ui';
 import tw from 'twin.macro';
+
+const AddNewButton = tw(Link)`italic absolute -bottom-10 right-10`;
 
 const Profile = () => {
   const {
@@ -41,8 +43,6 @@ const Profile = () => {
   if (!persmission?.granted) {
     return <div>You do not have permission to view that profile</div>;
   }
-
-  const AddNewButton = tw(Link)`italic absolute -bottom-10 right-10`;
 
   return (
     <div tw="relative min-w-min max-width[1440px]">
@@ -90,7 +90,7 @@ export async function getStaticProps(context: GetStaticPropsContext) {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(userId), () =>
-    findUserById(userId, { withMemberTrackingItems: true })
+    findUserByIdWithMemberTrackingItems(userId, EUserIncludes.TRACKING_ITEMS)
   );
 
   return {

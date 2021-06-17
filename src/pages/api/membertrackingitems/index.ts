@@ -11,7 +11,7 @@ import {
   findMemberTrackingRecords,
   updateMemberTrackingItem,
 } from '../../../repositories/memberTrackingRepo';
-import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
+import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
 
@@ -32,7 +32,7 @@ interface ITempestMemberTrackingItemApiRequest<T, B = unknown> extends NextApiRe
 }
 
 async function memberTrackingItemHandler(
-  req: ITempestMemberTrackingItemApiRequest<UserWithRole>,
+  req: ITempestMemberTrackingItemApiRequest<LoggedInUser>,
   res: NextApiResponse<MemberTrackingItem | ITempestApiError>
 ) {
   const {
@@ -44,7 +44,7 @@ async function memberTrackingItemHandler(
 
   const includesQuery = getIncludesQueryArray(include);
   const trackingItemIdParam = parseInt(trackingItemId);
-  const memberTrackingRecordCompleteDate = complete_date?.toString();
+  const memberTrackingRecordCompleteDate = complete_date ? dayjs(complete_date.toString()).toDate() : null;
 
   const ac = await getAc();
 
@@ -55,6 +55,10 @@ async function memberTrackingItemHandler(
         withTrackingItems: includesQuery.includes(EMemberTrackingItemIncludes.TRACKING_ITEMS),
       });
 
+      if (!memberTrackingItem) {
+        return recordNotFound(res);
+      }
+
       const permission =
         memberTrackingItem?.userId !== req.user.id
           ? ac.can(req.user.role.name).readAny(EResource.MEMBER_TRACKING_ITEM)
@@ -62,10 +66,6 @@ async function memberTrackingItemHandler(
 
       if (!permission.granted) {
         return permissionDenied(res);
-      }
-
-      if (!memberTrackingItem) {
-        return recordNotFound(res);
       }
 
       res.status(200).json(memberTrackingItem);
@@ -109,7 +109,7 @@ async function memberTrackingItemHandler(
           {
             traineeId: newMemberTrackingItem.userId,
             trackingItemId: newMemberTrackingItem.trackingItemId,
-            completedDate: memberTrackingRecordCompleteDate ? dayjs(memberTrackingRecordCompleteDate).toDate() : null,
+            completedDate: memberTrackingRecordCompleteDate,
           },
           { includeTrackingItem: true }
         );
