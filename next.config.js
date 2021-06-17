@@ -1,7 +1,3 @@
-// const withBundleAnalyzer = require('@next/bundle-analyzer')({
-//   enabled: process.env.ANALYZE === 'true',
-// });
-
 module.exports = {
   webpack: (config) => {
     // Unset client-side javascript that only works server-side
@@ -11,5 +7,5 @@ module.exports = {
   },
 };
 
-//Comment above and uncomment below to run bundle analzyer on build
+//Comment above and uncomment below to run bundle analyzer on build
 // module.exports = withBundleAnalyzer({});
