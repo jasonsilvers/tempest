@@ -1,5 +1,10 @@
 {
   "WillLuke.nextjs.addTypesOnSave": true,
   "WillLuke.nextjs.hasPrompted": true,
-  "cSpell.words": ["superjson"]
+  "cSpell.words": [
+    "accesscontrol",
+    "membertrackingrecords",
+    "superjson",
+    "trackingitems"
+  ]
 }
