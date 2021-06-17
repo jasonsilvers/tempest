@@ -1,13 +1,12 @@
-import { User, Role } from '@prisma/client';
+import { User, Role, Prisma } from '@prisma/client';
 import prisma from '../prisma/prisma';
 import { ERole, EUserIncludes } from '../types/global';
 import { IPerson } from './common/types';
 import { getRoleByName } from './roleRepo';
-import { Prisma } from '@prisma/client';
 import dayjs from 'dayjs';
 
 export const findUserByIdReturnAllIncludes = async (userId: string) => {
-  return await prisma.user.findUnique({
+  return prisma.user.findUnique({
     where: {
       id: userId,
     },
@@ -38,17 +37,15 @@ export const findUserByIdReturnAllIncludes = async (userId: string) => {
  */
 
 export const findUserById = async (id: string) => {
-  return await prisma.user.findUnique({
+  return prisma.user.findUnique({
     where: {
       id,
     },
   });
 };
 
-type EUserIncludesStrings = keyof typeof EUserIncludes;
-
 export const findUserByIdWithMemberTrackingItems = async (id: string, variant: EUserIncludes) => {
-  return await prisma.user.findUnique({
+  return prisma.user.findUnique({
     where: {
       id,
     },
@@ -63,7 +60,7 @@ export const findUserByIdWithMemberTrackingItems = async (id: string, variant: E
 };
 
 export const findUserByDodId = async (queryString: string) => {
-  return await prisma.user.findUnique({
+  return prisma.user.findUnique({
     where: {
       dodId: queryString,
     },
@@ -82,7 +79,7 @@ export const findUserByDodId = async (queryString: string) => {
  */
 
 export const findUsers = async () => {
-  return await prisma.user.findMany({
+  return prisma.user.findMany({
     include: {
       role: true,
       organization: true,
@@ -112,7 +109,7 @@ export const createUser = async (user: User, role?: Role) => {
     };
   }
 
-  return await prisma.user.create({
+  return prisma.user.create({
     data: { ...user, ...roleConnect },
   });
 };
@@ -190,7 +187,7 @@ export async function createUserFromCommonApi(commonUser: IPerson) {
 }
 
 export async function updateLastLogin(id: string) {
-  return await prisma.user.update({
+  return prisma.user.update({
     where: {
       id,
     },
@@ -211,7 +208,7 @@ export async function updateUserRole(id: string, roleName: string) {
     },
   });
 
-  return await prisma.user.update({
+  return prisma.user.update({
     where: {
       id,
     },

@@ -1,10 +1,11 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId, findUserById } from '../../../src/repositories/userRepo';
+import { findUserByDodId, findUserByIdWithMemberTrackingItems } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import userSlugHandler from '../../../src/pages/api/users/[...slug]';
 import { testNextApi } from '../../utils/NextAPIUtils';
 import dayjs from 'dayjs';
+import { EUserIncludes } from '../../../src/types/global';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');
@@ -56,47 +57,12 @@ test('GET - should return member tracking items', async () => {
       },
     ],
   };
-  mockMethodAndReturn(findUserById, recordFromDb);
+  mockMethodAndReturn(findUserByIdWithMemberTrackingItems, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
     urlSlug: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems',
   });
 
-  expect(findUserById).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', {
-    withMemberTrackingItems: true,
-    withMemberTrackingRecords: false,
-    withTrackingItems: false,
-  } as IUserIncludeConfig);
-  expect(status).toBe(200);
-  expect(data).toStrictEqual(recordFromDb);
-});
-
-test('GET - should return member tracking items and member tracking records', async () => {
-  const recordFromDb = {
-    ...userFromDb,
-    trackingItems: [
-      {
-        isActive: true,
-        userId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
-        trackingItemId: 23,
-        memberTrackingRecords: [completeRecord],
-      },
-      {
-        isActive: true,
-        userId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
-        trackingItemId: 14,
-      },
-    ],
-  };
-  mockMethodAndReturn(findUserById, recordFromDb);
-  const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords',
-  });
-
-  expect(findUserById).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', {
-    withMemberTrackingItems: true,
-    withMemberTrackingRecords: true,
-    withTrackingItems: false,
-  } as IUserIncludeConfig);
+  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', null);
   expect(status).toBe(200);
   expect(data).toStrictEqual(recordFromDb);
 });
@@ -128,17 +94,15 @@ test('GET - should return member tracking items.  member tracking records and tr
       },
     ],
   };
-  mockMethodAndReturn(findUserById, recordFromDb);
+  mockMethodAndReturn(findUserByIdWithMemberTrackingItems, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug:
-      'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
+    urlSlug: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=trackingitems',
   });
 
-  expect(findUserById).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', {
-    withMemberTrackingItems: true,
-    withMemberTrackingRecords: true,
-    withTrackingItems: true,
-  } as IUserIncludeConfig);
+  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(
+    'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    EUserIncludes.TRACKING_ITEMS
+  );
   expect(status).toBe(200);
   expect(data).toStrictEqual(recordFromDb);
 });
@@ -210,17 +174,12 @@ test('should return user if own record', async () => {
       },
     ],
   };
-  mockMethodAndReturn(findUserById, recordFromDb);
+  mockMethodAndReturn(findUserByIdWithMemberTrackingItems, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug:
-      'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
+    urlSlug: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems',
   });
 
-  expect(findUserById).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', {
-    withMemberTrackingItems: true,
-    withMemberTrackingRecords: true,
-    withTrackingItems: true,
-  });
+  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith('a100e2fa-50d0-49a6-b10f-00adde24d0c2', null);
   expect(status).toBe(200);
   expect(data).toStrictEqual(recordFromDb);
 });
@@ -239,7 +198,7 @@ test('should return 404 if user not found', async () => {
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
-  mockMethodAndReturn(findUserById, null);
+  mockMethodAndReturn(findUserByIdWithMemberTrackingItems, null);
   const { status } = await testNextApi.get(userSlugHandler, {
     urlSlug:
       'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords&include=trackingitems',
