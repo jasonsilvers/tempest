@@ -1,9 +1,9 @@
 import { P1_JWT } from '@tron/nextjs-auth-p1';
 import { ERole } from '../types/global';
 import { getPersonFromCommonApi, createPersonFromJwt } from './common/commonRepo';
-import { UserWithRole, findUserByDodId, updateUserRole, createUserFromCommonApi } from './userRepo';
+import { LoggedInUser, findUserByDodId, updateUserRole, createUserFromCommonApi } from './userRepo';
 
-export async function returnUser(queryString: string, jwt: P1_JWT): Promise<UserWithRole> {
+export async function returnUser(queryString: string, jwt: P1_JWT): Promise<LoggedInUser> {
   const tempestUser = await findUserByDodId(queryString);
 
   const isAdmin =

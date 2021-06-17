@@ -61,3 +61,12 @@ export enum ECategories {
 export interface ITempestApiError {
   message: string;
 }
+
+export enum EUserIncludes {
+  TRACKING_ITEMS = 'trackingitems',
+}
+
+export enum EUserResources {
+  MEMBER_TRACKING_ITEMS = 'membertrackingitems',
+  MEMBER_TRACKING_RECORDS = 'membertrackingrecords',
+}

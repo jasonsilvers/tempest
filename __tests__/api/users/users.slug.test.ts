@@ -1,5 +1,5 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId, findUserById, IUserIncludeConfig } from '../../../src/repositories/userRepo';
+import { findUserByDodId, findUserById } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import userSlugHandler from '../../../src/pages/api/users/[...slug]';
