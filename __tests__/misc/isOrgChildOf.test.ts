@@ -99,3 +99,20 @@ test('should return true if orgId is found on parent of parent of parent', async
   expect(mockedFindOrganizationById).toBeCalledTimes(2);
   expect(isChild).toBe(true);
 });
+
+// This case might should return an exception since it may falsely imply the child org has a parent and the data for the org reflects this but in reality the parent id does not exist
+test('should return false if organization does not have parent', async () => {
+  const organization: OrganizationWithChildren = {
+    id: '2',
+    name: 'organization2',
+    parentId: '5',
+    children: null,
+    users: null,
+  };
+
+  mockedFindOrganizationById.mockResolvedValueOnce(organization).mockResolvedValueOnce(null);
+
+  const isChild = await isOrgChildOf('2', '1');
+
+  expect(isChild).toBe(false);
+});
