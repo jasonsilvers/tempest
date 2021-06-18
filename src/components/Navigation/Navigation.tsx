@@ -35,9 +35,4 @@ const Link: React.FC<ILinkProps> = ({ children, goToUrl, className, activeLinkSt
   );
 };
 
-// const Prev: React.FC = () => {
-//   const router = useRouter();
-//   return <StyledLink onClick={() => router.back()}>Go Back</StyledLink>;
-// };
-
 export { Link, Header };
