@@ -1,4 +1,4 @@
-import { getStatus } from '../../../src/utils/Status';
+import { getStatus } from '../../src/utils/Status';
 import dayjs from 'dayjs';
 
 test('Should return Done when interval is greater than 60 days completed Date before due Date --Left', () => {

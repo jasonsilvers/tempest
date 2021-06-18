@@ -100,7 +100,8 @@ test('should return true if orgId is found on parent of parent of parent', async
   expect(isChild).toBe(true);
 });
 
-// This case might should return an exception since it may falsely imply the child org has a parent and the data for the org reflects this but in reality the parent id does not exist
+// This case might should return an exception since it may falsely imply the child org has a parent
+// and the data for the "child" org reflects this but in reality the parent id does not exist in DB
 test('should return false if organization does not have parent', async () => {
   const organization: OrganizationWithChildren = {
     id: '2',
