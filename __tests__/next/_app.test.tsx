@@ -1,7 +1,7 @@
 import { unmountComponentAtNode, render } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import App from '../../src/pages/_app';
-import { waitForElementToBeRemoved } from '../utils/TempestTestUtils';
+import { waitFor, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
 
 // simple component
 const simpleComponent = () => <div id="hello">Hello World</div>;
@@ -51,4 +51,20 @@ it('should render the _app for next js and remove the #jss-server-side element',
   // wait for jssStyles to be removed by the use effect in _app
   waitForElementToBeRemoved(() => jssStyles);
   expect(document.contains(jssStyles)).toBeFalsy();
+});
+
+it('should render the _app for next js with dev tools', async () => {
+  // set id of styles to jss-server-side and append to document.head
+  jssStyles.id = 'jss-server-side';
+  document.head.appendChild(jssStyles);
+
+  act(() => {
+    render(<App Component={simpleComponent} pageProps={null} />, container);
+  });
+
+  // wait for jssStyles to be removed by the use effect in _app
+  waitForElementToBeRemoved(() => jssStyles);
+  window.toggleDevtools();
+  const devtool = waitFor(() => document.getElementById('devtoolfab'));
+  expect(devtool).toBeTruthy();
 });
