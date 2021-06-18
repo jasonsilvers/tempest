@@ -163,6 +163,12 @@ const userGrants: Grants[] = [
     resource: EResource.USER,
     role: ERole.MEMBER,
   },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.USER,
+    role: ERole.MONITOR,
+  },
 ];
 
 const organizationGrants: Grants[] = [
