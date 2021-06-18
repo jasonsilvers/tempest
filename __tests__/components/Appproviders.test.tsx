@@ -1,8 +1,13 @@
 import React from 'react';
-import { render, waitFor, screen } from '@testing-library/react';
+import { render, waitFor, screen, fireEvent, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
 import AppProviders from '../../src/components/AppProviders';
+import { useSnackbar } from 'notistack';
 
-const TestComponent = () => {
+const TestComponent: React.FC<{ enque?: boolean }> = ({ enque }) => {
+  const { enqueueSnackbar } = useSnackbar();
+  if (enque) {
+    enqueueSnackbar('SNAKES', { variant: 'success' });
+  }
   return <div>Test</div>;
 };
 
@@ -56,5 +61,20 @@ describe('AppProviders', () => {
     await waitFor(() => {
       expect(getByText(/test/i)).toBeInTheDocument;
     });
+  });
+
+  it('should dismiss the snackbar', async () => {
+    const { getByText, queryByText } = render(
+      <AppProviders pageProps={null}>
+        <TestComponent enque />
+      </AppProviders>
+    );
+
+    await waitFor(() => {
+      expect(getByText(/snakes/i)).toBeInTheDocument();
+    });
+    fireEvent.click(getByText(/dismiss/i));
+    await waitForElementToBeRemoved(getByText(/snakes/i));
+    expect(queryByText(/snakes/i)).toBeFalsy();
   });
 });
