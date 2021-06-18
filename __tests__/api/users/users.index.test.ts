@@ -44,3 +44,10 @@ test('should not allow post', async () => {
   const { status } = await testNextApi.post(userHandler, { body: {} });
   expect(status).toEqual(405);
 });
+
+test('should return permission denied with bad grants', async () => {
+  mockMethodAndReturn(findUsers, [userFromDb]);
+  mockMethodAndReturn(findGrants, null);
+  const { status } = await testNextApi.get(userHandler);
+  expect(status).toEqual(500);
+});
