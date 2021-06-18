@@ -13,9 +13,21 @@ it('routes the user to the Unauthenticated app', async () => {
 it('routes the user to the Profile page if they have the role member', () => {
   useTestUser.mockImplementationOnce(() => ({
     isLoading: true,
-    user: { firstName: 'bob', role: { name: ERole.MEMBER, id: 1 } },
+    user: { firstName: 'bob', id: 1, role: { name: ERole.MEMBER, id: 1 } },
   }));
   const push = jest.fn();
   render(<Index />, { push });
   expect(push).toBeCalledTimes(1);
+  expect(push).toBeCalledWith('/Profile/1');
+});
+
+it('routes the user to the Dashboard page if their role is not Member', () => {
+  useTestUser.mockImplementationOnce(() => ({
+    isLoading: true,
+    user: { firstName: 'bob', role: { name: ERole.MONITOR, id: 1 } },
+  }));
+  const push = jest.fn();
+  render(<Index />, { push });
+  expect(push).toBeCalledTimes(1);
+  expect(push).toBeCalledWith('/Dashboard');
 });
