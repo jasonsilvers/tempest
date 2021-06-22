@@ -1,5 +1,5 @@
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import { findUserByDodId, findUserById } from '../../../src/repositories/userRepo';
+import { findUserByDodId, findUserById, updateUser } from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/users/[id]';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../utils/mocks/fixtures';
@@ -139,8 +139,47 @@ test('GET - should return 401 if not authorized', async () => {
   expect(status).toBe(401);
 });
 
+test('GET - should return 404 record not found', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  mockMethodAndReturn(findUserById, null);
+  const { status } = await testNextApi.get(userQueryHandler, { urlId: '123' });
+
+  expect(status).toBe(404);
+});
+
 test('GET - should only allow get', async () => {
   const { status } = await testNextApi.post(userQueryHandler, { body: {} });
 
   expect(status).toBe(405);
+});
+
+test('PUT - should return user - update any', async () => {
+  mockMethodAndReturn(findUserById, userFromDb);
+  mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  const { data, status } = await testNextApi.put(userQueryHandler, {
+    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    body: { name: 'bob' },
+  });
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ name: 'bob', id: 123 });
+});
+
+test('PUT - should return 403 - update any', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  mockMethodAndReturn(findUserById, userFromDb);
+  const { status } = await testNextApi.put(userQueryHandler, {
+    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    body: { name: 'bob' },
+  });
+
+  expect(status).toBe(403);
 });

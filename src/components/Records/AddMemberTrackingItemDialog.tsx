@@ -227,6 +227,9 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
         >
           Add
         </DialogButton>
+        <DialogButton onClick={handleClose} size="medium" variant="contained">
+          Close
+        </DialogButton>
       </DialogActions>
     </Dialog>
   );

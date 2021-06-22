@@ -4,6 +4,7 @@ import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import { testNextApi } from '../../utils/NextAPIUtils';
 import userHandler from '../../../src/pages/api/users/index';
+import { ERole } from '../../../src/types/global';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');
@@ -43,4 +44,23 @@ test('should not allow post', async () => {
   mockMethodAndReturn(findUsers, [userFromDb]);
   const { status } = await testNextApi.post(userHandler, { body: {} });
   expect(status).toEqual(405);
+});
+
+test('should return permission denied with bad grants', async () => {
+  /*eslint-disable */
+  const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  mockMethodAndReturn(findUsers, [userFromDb]);
+  mockMethodAndReturn(findGrants, null);
+  const { status } = await testNextApi.get(userHandler);
+  expect(status).toEqual(500);
+  expect(consoleSpy).toHaveBeenCalled();
+});
+test('should return permission denied with bad grants', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: ERole.NOROLE },
+  });
+  const { status } = await testNextApi.get(userHandler);
+  expect(status).toEqual(403);
 });

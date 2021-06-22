@@ -4,11 +4,11 @@ import dayjs from 'dayjs';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../middleware/utils';
 import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../repositories/memberTrackingRepo';
-import { UserWithRole } from '../repositories/userRepo';
+import { LoggedInUser } from '../repositories/userRepo';
 import { EResource, ITempestApiError } from '../types/global';
 
 type MemberTrackingRecordsAction = (
-  req: NextApiRequestWithAuthorization<UserWithRole>,
+  req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<MemberTrackingRecord | ITempestApiError>
 ) => void;
 
