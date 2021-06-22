@@ -1,5 +1,16 @@
 import { P1_JWT } from '@tron/nextjs-auth-p1';
-import { grants } from '../../../src/utils/Grants';
+import { EAction, EResource } from '../../../src/types/global';
+import { grants as realGrants } from '../../../src/utils/Grants';
+
+const grants = [
+  ...realGrants,
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.PROFILE,
+    role: 'norole',
+  },
+];
 
 export const explodedJwt: P1_JWT = {
   acr: '1',
