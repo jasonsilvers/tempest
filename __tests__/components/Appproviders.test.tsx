@@ -2,12 +2,16 @@ import React from 'react';
 import { render, waitFor, screen, fireEvent, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
 import AppProviders from '../../src/components/AppProviders';
 import { useSnackbar } from 'notistack';
+import { useLayoutEffect } from 'react';
 
 const TestComponent: React.FC<{ enque?: boolean }> = ({ enque }) => {
   const { enqueueSnackbar } = useSnackbar();
-  if (enque) {
-    enqueueSnackbar('SNAKES', { variant: 'success' });
-  }
+
+  useLayoutEffect(() => {
+    if (enque) {
+      enqueueSnackbar('SNAKES', { variant: 'success' });
+    }
+  }, []);
   return <div>Test</div>;
 };
 

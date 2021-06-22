@@ -13,6 +13,20 @@ jest.mock('../../../src/repositories/common/commonRepo');
 process.env.COMMON_API_URL = 'https://whatever.com';
 const COMMON_API_URL = process.env.COMMON_API_URL;
 
+// Establish API mocking before tests.
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: 'bypass',
+  });
+});
+// Reset any request handlers that we may add during the tests,
+// so they don't affect other tests.
+afterEach(() => {
+  server.resetHandlers();
+});
+// // Clean up after the tests are finished.
+afterAll(() => server.close());
+
 describe('User Subscription Endpoint Tests', () => {
   it('api/user/sub:POST user exists in tempest', async () => {
     const body = { personIds: ['1234'] };
