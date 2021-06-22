@@ -9,7 +9,7 @@ import { useNavLoading, NavigationLoading } from '../hooks/useNavLoading';
 
 const DynamicDevTools = dynamic(
   function importDevTools() {
-    return import('../components/Devtools/index');
+    return import('../components/Devtools/index').then((module) => module.Devtools);
   },
   {
     ssr: false,

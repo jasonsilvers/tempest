@@ -9,7 +9,7 @@ import { CircularProgress } from '../../lib/ui';
 import { DoneAllIcon } from '../../assets/Icons';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
-import { UserWithRole } from '../../repositories/userRepo';
+import { LoggedInUser as LoggedInUserType } from '../../repositories/userRepo';
 import { ActionButton, DisabledButton, TableData } from './TwinMacro/Twin';
 
 /**
@@ -79,7 +79,7 @@ const RecordSignature: React.FC<{
   traineeSignedDate: Date;
   memberTrackingRecord: MemberTrackingRecord;
 }> = ({ authoritySignedDate, traineeSignedDate, memberTrackingRecord }) => {
-  const { user: LoggedInUser } = useUser<UserWithRole>();
+  const { user: LoggedInUser } = useUser<LoggedInUserType>();
   const { enqueueSnackbar } = useSnackbar();
   const { mutate, isLoading } = useUpdateMemberTrackingRecord('sign_trainee');
 

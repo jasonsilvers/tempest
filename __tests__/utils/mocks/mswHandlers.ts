@@ -10,12 +10,21 @@ export const handlers = [
         id: '123',
         firstName: 'bob',
         lastName: 'jones',
-        role: ERole.MEMBER,
+        role: {
+          id: 22,
+          name: ERole.MEMBER,
+        },
       })
     );
   }),
 
   rest.get('/api/grants', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(grants));
+  }),
+  rest.get('/api/trackingitems', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json([]));
+  }),
+  rest.get('/api/users/*/membertrackingitems', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json([]));
   }),
 ];

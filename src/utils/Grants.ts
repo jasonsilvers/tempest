@@ -20,13 +20,6 @@ const pageGrants: Grants[] = [
     resource: EResource.PROFILE,
     role: ERole.MEMBER,
   },
-  { action: EAction.READ_ANY, attributes: '*', resource: EResource.PROFILE, role: ERole.MEMBER },
-  {
-    action: EAction.READ_ANY,
-    attributes: '*',
-    resource: EResource.PROFILE,
-    role: 'norole',
-  },
   {
     action: EAction.READ_ANY,
     attributes: '*',
@@ -162,6 +155,12 @@ const userGrants: Grants[] = [
     attributes: '*',
     resource: EResource.USER,
     role: ERole.MEMBER,
+  },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.USER,
+    role: ERole.MONITOR,
   },
 ];
 

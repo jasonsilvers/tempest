@@ -11,7 +11,7 @@ import {
   findMemberTrackingRecords,
   deleteMemberTrackingItem,
 } from '../repositories/memberTrackingRepo';
-import { UserWithRole } from '../repositories/userRepo';
+import { LoggedInUser } from '../repositories/userRepo';
 import { ITempestApiError, EResource } from '../types/global';
 import { getIncludesQueryArray } from '../utils/IncludeQuery';
 
@@ -21,7 +21,7 @@ export enum EMemberTrackingItemIncludes {
 }
 
 type IMemberTrackingItemController = (
-  req: ITempestMemberTrackingItemApiRequest<UserWithRole>,
+  req: ITempestMemberTrackingItemApiRequest<LoggedInUser>,
   res: NextApiResponse<MemberTrackingItem | ITempestApiError>
 ) => Promise<void>;
 

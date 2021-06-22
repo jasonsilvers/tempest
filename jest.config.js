@@ -9,6 +9,7 @@ module.exports = {
     '<rootDir>/node_modules/',
     '<rootDir>/__tests__/setup/',
     '<rootDir>/__tests__/utils/',
+    '<rootDir?/src/prisma/seed.ts',
   ],
   collectCoverage: true,
   coveragePathIgnorePatterns: [
@@ -18,6 +19,7 @@ module.exports = {
     '/__tests__/',
     '/src/repositories/common/types.ts',
     '/src/types',
+    '/src/prisma/seed.ts',
   ],
   coverageReporters: ['json', 'lcov', 'text', 'text-summary'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}'],

@@ -1,11 +1,11 @@
 import { NextApiResponse } from 'next';
 import { withApiAuth, NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
+import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { createOrganizations, findOrganizations } from '../../../repositories/organizationRepo';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
 
-const organizationApiHandler = async (req: NextApiRequestWithAuthorization<UserWithRole>, res: NextApiResponse) => {
+const organizationApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { body, method } = req;
 
   const ac = await getAc();
