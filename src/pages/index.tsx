@@ -2,11 +2,11 @@ import Head from 'next/head';
 import React from 'react';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useRouter } from 'next/router';
-import { UserWithRole } from '../repositories/userRepo';
+import { LoggedInUser } from '../repositories/userRepo';
 import { ERole } from '../types/global';
 
 function Home() {
-  const { user, isLoading } = useUser<UserWithRole>();
+  const { user, isLoading } = useUser<LoggedInUser>();
   const router = useRouter();
 
   if (!user && !isLoading) {

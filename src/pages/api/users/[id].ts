@@ -3,11 +3,11 @@ import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-
 import { Permission } from 'accesscontrol';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
-import { findUserByDodId, findUserById, updateUser, UserWithRole } from '../../../repositories/userRepo';
+import { findUserByDodId, findUserById, updateUser, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
 
-async function userWithinOrgOrChildOrg(reqUser: UserWithRole, user: User) {
+async function userWithinOrgOrChildOrg(reqUser: LoggedInUser, user: User) {
   if (
     reqUser.organizationId === user.organizationId ||
     (await isOrgChildOf(user.organizationId, reqUser.organizationId))
@@ -19,7 +19,7 @@ async function userWithinOrgOrChildOrg(reqUser: UserWithRole, user: User) {
 }
 
 async function userQueryHandler(
-  req: NextApiRequestWithAuthorization<UserWithRole>,
+  req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiError>
 ) {
   const { query, method, body } = req;
