@@ -1,5 +1,4 @@
-import { rest } from 'msw';
-import usePermissions from '../../src/hooks/usePermissions';
+import { usePermissions } from '../../src/hooks/usePermissions';
 import { grants } from '../utils/mocks/fixtures';
 import { server } from '../utils/mocks/msw';
 import { renderHook } from '@testing-library/react-hooks';
@@ -22,15 +21,10 @@ afterEach(() => {
 afterAll(() => server.close());
 
 test('should return user and new ac list with grants', async () => {
-  server.use(
-    rest.get('/api/grants/', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(grants));
-    })
-  );
   const { result, waitForValueToChange } = renderHook(() => usePermissions(), {
     wrapper: Wrapper,
     initialProps: {
-      user: { firstName: 'joe', role: { name: 'admin' } },
+      user: { firstName: 'joe', role: { id: 323, name: 'admin' } },
     },
   });
 
@@ -43,15 +37,10 @@ test('should return user and new ac list with grants', async () => {
 });
 
 test('should return permission when checking create resourse', async () => {
-  server.use(
-    rest.get('/api/grants/', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(grants));
-    })
-  );
   const { result, waitForValueToChange, waitForNextUpdate } = renderHook(() => usePermissions(), {
     wrapper: Wrapper,
     initialProps: {
-      user: { firstName: 'joe', role: { name: ERole.MEMBER } },
+      user: { firstName: 'joe', role: { id: 33, name: ERole.MEMBER } },
     },
   });
 
@@ -69,15 +58,10 @@ test('should return permission when checking create resourse', async () => {
 });
 
 test('sets granted to false when ac.can fails', async () => {
-  server.use(
-    rest.get('/api/grants/', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(grants));
-    })
-  );
   const { result, waitForValueToChange, waitForNextUpdate } = renderHook(() => usePermissions(), {
     wrapper: Wrapper,
     initialProps: {
-      user: { firstName: 'joe', role: { name: 'admin' } },
+      user: { firstName: 'joe', role: { id: 22, name: 'admin' } },
     },
   });
 

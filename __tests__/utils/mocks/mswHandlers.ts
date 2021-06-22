@@ -10,10 +10,14 @@ export const handlers = [
         id: '123',
         firstName: 'bob',
         lastName: 'jones',
+<<<<<<< HEAD
         role: {
           id: '123',
           name: ERole.MEMBER,
         },
+=======
+        role: { id: 22, name: ERole.MEMBER },
+>>>>>>> 7bc8a539ad4567363c274fdb6cece59826be85a8
       })
     );
   }),
