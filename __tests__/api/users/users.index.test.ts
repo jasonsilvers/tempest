@@ -47,6 +47,7 @@ test('should not allow post', async () => {
 });
 
 test('should return permission denied with bad grants', async () => {
+  /*eslint-disable */
   const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   mockMethodAndReturn(findUsers, [userFromDb]);
   mockMethodAndReturn(findGrants, null);
