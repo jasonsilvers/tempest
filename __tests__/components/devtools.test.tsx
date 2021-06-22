@@ -77,7 +77,7 @@ test('should show list of users', async () => {
 test('should close devtools', async () => {
   const { getByText, findByRole } = render(<Devtools />);
 
-  const devToolsButton = await findByRole('button');
+  const devToolsButton = await findByRole('button', { name: 'devtool-button' });
   fireEvent.click(devToolsButton);
 
   await waitForElementToBeRemoved(() => getByText(/loading users/i));

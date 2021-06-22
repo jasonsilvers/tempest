@@ -165,7 +165,7 @@ const Devtools = () => {
   return (
     <>
       <FabLayout>
-        <Fab size="small" onClick={() => toggleDrawer((old) => !old)}>
+        <Fab aria-label="devtool-button" size="small" onClick={() => toggleDrawer((old) => !old)}>
           <SecurityIcon fontSize="small"></SecurityIcon>
         </Fab>
       </FabLayout>
