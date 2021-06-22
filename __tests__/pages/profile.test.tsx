@@ -3,6 +3,10 @@ import Profile, { getStaticPaths, getStaticProps } from '../../src/pages/Profile
 import 'whatwg-fetch';
 import { server } from '../utils/mocks/msw';
 import * as nextRouter from 'next/router';
+import { mockMethodAndReturn } from '../utils/mocks/repository';
+import { findUserByIdWithMemberTrackingItems, UserWithAll } from '../../src/repositories/userRepo';
+
+jest.mock('../../src/repositories/userRepo');
 
 beforeAll(() => {
   server.listen({
@@ -73,7 +77,8 @@ it('test get static paths', async () => {
 });
 
 it('test get static props', async () => {
+  mockMethodAndReturn(findUserByIdWithMemberTrackingItems, {} as Partial<UserWithAll>);
   const result = await getStaticProps({ params: { id: '123' } });
-
-  expect(result).toStrictEqual({ props: { dehydrateState: { mutations: [], queries: [] } }, revalidate: 30 });
+  expect(result.revalidate).toEqual(30);
+  expect(result.props.dehydrateState.mutations).toStrictEqual([]);
 });

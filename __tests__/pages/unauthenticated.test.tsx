@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '../utils/TempestTestUtils';
-import Unauthenticated from '../../src/pages/unauthenticated';
+import Unauthenticated from '../../src/pages/Unauthenticated';
 import { useTestUser } from '../utils/mocks/NextMocks';
 import { ERole } from '../../src/types/global';
 it('renders the unauthenticated page', async () => {
