@@ -1,4 +1,3 @@
-import { Organization, Role, User } from '@prisma/client';
 import { UserContextProvider } from '@tron/nextjs-auth-p1/dist/client/UserContextProvider';
 import { useTestRouter } from './mocks/NextMocks';
 import * as React from 'react';
@@ -6,6 +5,7 @@ import { render as rtlRender } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SnackbarProvider } from 'notistack';
 import { Button } from '../../src/lib/ui';
+import { LoggedInUser } from '../../src/repositories/userRepo';
 
 const createTestQueryClient = () => {
   const queryClientInit = new QueryClient({
@@ -19,12 +19,8 @@ const createTestQueryClient = () => {
   return queryClientInit;
 };
 
-type UserWithAll = User & { role?: Partial<Role> } & {
-  organization?: Partial<Organization>;
-};
-
 interface IWrapperProps {
-  user?: Partial<UserWithAll>;
+  user?: Partial<LoggedInUser>;
   children?: React.ReactNode;
 }
 

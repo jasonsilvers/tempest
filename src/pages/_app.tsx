@@ -8,7 +8,7 @@ import Head from 'next/head';
 
 const DynamicDevTools = dynamic(
   function importDevTools() {
-    return import('../components/Devtools/index');
+    return import('../components/Devtools/index').then((module) => module.Devtools);
   },
   {
     ssr: false,

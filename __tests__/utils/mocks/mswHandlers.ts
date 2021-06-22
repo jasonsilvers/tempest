@@ -10,7 +10,7 @@ export const handlers = [
         id: '123',
         firstName: 'bob',
         lastName: 'jones',
-        role: ERole.MEMBER,
+        role: { id: 22, name: ERole.MEMBER },
       })
     );
   }),

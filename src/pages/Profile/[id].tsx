@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
-import usePermissions from '../../hooks/usePermissions';
+import { usePermissions } from '../../hooks/usePermissions';
 import MemberItemTracker from '../../components/Records/MemberRecordTracker';
 import HeaderUser from '../../components/Records/RecordHeader';
 import { useRouter } from 'next/router';

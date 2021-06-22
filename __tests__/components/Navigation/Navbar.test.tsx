@@ -1,11 +1,12 @@
 import React from 'react';
 import Navbar from '../../../src/components/Navigation/Navbar';
 import { render, waitFor } from '../../utils/TempestTestUtils';
-import 'whatwg-fetch';
 import { server } from '../../utils/mocks/msw';
 
+import 'whatwg-fetch';
+
 // Establish API mocking before tests.
-beforeAll(() => {
+beforeEach(() => {
   server.listen({
     onUnhandledRequest: 'bypass',
   });
@@ -16,7 +17,10 @@ afterEach(() => {
   server.resetHandlers();
 });
 // // Clean up after the tests are finished.
-afterAll(() => server.close());
+afterAll(() => {
+  jest.resetAllMocks();
+  server.close();
+});
 
 test('should render a navbar', async () => {
   const { getByText } = render(<Navbar />);
