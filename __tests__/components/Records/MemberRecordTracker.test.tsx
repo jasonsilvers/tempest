@@ -3,13 +3,14 @@ import React from 'react';
 import MemberRecordTracker from '../../../src/components/Records/MemberRecordTracker';
 import { rest } from 'msw';
 import dayjs from 'dayjs';
-import 'whatwg-fetch';
 import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';
 import { TrackingItem } from '.prisma/client';
 import { User } from '@prisma/client';
 import { server } from '../../utils/mocks/msw';
 import Tab from '../../../src/components/Records/Tab';
 import { ECategories } from '../../../src/types/global';
+
+import 'whatwg-fetch';
 
 // Establish API mocking before tests.
 beforeAll(() => {
