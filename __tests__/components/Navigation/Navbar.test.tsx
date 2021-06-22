@@ -6,7 +6,7 @@ import { server } from '../../utils/mocks/msw';
 import 'whatwg-fetch';
 
 // Establish API mocking before tests.
-beforeEach(() => {
+beforeAll(() => {
   server.listen({
     onUnhandledRequest: 'bypass',
   });
