@@ -59,7 +59,7 @@ afterAll(() => server.close());
 test('should render devtools', async () => {
   const { getByText, findByRole } = render(<Devtools />);
 
-  const button = await findByRole('button');
+  const button = await findByRole('button', { name: 'devtool-button' });
   fireEvent.click(button);
   expect(getByText(/loading users/i)).toBeInTheDocument();
 });
@@ -67,7 +67,7 @@ test('should render devtools', async () => {
 test('should show list of users', async () => {
   const { getByText, findByRole } = render(<Devtools />);
 
-  const button = await findByRole('button');
+  const button = await findByRole('button', { name: 'devtool-button' });
   fireEvent.click(button);
 
   await waitForElementToBeRemoved(() => getByText(/loading users/i));
