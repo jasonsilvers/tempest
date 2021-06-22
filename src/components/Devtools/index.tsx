@@ -4,9 +4,9 @@ import tw from 'twin.macro';
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
-import usePermissions from '../../hooks/usePermissions';
+import { usePermissions } from '../../hooks/usePermissions';
 import { ERole } from '../../types/global';
-import { UserWithRole } from '../../repositories/userRepo';
+import { LoggedInUser } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
 import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
@@ -18,7 +18,7 @@ type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 
 const UsersList = () => {
   const queryClient = useQueryClient();
-  const usersListQuery = useQuery<UserWithRole[]>('users', () =>
+  const usersListQuery = useQuery<LoggedInUser[]>('users', () =>
     axios.get('/api/users').then((response) => response.data)
   );
 
@@ -38,7 +38,7 @@ const UsersList = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const updateUsersOrg = (event: OrgFormEvent, user: UserWithRole) => {
+  const updateUsersOrg = (event: OrgFormEvent, user: LoggedInUser) => {
     const selectedOrgId = event.target.value;
 
     if (selectedOrgId !== user.organizationId) {
@@ -55,7 +55,7 @@ const UsersList = () => {
     }
   };
 
-  const updateUsersRole = (event: RoleFormEvent, user: UserWithRole) => {
+  const updateUsersRole = (event: RoleFormEvent, user: LoggedInUser) => {
     const selectedRoleId = event.target.value;
 
     if (selectedRoleId !== user.role.id) {
@@ -165,7 +165,7 @@ const Devtools = () => {
   return (
     <>
       <FabLayout>
-        <Fab size="small" onClick={() => toggleDrawer((old) => !old)}>
+        <Fab aria-label="devtool-button" size="small" onClick={() => toggleDrawer((old) => !old)}>
           <SecurityIcon fontSize="small"></SecurityIcon>
         </Fab>
       </FabLayout>
@@ -174,4 +174,4 @@ const Devtools = () => {
   );
 };
 
-export default Devtools;
+export { Devtools };
