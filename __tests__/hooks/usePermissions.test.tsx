@@ -1,4 +1,3 @@
-import { rest } from 'msw';
 import { usePermissions } from '../../src/hooks/usePermissions';
 import { grants } from '../utils/mocks/fixtures';
 import { server } from '../utils/mocks/msw';
