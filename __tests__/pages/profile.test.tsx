@@ -1,15 +1,14 @@
-import { render, waitFor, screen, waitForElementToBeRemoved, fireEvent } from '../utils/TempestTestUtils';
+import { render, waitFor, waitForElementToBeRemoved, fireEvent } from '../utils/TempestTestUtils';
 import Profile, { getStaticPaths, getStaticProps } from '../../src/pages/Profile/[id]';
 import 'whatwg-fetch';
 import { server } from '../utils/mocks/msw';
-import { ERole } from '../../src/types/global';
 import * as nextRouter from 'next/router';
 
 beforeAll(() => {
   server.listen({
     onUnhandledRequest: 'bypass',
   });
-  // @ts-ignore
+  // @ts-expect-errore
   nextRouter.useRouter = jest.fn();
 });
 // Reset any request handlers that we may add during the tests,
@@ -22,7 +21,7 @@ afterEach(() => {
 afterAll(() => server.close());
 
 const mockUseRouter = (config) => {
-  //@ts-ignore
+  //@ts-expect-error
   nextRouter.useRouter.mockImplementation(() => config);
 };
 
@@ -53,7 +52,7 @@ it('renders the profile page', async () => {
 
 it('renders the opens the dialog modal', async () => {
   mockUseRouter({ query: { id: '123' } });
-  const { getByText, queryByText, getByRole } = render(<Profile />);
+  const { getByText, queryByText } = render(<Profile />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
   await waitForElementToBeRemoved(() => getByText(/loading profile/i));
