@@ -3,11 +3,11 @@ import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { createMemberTrackingRecord } from '../../../repositories/memberTrackingRepo';
-import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
+import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource } from '../../../types/global';
 
 async function memberTrackingRecordIndexHandler(
-  req: NextApiRequestWithAuthorization<UserWithRole, MemberTrackingRecord>,
+  req: NextApiRequestWithAuthorization<LoggedInUser, MemberTrackingRecord>,
   res: NextApiResponse
 ) {
   const { body, method } = req;

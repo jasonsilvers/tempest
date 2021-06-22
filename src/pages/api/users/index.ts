@@ -1,10 +1,9 @@
 import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied } from '../../../middleware/utils';
-import { findUserByDodId, findUsers, UserWithRole } from '../../../repositories/userRepo';
+import { findUserByDodId, findUsers, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource } from '../../../types/global';
-
-export const usersApiHandler = async (req: NextApiRequestWithAuthorization<UserWithRole>, res: NextApiResponse) => {
+const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;
 
   const ac = await getAc();

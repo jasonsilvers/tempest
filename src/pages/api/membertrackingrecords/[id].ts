@@ -1,6 +1,6 @@
 import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { findUserByDodId, UserWithRole } from '../../../repositories/userRepo';
+import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { findMemberTrackingRecordById } from '../../../repositories/memberTrackingRepo';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
@@ -14,7 +14,7 @@ interface ITempestMemberTrackingRecordApiRequest<T, B = unknown> extends NextApi
 const INCLUDE_TRACKING_ITEM = true;
 
 async function memberTrackingRecordIdHandler(
-  req: ITempestMemberTrackingRecordApiRequest<UserWithRole>,
+  req: ITempestMemberTrackingRecordApiRequest<LoggedInUser>,
   res: NextApiResponse
 ) {
   const {

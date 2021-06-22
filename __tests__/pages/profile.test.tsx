@@ -3,6 +3,7 @@ import Profile, { getStaticPaths, getStaticProps } from '../../src/pages/Profile
 import 'whatwg-fetch';
 import { server } from '../utils/mocks/msw';
 import * as nextRouter from 'next/router';
+import { rest } from 'msw';
 
 beforeAll(() => {
   server.listen({
@@ -50,7 +51,22 @@ it('renders the profile page', async () => {
   await waitFor(() => expect(getByText(/jones bob/i)).toBeInTheDocument());
 });
 
-it('renders the opens the dialog modal', async () => {
+it('renders  opens the dialog modal', async () => {
+  server.use(
+    rest.get('/api/trackingitems', (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json([
+          {
+            userId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+            trackingItemId: 2,
+            isActive: true,
+          },
+        ])
+      );
+    })
+  );
+
   mockUseRouter({ query: { id: '123' } });
   const { getByText, queryByText } = render(<Profile />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
