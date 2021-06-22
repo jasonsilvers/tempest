@@ -47,10 +47,12 @@ test('should not allow post', async () => {
 });
 
 test('should return permission denied with bad grants', async () => {
+  const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   mockMethodAndReturn(findUsers, [userFromDb]);
   mockMethodAndReturn(findGrants, null);
   const { status } = await testNextApi.get(userHandler);
   expect(status).toEqual(500);
+  expect(consoleSpy).toHaveBeenCalled();
 });
 test('should return permission denied with bad grants', async () => {
   mockMethodAndReturn(findUserByDodId, {
