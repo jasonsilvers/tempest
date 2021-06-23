@@ -1,11 +1,13 @@
 # Dependencies
 FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/ironbank/nodejs14:14.16.0 AS dependencies
+USER root
 RUN mkdir -p ${HOME}/deps
 WORKDIR ${HOME}/deps
 ENV NODE_ENV=production
 
 COPY package.json package-lock.json .npmrc ./
 RUN npm ci --no-fund --no-audit 
+USER appuser
 
 # Build artifacts
 # ARG NEXT_PUBLIC_MAPBOX_TOKEN
@@ -21,10 +23,10 @@ COPY ./src package.json tsconfig.json tailwind.config.js .babelrc.js next-env.d.
 RUN npx prisma generate
 RUN npm run build:seed
 RUN npm run build
+USER appuser
 
 # Nextjs server
 FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/base-image/harden-nodejs14:14.16.0 AS application
-
 USER appuser
 WORKDIR /app
 
@@ -45,6 +47,6 @@ ENV NODE_ENV=production
 ENV PORT 8080
 ENV NODE_PATH=.
 EXPOSE 8080
-
+USER appuser
 # REQURIES PRISMA BE IN prod DEPEDENCIES
-CMD ./startup.sh
+CMD ["sh", "startup.sh"]
