@@ -2,7 +2,7 @@ import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 import MuiDialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
@@ -12,6 +12,8 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Fab from '@material-ui/core/Fab';
+import ToolTip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
 
 const TempestPaper = tw.div`bg-primary text-white w-64 pl-6 pt-9`;
 
@@ -40,6 +42,16 @@ const LoadingOverlay = () => {
   );
 };
 
+const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} classes={{ popper: className }} />)`
+  & .MuiTooltip-tooltip {
+    background: #dedede;
+    color: black;
+  }
+  & .MuiTooltip-arrow {
+    color: #dedede;
+  }
+`;
+
 export {
   TempestDrawer,
   IconButton,
@@ -57,6 +69,8 @@ export {
   Fab,
   Drawer,
   TempestSkeleton,
+  TempestToolTip,
+  Zoom,
 };
 
 export type { TempestModalProps };
