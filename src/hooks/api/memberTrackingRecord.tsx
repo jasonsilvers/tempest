@@ -2,6 +2,7 @@ import { MemberTrackingRecord } from '.prisma/client';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RecordWithTrackingItem } from '../../components/Records/RecordRow';
+import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
 import { getCategory } from '../../utils/Status';
 import { mtiQueryKeys } from './memberTrackingItem';
 
@@ -14,7 +15,7 @@ export const mtrQueryKeys = {
 };
 
 export const useMemberTrackingRecord = (memberTrackingRecordId: number) => {
-  return useQuery<MemberTrackingRecord>(
+  return useQuery<MemberTrackingRecordWithUsers>(
     mtrQueryKeys.memberTrackingRecord(memberTrackingRecordId),
     () =>
       axios.get(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}/${memberTrackingRecordId}`).then((response) => response.data),

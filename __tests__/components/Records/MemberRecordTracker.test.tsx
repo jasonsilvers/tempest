@@ -26,10 +26,18 @@ afterEach(() => {
 // // Clean up after the tests are finished.
 afterAll(() => server.close());
 
-const testUser: Partial<User> = {
+const testTrainee: Partial<User> = {
   id: '123',
   firstName: 'bob',
   lastName: 'jones',
+  rank: 'SSgt/E-5',
+};
+
+const testAuthority: Partial<User> = {
+  id: '321',
+  firstName: 'mark',
+  lastName: 'twain',
+  rank: 'TSgt/E-6',
 };
 
 const fireSafetyItem: TrackingItem = {
@@ -62,7 +70,7 @@ test('should render a record requiring signature - authority signed', async () =
       trackingItemId: 1,
       userId: '123',
       trackingItem: fireSafetyItem,
-      user: testUser as User,
+      user: testTrainee as User,
       memberTrackingRecords: [
         {
           id: 1,
@@ -74,21 +82,21 @@ test('should render a record requiring signature - authority signed', async () =
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs().toDate(),
           traineeSignedDate: null,
-          trainee: null,
-          authority: null,
+          trainee: testTrainee as User,
+          authority: testAuthority as User,
         },
       ],
     },
   ];
 
   server.use(
-    memberTrackingItemsGet(testUser, memberTrackingItems_authSigned),
+    memberTrackingItemsGet(testTrainee, memberTrackingItems_authSigned),
     memberTrackingItemGet(memberTrackingItems_authSigned[0]),
     memberTrackingRecordGet(memberTrackingItems_authSigned[0].memberTrackingRecords[0])
   );
 
   const { getByText, getByRole } = render(
-    <MemberRecordTracker userId={testUser.id} title="Test Records">
+    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -111,9 +119,9 @@ test('should render a record requiring signature - trainee signed', async () => 
     {
       isActive: true,
       trackingItemId: 1,
-      userId: testUser.id,
+      userId: testTrainee.id,
       trackingItem: fireSafetyItem,
-      user: testUser as User,
+      user: testTrainee as User,
       memberTrackingRecords: [
         {
           id: 2,
@@ -125,7 +133,7 @@ test('should render a record requiring signature - trainee signed', async () => 
           authoritySignedDate: null,
           completedDate: dayjs().toDate(),
           traineeSignedDate: dayjs().toDate(),
-          trainee: null,
+          trainee: testTrainee as User,
           authority: null,
         },
       ],
@@ -133,13 +141,13 @@ test('should render a record requiring signature - trainee signed', async () => 
   ];
 
   server.use(
-    memberTrackingItemsGet(testUser, memberTrackingItems_traineeSigned),
+    memberTrackingItemsGet(testTrainee, memberTrackingItems_traineeSigned),
     memberTrackingItemGet(memberTrackingItems_traineeSigned[0]),
     memberTrackingRecordGet(memberTrackingItems_traineeSigned[0].memberTrackingRecords[0])
   );
 
   const { getByText, getByRole } = render(
-    <MemberRecordTracker userId={testUser.id} title="Test Records">
+    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -161,9 +169,9 @@ test('should render a record that is done', async () => {
     {
       isActive: true,
       trackingItemId: 1,
-      userId: testUser.id,
+      userId: testTrainee.id,
       trackingItem: fireSafetyItem,
-      user: testUser as User,
+      user: testTrainee as User,
       memberTrackingRecords: [
         {
           id: 3,
@@ -175,21 +183,21 @@ test('should render a record that is done', async () => {
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs().toDate(),
           traineeSignedDate: dayjs().toDate(),
-          trainee: null,
-          authority: null,
+          trainee: testTrainee as User,
+          authority: testAuthority as User,
         },
       ],
     },
   ];
 
   server.use(
-    memberTrackingItemsGet(testUser, memberTrackingItems_done),
+    memberTrackingItemsGet(testTrainee, memberTrackingItems_done),
     memberTrackingItemGet(memberTrackingItems_done[0]),
     memberTrackingRecordGet(memberTrackingItems_done[0].memberTrackingRecords[0])
   );
 
   const { getByText } = render(
-    <MemberRecordTracker userId={testUser.id} title="Test Records">
+    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -215,9 +223,9 @@ test('should render a record that is coming due', async () => {
     {
       isActive: true,
       trackingItemId: 1,
-      userId: testUser.id,
+      userId: testTrainee.id,
       trackingItem: fireSafetyItem,
-      user: testUser as User,
+      user: testTrainee as User,
       memberTrackingRecords: [
         {
           id: 3,
@@ -231,21 +239,21 @@ test('should render a record that is coming due', async () => {
             .subtract(365 - 10, 'days')
             .toDate(),
           traineeSignedDate: dayjs().toDate(),
-          trainee: null,
-          authority: null,
+          trainee: testTrainee as User,
+          authority: testAuthority as User,
         },
       ],
     },
   ];
 
   server.use(
-    memberTrackingItemsGet(testUser, memberTrackingItems_upcoming),
+    memberTrackingItemsGet(testTrainee, memberTrackingItems_upcoming),
     memberTrackingItemGet(memberTrackingItems_upcoming[0]),
     memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
   );
 
   const { getByText } = render(
-    <MemberRecordTracker userId={testUser.id} title="Test Records">
+    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -270,9 +278,9 @@ test('should render a record that is overdue', async () => {
     {
       isActive: true,
       trackingItemId: 1,
-      userId: testUser.id,
+      userId: testTrainee.id,
       trackingItem: fireSafetyItem,
-      user: testUser as User,
+      user: testTrainee as User,
       memberTrackingRecords: [
         {
           id: 3,
@@ -284,21 +292,21 @@ test('should render a record that is overdue', async () => {
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs().subtract(366, 'days').toDate(),
           traineeSignedDate: dayjs().toDate(),
-          trainee: null,
-          authority: null,
+          trainee: testTrainee as User,
+          authority: testAuthority as User,
         },
       ],
     },
   ];
 
   server.use(
-    memberTrackingItemsGet(testUser, memberTrackingItems_upcoming),
+    memberTrackingItemsGet(testTrainee, memberTrackingItems_upcoming),
     memberTrackingItemGet(memberTrackingItems_upcoming[0]),
     memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
   );
 
   const { getByText } = render(
-    <MemberRecordTracker userId={testUser.id} title="Test Records">
+    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -323,9 +331,9 @@ test('should sign record as trainee and mark as done', async () => {
     {
       isActive: true,
       trackingItemId: 1,
-      userId: testUser.id,
+      userId: testTrainee.id,
       trackingItem: fireSafetyItem,
-      user: testUser as User,
+      user: testTrainee as User,
       memberTrackingRecords: [
         {
           id: 3,
@@ -337,8 +345,8 @@ test('should sign record as trainee and mark as done', async () => {
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs().toDate(),
           traineeSignedDate: null,
-          trainee: null,
-          authority: null,
+          trainee: testTrainee as User,
+          authority: testAuthority as User,
         },
       ],
     },
@@ -354,13 +362,13 @@ test('should sign record as trainee and mark as done', async () => {
   ];
 
   server.use(
-    memberTrackingItemsGet(testUser, memberTrackingItems_upcoming),
+    memberTrackingItemsGet(testTrainee, memberTrackingItems_upcoming),
     memberTrackingItemGet(memberTrackingItems_upcoming[0]),
     memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
   );
 
   const { getByText, getByRole, queryByText } = render(
-    <MemberRecordTracker userId={testUser.id} title="Test Records">
+    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -374,7 +382,7 @@ test('should sign record as trainee and mark as done', async () => {
   const signatureButton = getByRole('signature_button');
 
   server.use(
-    memberTrackingItemsGet(testUser, memberTrackingItems_Done),
+    memberTrackingItemsGet(testTrainee, memberTrackingItems_Done),
     memberTrackingItemGet(memberTrackingItems_Done[0]),
     memberTrackingRecordGet(memberTrackingItems_Done[0].memberTrackingRecords[0]),
     rest.post('/api/membertrackingrecords/*', (req, res, ctx) => {
@@ -389,6 +397,8 @@ test('should sign record as trainee and mark as done', async () => {
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs().toDate(),
           traineeSignedDate: dayjs().toDate(),
+          trainee: testTrainee as User,
+          authority: testAuthority as User,
         })
       );
     })

@@ -12,6 +12,9 @@ import { useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRec
 import { LoggedInUser as LoggedInUserType } from '../../repositories/userRepo';
 import { ActionButton, DisabledButton, TableData } from './TwinMacro/Twin';
 
+import RecordSignatureToolTip from './RecordSignatureToolTip';
+import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
+
 /**
  * Function to determine render for the Trainee Signature Block
  *
@@ -22,7 +25,7 @@ import { ActionButton, DisabledButton, TableData } from './TwinMacro/Twin';
  */
 
 const getTraineeSignature = (
-  memberTrackingRecord: MemberTrackingRecord,
+  memberTrackingRecord: MemberTrackingRecordWithUsers,
   signatureDate: Date,
   loggedInUser: User,
   signRecordFor: UseMutateFunction<
@@ -66,9 +69,13 @@ const getTraineeSignature = (
   if (loggedInUser) {
     return (
       <TableData tw="mr-6 align-middle">
-        <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord.traineeSignedDate).format(
-          'DD/MM/YY'
-        )}`}</DisabledButton>
+        <RecordSignatureToolTip
+          traineeSignature={{ signee: memberTrackingRecord.trainee, date: memberTrackingRecord.traineeSignedDate }}
+        >
+          <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord.traineeSignedDate).format(
+            'DD/MM/YY'
+          )}`}</DisabledButton>
+        </RecordSignatureToolTip>
       </TableData>
     );
   }
@@ -77,20 +84,27 @@ const getTraineeSignature = (
 const RecordSignature: React.FC<{
   authoritySignedDate: Date;
   traineeSignedDate: Date;
-  memberTrackingRecord: MemberTrackingRecord;
+  memberTrackingRecord: MemberTrackingRecordWithUsers;
 }> = ({ authoritySignedDate, traineeSignedDate, memberTrackingRecord }) => {
   const { user: LoggedInUser } = useUser<LoggedInUserType>();
   const { enqueueSnackbar } = useSnackbar();
   const { mutate, isLoading } = useUpdateMemberTrackingRecord('sign_trainee');
-
+  const { trainee, authority } = memberTrackingRecord;
   if (isLoading && !traineeSignedDate) {
     return <CircularProgress tw="ml-2" size={18} />;
   }
 
   if (authoritySignedDate && traineeSignedDate) {
     return (
-      <TableData tw="mr-20 color['#7B7B7B'] opacity-60">
-        Signatures Present <DoneAllIcon tw="ml-3 color['#DADADA']" />
+      <TableData tw="ml-auto mr-20 color['#7B7B7B'] opacity-60">
+        <RecordSignatureToolTip
+          traineeSignature={{ signee: trainee, date: memberTrackingRecord.authoritySignedDate }}
+          authoritySignature={{ signee: authority, date: memberTrackingRecord.traineeSignedDate }}
+        >
+          <div>
+            Signatures Present <DoneAllIcon tw="ml-3 color['#DADADA']" />
+          </div>
+        </RecordSignatureToolTip>
       </TableData>
     );
   }

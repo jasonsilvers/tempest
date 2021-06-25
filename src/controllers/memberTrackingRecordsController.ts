@@ -6,6 +6,7 @@ import { getAc, permissionDenied, recordNotFound } from '../middleware/utils';
 import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../repositories/memberTrackingRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { EResource, ITempestApiError } from '../types/global';
+import { filterObject } from '../utils/FilterObject';
 
 type MemberTrackingRecordsAction = (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
@@ -47,7 +48,7 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
     return permissionDenied(res);
   }
 
-  let updatedRecord: MemberTrackingRecord;
+  let updatedRecord: typeof recordFromDb;
 
   if (verb === EMtrVerb.SIGN_TRAINEE) {
     if (req.user.id === recordFromDb.authorityId) {
@@ -70,7 +71,9 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
     };
   }
 
-  const updatedRecordFromDb = await updateMemberTrackingRecord(memberTrackingRecordId, updatedRecord);
+  const filteredRecord = filterObject(updatedRecord, ['authority', 'trainee']) as MemberTrackingRecord;
+
+  const updatedRecordFromDb = await updateMemberTrackingRecord(memberTrackingRecordId, filteredRecord);
 
   res.status(200).json(updatedRecordFromDb);
 };

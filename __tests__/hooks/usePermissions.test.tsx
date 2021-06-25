@@ -67,11 +67,7 @@ test('sets granted to false when ac.can fails', async () => {
 
   await waitForValueToChange(() => result.current.ac);
 
-  const permission = result.current.permissionCheck(
-    'NOROLEINGRANTS',
-    EFuncAction.READ,
-    EResource.MEMBER_TRACKING_RECORD
-  );
+  const permission = result.current.permissionCheck('norole', EFuncAction.READ, EResource.MEMBER_TRACKING_RECORD);
 
   waitForNextUpdate();
 

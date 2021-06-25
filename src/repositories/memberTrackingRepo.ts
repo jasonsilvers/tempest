@@ -1,6 +1,7 @@
 import { MemberTrackingItem, MemberTrackingRecord, Prisma } from '.prisma/client';
 import prisma from '../prisma/prisma';
 import { ECategories } from '../types/global';
+import { filterObject } from '../utils/FilterObject';
 
 export const updateMemberTrackingRecord = async (id: number, memberTrackingRecord: MemberTrackingRecord) => {
   return prisma.memberTrackingRecord.update({
@@ -10,7 +11,7 @@ export const updateMemberTrackingRecord = async (id: number, memberTrackingRecor
 };
 
 export const deleteMemberTrackingRecord = async (id: number) => {
-  return await prisma.memberTrackingRecord.delete({
+  return prisma.memberTrackingRecord.delete({
     where: {
       id,
     },
@@ -18,7 +19,7 @@ export const deleteMemberTrackingRecord = async (id: number) => {
 };
 
 export const findMemberTrackingRecords = async (trackingItemId: number, userId: string) => {
-  return await prisma.memberTrackingRecord.findMany({
+  return prisma.memberTrackingRecord.findMany({
     where: {
       memberTrackingItems: {
         userId,
@@ -28,13 +29,17 @@ export const findMemberTrackingRecords = async (trackingItemId: number, userId: 
   });
 };
 
+export type MemberTrackingRecordWithUsers = Prisma.PromiseReturnType<typeof findMemberTrackingRecordById>;
+
 export const findMemberTrackingRecordById = async (id: number, withTrackingItem = false) => {
-  return await prisma.memberTrackingRecord.findUnique({
+  return prisma.memberTrackingRecord.findUnique({
     where: {
       id,
     },
     include: {
       trackingItem: withTrackingItem,
+      authority: true,
+      trainee: true,
     },
   });
 };
@@ -54,9 +59,9 @@ export const createMemberTrackingRecord = async (
       trackingItemId: newMtr.trackingItemId,
     },
   });
-
+  const filteredData = filterObject(newMtr, ['trackingItemId', 'traineeId']);
   const newMtrData: Prisma.MemberTrackingRecordCreateInput = {
-    ...newMtr,
+    ...filteredData,
     order: count + 1,
     memberTrackingItems: {
       connect: {
@@ -67,9 +72,6 @@ export const createMemberTrackingRecord = async (
       },
     },
   };
-
-  delete newMtrData['trackingItemId'];
-  delete newMtrData['traineeId'];
 
   return prisma.memberTrackingRecord.create({
     data: newMtrData,
@@ -147,7 +149,7 @@ export const createMemberTrackingItem = async (newMti: MemberTrackingItem) => {
 export type MemberTrackingItemWithAll = Prisma.PromiseReturnType<typeof findMemberTrackingItemByIdAll>;
 
 export const findMemberTrackingItemByIdAll = async (userId: string, trackingItemId: number) => {
-  return await prisma.memberTrackingItem.findUnique({
+  return prisma.memberTrackingItem.findUnique({
     where: {
       userId_trackingItemId: { trackingItemId, userId },
     },

@@ -31,7 +31,7 @@ const Profile = () => {
   //   return () => resetCount();
   // }, []);
 
-  if (isLoading) {
+  if (isLoading || !id) {
     return <div>Loading Profile</div>;
   }
 
