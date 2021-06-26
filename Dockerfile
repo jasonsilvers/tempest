@@ -1,7 +1,7 @@
 # Dependencies
 FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/ironbank/nodejs14:14.16.0 AS dependencies
 USER root
-RUN mkdir -p ${HOME}/deps
+RUN mkdir -p "${HOME}"/deps
 WORKDIR ${HOME}/deps
 ENV NODE_ENV=production
 
@@ -13,16 +13,14 @@ USER appuser
 # ARG NEXT_PUBLIC_MAPBOX_TOKEN
 FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/ironbank/nodejs14:14.16.0 AS builder
 USER root
-RUN mkdir -p ${HOME}/build
+RUN mkdir -p "${HOME}"/build
 WORKDIR ${HOME}/build
 ENV NODE_ENV=production
 
 COPY --from=dependencies /home/node/deps/node_modules ./node_modules
 COPY ./src package.json tsconfig.json tailwind.config.js .babelrc.js next-env.d.ts ./
 
-RUN npx prisma generate
-RUN npm run build:seed
-RUN npm run build
+RUN npx prisma generate && npm run build:seed && npm run build
 USER appuser
 
 # Nextjs server
