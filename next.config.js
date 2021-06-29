@@ -14,6 +14,10 @@ module.exports = {
             key: 'x-content-type-options',
             value: 'nosniff',
           },
+          {
+            key: 'X-Frame-Options',
+            value: 'deny',
+          },
         ],
       },
     ];
