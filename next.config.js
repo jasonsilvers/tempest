@@ -5,6 +5,19 @@ module.exports = {
 
     return config;
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'x-content-type-options',
+            value: 'nosniff',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 //Comment above and uncomment below to run bundle analyzer on build
