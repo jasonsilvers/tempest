@@ -12,6 +12,18 @@ import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 
+type UsersDTO = {
+  users: LoggedInUser[];
+};
+
+type RolesDTO = {
+  roles: Role[];
+};
+
+type OrgsDTO = {
+  organizations: Organization[];
+};
+
 const Data = tw.div`font-light text-gray-400`;
 type RoleFormEvent = React.ChangeEvent<{ value: number }>;
 type OrgFormEvent = React.ChangeEvent<{ value: string }>;
@@ -19,12 +31,14 @@ type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 const UsersList = () => {
   const queryClient = useQueryClient();
   const usersListQuery = useQuery<LoggedInUser[]>('users', () =>
-    axios.get('/api/users').then((response) => response.data)
+    axios.get<UsersDTO>('/api/users').then((response) => response.data.users)
   );
 
-  const rolesListQuery = useQuery<Role[]>('roles', () => axios.get('/api/roles').then((response) => response.data));
+  const rolesListQuery = useQuery<Role[]>('roles', () =>
+    axios.get<RolesDTO>('/api/roles').then((response) => response.data.roles)
+  );
   const orgsListQuery = useQuery<Organization[]>('organizations', () =>
-    axios.get('/api/organizations').then((response) => response.data)
+    axios.get<OrgsDTO>('/api/organizations').then((response) => response.data.organizations)
   );
 
   const mutateUser = useMutation<User, unknown, User>(

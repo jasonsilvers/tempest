@@ -17,7 +17,7 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
       }
 
       const users = await findUsers();
-      res.json(users);
+      res.json({ users });
       break;
     }
 

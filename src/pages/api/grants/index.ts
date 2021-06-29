@@ -9,7 +9,7 @@ const grantsHandler = async (req: NextApiRequestWithAuthorization<User>, res: Ne
 
   const grants = await findGrants();
 
-  res.json(grants);
+  res.json({ grants });
 };
 
 export default withApiAuth(grantsHandler, findUserByDodId);

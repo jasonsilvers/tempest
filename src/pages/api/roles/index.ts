@@ -18,7 +18,7 @@ const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, 
 
   const roles = await prisma.role.findMany();
 
-  res.json(roles);
+  res.json({ roles });
 };
 
 export default withApiAuth(rolesHandler, findUserByDodId);

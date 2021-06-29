@@ -7,14 +7,22 @@ import { useQuery } from 'react-query';
 import { LoggedInUser } from '../repositories/userRepo';
 import { EFuncAction, EResource } from '../types/global';
 
+type GrantsDTO = {
+  grants: Grant[];
+};
+
 const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<LoggedInUser>();
   let isLoading = true;
 
-  const grantsQuery = useQuery<Grant[]>('grants', () => axios.get('/api/grants').then((result) => result.data), {
-    enabled: !!user,
-    staleTime: 100000,
-  });
+  const grantsQuery = useQuery<Grant[]>(
+    'grants',
+    () => axios.get<GrantsDTO>('/api/grants').then((result) => result.data.grants),
+    {
+      enabled: !!user,
+      staleTime: 100000,
+    }
+  );
 
   let ac: AccessControl;
 
