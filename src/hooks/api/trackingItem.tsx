@@ -1,6 +1,7 @@
 import { TrackingItem } from '@prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { TrackingItemsDTO } from '../../types/global';
 
 const TRACKING_ITEM_RESOURCE = 'trackingitems';
 
@@ -10,7 +11,7 @@ export const tiQueryKeys = {
 
 const useTrackingItems = () => {
   return useQuery<TrackingItem[]>(tiQueryKeys.memberTrackingItems(), async () => {
-    return axios.get(`/api/${TRACKING_ITEM_RESOURCE}`).then((result) => result.data);
+    return axios.get<TrackingItemsDTO>(`/api/${TRACKING_ITEM_RESOURCE}`).then((result) => result.data.trackingItems);
   });
 };
 

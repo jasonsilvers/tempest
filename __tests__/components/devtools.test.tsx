@@ -28,23 +28,25 @@ beforeEach(() => {
     rest.get('/api/users', (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json([
-          {
-            id: '123',
-            firstName: 'bob',
-            lastName: 'jones',
-            organizationId: '1',
-            role: { id: 22, name: ERole.ADMIN },
-          },
-        ])
+        ctx.json({
+          users: [
+            {
+              id: '123',
+              firstName: 'bob',
+              lastName: 'jones',
+              organizationId: '1',
+              role: { id: 22, name: ERole.ADMIN },
+            },
+          ],
+        })
       );
     }),
 
     rest.get('/api/roles', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json([{ id: 22, name: ERole.ADMIN }]));
+      return res(ctx.status(200), ctx.json({ roles: [{ id: 22, name: ERole.ADMIN }] }));
     }),
     rest.get('/api/organizations', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json([{ id: '1', name: '15th MDG', parentId: null }]));
+      return res(ctx.status(200), ctx.json({ organizations: [{ id: '1', name: '15th MDG', parentId: null }] }));
     })
   );
 });

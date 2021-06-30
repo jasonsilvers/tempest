@@ -37,7 +37,7 @@ test('should return users', async () => {
   mockMethodAndReturn(findUsers, [userFromDb]);
   const { status, data } = await testNextApi.get(userHandler);
   expect(status).toEqual(200);
-  expect(data).toStrictEqual([userFromDb]);
+  expect(data).toStrictEqual({ users: [userFromDb] });
 });
 
 test('should not allow post', async () => {

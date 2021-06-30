@@ -19,10 +19,10 @@ export const handlers = [
   }),
 
   rest.get('/api/grants', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(grants));
+    return res(ctx.status(200), ctx.json({ grants }));
   }),
   rest.get('/api/trackingitems', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json([]));
+    return res(ctx.status(200), ctx.json({ trackingItems: [] }));
   }),
   rest.get('/api/users/*/membertrackingitems', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json([]));

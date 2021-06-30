@@ -3,9 +3,9 @@ import { withApiAuth, NextApiRequestWithAuthorization } from '@tron/nextjs-auth-
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import prisma from '../../../prisma/prisma';
 import { getAc, permissionDenied } from '../../../middleware/utils';
-import { EResource } from '../../../types/global';
+import { EResource, RolesDTO } from '../../../types/global';
 
-const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
+const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse<RolesDTO>) => {
   res.statusCode = 200;
 
   const ac = await getAc();
@@ -18,7 +18,7 @@ const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, 
 
   const roles = await prisma.role.findMany();
 
-  res.json(roles);
+  res.json({ roles });
 };
 
 export default withApiAuth(rolesHandler, findUserByDodId);

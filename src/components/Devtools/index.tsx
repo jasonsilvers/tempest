@@ -10,6 +10,7 @@ import { LoggedInUser } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
 import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
+import { UsersDTO, RolesDTO, OrgsDTO } from '../../types/global';
 import dayjs from 'dayjs';
 
 const Data = tw.div`font-light text-gray-400`;
@@ -19,12 +20,14 @@ type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 const UsersList = () => {
   const queryClient = useQueryClient();
   const usersListQuery = useQuery<LoggedInUser[]>('users', () =>
-    axios.get('/api/users').then((response) => response.data)
+    axios.get<UsersDTO>('/api/users').then((response) => response.data.users)
   );
 
-  const rolesListQuery = useQuery<Role[]>('roles', () => axios.get('/api/roles').then((response) => response.data));
+  const rolesListQuery = useQuery<Role[]>('roles', () =>
+    axios.get<RolesDTO>('/api/roles').then((response) => response.data.roles)
+  );
   const orgsListQuery = useQuery<Organization[]>('organizations', () =>
-    axios.get('/api/organizations').then((response) => response.data)
+    axios.get<OrgsDTO>('/api/organizations').then((response) => response.data.organizations)
   );
 
   const mutateUser = useMutation<User, unknown, User>(

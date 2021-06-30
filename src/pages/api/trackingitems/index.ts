@@ -14,7 +14,7 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<User>, r
 
   const trackingItems = await prisma.trackingItem.findMany();
 
-  res.status(200).json(trackingItems);
+  res.status(200).json({ trackingItems });
 };
 
 export default trackingItemHandler;

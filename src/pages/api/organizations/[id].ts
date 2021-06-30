@@ -68,7 +68,7 @@ export const organizationIdApiHandler = async (
     // If this end point is hit with anything other than GET or PUT return a 405 error
     default:
       res.setHeader('Allow', ['GET']);
-      res.status(405).json({ messgae: `Method ${method} Not Allowed` });
+      res.status(405).json({ message: `Method ${method} Not Allowed` });
   }
 };
 

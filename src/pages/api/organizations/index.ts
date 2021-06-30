@@ -19,7 +19,7 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
       }
 
       const organizations = await findOrganizations();
-      res.status(200).json(organizations);
+      res.status(200).json({ organizations });
       break;
     }
     case 'POST': {
