@@ -9,7 +9,7 @@ const grantsHandler = async (req: NextApiRequestWithAuthorization<User>, res: Ne
 
   var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-  console.log(ip);
+  console.log('THE IP ADDRESS IS------------', ip);
 
   const grants = await findGrants();
 
