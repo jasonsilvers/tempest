@@ -1,4 +1,5 @@
-import { Role, Organization, Grant, TrackingItem } from '@prisma/client';
+import { Role, Organization, TrackingItem } from '@prisma/client';
+import { Grants } from '../repositories/grantsRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 
 export enum ERole {
@@ -87,7 +88,7 @@ export type OrgsDTO = {
 };
 
 export type GrantsDTO = {
-  grants: Grant[];
+  grants: Grants;
 };
 
 export type TrackingItemsDTO = {
