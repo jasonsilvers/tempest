@@ -1,10 +1,7 @@
 import { TrackingItem } from '@prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-
-type TrackingItemsDTO = {
-  trackingItems: TrackingItem[];
-};
+import { TrackingItemsDTO } from '../../types/global';
 
 const TRACKING_ITEM_RESOURCE = 'trackingitems';
 
