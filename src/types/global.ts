@@ -1,3 +1,6 @@
+import { Role, Organization } from '@prisma/client';
+import { LoggedInUser } from '../repositories/userRepo';
+
 export enum ERole {
   ADMIN = 'admin',
   MEMBER = 'member',
@@ -70,3 +73,19 @@ export enum EUserResources {
   MEMBER_TRACKING_ITEMS = 'membertrackingitems',
   MEMBER_TRACKING_RECORDS = 'membertrackingrecords',
 }
+
+export type UsersDTO = {
+  users: LoggedInUser[];
+};
+
+export type RolesDTO = {
+  roles: Role[];
+};
+
+export type OrgsDTO = {
+  organizations: Organization[];
+};
+
+export type GrantsDTO = {
+  grants: Grant[];
+};

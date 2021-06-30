@@ -40,7 +40,7 @@ test('should return organizations', async () => {
   mockMethodAndReturn(findOrganizations, testOrganizations);
   const { status, data } = await testNextApi.get(organizationApiHandler);
   expect(status).toBe(200);
-  expect(data).toStrictEqual(testOrganizations);
+  expect(data).toStrictEqual({ organizations: testOrganizations });
 });
 
 test('should return 401 if not authorized', async () => {

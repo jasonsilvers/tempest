@@ -27,7 +27,7 @@ test('should return grants', async () => {
   const { status, data } = await testNextApi.get(grantsHandler);
 
   expect(status).toBe(200);
-  expect(data).toStrictEqual(grants);
+  expect(data).toStrictEqual({ grants });
 });
 test('should return 401 if not authorized', async () => {
   const { status } = await testNextApi.get(grantsHandler, { withJwt: false });

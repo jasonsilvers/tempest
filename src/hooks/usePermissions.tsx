@@ -5,11 +5,7 @@ import axios from 'axios';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import { LoggedInUser } from '../repositories/userRepo';
-import { EFuncAction, EResource } from '../types/global';
-
-type GrantsDTO = {
-  grants: Grant[];
-};
+import { EFuncAction, EResource, GrantsDTO } from '../types/global';
 
 const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<LoggedInUser>();
