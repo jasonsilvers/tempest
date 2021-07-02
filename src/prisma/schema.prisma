@@ -32,9 +32,8 @@ model User {
   afsc                     String?
   dutyTitle                String?
   address                  String?
-
-
-
+  Log Log[]
+  
   @@map(name: "user")
 }
 
@@ -148,4 +147,19 @@ model Grant {
   role          String   @map("role_name")
 
   @@map(name: "grant")
+}
+
+enum LogEventType {
+  PERMISSION_DENIED
+  NOT_AUTHORIZED
+  NONE
+}
+
+model Log {
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime?    @default(now()) @map("created_at")
+  eventType LogEventType @default(NONE)
+  details   String
+  user      User         @relation(fields: [userId], references: [id])
+  userId    String       @db.Uuid
 }
