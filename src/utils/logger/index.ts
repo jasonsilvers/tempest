@@ -3,6 +3,7 @@ import log from 'loglevel';
 import { LoggedInUser } from '../../repositories/userRepo';
 
 const originalFactory = log.methodFactory;
+/*eslint-disable */
 const level = (process.env.LOG_LEVEL as any) || log.levels.INFO;
 
 type TempestLog = log.RootLogger & { persist: (message: string, eventType: LogEventType) => void };

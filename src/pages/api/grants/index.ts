@@ -3,7 +3,6 @@ import { withApiAuth, NextApiRequestWithAuthorization } from '@tron/nextjs-auth-
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { findGrants } from '../../../repositories/grantsRepo';
 import { GrantsDTO } from '../../../types/global';
-import { logFactory } from '../../../utils/logger';
 
 const grantsHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse<GrantsDTO>) => {
   res.statusCode = 200;
