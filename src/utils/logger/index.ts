@@ -1,6 +1,5 @@
 import { LogEventType } from '@prisma/client';
 import log from 'loglevel';
-import prisma from '../../prisma/prisma';
 import { LoggedInUser } from '../../repositories/userRepo';
 
 const originalFactory = log.methodFactory;
@@ -13,21 +12,15 @@ function logFactory(user: LoggedInUser): TempestLog {
   log.methodFactory = function (methodName, logLevel, logName) {
     const rawMethod = originalFactory(methodName, logLevel, logName);
 
-    return function (message) {
-      rawMethod(`Tempest----For User: ${user.id}-----${message}`);
-    };
+    if (methodName === 'warn') {
+      return function (message) {
+        rawMethod(`Tempest----For User: ${user.id}-----${message}`);
+      };
+    }
+
+    return rawMethod;
   };
   log.setLevel(level);
-
-  (log as TempestLog).persist = async (message: string, eventType: LogEventType) => {
-    await prisma.log.create({
-      data: {
-        userId: user.id,
-        eventType: eventType,
-        details: message,
-      },
-    });
-  };
 
   return log as TempestLog;
 }
