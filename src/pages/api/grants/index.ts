@@ -9,7 +9,7 @@ const grantsHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>,
   res.statusCode = 200;
 
   const log = logFactory(req.user);
-  log.info('Accessing Grants');
+  log.info('API Grants');
 
   const grants = await findGrants();
 
