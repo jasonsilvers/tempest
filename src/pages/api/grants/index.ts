@@ -1,16 +1,15 @@
 import { NextApiResponse } from 'next';
 import { withApiAuth, NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { User } from '@prisma/client';
-import { findUserByDodId } from '../../../repositories/userRepo';
+import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { findGrants } from '../../../repositories/grantsRepo';
 import { GrantsDTO } from '../../../types/global';
+import { logFactory } from '../../../utils/logger';
 
-const grantsHandler = async (req: NextApiRequestWithAuthorization<User>, res: NextApiResponse<GrantsDTO>) => {
+const grantsHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse<GrantsDTO>) => {
   res.statusCode = 200;
 
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-
-  console.log('THE IP ADDRESS IS------------', ip);
+  const log = logFactory(req.user);
+  log.info('API Grants');
 
   const grants = await findGrants();
 

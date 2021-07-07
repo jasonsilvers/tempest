@@ -15,11 +15,18 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import Fab from '@material-ui/core/Fab';
 import ToolTip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
+import Paper from '@material-ui/core/Paper';
 
-const TempestPaper = tw.div`bg-primary text-white w-64 pl-6 pt-9`;
+const TPaper = styled(Paper)`
+  background-color: #2d2270;
+  width: 16rem;
+  padding-left: 1.5rem;
+  padding-top: 2.25rem;
+  color: white;
+`;
 
 const TempestDrawer = (props) => {
-  return <Drawer variant="permanent" PaperProps={{ component: TempestPaper }} {...props} />;
+  return <Drawer variant="permanent" PaperProps={{ component: TPaper }} {...props} />;
 };
 
 type TempestModalProps = {
