@@ -1,9 +1,9 @@
-import { Grant } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { AccessControl } from 'accesscontrol';
 import axios from 'axios';
 import { useCallback } from 'react';
 import { useQuery } from 'react-query';
+import { Grants } from '../repositories/grantsRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { EFuncAction, EResource, GrantsDTO } from '../types/global';
 
@@ -11,7 +11,7 @@ const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<LoggedInUser>();
   let isLoading = true;
 
-  const grantsQuery = useQuery<Grant[]>(
+  const grantsQuery = useQuery<Grants>(
     'grants',
     () => axios.get<GrantsDTO>('/api/grants').then((result) => result.data.grants),
     {

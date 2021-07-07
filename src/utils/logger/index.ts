@@ -1,29 +1,27 @@
-import { LogEventType } from '@prisma/client';
-import log from 'loglevel';
+import log, { LogLevelDesc } from 'loglevel';
 import { LoggedInUser } from '../../repositories/userRepo';
 
 const originalFactory = log.methodFactory;
 /*eslint-disable */
-const level = (process.env.LOG_LEVEL as any) || log.levels.INFO;
-
-type TempestLog = log.RootLogger & { persist: (message: string, eventType: LogEventType) => void };
+const level = (process.env.LOG_LEVEL as LogLevelDesc) || 'info';
 
 //factory that returns a logger with the user
-function logFactory(user: LoggedInUser): TempestLog {
+function logFactory(user: LoggedInUser) {
+  log.setLevel(level);
+
+  if (level === 'SILENT') {
+    return log;
+  }
+
   log.methodFactory = function (methodName, logLevel, logName) {
     const rawMethod = originalFactory(methodName, logLevel, logName);
 
-    if (methodName === 'warn') {
-      return function (message) {
-        rawMethod(`Tempest----For User: ${user.id}-----${message}`);
-      };
-    }
-
-    return rawMethod;
+    return function (message) {
+      rawMethod(`Tempest__+__User: ${user.id}-----${message}`);
+    };
   };
-  log.setLevel(level);
 
-  return log as TempestLog;
+  return log;
 }
 
 export { logFactory };
