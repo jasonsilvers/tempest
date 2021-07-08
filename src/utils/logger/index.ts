@@ -17,7 +17,7 @@ function logFactory(user: LoggedInUser) {
     const rawMethod = originalFactory(methodName, logLevel, logName);
 
     return function (message) {
-      rawMethod(`Tempest__+__User: ${user.id}-----${message}`);
+      rawMethod(`User: ${user.id} -- Message:${message}`);
     };
   };
 
