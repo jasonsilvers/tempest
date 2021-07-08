@@ -38,7 +38,9 @@ const ExcelPage = () => {
           accept={acceptableFiles.join(', ')}
           onChange={(e) => {
             const newFile = e.target.files[0];
-            if (acceptableFiles.some((value) => newFile.name.includes(value))) setFile(newFile);
+            if (acceptableFiles.some((value) => newFile.name.includes(value))) {
+              setFile(newFile);
+            }
           }}
         />
         <button type="submit" disabled={!file}>
