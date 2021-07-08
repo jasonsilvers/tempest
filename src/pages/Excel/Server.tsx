@@ -15,7 +15,7 @@ const ExcelPage = () => {
 
   return (
     <main>
-      <h1>Excel Upload Test Page</h1>
+      <h1>Excel Upload to Server Test Page</h1>
       <form id="uploadForm" encType="multipart/form-data" onSubmit={handleFileChange}>
         <input type="file" name="file" />
         <input type="submit" value="Upload" name="submit" />
