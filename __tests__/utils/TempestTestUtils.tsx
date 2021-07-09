@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { SnackbarProvider } from 'notistack';
 import { Button } from '../../src/lib/ui';
 import { LoggedInUser } from '../../src/repositories/userRepo';
+import userEvent from '@testing-library/user-event';
 
 const createTestQueryClient = () => {
   const queryClientInit = new QueryClient({
@@ -82,4 +83,4 @@ const render = (component: JSX.Element, { nextJSRoute = '/', push = jest.fn(), .
 
 export * from '@testing-library/react';
 // override React Testing Library's render with our own
-export { render, createWrapper, Wrapper, rtlRender, createTestQueryClient };
+export { render, createWrapper, Wrapper, rtlRender, createTestQueryClient, userEvent };
