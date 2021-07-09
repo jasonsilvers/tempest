@@ -21,6 +21,7 @@ export enum EResource {
   TRACKING_ITEM = 'trackingitem',
   USER = 'user',
   ROLE = 'role',
+  UPLOAD = 'upload',
 }
 
 export enum EAttribute {
