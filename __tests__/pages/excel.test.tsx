@@ -2,11 +2,8 @@ import { fireEvent, render, waitFor, userEvent, waitForElementToBeRemoved } from
 import Excel from '../../src/pages/Excel/index';
 import fs from 'fs';
 import { ERole } from '../../src/types/global';
-import { useTestUser } from '../utils/mocks/NextMocks';
 import { server, rest } from '../utils/mocks/msw';
 import 'whatwg-fetch';
-
-console.log(fs.realpathSync('./'));
 
 const blob = fs.readFileSync('__tests__/setup/test.xlsx');
 
@@ -26,8 +23,6 @@ afterAll(() => server.close());
 test('should upload excel file', async () => {
   server.use(
     rest.get('/api/login', (req, res, ctx) => {
-      console.log('returning user bob');
-
       return res(
         ctx.status(200),
         ctx.json({
@@ -64,8 +59,6 @@ test('should upload excel file', async () => {
 test('should not upload excel file based on file extension', async () => {
   server.use(
     rest.get('/api/login', (req, res, ctx) => {
-      console.log('returning user bob');
-
       return res(
         ctx.status(200),
         ctx.json({
