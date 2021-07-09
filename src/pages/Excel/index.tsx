@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Excel from 'exceljs';
 import fileToArrayBuffer from 'file-to-array-buffer';
+import { usePermissions } from '../../hooks/usePermissions';
+import { EFuncAction, EResource } from '../../types/global';
 
 // for controlling the files allowed in one place
 const acceptableFiles = ['.xlsx'];
@@ -13,17 +15,23 @@ const getA1Value = (workbook) => {
 const wb = new Excel.Workbook();
 
 const ExcelPage = () => {
+  const { role, isLoading, permissionCheck, user } = usePermissions();
   const [A1, setA1] = useState(null);
   const [file, setFile] = useState(null as File);
+
+  if (isLoading || !user) {
+    return <div>Loading excel page</div>;
+  }
+  const permission = permissionCheck(role, EFuncAction.CREATE_ANY, EResource.UPLOAD);
+
+  if (!permission?.granted) {
+    return <div>You do not have permission to the excel upload feature</div>;
+  }
 
   // handle File Change function to stream the file to exceljs
   const handleFileChange = async (e) => {
     e.preventDefault();
-    console.log('before buffer');
-
     const buffer = (await fileToArrayBuffer(file)) as Buffer;
-    console.log(buffer);
-
     wb.xlsx.load(buffer).then((workbook) => setA1(getA1Value(workbook)));
   };
 
