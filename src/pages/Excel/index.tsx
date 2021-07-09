@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Excel from 'exceljs';
+import fileToArrayBuffer from 'file-to-array-buffer';
 
 // for controlling the files allowed in one place
 const acceptableFiles = ['.xlsx'];
@@ -18,7 +19,11 @@ const ExcelPage = () => {
   // handle File Change function to stream the file to exceljs
   const handleFileChange = async (e) => {
     e.preventDefault();
-    const buffer = await file.arrayBuffer();
+    console.log('before buffer');
+
+    const buffer = (await fileToArrayBuffer(file)) as Buffer;
+    console.log(buffer);
+
     wb.xlsx.load(buffer).then((workbook) => setA1(getA1Value(workbook)));
   };
 
@@ -31,18 +36,21 @@ const ExcelPage = () => {
     <main>
       <h1>Excel Client Test Page</h1>
       <form id="uploadForm" encType="multipart/form-data" onSubmit={handleFileChange}>
-        <input
-          id="file_input"
-          type="file"
-          name="file"
-          accept={acceptableFiles.join(', ')}
-          onChange={(e) => {
-            const newFile = e.target.files[0];
-            if (acceptableFiles.some((value) => newFile.name.includes(value))) {
-              setFile(newFile);
-            }
-          }}
-        />
+        <div>
+          <input
+            id="file_input"
+            type="file"
+            name="file"
+            accept={acceptableFiles.join(', ')}
+            onChange={(e) => {
+              const newFile = e.target.files[0];
+              if (acceptableFiles.some((value) => newFile.name.includes(value))) {
+                setFile(newFile);
+              }
+            }}
+          />
+          <label htmlFor="file_input">Upload</label>
+        </div>
         <button type="submit" disabled={!file}>
           Submit
         </button>
