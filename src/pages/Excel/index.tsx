@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import Excel from 'exceljs';
 import fileToArrayBuffer from 'file-to-array-buffer';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -29,7 +29,7 @@ const ExcelPage = () => {
   }
 
   // handle File Change function to stream the file to exceljs
-  const handleFileChange = async (e) => {
+  const handleFileChange = async (e: FormEvent) => {
     e.preventDefault();
     const buffer = (await fileToArrayBuffer(file)) as Buffer;
     wb.xlsx.load(buffer).then((workbook) => setA1(getA1Value(workbook)));
@@ -50,7 +50,7 @@ const ExcelPage = () => {
             type="file"
             name="file"
             accept={acceptableFiles.join(', ')}
-            onChange={(e) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
               const newFile = e.target.files[0];
               if (acceptableFiles.some((value) => newFile.name.includes(value))) {
                 setFile(newFile);
