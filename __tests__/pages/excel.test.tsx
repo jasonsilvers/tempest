@@ -4,6 +4,7 @@ import fs from 'fs';
 import { ERole } from '../../src/types/global';
 import { useTestUser } from '../utils/mocks/NextMocks';
 import { server, rest } from '../utils/mocks/msw';
+import 'whatwg-fetch';
 
 console.log(fs.realpathSync('./'));
 
@@ -61,16 +62,41 @@ test('should upload excel file', async () => {
 });
 
 test('should not upload excel file based on file extension', async () => {
+  server.use(
+    rest.get('/api/login', (req, res, ctx) => {
+      console.log('returning user bob');
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          id: '123',
+          firstName: 'bob',
+          lastName: 'jones',
+          role: {
+            id: 22,
+            name: ERole.ADMIN,
+          },
+        })
+      );
+    })
+  );
+
   const excelFile = new File([blob], 'dummy excel.txt', {
     type: 'excel',
   });
 
   const { getByLabelText, getByText, queryByText } = render(<Excel />);
-
+  await waitForElementToBeRemoved(() => getByText(/loading/i));
   const input = getByLabelText('Upload') as HTMLInputElement;
   userEvent.upload(input, excelFile);
   expect(input.files[0]).toStrictEqual(excelFile);
   fireEvent.change(input);
   fireEvent.click(getByText(/Submit/i));
   expect(queryByText(/A1/i)).toBeFalsy();
+});
+
+test('should deny permissions for non admin users', async () => {
+  const { getByText, queryByText } = render(<Excel />);
+  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  expect(queryByText(/permission/i)).toBeTruthy();
 });
