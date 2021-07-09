@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor, userEvent, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, userEvent } from '../utils/TempestTestUtils';
 import Excel from '../../src/pages/Excel/index';
 import fs from 'fs';
 
