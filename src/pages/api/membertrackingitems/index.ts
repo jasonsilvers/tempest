@@ -1,5 +1,5 @@
 import { MemberTrackingItem } from '.prisma/client';
-import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import {
@@ -9,6 +9,7 @@ import {
   deleteMemberTrackingItemAction,
   EMemberTrackingItemIncludes,
 } from '../../../controllers/memberTrackingItemsController';
+import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 export interface ITempestMemberTrackingItemApiRequest<T> extends NextApiRequestWithAuthorization<T> {
   query: {
     userId: string;
@@ -47,4 +48,4 @@ async function memberTrackingItemHandler(
   }
 }
 
-export default withApiAuth(memberTrackingItemHandler, findUserByDodId);
+export default withErrorHandlingAndAuthorization(memberTrackingItemHandler, findUserByDodId);

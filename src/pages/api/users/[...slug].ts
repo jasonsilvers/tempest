@@ -1,7 +1,8 @@
 import { User } from '@prisma/client';
-import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
+import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 import {
   findUserByDodId,
   findUserByIdWithMemberTrackingItems,
@@ -60,4 +61,4 @@ async function userSlugHandler(
   }
 }
 
-export default withApiAuth(userSlugHandler, findUserByDodId);
+export default withErrorHandlingAndAuthorization(userSlugHandler, findUserByDodId);

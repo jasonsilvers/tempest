@@ -8,10 +8,10 @@ import { logFactory } from '../utils/logger';
 // the error bubbles up to this handler that sends the encoded error message as a response
 export class ApiError extends Error {
   readonly status: number;
-  readonly body: any;
+  readonly body: unknown;
   readonly name: string;
 
-  constructor({ status, body }: { status: number; body: any }) {
+  constructor({ status, body }: { status: number; body: unknown }) {
     super('ApiError');
     this.status = status;
     this.body = body;
@@ -53,6 +53,6 @@ export const withErrorHandling =
     }
   };
 
-export function withErrorHandlingAndAuthorization(func: NextApiHandler, getUserFunc: any) {
+export function withErrorHandlingAndAuthorization(func: NextApiHandler, getUserFunc: (unknown) => Promise<unknown>) {
   return withApiAuth(withErrorHandling(func), getUserFunc);
 }

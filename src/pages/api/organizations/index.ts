@@ -1,9 +1,10 @@
 import { NextApiResponse } from 'next';
-import { withApiAuth, NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { createOrganizations, findOrganizations } from '../../../repositories/organizationRepo';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
+import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 
 const organizationApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { body, method } = req;
@@ -45,4 +46,4 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
   }
 };
 
-export default withApiAuth(organizationApiHandler, findUserByDodId);
+export default withErrorHandlingAndAuthorization(organizationApiHandler, findUserByDodId);
