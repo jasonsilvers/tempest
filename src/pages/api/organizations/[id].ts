@@ -1,5 +1,5 @@
 import { NextApiResponse } from 'next';
-import { withApiAuth, NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { findOrganizationById } from '../../../repositories/organizationRepo';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
@@ -7,6 +7,7 @@ import { EResource } from '../../../types/global';
 import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
 import { Permission } from 'accesscontrol';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
+import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 
 interface ITempestOrganizationIdApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -72,4 +73,4 @@ export const organizationIdApiHandler = async (
   }
 };
 
-export default withApiAuth(organizationIdApiHandler, findUserByDodId);
+export default withErrorHandlingAndAuthorization(organizationIdApiHandler, findUserByDodId);

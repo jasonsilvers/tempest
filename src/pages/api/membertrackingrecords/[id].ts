@@ -1,9 +1,10 @@
-import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { findMemberTrackingRecordById } from '../../../repositories/memberTrackingRepo';
-import { getAc, permissionDenied } from '../../../middleware/utils';
+import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
+import { PermissionError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 
 interface ITempestMemberTrackingRecordApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -36,7 +37,7 @@ async function memberTrackingRecordIdHandler(
           : ac.can(req.user.role.name).readOwn(EResource.USER);
 
       if (!permission.granted) {
-        return permissionDenied(res);
+        throw new PermissionError();
       }
 
       res.status(200).json(memberTrackingRecord);
@@ -49,4 +50,4 @@ async function memberTrackingRecordIdHandler(
   }
 }
 
-export default withApiAuth(memberTrackingRecordIdHandler, findUserByDodId);
+export default withErrorHandlingAndAuthorization(memberTrackingRecordIdHandler, findUserByDodId);

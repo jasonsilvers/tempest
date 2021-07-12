@@ -1,8 +1,9 @@
 import { User } from '@prisma/client';
-import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { Permission } from 'accesscontrol';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
+import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 import { findUserByDodId, findUserById, updateUser, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
@@ -78,4 +79,4 @@ async function userQueryHandler(
   }
 }
 
-export default withApiAuth(userQueryHandler, findUserByDodId);
+export default withErrorHandlingAndAuthorization(userQueryHandler, findUserByDodId);

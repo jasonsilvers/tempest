@@ -1,6 +1,7 @@
-import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied } from '../../../middleware/utils';
+import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 import { findUserByDodId, findUsers, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource } from '../../../types/global';
 const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
@@ -28,4 +29,4 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
   }
 };
 
-export default withApiAuth(usersApiHandler, findUserByDodId);
+export default withErrorHandlingAndAuthorization(usersApiHandler, findUserByDodId);
