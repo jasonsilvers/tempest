@@ -101,11 +101,17 @@ async function seedDev() {
     },
   });
 
+  const adminRole = await prisma.role.findFirst({
+    where: {
+      name: ERole.ADMIN,
+    },
+  });
+
   await prisma.user.create({
     data: {
       ...user1,
       organizationId: organization1.id,
-      roleId: memberRole.id,
+      roleId: adminRole.id,
     },
   });
 

@@ -173,10 +173,20 @@ const organizationGrants: Grants[] = [
   },
 ];
 
+const uploadGrants: Grants[] = [
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.UPLOAD,
+    role: ERole.ADMIN,
+  },
+];
+
 export const grants: Grants[] = [
   ...pageGrants,
   ...memberTrackingItemGrants,
   ...userGrants,
   ...memberTrackingRecordsGrants,
   ...organizationGrants,
+  ...uploadGrants,
 ];
