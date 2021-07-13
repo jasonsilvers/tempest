@@ -60,6 +60,14 @@ const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} c
   }
 `;
 
+const TempestDatePicker = styled(({ className, ...props }) => (
+  <TextField type="date" {...props} InputProps={{ className }} />
+))`
+  & .MuiInputBase-input {
+    background: red;
+  }
+`;
+
 export {
   TempestDrawer,
   IconButton,
@@ -78,6 +86,7 @@ export {
   Drawer,
   TempestSkeleton,
   TempestToolTip,
+  TempestDatePicker,
   Zoom,
 };
 
