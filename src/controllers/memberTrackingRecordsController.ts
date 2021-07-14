@@ -5,23 +5,18 @@ import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../middleware/utils';
 import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../repositories/memberTrackingRepo';
 import { LoggedInUser } from '../repositories/userRepo';
-import { EResource, ITempestApiError } from '../types/global';
+import { EMtrVerb, EResource, ITempestApiError } from '../types/global';
 import { filterObject } from '../utils/FilterObject';
 
 type MemberTrackingRecordsAction = (
-  req: NextApiRequestWithAuthorization<LoggedInUser>,
+  req: NextApiRequestWithAuthorization<LoggedInUser, MemberTrackingRecord>,
   res: NextApiResponse<MemberTrackingRecord | ITempestApiError>
 ) => void;
-
-enum EMtrVerb {
-  SIGN_TRAINEE = 'sign_trainee',
-  SIGN_AUTHORITY = 'sign_authority',
-  UPDATE_COMPLETION = 'update_completion',
-}
 
 export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = async (req, res) => {
   const {
     query: { slug },
+    body,
   } = req;
 
   const memberTrackingRecordId = parseInt(slug[0]);
@@ -68,6 +63,20 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
     updatedRecord = {
       ...recordFromDb,
       authoritySignedDate: dayjs().toDate(),
+    };
+  }
+
+  if (verb === EMtrVerb.UPDATE_COMPLETION) {
+    const date = dayjs(body.completedDate);
+    if (!date.isValid()) {
+      return res.status(400).json({ message: 'Bad Request' });
+    }
+    updatedRecord = {
+      ...recordFromDb,
+      completedDate: date.toDate(),
+      traineeSignedDate: null,
+      authoritySignedDate: null,
+      authorityId: null,
     };
   }
 

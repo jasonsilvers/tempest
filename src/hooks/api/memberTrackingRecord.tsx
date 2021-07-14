@@ -3,10 +3,9 @@ import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RecordWithTrackingItem } from '../../components/Records/RecordRow';
 import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
+import { EMtrVerb } from '../../types/global';
 import { getCategory } from '../../utils/Status';
 import { mtiQueryKeys } from './memberTrackingItem';
-
-type Verb = 'sign_trainee' | 'sign_authority';
 
 const MEMBER_TRACKING_RECORD_RESOURCE = 'membertrackingrecords';
 
@@ -34,25 +33,40 @@ export const useMemberTrackingRecord = (memberTrackingRecordId: number) => {
     }
   );
 };
-export const useUpdateMemberTrackingRecord = (verb: Verb) => {
+export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
   const queryClient = useQueryClient();
 
   return useMutation<MemberTrackingRecord, unknown, { memberTrackingRecord: RecordWithTrackingItem; userId: string }>(
     ({ memberTrackingRecord }) =>
       axios
-        .post(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}/${memberTrackingRecord.id}/${verb}`)
+        .post(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}/${memberTrackingRecord.id}/${verb}`, memberTrackingRecord)
         .then((response) => response.data),
     {
-      onMutate: ({ memberTrackingRecord }) => {
-        getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
+      onMutate: async ({ memberTrackingRecord }) => {
+        await queryClient.cancelQueries(mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id));
+        const previousState = queryClient.getQueryData(mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id));
+
+        const status = getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
+
+        queryClient.setQueryData(
+          mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id),
+          (old: RecordWithTrackingItem) => ({
+            ...old,
+            ...memberTrackingRecord,
+            authoritySignedDate: null,
+            traineeSignedDate: null,
+            status,
+          })
+        );
+        return previousState;
       },
 
-      onSuccess: (data) => {
+      onSettled: (data) => {
         //This will need to be updated when signing for authority
         queryClient.invalidateQueries(mtrQueryKeys.memberTrackingRecord(data.id));
       },
-      onError: ({ memberTrackingRecord }) => {
-        getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
+      onError: (err, { memberTrackingRecord }, previousState) => {
+        queryClient.setQueryData(mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id), previousState);
       },
     }
   );

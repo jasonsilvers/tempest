@@ -1,13 +1,16 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import dayjs from 'dayjs';
-import React, { useLayoutEffect, useMemo } from 'react';
-import { useMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
+import React, { ChangeEvent, useLayoutEffect, useMemo } from 'react';
+import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 import { getCategory } from '../../utils/Status';
-import { ECategories } from '../../types/global';
+import { ECategories, EMtrVerb } from '../../types/global';
 import { useMemberItemTrackerContext } from './MemberRecordTracker';
 import RecordSignature from './RecordSignature';
 import { Token, TableData, TokenObj, TableRow } from './TwinMacro/Twin';
 import 'twin.macro';
+import ConditionalDateInput from '../../lib/ConditionalDateInput';
+import { useUser } from '@tron/nextjs-auth-p1';
+import { LoggedInUser } from '../../repositories/userRepo';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -49,6 +52,8 @@ const RecordRow: React.FC<{
 }> = ({ memberTrackingRecordId, trackingItem }) => {
   const { activeCategory, increaseCategoryCount, categories } = useMemberItemTrackerContext();
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
+  const mutation = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
+  const { user } = useUser<LoggedInUser>();
 
   // increase count
   useLayoutEffect(() => {
@@ -83,6 +88,15 @@ const RecordRow: React.FC<{
     }
   }
 
+  const handleCompletionDateChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const date = dayjs(event.target.value);
+    const memberTrackingRecord = {
+      ...trackingRecordQuery.data,
+      completedDate: date.toDate(),
+    };
+    mutation.mutate({ memberTrackingRecord, userId: user.id });
+  };
+
   const DynamicToken = TokenObj[status];
   return (
     <TableRow>
@@ -97,17 +111,23 @@ const RecordRow: React.FC<{
         {/* get the common text for number of days if exits else render '## days' */}
         {daysToString[trackingItem?.interval] ?? `${trackingItem?.interval} days`}
       </TableData>
-      <div tw="flex w-80 justify-between">
-        <TableData tw="w-40">
+      <div tw="flex justify-between">
+        <TableData tw="flex space-x-1">
           <>
             <span tw={'opacity-40'}>Completed: </span>
-            {dayjs(trackingRecordQuery.data?.completedDate).format('DD MMM YY')}
+            <ConditionalDateInput
+              onChange={handleCompletionDateChange}
+              condition={!!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate}
+              dateValue={trackingRecordQuery.data.completedDate}
+            />
           </>
         </TableData>
-        <TableData tw="w-40">
+        <TableData tw="w-40 space-x-1">
           <>
             <span tw={'opacity-40'}>Due: </span>
-            {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}
+            <span>
+              {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}
+            </span>
           </>
         </TableData>
       </div>

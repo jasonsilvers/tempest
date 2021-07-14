@@ -14,6 +14,7 @@ import { ActionButton, DisabledButton, TableData } from './TwinMacro/Twin';
 
 import RecordSignatureToolTip from './RecordSignatureToolTip';
 import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
+import { EMtrVerb } from '../../types/global';
 
 /**
  * Function to determine render for the Trainee Signature Block
@@ -88,7 +89,7 @@ const RecordSignature: React.FC<{
 }> = ({ authoritySignedDate, traineeSignedDate, memberTrackingRecord }) => {
   const { user: LoggedInUser } = useUser<LoggedInUserType>();
   const { enqueueSnackbar } = useSnackbar();
-  const { mutate, isLoading } = useUpdateMemberTrackingRecord('sign_trainee');
+  const { mutate, isLoading } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_TRAINEE);
   const { trainee, authority } = memberTrackingRecord;
   if (isLoading && !traineeSignedDate) {
     return <CircularProgress tw="ml-2" size={18} />;

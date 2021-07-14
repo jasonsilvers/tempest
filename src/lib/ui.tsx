@@ -60,11 +60,17 @@ const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} c
   }
 `;
 
-const TempestDatePicker = styled(({ className, ...props }) => (
-  <TextField type="date" {...props} InputProps={{ className }} />
-))`
+const TempestDatePicker = styled(({ ...props }) => <TextField type="date" {...props} />)`
   & .MuiInputBase-input {
-    background: red;
+    padding: 2px;
+    font-size: 12px;
+    opacity: 60%;
+    width: 100px;
+    font-weight: 400;
+    line-height: 14.06px;
+  }
+  & .MuiInputBase-input::-webkit-calendar-picker-indicator {
+    margin: 0;
   }
 `;
 
