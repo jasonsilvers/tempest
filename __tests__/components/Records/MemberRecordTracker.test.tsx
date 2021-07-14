@@ -407,11 +407,6 @@ test('should sign record as trainee and mark as done', async () => {
   fireEvent.click(signatureButton);
   await waitForElementToBeRemoved(() => getByRole('signature_button'));
 
-  const loadingSpinner = getByRole('progressbar');
-  expect(loadingSpinner).toBeInTheDocument();
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
-  await waitForElementToBeRemoved(() => getByRole('signature_button'));
-
   const doneTab = getByText(/done/i);
 
   fireEvent.click(doneTab);

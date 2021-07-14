@@ -7,6 +7,7 @@ import memberTrackingRecordSlugHandler from '../../../src/pages/api/membertracki
 import dayjs from 'dayjs';
 import { testNextApi } from '../../utils/NextAPIUtils';
 import MockDate from 'mockdate';
+import { MemberTrackingRecord } from '@prisma/client';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
@@ -231,4 +232,84 @@ test('Should not accept GET', async () => {
   });
 
   expect(status).toEqual(405);
+});
+
+test('should handle null value for updating completed date ', async () => {
+  const returnedMemberTrackingRecordDB = {
+    order: 0,
+    trackingItemId: 1,
+    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    authorityId: null,
+    authoritySignedDate: null,
+    traineeSignedDate: null,
+    completedDate: null,
+  };
+
+  const updatedMemberTrackingRecordFromDb = {
+    ...returnedMemberTrackingRecordDB,
+    completedDate: null,
+  };
+
+  mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
+  mockMethodAndReturn(updateMemberTrackingRecord, updatedMemberTrackingRecordFromDb);
+
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: {},
+    urlSlug: '23/update_completion',
+  });
+
+  expect(updateMemberTrackingRecord).toBeCalledWith(23, updatedMemberTrackingRecordFromDb);
+  expect(status).toBe(200);
+  expect(JSON.stringify(data)).toEqual(JSON.stringify(updatedMemberTrackingRecordFromDb));
+});
+
+test('should handle update of completion date', async () => {
+  const returnedMemberTrackingRecordDB = {
+    order: 0,
+    trackingItemId: 1,
+    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    authorityId: null,
+    authoritySignedDate: null,
+    traineeSignedDate: null,
+    completedDate: null,
+  };
+
+  const updatedMemberTrackingRecordFromDb = {
+    ...returnedMemberTrackingRecordDB,
+    completedDate: dayjs('2020-5-14').toDate(),
+  };
+
+  mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
+  mockMethodAndReturn(updateMemberTrackingRecord, updatedMemberTrackingRecordFromDb);
+
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: { completedDate: dayjs('2020-5-14').toDate() } as MemberTrackingRecord,
+    urlSlug: '23/update_completion',
+  });
+
+  expect(updateMemberTrackingRecord).toBeCalledWith(23, updatedMemberTrackingRecordFromDb);
+  expect(status).toBe(200);
+  expect(JSON.stringify(data)).toEqual(JSON.stringify(updatedMemberTrackingRecordFromDb));
+});
+
+test('should return error if completed date is in future', async () => {
+  const returnedMemberTrackingRecordDB = {
+    order: 0,
+    trackingItemId: 1,
+    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    authorityId: null,
+    authoritySignedDate: null,
+    traineeSignedDate: null,
+    completedDate: null,
+  };
+
+  mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
+
+  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+    body: { completedDate: dayjs().add(5, 'days').toDate() } as MemberTrackingRecord,
+    urlSlug: '23/update_completion',
+  });
+
+  expect(status).toBe(409);
+  expect(JSON.stringify(data)).toEqual(JSON.stringify({ message: 'Cannot update completion date in the future' }));
 });

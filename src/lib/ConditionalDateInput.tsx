@@ -16,6 +16,10 @@ const ConditionalDateInput: React.FC<IConditionalDateInput> = ({ dateValue, cond
       <TempestDatePicker
         onChange={onChange}
         size="small"
+        inputProps={{
+          role: 'date-picker',
+          max: dayjs().format('YYYY-MM-DD'),
+        }}
         variant="outlined"
         value={dayjs(dateValue).format('YYYY-MM-DD')}
       />

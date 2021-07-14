@@ -10,12 +10,13 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import TextField, { TextFieldProps } from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Fab from '@material-ui/core/Fab';
 import ToolTip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import Paper from '@material-ui/core/Paper';
+import dayjs from 'dayjs';
 
 const TPaper = styled(Paper)`
   background-color: #2d2270;
@@ -60,7 +61,7 @@ const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} c
   }
 `;
 
-const TempestDatePicker = styled(({ ...props }) => <TextField type="date" {...props} />)`
+const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="date" {...props} />)`
   & .MuiInputBase-input {
     padding: 2px;
     font-size: 12px;

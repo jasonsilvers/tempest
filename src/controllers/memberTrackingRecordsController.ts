@@ -67,13 +67,16 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
   }
 
   if (verb === EMtrVerb.UPDATE_COMPLETION) {
-    const date = dayjs(body.completedDate);
-    if (!date.isValid()) {
-      return res.status(400).json({ message: 'Bad Request' });
+    const date = body.completedDate ? dayjs(body.completedDate) : null;
+
+    if (date && date.isAfter(dayjs())) {
+      return res.status(409).json({ message: 'Cannot update completion date in the future' });
     }
+    console.log(date);
+
     updatedRecord = {
       ...recordFromDb,
-      completedDate: date.toDate(),
+      completedDate: date ? date.toDate() : null,
       traineeSignedDate: null,
       authoritySignedDate: null,
       authorityId: null,

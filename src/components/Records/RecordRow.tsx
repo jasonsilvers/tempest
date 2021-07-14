@@ -11,6 +11,7 @@ import 'twin.macro';
 import ConditionalDateInput from '../../lib/ConditionalDateInput';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../../repositories/userRepo';
+import { useSnackbar } from 'notistack';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -52,8 +53,9 @@ const RecordRow: React.FC<{
 }> = ({ memberTrackingRecordId, trackingItem }) => {
   const { activeCategory, increaseCategoryCount, categories } = useMemberItemTrackerContext();
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
-  const mutation = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
+  const completionDate = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
   const { user } = useUser<LoggedInUser>();
+  const { enqueueSnackbar } = useSnackbar();
 
   // increase count
   useLayoutEffect(() => {
@@ -89,12 +91,26 @@ const RecordRow: React.FC<{
   }
 
   const handleCompletionDateChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
     const date = dayjs(event.target.value);
     const memberTrackingRecord = {
       ...trackingRecordQuery.data,
       completedDate: date.toDate(),
     };
-    mutation.mutate({ memberTrackingRecord, userId: user.id });
+    completionDate.mutate(
+      { memberTrackingRecord, userId: user.id },
+      {
+        onSettled: async () => {
+          enqueueSnackbar('Completion date updated, Signatures cleared', { variant: 'success' });
+        },
+        // currently not firing onError.
+        // see https://react-query.tanstack.com/guides/mutations#mutation-side-effects for doc on how it should work.
+        onError: async () => {
+          console.log(`options onError -- error while updating completion date`);
+          enqueueSnackbar('Completion date Request failed', { variant: 'error' });
+        },
+      }
+    );
   };
 
   const DynamicToken = TokenObj[status];
@@ -122,7 +138,7 @@ const RecordRow: React.FC<{
             />
           </>
         </TableData>
-        <TableData tw="w-40 space-x-1">
+        <TableData tw="w-52 space-x-1">
           <>
             <span tw={'opacity-40'}>Due: </span>
             <span>
@@ -135,6 +151,7 @@ const RecordRow: React.FC<{
         memberTrackingRecord={trackingRecordQuery.data}
         authoritySignedDate={trackingRecordQuery.data.authoritySignedDate}
         traineeSignedDate={trackingRecordQuery.data.traineeSignedDate}
+        disabled={!trackingRecordQuery.data.completedDate}
       />
     </TableRow>
   );

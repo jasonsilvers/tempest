@@ -47,26 +47,58 @@ export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
         const previousState = queryClient.getQueryData(mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id));
 
         const status = getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
+        // optimistic update for the completedDate
+        if (verb === EMtrVerb.UPDATE_COMPLETION) {
+          queryClient.setQueryData(
+            mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id),
+            (old: RecordWithTrackingItem) => ({
+              ...old,
+              ...memberTrackingRecord,
+              authoritySignedDate: null,
+              traineeSignedDate: null,
+              status,
+            })
+          );
+        }
+        // optimistic update for the traineeSignedDate
+        if (verb === EMtrVerb.SIGN_TRAINEE) {
+          queryClient.setQueryData(
+            mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id),
+            (old: RecordWithTrackingItem) => ({
+              ...old,
+              ...memberTrackingRecord,
+              traineeSignedDate: new Date(),
+              status,
+            })
+          );
+        }
+        // optimistic update for the authoritySignedDate
+        if (verb === EMtrVerb.SIGN_AUTHORITY) {
+          queryClient.setQueryData(
+            mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id),
+            (old: RecordWithTrackingItem) => ({
+              ...old,
+              ...memberTrackingRecord,
+              authoritySignedDate: new Date(),
+              status,
+            })
+          );
+        }
 
-        queryClient.setQueryData(
-          mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id),
-          (old: RecordWithTrackingItem) => ({
-            ...old,
-            ...memberTrackingRecord,
-            authoritySignedDate: null,
-            traineeSignedDate: null,
-            status,
-          })
-        );
+        // fallback to the previous state
         return previousState;
       },
 
-      onSettled: (data) => {
+      onSettled: async (data) => {
         //This will need to be updated when signing for authority
         queryClient.invalidateQueries(mtrQueryKeys.memberTrackingRecord(data.id));
+        console.log(`default settled`);
       },
-      onError: (err, { memberTrackingRecord }, previousState) => {
+      onError: async (err, { memberTrackingRecord }, previousState) => {
+        console.log('error');
         queryClient.setQueryData(mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id), previousState);
+        console.log(err);
+        queryClient.cancelMutations();
       },
     }
   );
