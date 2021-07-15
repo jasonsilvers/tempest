@@ -30,6 +30,19 @@ export class PermissionError extends Error {
   }
 }
 
+export class TempestError extends Error {
+  readonly status: number;
+  readonly name: string;
+  readonly message: string;
+
+  constructor(status: number, message: string) {
+    super('TempestError');
+    this.status = status;
+    this.name = 'TempestError';
+    this.message = message;
+  }
+}
+
 export const withErrorHandling =
   (handler: NextApiHandler) => async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
     try {
@@ -46,6 +59,12 @@ export const withErrorHandling =
         log.trace(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
         log.warn(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
         return res.status(403).send({ message: 'You do not have the appropriate permissions' });
+      }
+
+      if (e.name === 'TempestError') {
+        log.trace(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
+        log.warn(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
+        return res.status(e.status).json({ message: e.message });
       }
 
       log.error(`caught error: ${e.status} ${e.body}`);

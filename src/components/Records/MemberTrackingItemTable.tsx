@@ -4,7 +4,7 @@ import { useMemberTrackingItems } from '../../hooks/api/memberTrackingItem';
 import MemberTrackingItemRow from './MemberTrackingItemRow';
 
 // styled twin elements
-const Container = tw.div`text-black pt-6 text-left flex space-y-5 flex-col h-64 overflow-y-scroll overflow-x-hidden min-width[1080px] max-width[1440px]`;
+const Container = tw.div`text-black pt-6 text-left flex space-y-5 flex-col h-64 overflow-y-auto overflow-x-hidden max-width[1440px]`;
 
 const MemberTrackingItemTableSkeleton = tw.div`border animate-pulse bg-gray-400 h-full px-2 border-gray-300`;
 

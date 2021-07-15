@@ -1,13 +1,17 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import dayjs from 'dayjs';
-import React, { useLayoutEffect, useMemo } from 'react';
-import { useMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
+import React, { ChangeEvent, useLayoutEffect, useMemo } from 'react';
+import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 import { getCategory } from '../../utils/Status';
-import { ECategories } from '../../types/global';
-import { useMemberItemTrackerContext } from './MemberRecordTracker';
+import { ECategories, EMtrVerb } from '../../types/global';
 import RecordSignature from './RecordSignature';
 import { Token, TableData, TokenObj, TableRow } from './TwinMacro/Twin';
 import 'twin.macro';
+import ConditionalDateInput from '../../lib/ConditionalDateInput';
+import { useUser } from '@tron/nextjs-auth-p1';
+import { LoggedInUser } from '../../repositories/userRepo';
+import { useSnackbar } from 'notistack';
+import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -28,7 +32,7 @@ const daysToString = {
 
 const RecordRowSkeleton = () => {
   return (
-    <div tw="border border-gray-300 ">
+    <div role="skeleton" tw="border border-gray-300 ">
       <div tw="animate-pulse flex h-12 justify-items-center items-center px-2">
         <Token tw="bg-gray-400 pr-2" />
         <div tw="h-4 w-40 bg-gray-400 rounded-sm"></div>
@@ -49,6 +53,9 @@ const RecordRow: React.FC<{
 }> = ({ memberTrackingRecordId, trackingItem }) => {
   const { activeCategory, increaseCategoryCount, categories } = useMemberItemTrackerContext();
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
+  const completionDate = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
+  const { user } = useUser<LoggedInUser>();
+  const { enqueueSnackbar } = useSnackbar();
 
   // increase count
   useLayoutEffect(() => {
@@ -63,7 +70,7 @@ const RecordRow: React.FC<{
     }
   }, [trackingRecordQuery.data, trackingItem?.interval]);
 
-  if (!trackingRecordQuery || trackingRecordQuery.isLoading) {
+  if (!trackingRecordQuery || trackingRecordQuery.isLoading || !user) {
     return <RecordRowSkeleton />;
   }
 
@@ -83,13 +90,35 @@ const RecordRow: React.FC<{
     }
   }
 
+  const handleCompletionDateChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const date = dayjs(event.target.value);
+    const memberTrackingRecord = {
+      ...trackingRecordQuery.data,
+      completedDate: date.toDate(),
+    };
+    completionDate.mutate(
+      { memberTrackingRecord, userId: user.id },
+      {
+        onSettled: async () => {
+          enqueueSnackbar('Completion date updated, Signatures cleared', { variant: 'success' });
+        },
+        // currently not firing onError.
+        // see https://react-query.tanstack.com/guides/mutations#mutation-side-effects for doc on how it should work.
+        onError: async () => {
+          enqueueSnackbar('Completion date Request failed', { variant: 'error' });
+        },
+      }
+    );
+  };
+
   const DynamicToken = TokenObj[status];
   return (
     <TableRow>
-      <TableData tw={'font-size[16px] overflow-ellipsis w-72'}>
+      <TableData tw={'font-size[16px] w-72'}>
         <div tw={'flex'}>
           <DynamicToken />
-          {trackingItem?.title}
+          <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64">{trackingItem?.title}</div>
           {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
         </div>
       </TableData>
@@ -97,17 +126,23 @@ const RecordRow: React.FC<{
         {/* get the common text for number of days if exits else render '## days' */}
         {daysToString[trackingItem?.interval] ?? `${trackingItem?.interval} days`}
       </TableData>
-      <div tw="flex w-80 justify-between">
-        <TableData tw="w-40">
+      <div tw="flex justify-between">
+        <TableData tw="flex space-x-1">
           <>
             <span tw={'opacity-40'}>Completed: </span>
-            {dayjs(trackingRecordQuery.data?.completedDate).format('DD MMM YY')}
+            <ConditionalDateInput
+              onChange={handleCompletionDateChange}
+              condition={!!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate}
+              dateValue={trackingRecordQuery.data.completedDate}
+            />
           </>
         </TableData>
-        <TableData tw="w-40">
+        <TableData tw="space-x-1">
           <>
             <span tw={'opacity-40'}>Due: </span>
-            {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}
+            <span>
+              {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}
+            </span>
           </>
         </TableData>
       </div>
@@ -115,6 +150,7 @@ const RecordRow: React.FC<{
         memberTrackingRecord={trackingRecordQuery.data}
         authoritySignedDate={trackingRecordQuery.data.authoritySignedDate}
         traineeSignedDate={trackingRecordQuery.data.traineeSignedDate}
+        disabled={!trackingRecordQuery.data.completedDate}
       />
     </TableRow>
   );

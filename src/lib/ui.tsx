@@ -10,7 +10,7 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import TextField, { TextFieldProps } from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Fab from '@material-ui/core/Fab';
 import ToolTip from '@material-ui/core/Tooltip';
@@ -60,6 +60,20 @@ const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} c
   }
 `;
 
+const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="date" {...props} />)`
+  & .MuiInputBase-input {
+    padding: 2px;
+    font-size: 12px;
+    opacity: 60%;
+    width: 100px;
+    font-weight: 400;
+    line-height: 14.06px;
+  }
+  & .MuiInputBase-input::-webkit-calendar-picker-indicator {
+    margin: 0;
+  }
+`;
+
 export {
   TempestDrawer,
   IconButton,
@@ -78,6 +92,7 @@ export {
   Drawer,
   TempestSkeleton,
   TempestToolTip,
+  TempestDatePicker,
   Zoom,
 };
 

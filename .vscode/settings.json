@@ -2,5 +2,6 @@
   "WillLuke.nextjs.addTypesOnSave": true,
   "WillLuke.nextjs.hasPrompted": true,
   "cSpell.words": ["accesscontrol", "membertrackingrecords", "superjson", "trackingitems"],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "jest.jestCommandLine": "npm test"
 }

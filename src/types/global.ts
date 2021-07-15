@@ -2,6 +2,12 @@ import { Role, Organization, TrackingItem } from '@prisma/client';
 import { Grants } from '../repositories/grantsRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 
+export enum EMtrVerb {
+  SIGN_TRAINEE = 'sign_trainee',
+  SIGN_AUTHORITY = 'sign_authority',
+  UPDATE_COMPLETION = 'update_completion',
+}
+
 export enum ERole {
   ADMIN = 'admin',
   MEMBER = 'member',

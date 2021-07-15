@@ -5,7 +5,6 @@ import React from 'react';
 import { UseMutateFunction } from 'react-query';
 import 'twin.macro';
 import setDomRole from '../../utils/SetDomRole';
-import { CircularProgress } from '../../lib/ui';
 import { DoneAllIcon } from '../../assets/Icons';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
@@ -14,6 +13,7 @@ import { ActionButton, DisabledButton, TableData } from './TwinMacro/Twin';
 
 import RecordSignatureToolTip from './RecordSignatureToolTip';
 import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
+import { EMtrVerb } from '../../types/global';
 
 /**
  * Function to determine render for the Trainee Signature Block
@@ -46,7 +46,10 @@ const getTraineeSignature = (
       { memberTrackingRecord, userId: loggedInUser.id },
       {
         onSuccess: () => {
-          enqueueSnackbar('A record was successfully addded', { variant: 'success' });
+          enqueueSnackbar('A record was successfully Signed', { variant: 'success' });
+        },
+        onError: () => {
+          console.log('error with signature');
         },
       }
     );
@@ -57,7 +60,7 @@ const getTraineeSignature = (
   // render button to sign
   if (!signatureDate && memberTrackingRecord?.traineeId === loggedInUser?.id) {
     return (
-      <TableData tw="mr-6 align-middle">
+      <TableData>
         <ActionButton role={setDomRole('Signature Button')} onClick={handleSignTrainee}>
           Sign
         </ActionButton>
@@ -68,12 +71,12 @@ const getTraineeSignature = (
   // render signature based on the signature owner and date
   if (loggedInUser) {
     return (
-      <TableData tw="mr-6 align-middle">
+      <TableData>
         <RecordSignatureToolTip
           traineeSignature={{ signee: memberTrackingRecord.trainee, date: memberTrackingRecord.traineeSignedDate }}
         >
           <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord.traineeSignedDate).format(
-            'DD/MM/YY'
+            'MM/DD/YY'
           )}`}</DisabledButton>
         </RecordSignatureToolTip>
       </TableData>
@@ -81,22 +84,26 @@ const getTraineeSignature = (
   }
 };
 
+const AwaitingSignature: React.FC = ({ children }) => (
+  <TableData tw="mr-3">
+    <DisabledButton>{children ?? 'Awaiting Signature'}</DisabledButton>
+  </TableData>
+);
+
 const RecordSignature: React.FC<{
   authoritySignedDate: Date;
   traineeSignedDate: Date;
   memberTrackingRecord: MemberTrackingRecordWithUsers;
-}> = ({ authoritySignedDate, traineeSignedDate, memberTrackingRecord }) => {
+  disabled: boolean;
+}> = ({ authoritySignedDate, traineeSignedDate, memberTrackingRecord, disabled }) => {
   const { user: LoggedInUser } = useUser<LoggedInUserType>();
   const { enqueueSnackbar } = useSnackbar();
-  const { mutate, isLoading } = useUpdateMemberTrackingRecord('sign_trainee');
+  const { mutate } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_TRAINEE);
   const { trainee, authority } = memberTrackingRecord;
-  if (isLoading && !traineeSignedDate) {
-    return <CircularProgress tw="ml-2" size={18} />;
-  }
 
   if (authoritySignedDate && traineeSignedDate) {
     return (
-      <TableData tw="ml-auto mr-20 color['#7B7B7B'] opacity-60">
+      <TableData tw="ml-auto color['#7B7B7B'] opacity-60">
         <RecordSignatureToolTip
           traineeSignature={{ signee: trainee, date: memberTrackingRecord.authoritySignedDate }}
           authoritySignature={{ signee: authority, date: memberTrackingRecord.traineeSignedDate }}
@@ -110,10 +117,12 @@ const RecordSignature: React.FC<{
   }
   return (
     <div tw="flex ml-auto">
-      <TableData tw="mr-3">
-        <DisabledButton>Awaiting Signature</DisabledButton>
-      </TableData>
-      {getTraineeSignature(memberTrackingRecord, traineeSignedDate, LoggedInUser, mutate, enqueueSnackbar)}
+      <AwaitingSignature />
+      {!disabled ? (
+        getTraineeSignature(memberTrackingRecord, traineeSignedDate, LoggedInUser, mutate, enqueueSnackbar)
+      ) : (
+        <AwaitingSignature>Invalid Date</AwaitingSignature>
+      )}
     </div>
   );
 };
