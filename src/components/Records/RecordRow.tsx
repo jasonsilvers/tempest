@@ -1,6 +1,6 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
-import dayjs from 'dayjs';
-import React, { ChangeEvent, useLayoutEffect, useMemo } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+import React, { ChangeEvent, useLayoutEffect, useMemo, useState } from 'react';
 import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 import { getCategory } from '../../utils/Status';
 import { ECategories, EMtrVerb } from '../../types/global';
@@ -12,6 +12,8 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../../repositories/userRepo';
 import { useSnackbar } from 'notistack';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
+import ConfirmDialog from './Dialog/ConfirmDialog';
+import { DialogContent, DialogTitle } from '../../lib/ui';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -56,6 +58,35 @@ const RecordRow: React.FC<{
   const completionDate = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
   const { user } = useUser<LoggedInUser>();
   const { enqueueSnackbar } = useSnackbar();
+  const [modalState, setModalState] = useState({ open: false, date: null });
+
+  const handleMutation = (date?: Dayjs) => {
+    const memberTrackingRecord = {
+      ...trackingRecordQuery.data,
+      completedDate: date ?? modalState.date,
+    };
+    completionDate.mutate(
+      { memberTrackingRecord, userId: user.id },
+      {
+        onSettled: async () => {
+          enqueueSnackbar('Completion date updated, Signatures cleared', { variant: 'success' });
+        },
+        // currently not firing onError.
+        // see https://react-query.tanstack.com/guides/mutations#mutation-side-effects for doc on how it should work.
+        onError: async () => {
+          enqueueSnackbar('Completion date Request failed', { variant: 'error' });
+        },
+      }
+    );
+  };
+  const handleYes = () => {
+    handleMutation();
+    setModalState({ open: false, date: null });
+  };
+
+  const handleNo = () => {
+    setModalState({ open: false, date: null });
+  };
 
   // increase count
   useLayoutEffect(() => {
@@ -93,75 +124,63 @@ const RecordRow: React.FC<{
   const handleCompletionDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     const date = dayjs(event.target.value);
-    const memberTrackingRecord = {
-      ...trackingRecordQuery.data,
-      completedDate: date.toDate(),
-    };
-    completionDate.mutate(
-      { memberTrackingRecord, userId: user.id },
-      {
-        onSettled: async () => {
-          enqueueSnackbar('Completion date updated, Signatures cleared', { variant: 'success' });
-        },
-        // currently not firing onError.
-        // see https://react-query.tanstack.com/guides/mutations#mutation-side-effects for doc on how it should work.
-        onError: async () => {
-          enqueueSnackbar('Completion date Request failed', { variant: 'error' });
-        },
-      }
-    );
+    if (trackingRecordQuery.data.authoritySignedDate || trackingRecordQuery.data.traineeSignedDate) {
+      setModalState({ open: true, date });
+    } else {
+      handleMutation(date);
+    }
   };
 
   const DynamicToken = TokenObj[status];
   return (
-    <TableRow>
-      <TableData tw={'font-size[16px] w-72'}>
-        <div tw={'flex'}>
-          <DynamicToken />
-          <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64">{trackingItem?.title}</div>
-          {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
+    <>
+      <TableRow>
+        <TableData tw={'font-size[16px] w-72'}>
+          <div tw={'flex'}>
+            <DynamicToken />
+            <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64">{trackingItem?.title}</div>
+            {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
+          </div>
+        </TableData>
+        <TableData tw={'text-purple-500 w-20 ml-10'}>
+          {/* get the common text for number of days if exits else render '## days' */}
+          {daysToString[trackingItem?.interval] ?? `${trackingItem?.interval} days`}
+        </TableData>
+        <div tw="flex justify-between">
+          <TableData tw="flex space-x-1">
+            <>
+              <span tw={'opacity-40'}>Completed: </span>
+              <ConditionalDateInput
+                onChange={handleCompletionDateChange}
+                condition={
+                  !!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate
+                }
+                dateValue={trackingRecordQuery.data.completedDate}
+              />
+            </>
+          </TableData>
+          <TableData tw="space-x-1">
+            <>
+              <span tw={'opacity-40'}>Due: </span>
+              <span>
+                {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}
+              </span>
+            </>
+          </TableData>
         </div>
-      </TableData>
-      <TableData tw={'text-purple-500 w-20 ml-10'}>
-        {/* get the common text for number of days if exits else render '## days' */}
-        {daysToString[trackingItem?.interval] ?? `${trackingItem?.interval} days`}
-      </TableData>
-      <div tw="flex justify-between">
-        <TableData tw="flex space-x-1">
-          <>
-            <span tw={'opacity-40'}>Completed: </span>
-            <ConditionalDateInput
-              onChange={handleCompletionDateChange}
-              condition={!!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate}
-              dateValue={trackingRecordQuery.data.completedDate}
-            />
-          </>
-        </TableData>
-        <TableData tw="space-x-1">
-          <>
-            <span tw={'opacity-40'}>Due: </span>
-            <span>
-              {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}
-            </span>
-          </>
-        </TableData>
-      </div>
-      <RecordSignature
-        memberTrackingRecord={trackingRecordQuery.data}
-        authoritySignedDate={trackingRecordQuery.data.authoritySignedDate}
-        traineeSignedDate={trackingRecordQuery.data.traineeSignedDate}
-        disabled={!trackingRecordQuery.data.completedDate}
-      />
-    </TableRow>
+        <RecordSignature
+          memberTrackingRecord={trackingRecordQuery.data}
+          authoritySignedDate={trackingRecordQuery.data.authoritySignedDate}
+          traineeSignedDate={trackingRecordQuery.data.traineeSignedDate}
+          disabled={!trackingRecordQuery.data.completedDate}
+        />
+      </TableRow>
+      <ConfirmDialog open={modalState.open} handleNo={handleNo} handleYes={handleYes}>
+        <DialogTitle>Proceed?</DialogTitle>
+        <DialogContent>Changing the Completion Date will clear signatures</DialogContent>
+      </ConfirmDialog>
+    </>
   );
 };
-
-/**
- * For later
- */
-//<CircularProgress tw="ml-2" size={18} />
-/*
-
-*/
 
 export default RecordRow;
