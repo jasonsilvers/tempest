@@ -1,4 +1,4 @@
-import { NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
+import { DBQueryFunctionToReturnUser, NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import type { NextApiHandler, NextApiResponse } from 'next';
 import { LoggedInUser } from '../repositories/userRepo';
 import { logFactory } from '../utils/logger';
@@ -72,6 +72,6 @@ export const withErrorHandling =
     }
   };
 
-export function withErrorHandlingAndAuthorization(func: NextApiHandler, getUserFunc: (unknown) => Promise<unknown>) {
+export function withErrorHandlingAndAuthorization(func: NextApiHandler, getUserFunc: DBQueryFunctionToReturnUser) {
   return withApiAuth(withErrorHandling(func), getUserFunc);
 }
