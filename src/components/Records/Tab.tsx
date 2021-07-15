@@ -1,7 +1,7 @@
 import tw from 'twin.macro';
 import { ECategories } from '../../types/global';
 import setDomRole from '../../utils/SetDomRole';
-import { useMemberItemTrackerContext } from './MemberRecordTracker';
+import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 
 // Tab navigation animations
 const underline = "content[''] absolute height[2px] bg-purple-500 w-full left-0 bottom-0";

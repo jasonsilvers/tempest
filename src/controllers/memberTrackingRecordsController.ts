@@ -72,8 +72,6 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
     if (date && date.isAfter(dayjs())) {
       return res.status(409).json({ message: 'Cannot update completion date in the future' });
     }
-    console.log(date);
-
     updatedRecord = {
       ...recordFromDb,
       completedDate: date ? date.toDate() : null,

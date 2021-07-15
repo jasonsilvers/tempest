@@ -4,7 +4,6 @@ import React, { ChangeEvent, useLayoutEffect, useMemo } from 'react';
 import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 import { getCategory } from '../../utils/Status';
 import { ECategories, EMtrVerb } from '../../types/global';
-import { useMemberItemTrackerContext } from './MemberRecordTracker';
 import RecordSignature from './RecordSignature';
 import { Token, TableData, TokenObj, TableRow } from './TwinMacro/Twin';
 import 'twin.macro';
@@ -12,6 +11,7 @@ import ConditionalDateInput from '../../lib/ConditionalDateInput';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../../repositories/userRepo';
 import { useSnackbar } from 'notistack';
+import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -32,7 +32,7 @@ const daysToString = {
 
 const RecordRowSkeleton = () => {
   return (
-    <div tw="border border-gray-300 ">
+    <div role="skeleton" tw="border border-gray-300 ">
       <div tw="animate-pulse flex h-12 justify-items-center items-center px-2">
         <Token tw="bg-gray-400 pr-2" />
         <div tw="h-4 w-40 bg-gray-400 rounded-sm"></div>
@@ -70,7 +70,7 @@ const RecordRow: React.FC<{
     }
   }, [trackingRecordQuery.data, trackingItem?.interval]);
 
-  if (!trackingRecordQuery || trackingRecordQuery.isLoading) {
+  if (!trackingRecordQuery || trackingRecordQuery.isLoading || !user) {
     return <RecordRowSkeleton />;
   }
 
@@ -101,12 +101,14 @@ const RecordRow: React.FC<{
       { memberTrackingRecord, userId: user.id },
       {
         onSettled: async () => {
+          console.log('on settled in record row');
+
           enqueueSnackbar('Completion date updated, Signatures cleared', { variant: 'success' });
         },
         // currently not firing onError.
         // see https://react-query.tanstack.com/guides/mutations#mutation-side-effects for doc on how it should work.
         onError: async () => {
-          console.log(`options onError -- error while updating completion date`);
+          console.log('Error while updating completion date');
           enqueueSnackbar('Completion date Request failed', { variant: 'error' });
         },
       }

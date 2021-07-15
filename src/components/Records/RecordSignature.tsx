@@ -5,7 +5,6 @@ import React from 'react';
 import { UseMutateFunction } from 'react-query';
 import 'twin.macro';
 import setDomRole from '../../utils/SetDomRole';
-import { CircularProgress } from '../../lib/ui';
 import { DoneAllIcon } from '../../assets/Icons';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';

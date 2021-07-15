@@ -8,8 +8,7 @@ import {
 import { getRoleByName } from '../../src/repositories/roleRepo';
 import { explodedJwt, explodedJwt_admin, grants } from '../utils/mocks/fixtures';
 import { IPerson } from '../../src/repositories/common/types';
-import { server } from '../utils/mocks/msw';
-import { rest } from 'msw';
+import { server, rest } from '../utils/mocks/msw';
 import { Role } from '.prisma/client';
 import { findGrants } from '../../src/repositories/grantsRepo';
 import { returnUser } from '../../src/repositories/loginRepo';
