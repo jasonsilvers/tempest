@@ -33,8 +33,6 @@ beforeEach(() => {
   server.use(
     // return member tracking record with status of 'todo'
     rest.get('/api/membertrackingrecords/1', (req, res, ctx) => {
-      console.log('fetch records for id 1');
-
       return res(
         ctx.status(200),
         ctx.json({
@@ -246,7 +244,6 @@ test('should mutate and enqueue snackbar success', async () => {
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
   await waitFor(() => getByRole(/date-picker/i));
   expect(getByText(/item title/i)).toBeInTheDocument();
-  console.log(prettyDOM(getByRole(/date-picker/i)));
   fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
   await waitFor(() => getByText(/date updated/i));
   expect(getByText(/date updated/i)).toBeInTheDocument();

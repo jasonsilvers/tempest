@@ -4,8 +4,6 @@ import { grants } from './fixtures';
 
 export const handlers = [
   rest.get('/api/login', (req, res, ctx) => {
-    console.log(`LOGGED IN`);
-
     return res(
       ctx.status(200),
       ctx.json({

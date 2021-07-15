@@ -114,7 +114,7 @@ test('should not sign trainee if already signed as authority', async () => {
     message: 'Cannot sign as both authority and trainee',
   });
 });
-test('should not sign authoritey if already signed as trainee', async () => {
+test('should not sign authority if already signed as trainee', async () => {
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
