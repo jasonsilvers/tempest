@@ -115,10 +115,10 @@ const RecordRow: React.FC<{
   const DynamicToken = TokenObj[status];
   return (
     <TableRow>
-      <TableData tw={'font-size[16px] overflow-ellipsis w-72'}>
+      <TableData tw={'font-size[16px] w-72'}>
         <div tw={'flex'}>
           <DynamicToken />
-          {trackingItem?.title}
+          <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64">{trackingItem?.title}</div>
           {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
         </div>
       </TableData>
@@ -137,7 +137,7 @@ const RecordRow: React.FC<{
             />
           </>
         </TableData>
-        <TableData tw="w-52 space-x-1">
+        <TableData tw="space-x-1">
           <>
             <span tw={'opacity-40'}>Due: </span>
             <span>

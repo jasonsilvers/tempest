@@ -103,7 +103,7 @@ const RecordSignature: React.FC<{
 
   if (authoritySignedDate && traineeSignedDate) {
     return (
-      <TableData tw="ml-auto mr-20 color['#7B7B7B'] opacity-60">
+      <TableData tw="ml-auto color['#7B7B7B'] opacity-60">
         <RecordSignatureToolTip
           traineeSignature={{ signee: trainee, date: memberTrackingRecord.authoritySignedDate }}
           authoritySignature={{ signee: authority, date: memberTrackingRecord.traineeSignedDate }}
