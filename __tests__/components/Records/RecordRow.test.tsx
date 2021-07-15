@@ -3,7 +3,7 @@ import React from 'react';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/providers/MemberItemTrackerContext';
 import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/RecordRow';
 import { ECategories } from '../../../src/types/global';
-import { fireEvent, prettyDOM, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/providers/useMemberItemTrackerContext';
 // MSW test requirements
 import 'whatwg-fetch';
@@ -39,6 +39,22 @@ beforeEach(() => {
           authorityId: null,
           id: 1,
           authoritySignedDate: null,
+          completedDate: null,
+          order: 0,
+          trackingItemId: 1,
+          traineeId: '1',
+          traineeSignedDate: null,
+          trackingItem: trackingItemWithAnnualInterval,
+        } as RecordWithTrackingItem)
+      );
+    }),
+    rest.get('/api/membertrackingrecords/2', (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          authorityId: null,
+          id: 2,
+          authoritySignedDate: dayjs('2021-01-02').toDate(),
           completedDate: null,
           order: 0,
           trackingItemId: 1,
@@ -199,7 +215,7 @@ test('should render the interval in number form for weird amount', async () => {
   expect(queryByText(/4 days/i)).toBeTruthy();
 });
 
-test('should mutate and enqueue snackbar success', async () => {
+test('should mutate and enqueue snackbar success with not signatures', async () => {
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,
@@ -290,3 +306,117 @@ test('should mutate and enqueue snackbar success', async () => {
 //   await waitFor(() => getByText(/date request failed/i));
 //   expect(getByText(/date request failed/i)).toBeInTheDocument();
 // });
+
+test('should prompt user then mutate and enqueue snackbar success with signatures present', async () => {
+  const countIncreaseFunction = jest.fn();
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategories.ALL,
+    increaseCategoryCount: countIncreaseFunction,
+    categories: [ECategories.ALL, ECategories.TODO],
+    count: {
+      Archived: 0,
+      Done: 0,
+      Draft: 0,
+      Overdue: 0,
+      SignatureRequired: 0,
+      Upcoming: 0,
+    },
+    decreaseCategoryCount: jest.fn(),
+    resetCount: jest.fn(),
+    setActiveCategory: jest.fn(),
+  }));
+
+  server.use(
+    // return member tracking record with status of 'todo'
+    rest.post(`/api/membertrackingrecords/2/update_completion`, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          authorityId: null,
+          id: 1,
+          authoritySignedDate: dayjs('2021-01-02').toDate(),
+          completedDate: dayjs('2021-01-02').toDate(),
+          order: 0,
+          trackingItemId: 1,
+          traineeId: '1',
+          traineeSignedDate: null,
+          trackingItem: trackingItemWithAnnualInterval,
+        } as RecordWithTrackingItem)
+      );
+    })
+  );
+
+  const { getByText, queryByRole, getByRole } = render(
+    <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
+  );
+  await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
+  await waitFor(() => getByRole(/date-picker/i));
+  expect(getByText(/item title/i)).toBeInTheDocument();
+  fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
+
+  // wait for modal then click yes
+  await waitFor(() => getByText(/Yes/i));
+  expect(getByText(/Yes/i)).toBeInTheDocument();
+  fireEvent.click(getByText(/Yes/i));
+
+  // expect the snackbar to be visible
+  await waitFor(() => getByText(/date updated/i));
+  expect(getByText(/date updated/i)).toBeInTheDocument();
+});
+
+test('should prompt user with signatures present but then we click the No button', async () => {
+  const countIncreaseFunction = jest.fn();
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategories.ALL,
+    increaseCategoryCount: countIncreaseFunction,
+    categories: [ECategories.ALL, ECategories.TODO],
+    count: {
+      Archived: 0,
+      Done: 0,
+      Draft: 0,
+      Overdue: 0,
+      SignatureRequired: 0,
+      Upcoming: 0,
+    },
+    decreaseCategoryCount: jest.fn(),
+    resetCount: jest.fn(),
+    setActiveCategory: jest.fn(),
+  }));
+
+  server.use(
+    // return member tracking record with status of 'todo'
+    rest.post(`/api/membertrackingrecords/2/update_completion`, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          authorityId: null,
+          id: 1,
+          authoritySignedDate: dayjs('2021-01-02').toDate(),
+          completedDate: dayjs('2021-01-02').toDate(),
+          order: 0,
+          trackingItemId: 1,
+          traineeId: '1',
+          traineeSignedDate: null,
+          trackingItem: trackingItemWithAnnualInterval,
+        } as RecordWithTrackingItem)
+      );
+    })
+  );
+
+  const { getByText, queryByText, queryByRole, getByRole } = render(
+    <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
+  );
+  await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
+  await waitFor(() => getByRole(/date-picker/i));
+  expect(getByText(/item title/i)).toBeInTheDocument();
+  fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
+
+  // wait for modal then click yes
+  await waitFor(() => getByText(/No/i));
+  expect(getByText(/No/i)).toBeInTheDocument();
+  fireEvent.click(getByText(/No/i));
+
+  // expect the snackbar to not be visible
+  await waitFor(() => queryByText(/date updated/i));
+  expect(queryByText(/date updated/i)).not.toBeInTheDocument();
+});

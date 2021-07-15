@@ -11,7 +11,7 @@ import { GetStaticPropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
 import { findUserByIdWithMemberTrackingItems } from '../../repositories/userRepo';
 import Tab from '../../components/Records/Tab';
-import { AddMemberTrackingItemDialog } from '../../components/Records/AddMemberTrackingItemDialog';
+import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
 import { Link } from '../../lib/ui';
 import tw from 'twin.macro';
 
