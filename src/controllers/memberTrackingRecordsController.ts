@@ -22,6 +22,8 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
   const memberTrackingRecordId = parseInt(slug[0]);
   const verb = slug[1];
 
+  return res.status(400).json({ message: 'Not implemented' });
+
   if (!Object.values(EMtrVerb).includes(verb as EMtrVerb)) {
     return res.status(400).json({ message: 'Bad Request' });
   }

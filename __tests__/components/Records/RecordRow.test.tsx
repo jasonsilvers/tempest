@@ -1,8 +1,8 @@
-import { MemberTrackingRecord, TrackingItem } from '.prisma/client';
+import { TrackingItem } from '.prisma/client';
 import React from 'react';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/providers/MemberItemTrackerContext';
 import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/RecordRow';
-import { ECategories, EMtrVerb } from '../../../src/types/global';
+import { ECategories } from '../../../src/types/global';
 import { fireEvent, prettyDOM, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/providers/useMemberItemTrackerContext';
 // MSW test requirements

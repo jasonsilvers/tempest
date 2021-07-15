@@ -101,14 +101,11 @@ const RecordRow: React.FC<{
       { memberTrackingRecord, userId: user.id },
       {
         onSettled: async () => {
-          console.log('on settled in record row');
-
           enqueueSnackbar('Completion date updated, Signatures cleared', { variant: 'success' });
         },
         // currently not firing onError.
         // see https://react-query.tanstack.com/guides/mutations#mutation-side-effects for doc on how it should work.
         onError: async () => {
-          console.log('Error while updating completion date');
           enqueueSnackbar('Completion date Request failed', { variant: 'error' });
         },
       }

@@ -91,16 +91,12 @@ export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
 
       onSettled: async (data) => {
         //This will need to be updated when signing for authority
-        console.log('on settled in hook');
 
         queryClient.invalidateQueries(mtrQueryKeys.memberTrackingRecord(data.id));
       },
       onError: async (err, { memberTrackingRecord }, previousState) => {
-        console.log('onError function');
-
         queryClient.setQueryData(mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id), previousState);
         queryClient.cancelMutations();
-        console.log('end of function');
       },
     }
   );
