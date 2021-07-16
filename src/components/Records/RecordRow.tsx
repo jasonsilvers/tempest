@@ -178,7 +178,9 @@ const RecordRow: React.FC<{
       </TableRow>
       <ConfirmDialog open={modalState.open} handleNo={handleNo} handleYes={handleYes}>
         <DialogTitle>Proceed?</DialogTitle>
-        <DialogContent>Changing the Completion Date will clear signatures</DialogContent>
+        <DialogContent>
+          Changing the completion date will clear all signatures present. Are you sure you want to continue?
+        </DialogContent>
       </ConfirmDialog>
     </>
   );
