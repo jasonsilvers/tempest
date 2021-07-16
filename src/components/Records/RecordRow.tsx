@@ -1,5 +1,6 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
-import dayjs, { Dayjs } from 'dayjs';
+import { Dayjs } from 'dayjs';
+const dayjs = require('dayjs');
 import React, { ChangeEvent, useLayoutEffect, useMemo, useState } from 'react';
 import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 import { getCategory } from '../../utils/Status';

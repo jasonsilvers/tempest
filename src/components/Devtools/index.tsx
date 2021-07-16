@@ -11,7 +11,7 @@ import { MenuItem, Select } from '@material-ui/core';
 import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
 import { UsersDTO, RolesDTO, OrgsDTO } from '../../types/global';
-import dayjs from 'dayjs';
+const dayjs = require('dayjs');
 
 const Data = tw.div`font-light text-gray-400`;
 type RoleFormEvent = React.ChangeEvent<{ value: number }>;

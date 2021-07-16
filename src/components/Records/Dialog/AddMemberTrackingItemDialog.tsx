@@ -14,7 +14,7 @@ import {
 import tw from 'twin.macro';
 import { useTrackingItems } from '../../../hooks/api/trackingItem';
 import { MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '.prisma/client';
-import dayjs from 'dayjs';
+const dayjs = require('dayjs');
 import { DeleteIcon } from '../../../assets/Icons';
 import { useCreateMemberTrackingItemAndRecord, useMemberTrackingItems } from '../../../hooks/api/memberTrackingItem';
 import { useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';

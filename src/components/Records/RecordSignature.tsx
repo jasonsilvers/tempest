@@ -1,5 +1,5 @@
 import { MemberTrackingRecord, User } from '@prisma/client';
-import dayjs from 'dayjs';
+const dayjs = require('dayjs');
 import { SnackbarMessage, OptionsObject, SnackbarKey, useSnackbar } from 'notistack';
 import React from 'react';
 import { UseMutateFunction } from 'react-query';

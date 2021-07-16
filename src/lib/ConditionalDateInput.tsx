@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+const dayjs = require('dayjs');
 import React, { ChangeEvent } from 'react';
 import { TempestDatePicker } from './ui';
 

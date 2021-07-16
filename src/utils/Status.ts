@@ -1,5 +1,5 @@
 import { ECategories } from '../types/global';
-import dayjs from 'dayjs';
+const dayjs = require('dayjs');
 import { MemberTrackingRecord } from '.prisma/client';
 /**
  * Function to get the status text of a tracking item

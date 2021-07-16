@@ -67,8 +67,8 @@ export const withErrorHandling =
         return res.status(e.status).json({ message: e.message });
       }
 
-      log.error(`caught error: ${e.status} ${e.body}`);
-      return res.status(e.status).send(e.body);
+      log.error(`caught error: ${500} ${e}`);
+      return res.status(500).send(e.body);
     }
   };
 

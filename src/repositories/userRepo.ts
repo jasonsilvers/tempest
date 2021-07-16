@@ -3,7 +3,7 @@ import prisma from '../prisma/prisma';
 import { ERole, EUserIncludes } from '../types/global';
 import { IPerson } from './common/types';
 import { getRoleByName } from './roleRepo';
-import dayjs from 'dayjs';
+const dayjs = require('dayjs');
 
 export const findUserByIdReturnAllIncludes = async (userId: string) => {
   return prisma.user.findUnique({

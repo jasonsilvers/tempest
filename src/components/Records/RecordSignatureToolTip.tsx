@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import dayjs from 'dayjs';
+const dayjs = require('dayjs');
 import tw from 'twin.macro';
 import { ReactElement } from 'react';
 import { TempestToolTip, Zoom } from '../../lib/ui';

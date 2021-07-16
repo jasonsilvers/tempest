@@ -1,6 +1,6 @@
 import { MemberTrackingRecord } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import dayjs from 'dayjs';
+const dayjs = require('dayjs');
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../middleware/utils';
 import { TempestError } from '../middleware/withErrorHandling';

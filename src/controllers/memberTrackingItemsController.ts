@@ -1,5 +1,5 @@
 import { MemberTrackingItem } from '@prisma/client';
-import dayjs from 'dayjs';
+const dayjs = require('dayjs');
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../middleware/utils';
 import { ITempestMemberTrackingItemApiRequest } from '../pages/api/membertrackingitems';
