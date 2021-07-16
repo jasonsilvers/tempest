@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import './global';
 
 // Docs about instantiating `PrismaClient` with Next.js:
 // https://pris.ly/d/help/next-js-best-practices
