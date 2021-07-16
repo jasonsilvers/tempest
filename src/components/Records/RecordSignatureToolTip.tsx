@@ -20,12 +20,12 @@ const getTitle = (traineeSignature: Signature, authoritySignature: Signature) =>
     <div tw="flex space-x-3">
       {authoritySignature ? (
         <Container>
-          <Name>{`${authorityRank.split('/')[0]} ${authorityFN} ${authorityLN}`}</Name>
+          <Name>{`${authorityRank?.split('/')[0]} ${authorityFN} ${authorityLN}`}</Name>
           <Date>{dayjs(authoritySignature.date).format('hhmm MM/DD/YY')}</Date>
         </Container>
       ) : null}
       <Container>
-        <Name>{`${traineeRank.split('/')[0]} ${tranieeFN} ${traineeLN}`}</Name>
+        <Name>{`${traineeRank?.split('/')[0]} ${tranieeFN} ${traineeLN}`}</Name>
         <Date>{dayjs(traineeSignature.date).format('hhmm MM/DD/YY')}</Date>
       </Container>
     </div>
