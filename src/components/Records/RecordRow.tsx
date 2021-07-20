@@ -33,6 +33,26 @@ const daysToString = {
   365: 'Annual',
 };
 
+const isFiltered = (categories: ECategories[], activeCategory: ECategories, status: ECategories) => {
+  // fallback case to ensure the activeCategory is in the category array
+  if (!categories.includes(activeCategory)) {
+    return true;
+  }
+
+  // Filter statuses
+  if (!categories.includes(status)) {
+    return true;
+  }
+  // display all filter
+  if (activeCategory !== ECategories.ALL) {
+    if (activeCategory !== status) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 const RecordRowSkeleton = () => {
   return (
     <div role="skeleton" tw="border border-gray-300 ">
@@ -106,20 +126,8 @@ const RecordRow: React.FC<{
     return <RecordRowSkeleton />;
   }
 
-  // fallback case to ensure the activeCategory is in the category array
-  if (!categories.includes(activeCategory)) {
+  if (isFiltered(categories, activeCategory, status)) {
     return null;
-  }
-
-  // Filter statuses
-  if (!categories.includes(status)) {
-    return null;
-  }
-  // display all filter
-  if (activeCategory !== ECategories.ALL) {
-    if (activeCategory !== status) {
-      return null;
-    }
   }
 
   const handleCompletionDateChange = (event: ChangeEvent<HTMLInputElement>) => {
