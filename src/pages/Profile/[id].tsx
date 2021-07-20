@@ -15,7 +15,8 @@ import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/Add
 import { Link } from '../../lib/ui';
 import tw from 'twin.macro';
 
-const AddNewButton = tw(Link)`italic absolute -bottom-10 right-10`;
+const ButtonContainer = tw.div`fixed right-10 bg-white top-5 border border-primary rounded-3xl`;
+const AddNewButton = tw(Link)`italic p-2 outline-none focus:outline-none`;
 
 const Profile = () => {
   const {
@@ -60,15 +61,17 @@ const Profile = () => {
         <Tab category={ECategories.OVERDUE}>Overdue</Tab>
       </MemberItemTracker>
 
-      <AddNewButton
-        component="button"
-        variant="body2"
-        onClick={() => {
-          setAddNewModal(true);
-        }}
-      >
-        Add New +
-      </AddNewButton>
+      <ButtonContainer>
+        <AddNewButton
+          component="button"
+          variant="body2"
+          onClick={() => {
+            setAddNewModal(true);
+          }}
+        >
+          Add New +
+        </AddNewButton>
+      </ButtonContainer>
 
       {openAddNewModal ? (
         <AddMemberTrackingItemDialog
