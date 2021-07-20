@@ -53,7 +53,9 @@ test('should return permission denied with bad grants', async () => {
   mockMethodAndReturn(findGrants, null);
   const { status } = await testNextApi.get(userHandler);
   expect(status).toEqual(500);
-  expect(consoleSpy).toHaveBeenCalled();
+  if (process.env.NODE_ENV === 'production') {
+    expect(consoleSpy).toHaveBeenCalled();
+  }
 });
 test('should return permission denied with bad grants', async () => {
   mockMethodAndReturn(findUserByDodId, {

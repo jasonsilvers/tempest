@@ -19,11 +19,11 @@ const Navbar: React.FC = () => {
           </Link>
           <Link goToUrl={`/Profile/${user.id}`}>
             <PersonIcon />
-            <div>Profile</div>
+            <div>My Profile</div>
           </Link>
           <Link goToUrl="/Trackingitems">
             <DescriptionIcon />
-            <div>Tracking Items</div>
+            <div>Global Training Catalog</div>
           </Link>
         </div>
       ) : null}
