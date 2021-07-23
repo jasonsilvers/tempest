@@ -30,11 +30,19 @@ const DashboardPage: React.FC<{ users: User[] }> = ({ users }) => {
 export default DashboardPage;
 
 export const getStaticProps = async () => {
-  const users = await getUsers();
-  return {
-    props: {
-      users,
-    },
-    revalidate: 30,
-  };
+  try {
+    return {
+      props: {
+        users: await getUsers(),
+      },
+      revalidate: 60,
+    };
+  } catch (e) {
+    return {
+      props: {
+        users: [],
+      },
+      revalidate: 60,
+    };
+  }
 };
