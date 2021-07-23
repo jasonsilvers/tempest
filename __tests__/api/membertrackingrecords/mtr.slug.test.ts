@@ -76,6 +76,7 @@ test('should sign authority', async () => {
   const updatedMemberTrackingRecordFromDb = {
     ...returnedMemberTrackingRecordDB,
     authoritySignedDate: dayjs().toDate(),
+    authorityId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
   };
 
   mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);

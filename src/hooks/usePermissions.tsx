@@ -40,7 +40,7 @@ const usePermissions = () => {
     role = user.role?.name;
   }
 
-  if (!userIsLoading && !grantsQuery.isLoading) {
+  if (!userIsLoading && grantsQuery.data) {
     isLoading = false;
   }
 

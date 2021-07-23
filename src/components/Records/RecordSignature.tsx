@@ -13,7 +13,14 @@ import { ActionButton, DisabledButton, TableData } from './TwinMacro/Twin';
 
 import RecordSignatureToolTip from './RecordSignatureToolTip';
 import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
-import { EMtrVerb } from '../../types/global';
+import { EFuncAction, EMtrVerb, EResource } from '../../types/global';
+import { usePermissions } from '../../hooks/usePermissions';
+
+const AwaitingSignature: React.FC = ({ children }) => (
+  <TableData tw="mr-3">
+    <DisabledButton>{children ?? 'Awaiting Signature'}</DisabledButton>
+  </TableData>
+);
 
 /**
  * Function to determine render for the Trainee Signature Block
@@ -24,9 +31,10 @@ import { EMtrVerb } from '../../types/global';
  * @returns
  */
 
-const getTraineeSignature = (
+const getSignature = (
+  signee: 'trainee' | 'authority',
   memberTrackingRecord: MemberTrackingRecordWithUsers,
-  signatureDate: Date,
+  signatureType: 'authoritySignedDate' | 'traineeSignedDate',
   loggedInUser: User,
   signRecordFor: UseMutateFunction<
     MemberTrackingRecord,
@@ -58,7 +66,11 @@ const getTraineeSignature = (
   // if signature date is false and
   // user logged in is the signature owner
   // render button to sign
-  if (!signatureDate && memberTrackingRecord?.traineeId === loggedInUser?.id) {
+  if (
+    !memberTrackingRecord[signatureType] &&
+    ((signee === 'authority' && loggedInUser.id !== memberTrackingRecord.traineeId) ||
+      (signee === 'trainee' && loggedInUser.id === memberTrackingRecord.traineeId))
+  ) {
     return (
       <TableData>
         <ActionButton role={setDomRole('Signature Button')} onClick={handleSignTrainee}>
@@ -69,26 +81,22 @@ const getTraineeSignature = (
   }
   // if signature date is true and signature owner is true
   // render signature based on the signature owner and date
-  if (loggedInUser) {
+  if (memberTrackingRecord[signatureType] && memberTrackingRecord[signee]) {
     return (
       <TableData>
         <RecordSignatureToolTip
-          traineeSignature={{ signee: memberTrackingRecord.trainee, date: memberTrackingRecord.traineeSignedDate }}
+          traineeSignature={{ signee: memberTrackingRecord[signee], date: memberTrackingRecord[signatureType] }}
         >
-          <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord.traineeSignedDate).format(
+          <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
             'MM/DD/YY'
           )}`}</DisabledButton>
         </RecordSignatureToolTip>
       </TableData>
     );
   }
-};
 
-const AwaitingSignature: React.FC = ({ children }) => (
-  <TableData tw="mr-3">
-    <DisabledButton>{children ?? 'Awaiting Signature'}</DisabledButton>
-  </TableData>
-);
+  return <AwaitingSignature />;
+};
 
 const RecordSignature: React.FC<{
   authoritySignedDate: Date;
@@ -98,8 +106,22 @@ const RecordSignature: React.FC<{
 }> = ({ authoritySignedDate, traineeSignedDate, memberTrackingRecord, disabled }) => {
   const { user: LoggedInUser } = useUser<LoggedInUserType>();
   const { enqueueSnackbar } = useSnackbar();
-  const { mutate } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_TRAINEE);
+  const { mutate: signTrainee } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_TRAINEE);
+  const { mutate: signAuthority } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_AUTHORITY);
   const { trainee, authority } = memberTrackingRecord;
+  const { permissionCheck, isLoading } = usePermissions();
+
+  const permission = permissionCheck(LoggedInUser.role.name, EFuncAction.UPDATE_ANY, EResource.MEMBER_TRACKING_RECORD);
+
+  if (disabled) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <></>;
+  }
+
+  const canSignAuthority = permission.granted && memberTrackingRecord.traineeId !== LoggedInUser.id;
 
   if (authoritySignedDate && traineeSignedDate) {
     return (
@@ -117,12 +139,19 @@ const RecordSignature: React.FC<{
   }
   return (
     <div tw="flex ml-auto">
-      <AwaitingSignature />
-      {!disabled ? (
-        getTraineeSignature(memberTrackingRecord, traineeSignedDate, LoggedInUser, mutate, enqueueSnackbar)
+      {canSignAuthority ? (
+        getSignature(
+          'authority',
+          memberTrackingRecord,
+          'authoritySignedDate',
+          LoggedInUser,
+          signAuthority,
+          enqueueSnackbar
+        )
       ) : (
-        <AwaitingSignature>Invalid Date</AwaitingSignature>
+        <AwaitingSignature />
       )}
+      {getSignature('trainee', memberTrackingRecord, 'traineeSignedDate', LoggedInUser, signTrainee, enqueueSnackbar)}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { MemberTrackingRecord } from '.prisma/client';
+import { User } from '@prisma/client';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RecordWithTrackingItem } from '../../components/Records/RecordRow';
@@ -45,6 +46,7 @@ export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
       onMutate: async ({ memberTrackingRecord }) => {
         await queryClient.cancelQueries(mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id));
         const previousState = queryClient.getQueryData(mtrQueryKeys.memberTrackingRecord(memberTrackingRecord.id));
+        const loggedInUser: User = queryClient.getQueryData('loggedInUser');
 
         const status = getCategory(memberTrackingRecord, memberTrackingRecord.trackingItem.interval);
         // optimistic update for the completedDate
@@ -80,6 +82,7 @@ export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
               ...old,
               ...memberTrackingRecord,
               authoritySignedDate: new Date(),
+              authority: loggedInUser,
               status,
             })
           );

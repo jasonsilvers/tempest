@@ -26,5 +26,7 @@ export const TokenObj: { [K in ECategories]: typeof Token } = {
 
 // Buttons
 export const ActionButton = tw.button`bg-primary border-radius[5px] min-width[120px] text-white min-height[25px] flex justify-center items-center `;
-export const NoActionButton = tw(ActionButton)`bg-transparent text-primary border-primary border`;
+export const NoActionButton = tw(
+  ActionButton
+)`bg-transparent text-primary border-primary border cursor-not-allowed outline-none focus:outline-none`;
 export const DisabledButton = tw(NoActionButton)`border-black border-opacity-25 text-black text-opacity-25`;

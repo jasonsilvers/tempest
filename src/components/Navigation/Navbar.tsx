@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { Header, Link } from './Navigation';
 import { User } from '.prisma/client';
 import { TempestDrawer } from '../../lib/ui';
 import { DashboardIcon, DescriptionIcon, PersonIcon } from '../../assets/Icons';
+import { useQueryClient } from 'react-query';
 
 const Navbar: React.FC = () => {
   const { user } = useUser<User>();
+  const queryClient = useQueryClient();
+
+  useMemo(() => {
+    if (user) {
+      queryClient.setQueryData('loggedInUser', user);
+    }
+  }, [user]);
 
   return (
     <TempestDrawer>

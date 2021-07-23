@@ -22,6 +22,20 @@ afterEach(() => {
   container = null;
 });
 
+it('should render the _app for next js and remove the #jss-server-side element', async () => {
+  // set id of styles to jss-server-side and append to document.head
+  jssStyles.id = 'jss-server-side';
+  document.head.appendChild(jssStyles);
+
+  act(() => {
+    render(<App Component={simpleComponent} pageProps={null} />, container);
+  });
+
+  // wait for jssStyles to be removed by the use effect in _app
+  waitForElementToBeRemoved(() => jssStyles);
+  expect(document.contains(jssStyles)).toBeFalsy();
+});
+
 it('should render the _app for next js', async () => {
   // add the jssStyles to the document head
   document.head.appendChild(jssStyles);
@@ -37,20 +51,6 @@ it('should render the _app for next js', async () => {
   // clean up document.head after expect
   expect(document.contains(jssStyles)).toBeTruthy();
   document.head.removeChild(jssStyles);
-});
-
-it('should render the _app for next js and remove the #jss-server-side element', async () => {
-  // set id of styles to jss-server-side and append to document.head
-  jssStyles.id = 'jss-server-side';
-  document.head.appendChild(jssStyles);
-
-  act(() => {
-    render(<App Component={simpleComponent} pageProps={null} />, container);
-  });
-
-  // wait for jssStyles to be removed by the use effect in _app
-  waitForElementToBeRemoved(() => jssStyles);
-  expect(document.contains(jssStyles)).toBeFalsy();
 });
 
 it('should render the _app for next js with dev tools', async () => {
