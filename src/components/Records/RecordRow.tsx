@@ -15,22 +15,12 @@ import { useSnackbar } from 'notistack';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 import ConfirmDialog from './Dialog/ConfirmDialog';
 import { DialogContent, DialogTitle } from '../../lib/ui';
+import { getInterval } from '../../utils/DaysToString';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
   status?: ECategories;
   authority: User;
-};
-
-// object to get common text for amount of days
-const daysToString = {
-  7: 'Weekly',
-  14: 'Bi-Weekly',
-  30: 'Monthly',
-  31: 'Monthly',
-  90: 'Quarter',
-  180: 'Semi-Annual',
-  365: 'Annual',
 };
 
 const isFiltered = (categories: ECategories[], activeCategory: ECategories, status: ECategories) => {
@@ -151,10 +141,7 @@ const RecordRow: React.FC<{
             {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
           </div>
         </TableData>
-        <TableData tw={'text-purple-500 w-20 ml-10'}>
-          {/* get the common text for number of days if exits else render '## days' */}
-          {daysToString[trackingItem?.interval] ?? `${trackingItem?.interval} days`}
-        </TableData>
+        <TableData tw={'text-purple-500 w-20 ml-10'}>{getInterval(trackingItem?.interval)}</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
             <>

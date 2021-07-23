@@ -1,21 +1,11 @@
 import { rest } from 'msw';
-import { ERole } from '../../../src/types/global';
-import { grants } from './fixtures';
+import { bobJones, grants } from './fixtures';
 
 export const handlers = [
   rest.get('/api/login', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        id: '123',
-        firstName: 'bob',
-        lastName: 'jones',
-        role: {
-          id: 22,
-          name: ERole.MEMBER,
-        },
-      })
-    );
+    console.log(`is logging in`);
+
+    return res(ctx.status(200), ctx.json(bobJones));
   }),
 
   rest.get('/api/grants', (req, res, ctx) => {

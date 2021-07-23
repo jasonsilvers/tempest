@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { Header, Link } from './Navigation';
 import { User } from '.prisma/client';
 import { TempestDrawer } from '../../lib/ui';
 import { DashboardIcon, DescriptionIcon, PersonIcon } from '../../assets/Icons';
+import { useQueryClient } from 'react-query';
 
 const Navbar: React.FC = () => {
   const { user } = useUser<User>();
+  const queryClient = useQueryClient();
+
+  useMemo(() => {
+    if (user) {
+      queryClient.setQueryData('loggedInUser', user);
+    }
+  }, [user]);
 
   return (
     <TempestDrawer>
@@ -19,11 +27,11 @@ const Navbar: React.FC = () => {
           </Link>
           <Link goToUrl={`/Profile/${user.id}`}>
             <PersonIcon />
-            <div>Profile</div>
+            <div>My Profile</div>
           </Link>
           <Link goToUrl="/Trackingitems">
             <DescriptionIcon />
-            <div>Tracking Items</div>
+            <div>Global Training Catalog</div>
           </Link>
         </div>
       ) : null}

@@ -1,5 +1,4 @@
 import { User } from '@prisma/client';
-import { useUser } from '@tron/nextjs-auth-p1';
 import React from 'react';
 import tw from 'twin.macro';
 
@@ -14,9 +13,7 @@ const Address = tw(Base)``;
 const AFSC = tw(Base)`w-16`;
 const DutyTitle = tw(Base)``;
 
-const HeaderUser = () => {
-  const { user } = useUser<User>();
-
+const HeaderUser: React.FC<{ user: User }> = ({ user }) => {
   return user ? (
     <>
       <Header>EMPLOYEE SAFETY AND HEALTH RECORD</Header>

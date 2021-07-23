@@ -8,6 +8,7 @@ import { findUserByIdWithMemberTrackingItems, UserWithAll } from '../../src/repo
 
 jest.mock('../../src/repositories/userRepo');
 import { rest } from 'msw';
+import { bobJones } from '../utils/mocks/fixtures';
 
 beforeAll(() => {
   server.listen({
@@ -32,13 +33,13 @@ const mockUseRouter = (config) => {
 
 it('renders the profile page with loading profile text', async () => {
   mockUseRouter({ query: { id: '123' } });
-  const { getByText } = render(<Profile />);
+  const { getByText } = render(<Profile member={bobJones} />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 });
 
 it('renders the profile page with bad permissions', async () => {
   mockUseRouter({ query: { id: '321' } });
-  const { getByText } = render(<Profile />);
+  const { getByText } = render(<Profile member={bobJones} />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
   await waitForElementToBeRemoved(() => getByText(/loading profile/i));
@@ -48,7 +49,7 @@ it('renders the profile page with bad permissions', async () => {
 // MSW broke stuff
 it('renders the profile page', async () => {
   mockUseRouter({ query: { id: '123' } });
-  const { getByText } = render(<Profile />);
+  const { getByText } = render(<Profile member={bobJones} />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
   await waitForElementToBeRemoved(() => getByText(/loading profile/i));
@@ -72,7 +73,7 @@ it('renders  opens the dialog modal', async () => {
   );
 
   mockUseRouter({ query: { id: '123' } });
-  const { getByText, queryByText } = render(<Profile />);
+  const { getByText, queryByText } = render(<Profile member={bobJones} />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
   await waitForElementToBeRemoved(() => getByText(/loading profile/i));

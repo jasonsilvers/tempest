@@ -9,16 +9,17 @@ import { QueryClient } from 'react-query';
 import { mtiQueryKeys } from '../../hooks/api/memberTrackingItem';
 import { GetStaticPropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
-import { findUserByIdWithMemberTrackingItems } from '../../repositories/userRepo';
+import { findUserByIdWithMemberTrackingItems, findUserById } from '../../repositories/userRepo';
 import Tab from '../../components/Records/Tab';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
 import { Link } from '../../lib/ui';
 import tw from 'twin.macro';
+import { User } from '@prisma/client';
 
 const ButtonContainer = tw.div`fixed right-10 bg-white top-5 border border-primary rounded-3xl`;
 const AddNewButton = tw(Link)`italic p-2 outline-none focus:outline-none`;
 
-const Profile = () => {
+const Profile: React.FC<{ member: User }> = ({ member }) => {
   const {
     query: { id },
   } = useRouter();
@@ -47,7 +48,7 @@ const Profile = () => {
 
   return (
     <div tw="relative min-w-min max-width[1440px]">
-      <HeaderUser />
+      <HeaderUser user={member} />
       <MemberItemTracker title="Training in Progress" userId={userId}>
         <Tab category={ECategories.ALL}>All</Tab>
         <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
@@ -96,9 +97,12 @@ export async function getStaticProps(context: GetStaticPropsContext) {
     findUserByIdWithMemberTrackingItems(userId, EUserIncludes.TRACKING_ITEMS)
   );
 
+  const member = await findUserById(userId);
+
   return {
     props: {
       dehydrateState: dehydrate(queryClient),
+      member,
     },
     revalidate: 30,
   };

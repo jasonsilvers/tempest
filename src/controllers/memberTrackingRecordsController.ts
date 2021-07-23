@@ -33,6 +33,7 @@ const signAuthority = (userId: string, recordFromDb: MemberTrackingRecordWithUse
   return {
     ...recordFromDb,
     authoritySignedDate: dayjs().toDate(),
+    authorityId: userId,
   } as MemberTrackingRecordWithUsers;
 };
 

@@ -1,5 +1,5 @@
 import { P1_JWT } from '@tron/nextjs-auth-p1';
-import { EAction, EResource } from '../../../src/types/global';
+import { EAction, EResource, ERole } from '../../../src/types/global';
 import { grants as realGrants } from '../../../src/utils/Grants';
 
 const grants = [
@@ -51,6 +51,16 @@ export const explodedJwt_admin: P1_JWT = {
   family_name: 'Jones',
   email: 'jj@gmail.com',
   dod_id: '2223332221',
+};
+
+export const bobJones = {
+  id: '123',
+  firstName: 'bob',
+  lastName: 'jones',
+  role: {
+    id: 22,
+    name: ERole.MEMBER,
+  },
 };
 
 export { grants };
