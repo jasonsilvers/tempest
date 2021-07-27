@@ -11,7 +11,7 @@ module.exports = {
         hg: '#7B7B7B',
       },
       fontFamily: {
-        sans: ['Roboto', ...defaultTheme.fontFamily.sans],
+        sans: ['Roboto', 'DM Sans', ...defaultTheme.fontFamily.sans],
         default: ['Roboto'],
       },
       screens: {
