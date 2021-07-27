@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { ECategories } from '../../../types/global';
+import { ECategories } from '../../../../types/global';
 
 interface IMemberTrackerContextState {
   count: {

@@ -2,7 +2,7 @@ import { MemberTrackingRecord } from '.prisma/client';
 import { User } from '@prisma/client';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { RecordWithTrackingItem } from '../../components/Records/RecordRow';
+import { RecordWithTrackingItem } from '../../components/Records/MemberRecordTracker/RecordRow';
 import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
 import { EMtrVerb } from '../../types/global';
 import { getCategory } from '../../utils/Status';
