@@ -14,6 +14,7 @@ import { MemberTrackingRecordWithUsers } from '../../../repositories/memberTrack
 import { EMtrVerb, EFuncAction, EResource } from '../../../types/global';
 import setDomRole from '../../../utils/SetDomRole';
 import { TableData, DisabledButton, ActionButton } from '../TwinMacro/Twin';
+import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
 
 const AwaitingSignature: React.FC = ({ children }) => (
   <TableData tw="mr-3">
