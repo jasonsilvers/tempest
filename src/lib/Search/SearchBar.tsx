@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
@@ -7,7 +6,6 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 import withStyles from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
-import { JsxElement } from 'typescript';
 import { ReactElement } from 'react';
 
 const styles = (theme) => ({
