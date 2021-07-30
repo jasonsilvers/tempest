@@ -11,7 +11,6 @@ import {
 import tw from 'twin.macro';
 import { useAddTrackingItem } from '../../../hooks/api/trackingItem';
 import { DeleteIcon } from '../../../assets/Icons';
-import { useSnackbar } from 'notistack';
 import { DialogContentText, OutlinedInput, OutlinedInputProps } from '@material-ui/core';
 import { TrackingItem } from '@prisma/client';
 
@@ -38,7 +37,7 @@ const Paper = tw.div`ml-80 px-5`;
 
 const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClose, isOpen }) => {
   const { mutate: create } = useAddTrackingItem();
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving] = useState(false);
   const [trackingItems, setTrackingItems] = useState([] as TrackingItemToAdd[]);
   const [trackingItem, setTrackingItem] = useState({
     title: '',

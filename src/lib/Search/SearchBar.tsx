@@ -50,7 +50,7 @@ interface ISearchBarProps {
   /** Whether to clear search on escape */
   cancelOnEscape?: boolean;
   /** Override or extend the styles applied to the component. */
-  classes?: any;
+  classes?: { [key: string]: string };
   /** Custom top-level class */
   className?: string;
   /** Override the close icon. */
