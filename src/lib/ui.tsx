@@ -16,6 +16,7 @@ import Fab from '@material-ui/core/Fab';
 import ToolTip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import Paper from '@material-ui/core/Paper';
+import SearchBar from '@snekcode/mui-search-bar';
 
 const TPaper = styled(Paper)`
   background-color: #2d2270;
@@ -94,6 +95,7 @@ export {
   TempestToolTip,
   TempestDatePicker,
   Zoom,
+  SearchBar,
 };
 
 export type { TempestModalProps };
