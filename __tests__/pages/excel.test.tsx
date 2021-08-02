@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor, userEvent, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
 import Excel from '../../src/pages/Excel/index';
 import fs from 'fs';
-import { ERole } from '../../src/types/global';
+import { ERole, EUri } from '../../src/types/global';
 import { server, rest } from '../utils/mocks/msw';
 import 'whatwg-fetch';
 
@@ -22,7 +22,7 @@ afterAll(() => server.close());
 
 test('should upload excel file', async () => {
   server.use(
-    rest.get('/api/login', (req, res, ctx) => {
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
@@ -58,7 +58,7 @@ test('should upload excel file', async () => {
 
 test('should not upload excel file based on file extension', async () => {
   server.use(
-    rest.get('/api/login', (req, res, ctx) => {
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({

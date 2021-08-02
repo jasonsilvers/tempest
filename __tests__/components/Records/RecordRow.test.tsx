@@ -1,10 +1,10 @@
 import { TrackingItem } from '.prisma/client';
 import React from 'react';
-import { MemberItemTrackerContextProvider } from '../../../src/components/Records/providers/MemberItemTrackerContext';
-import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/RecordRow';
-import { ECategories } from '../../../src/types/global';
+import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
+import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/MemberRecordTracker/RecordRow';
+import { ECategories, EUri } from '../../../src/types/global';
 import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
-import * as MemberItemTrackerHooks from '../../../src/components/Records/providers/useMemberItemTrackerContext';
+import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 // MSW test requirements
 import 'whatwg-fetch';
 import { server, rest } from '../../utils/mocks/msw';
@@ -32,7 +32,7 @@ beforeEach(() => {
 
   server.use(
     // return member tracking record with status of 'todo'
-    rest.get('/api/membertrackingrecords/1', (req, res, ctx) => {
+    rest.get(EUri.MEMBER_TRACKING_RECORDS + '1', (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
@@ -48,7 +48,7 @@ beforeEach(() => {
         } as RecordWithTrackingItem)
       );
     }),
-    rest.get('/api/membertrackingrecords/2', (req, res, ctx) => {
+    rest.get(EUri.MEMBER_TRACKING_RECORDS + 2, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
@@ -236,7 +236,7 @@ test('should mutate and enqueue snackbar success with not signatures', async () 
 
   server.use(
     // return member tracking record with status of 'todo'
-    rest.post(`/api/membertrackingrecords/1/update_completion`, (req, res, ctx) => {
+    rest.post(EUri.MEMBER_TRACKING_RECORDS + `1/update_completion`, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
@@ -328,7 +328,7 @@ test('should prompt user then mutate and enqueue snackbar success with signature
 
   server.use(
     // return member tracking record with status of 'todo'
-    rest.post(`/api/membertrackingrecords/2/update_completion`, (req, res, ctx) => {
+    rest.post(EUri.MEMBER_TRACKING_RECORDS + `2/update_completion`, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
@@ -385,7 +385,7 @@ test('should prompt user with signatures present but then we click the No button
 
   server.use(
     // return member tracking record with status of 'todo'
-    rest.post(`/api/membertrackingrecords/2/update_completion`, (req, res, ctx) => {
+    rest.post(EUri.MEMBER_TRACKING_RECORDS + `2/update_completion`, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({

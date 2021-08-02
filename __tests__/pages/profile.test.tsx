@@ -1,14 +1,14 @@
 import { render, waitFor, waitForElementToBeRemoved, fireEvent } from '../utils/TempestTestUtils';
 import Profile, { getStaticPaths, getStaticProps } from '../../src/pages/Profile/[id]';
 import 'whatwg-fetch';
-import { server } from '../utils/mocks/msw';
+import { server, rest } from '../utils/mocks/msw';
 import * as nextRouter from 'next/router';
 import { mockMethodAndReturn } from '../utils/mocks/repository';
 import { findUserByIdWithMemberTrackingItems, UserWithAll } from '../../src/repositories/userRepo';
 
 jest.mock('../../src/repositories/userRepo');
-import { rest } from 'msw';
 import { bobJones } from '../utils/mocks/fixtures';
+import { EUri } from '../../src/types/global';
 
 beforeAll(() => {
   server.listen({
@@ -58,7 +58,7 @@ it('renders the profile page', async () => {
 
 it('renders  opens the dialog modal', async () => {
   server.use(
-    rest.get('/api/trackingitems', (req, res, ctx) => {
+    rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json([

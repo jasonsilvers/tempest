@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
 import { usePermissions } from '../../hooks/usePermissions';
-import { ERole } from '../../types/global';
+import { ERole, EUri } from '../../types/global';
 import { LoggedInUser } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
 import { Organization, Role, User } from '.prisma/client';
@@ -23,18 +23,18 @@ type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 const UsersList = () => {
   const queryClient = useQueryClient();
   const usersListQuery = useQuery<LoggedInUser[]>('users', () =>
-    axios.get<UsersDTO>('/api/users').then((response) => response.data.users)
+    axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.users)
   );
 
   const rolesListQuery = useQuery<Role[]>('roles', () =>
-    axios.get<RolesDTO>('/api/roles').then((response) => response.data.roles)
+    axios.get<RolesDTO>(EUri.ROLES).then((response) => response.data.roles)
   );
   const orgsListQuery = useQuery<Organization[]>('organizations', () =>
-    axios.get<OrgsDTO>('/api/organizations').then((response) => response.data.organizations)
+    axios.get<OrgsDTO>(EUri.ORGANIZATIONS).then((response) => response.data.organizations)
   );
 
   const mutateUser = useMutation<User, unknown, User>(
-    (user: User) => axios.put(`/api/users/${user.id}`, user).then((response) => response.data),
+    (user: User) => axios.put(EUri.USERS + `${user.id}`, user).then((response) => response.data),
     {
       onSettled: () => {
         queryClient.invalidateQueries('users');
