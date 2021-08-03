@@ -6,6 +6,8 @@ import { ERole, EUri, TrackingItemsDTO } from '../../src/types/global';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { bobJones } from '../utils/mocks/fixtures';
 import { DefaultRequestBody } from 'msw';
+import prisma from '../setup/mockedPrisma';
+import { TrackingItem } from '@prisma/client';
 
 beforeAll(() => {
   server.listen({
@@ -35,12 +37,16 @@ beforeEach(() => {
           ],
         })
       );
+    }),
+    rest.delete(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+      return res(ctx.status(204));
     })
   );
 });
 
 afterAll(() => {
   server.close();
+  jest.clearAllMocks();
 });
 
 afterEach(() => {
@@ -56,6 +62,33 @@ it('renders the Dashboard page', async () => {
   expect(getByText(/global training/i)).toBeInTheDocument();
   await waitFor(() => getByText(/test title/i));
   expect(getByText(/test title/i)).toBeInTheDocument();
+});
+
+it('renders the Dashboard page as admin an deletes trackingItem', async () => {
+  const { getByText, getByRole, queryByText } = render(<TrackingItemPage />);
+  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  expect(getByText(/global training/i)).toBeInTheDocument();
+  await waitFor(() => getByText(/test title/i));
+  expect(getByText(/test title/i)).toBeInTheDocument();
+
+  fireEvent.click(getByRole('button', { name: /delete/i }));
+  waitForElementToBeRemoved(() => getByText(/test title/i));
+  waitFor(() => expect(queryByText(/test title/i)).toBeFalsy());
+});
+
+it('renders the Dashboard page as user with out delete permissions', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 0, name: ERole.MEMBER } } as LoggedInUser));
+    })
+  );
+  const { getByText, queryByRole } = render(<TrackingItemPage />);
+  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  expect(getByText(/global training/i)).toBeInTheDocument();
+  await waitFor(() => getByText(/test title/i));
+  expect(getByText(/test title/i)).toBeInTheDocument();
+
+  expect(queryByRole('button', { name: /delete/i })).toBeFalsy();
 });
 
 /**
@@ -101,8 +134,33 @@ it('test the dashboard cancels the search', async () => {
 test('should return props for static props with no prisma', async () => {
   const { props } = await getStaticProps();
 
-  console.log(props.dehydrateState.queries[0]);
-
   expect(props.dehydrateState.queries[0].state.data).toEqual([]);
   expect(props.dehydrateState.queries[0].queryKey).toEqual(['trackingitems']);
+});
+
+test('should return props for static props with prisma', async () => {
+  const trackingItem = { id: 1, title: 'test title', description: 'test description', interval: 365 } as TrackingItem;
+  prisma.trackingItem.findMany.mockImplementation(() => [trackingItem]);
+  const { props } = await getStaticProps();
+
+  expect(props.dehydrateState.queries[0].state.data).toEqual([trackingItem]);
+  expect(props.dehydrateState.queries[0].queryKey).toEqual(['trackingitems']);
+});
+
+/**
+ * Dialog tests
+ */
+
+test('should open then close the dialog box', async () => {
+  const { getByText, getByRole, queryByText } = render(<TrackingItemPage />);
+  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  const title = getByText(/global training/i) as HTMLElement;
+  expect(title).toBeInTheDocument();
+  await waitFor(() => getByText(/test title/i));
+  const button = getByRole('button', { name: '+ Create New Training' }) as HTMLButtonElement;
+  fireEvent.click(button);
+  expect(getByText(/Please create the training title/i)).toBeInTheDocument();
+  fireEvent.click(getByRole('button', { name: /Close/i }));
+  await waitForElementToBeRemoved(() => queryByText(/Please create the training title/i));
+  expect(queryByText(/Please create the training title/i)).toBeFalsy();
 });

@@ -46,7 +46,12 @@ export const TrainingItemRow: React.FC<{ trackingItem: TrackingItem; canDelete: 
         // gitHub copilot would like you you to know that
         // its not worth it's own component
         // thanks coPilot!
-        <IconButton size="small" onClick={() => del(trackingItem.id)} tw="ml-auto mr-3 hover:bg-transparent">
+        <IconButton
+          aria-label={`delete ${trackingItem.title}`}
+          size="small"
+          onClick={() => del(trackingItem.id)}
+          tw="ml-auto mr-3 hover:bg-transparent"
+        >
           <StyledDeleteIcon tw="opacity-0 group-hocus:opacity-100" />
         </IconButton>
       ) : (

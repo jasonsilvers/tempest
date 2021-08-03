@@ -118,6 +118,11 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
         >
           Create
         </DialogButton>
+        {trackingItems.length === 0 ? (
+          <DialogButton onClick={handleClose} size="small" variant="contained">
+            Close
+          </DialogButton>
+        ) : null}
       </DialogActions>
       {trackingItems.length > 0 ? (
         <>

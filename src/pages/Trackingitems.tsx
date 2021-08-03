@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import tw from 'twin.macro';
 import { tiQueryKeys, useTrackingItems } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
-import prisma from '../prisma/prisma';
 import { dehydrate } from 'react-query/hydration';
 import { TrainingItemRow, TrainingItemHeader } from '../components/TrainingItems/TrainingItemRow';
 import { Button, SearchBar } from '../lib/ui';
@@ -23,6 +22,8 @@ const TrackingItems = () => {
   }
 
   const deletePermission = permissionCheck(user.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
+
+  console.log(deletePermission.granted);
 
   return (
     <div tw="flex flex-col max-width[1440px] min-width[800px] pr-5">
@@ -57,9 +58,10 @@ const TrackingItems = () => {
 export default TrackingItems;
 
 export async function getStaticProps() {
+  const prisma = require('../prisma/prisma');
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(tiQueryKeys.trackingItems(), () => (prisma ? prisma.trackingItem.findMany() : []));
+  await queryClient.prefetchQuery(tiQueryKeys.trackingItems(), () => prisma?.trackingItem.findMany() ?? []);
 
   return {
     props: {
