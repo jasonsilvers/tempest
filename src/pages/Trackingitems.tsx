@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import tw from 'twin.macro';
 import { tiQueryKeys, useTrackingItems } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
@@ -16,17 +16,13 @@ const TrackingItems = () => {
   const { data: trackingItems } = useTrackingItems();
   const [search, setSearch] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
-  const { user, permissionCheck } = usePermissions();
+  const { user, permissionCheck, isLoading } = usePermissions();
 
-  if (!user) {
-    return null;
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   const deletePermission = permissionCheck(user.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
-
-  if (!deletePermission) {
-    return null;
-  }
 
   return (
     <div tw="flex flex-col max-width[1440px] min-width[800px] pr-5">
@@ -63,7 +59,7 @@ export default TrackingItems;
 export async function getStaticProps() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(tiQueryKeys.memberTrackingItems(), () => prisma.trackingItem.findMany());
+  await queryClient.prefetchQuery(tiQueryKeys.trackingItems(), () => (prisma ? prisma.trackingItem.findMany() : []));
 
   return {
     props: {

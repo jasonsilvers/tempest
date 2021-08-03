@@ -14,7 +14,7 @@ beforeAll(() => {
   server.listen({
     onUnhandledRequest: 'bypass',
   });
-  // @ts-expect-errore
+  // @ts-expect-error
   nextRouter.useRouter = jest.fn();
 });
 // Reset any request handlers that we may add during the tests,
@@ -63,9 +63,10 @@ it('renders  opens the dialog modal', async () => {
         ctx.status(200),
         ctx.json([
           {
-            userId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
-            trackingItemId: 2,
-            isActive: true,
+            description: 'test item',
+            id: 1,
+            interval: 365,
+            title: 'test title',
           },
         ])
       );
