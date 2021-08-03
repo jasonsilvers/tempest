@@ -2,10 +2,10 @@ import TrackingItemPage, { getStaticProps } from '../../src/pages/Trackingitems'
 import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
 import 'whatwg-fetch';
 import { server, rest } from '../utils/mocks/msw';
-import { ERole, EUri } from '../../src/types/global';
+import { ERole, EUri, TrackingItemsDTO } from '../../src/types/global';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { bobJones } from '../utils/mocks/fixtures';
-import { TrackingItem } from '@prisma/client';
+import { DefaultRequestBody } from 'msw';
 
 beforeAll(() => {
   server.listen({
@@ -21,7 +21,7 @@ beforeEach(() => {
     }),
 
     // set up tracking items to be returned
-    rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+    rest.get<DefaultRequestBody, TrackingItemsDTO>(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
@@ -32,7 +32,7 @@ beforeEach(() => {
               interval: 365,
               title: 'test title',
             },
-          ] as TrackingItem[],
+          ],
         })
       );
     })

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import tw from 'twin.macro';
 import { tiQueryKeys, useTrackingItems } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
