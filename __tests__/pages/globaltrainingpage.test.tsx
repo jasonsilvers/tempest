@@ -38,7 +38,7 @@ beforeEach(() => {
         })
       );
     }),
-    rest.delete(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+    rest.delete(EUri.TRACKING_ITEMS + '*', (req, res, ctx) => {
       return res(ctx.status(204));
     })
   );
@@ -72,7 +72,6 @@ it('renders the Dashboard page as admin an deletes trackingItem', async () => {
   expect(getByText(/test title/i)).toBeInTheDocument();
 
   fireEvent.click(getByRole('button', { name: /delete/i }));
-  waitForElementToBeRemoved(() => getByText(/test title/i));
   waitFor(() => expect(queryByText(/test title/i)).toBeFalsy());
 });
 

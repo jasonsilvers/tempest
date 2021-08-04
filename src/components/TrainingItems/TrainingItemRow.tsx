@@ -9,7 +9,7 @@ import { useDeleteTrackingItem } from '../../hooks/api/trackingItem';
 const Container = tw.div`flex h-10 items-center border-b-2`;
 const RowTitle = tw.div`font-size[12px] mx-3 w-60`;
 const RowInterval = tw.div`font-size[12px] mx-3 w-20`;
-const DescriptionTable = tw.table`w-7/12 ml-10`;
+const DescriptionTable = tw.div`w-7/12 ml-10`;
 const DescriptionContainer = tw.div`table-cell align-middle h-10`;
 const RowDescription = tw.div`font-size[12px] min-height[20px] max-height[40px] line-clamp[2] overflow-ellipsis overflow-hidden -webkit-box-orient[vertical] display[-webkit-box]`;
 const StyledDeleteIcon = tw(DeleteIcon)`text-xl`;
