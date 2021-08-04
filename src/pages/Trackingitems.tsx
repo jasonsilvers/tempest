@@ -33,7 +33,7 @@ const TrackingItems = () => {
           onChange={(searchValue) => setSearch(searchValue)}
           onCancelSearch={() => setSearch('')}
         />
-        <Button tw="h-12 ml-10" variant="contained" color="primary" onClick={() => setOpenDialog(true)}>
+        <Button tw="h-12 ml-10 bg-secondary" variant="contained" color="primary" onClick={() => setOpenDialog(true)}>
           + Create New Training
         </Button>
       </div>
