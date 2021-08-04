@@ -12,6 +12,7 @@ interface IMockedPrisma {
   };
   trackingItem: {
     findMany: jest.Mock;
+    delete: jest.Mock;
   };
 }
 
@@ -29,6 +30,7 @@ jest.mock(
     },
     trackingItem: {
       findMany: jest.fn(),
+      delete: jest.fn(),
     },
   })
 );
