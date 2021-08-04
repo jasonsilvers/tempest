@@ -19,11 +19,11 @@ import Paper from '@material-ui/core/Paper';
 import SearchBar from '@snekcode/mui-search-bar';
 
 const TPaper = styled(Paper)`
-  background-color: #2d2270;
+  background-color: #fff;
   width: 16rem;
   padding-left: 1.5rem;
   padding-top: 2.25rem;
-  color: white;
+  color: #2d2270;
 `;
 
 const TempestDrawer = (props) => {
