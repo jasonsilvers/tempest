@@ -55,7 +55,7 @@ const Profile: React.FC<{ member: User }> = ({ member }) => {
         <Tab category={ECategories.TODO}>To Do</Tab>
       </MemberItemTracker>
       <br />
-      <MemberItemTracker title="Official Training Record" userId={userId}>
+      <MemberItemTracker tw="bg-white" title="Official Training Record" userId={userId}>
         <Tab category={ECategories.ALL}>All</Tab>
         <Tab category={ECategories.DONE}>Current</Tab>
         <Tab category={ECategories.UPCOMING}>Upcoming</Tab>

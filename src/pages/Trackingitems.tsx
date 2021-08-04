@@ -39,7 +39,7 @@ const TrackingItems = () => {
           + Create New Training
         </Button>
       </div>
-      <div tw="border-radius[10px] border overflow-hidden">
+      <div tw="border-radius[10px] border overflow-hidden bg-white">
         <TrainingItemHeader />
         {trackingItems
           ?.filter(
@@ -61,7 +61,7 @@ export async function getStaticProps() {
   const prisma = require('../prisma/prisma');
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(tiQueryKeys.trackingItems(), () => prisma?.trackingItem.findMany() ?? []);
+  await queryClient.prefetchQuery(tiQueryKeys.trackingItems(), () => prisma?.trackingItem?.findMany() ?? []);
 
   return {
     props: {
