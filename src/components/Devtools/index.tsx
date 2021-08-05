@@ -5,12 +5,15 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
 import { usePermissions } from '../../hooks/usePermissions';
-import { ERole } from '../../types/global';
+import { ERole, EUri } from '../../types/global';
 import { LoggedInUser } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
 import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
 import { UsersDTO, RolesDTO, OrgsDTO } from '../../types/global';
+import faker from 'faker';
+import { TrackingItem } from '@prisma/client';
+import { useAddTrackingItem } from '../../hooks/api/trackingItem';
 const dayjs = require('dayjs');
 
 const Data = tw.div`font-light text-gray-400`;
@@ -20,24 +23,25 @@ type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 const UsersList = () => {
   const queryClient = useQueryClient();
   const usersListQuery = useQuery<LoggedInUser[]>('users', () =>
-    axios.get<UsersDTO>('/api/users').then((response) => response.data.users)
+    axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.users)
   );
 
   const rolesListQuery = useQuery<Role[]>('roles', () =>
-    axios.get<RolesDTO>('/api/roles').then((response) => response.data.roles)
+    axios.get<RolesDTO>(EUri.ROLES).then((response) => response.data.roles)
   );
   const orgsListQuery = useQuery<Organization[]>('organizations', () =>
-    axios.get<OrgsDTO>('/api/organizations').then((response) => response.data.organizations)
+    axios.get<OrgsDTO>(EUri.ORGANIZATIONS).then((response) => response.data.organizations)
   );
 
   const mutateUser = useMutation<User, unknown, User>(
-    (user: User) => axios.put(`/api/users/${user.id}`, user).then((response) => response.data),
+    (user: User) => axios.put(EUri.USERS + `${user.id}`, user).then((response) => response.data),
     {
       onSettled: () => {
         queryClient.invalidateQueries('users');
       },
     }
   );
+  const { mutate: create } = useAddTrackingItem();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -56,6 +60,16 @@ const UsersList = () => {
         },
       });
     }
+  };
+
+  const handleCreateRandomTrackingItem = () => {
+    const newTrackingItem = {
+      title: faker.commerce.productAdjective() + ' ' + faker.commerce.productName() + ' training',
+      description: faker.commerce.productDescription(),
+      interval: faker.datatype.number({ min: 1, max: 365 }),
+    } as TrackingItem;
+
+    create(newTrackingItem);
   };
 
   const updateUsersRole = (event: RoleFormEvent, user: LoggedInUser) => {
@@ -136,6 +150,10 @@ const UsersList = () => {
           </div>
         );
       })}
+      <h2 tw="text-xl pt-4">Create Tracking Item </h2>
+      <Button variant="outlined" onClick={handleCreateRandomTrackingItem}>
+        Create
+      </Button>
     </div>
   );
 };

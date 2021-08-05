@@ -1,20 +1,20 @@
 import { render, waitFor, waitForElementToBeRemoved, fireEvent } from '../utils/TempestTestUtils';
 import Profile, { getStaticPaths, getStaticProps } from '../../src/pages/Profile/[id]';
 import 'whatwg-fetch';
-import { server } from '../utils/mocks/msw';
+import { server, rest } from '../utils/mocks/msw';
 import * as nextRouter from 'next/router';
 import { mockMethodAndReturn } from '../utils/mocks/repository';
 import { findUserByIdWithMemberTrackingItems, UserWithAll } from '../../src/repositories/userRepo';
 
 jest.mock('../../src/repositories/userRepo');
-import { rest } from 'msw';
 import { bobJones } from '../utils/mocks/fixtures';
+import { EUri } from '../../src/types/global';
 
 beforeAll(() => {
   server.listen({
     onUnhandledRequest: 'bypass',
   });
-  // @ts-expect-errore
+  // @ts-expect-error
   nextRouter.useRouter = jest.fn();
 });
 // Reset any request handlers that we may add during the tests,
@@ -58,14 +58,15 @@ it('renders the profile page', async () => {
 
 it('renders  opens the dialog modal', async () => {
   server.use(
-    rest.get('/api/trackingitems', (req, res, ctx) => {
+    rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json([
           {
-            userId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
-            trackingItemId: 2,
-            isActive: true,
+            description: 'test item',
+            id: 1,
+            interval: 365,
+            title: 'test title',
           },
         ])
       );

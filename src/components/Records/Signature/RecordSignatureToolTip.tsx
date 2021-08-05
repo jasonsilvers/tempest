@@ -1,8 +1,8 @@
 import { User } from '@prisma/client';
 const dayjs = require('dayjs');
 import tw from 'twin.macro';
-import { ReactElement } from 'react';
-import { TempestToolTip, Zoom } from '../../lib/ui';
+import React, { ReactElement } from 'react';
+import { TempestToolTip, Zoom } from '../../../lib/ui';
 
 const Container = tw.div`text-right `;
 const Name = tw.div``;

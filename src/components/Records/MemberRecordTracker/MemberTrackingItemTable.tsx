@@ -1,6 +1,6 @@
 import React from 'react';
 import tw from 'twin.macro';
-import { useMemberTrackingItems } from '../../hooks/api/memberTrackingItem';
+import { useMemberTrackingItems } from '../../../hooks/api/memberTrackingItem';
 import MemberTrackingItemRow from './MemberTrackingItemRow';
 
 // styled twin elements

@@ -1,7 +1,7 @@
 import { fireEvent, render, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
 import { Devtools } from '../../src/components/Devtools';
 import { server, rest } from '../utils/mocks/msw';
-import { ERole } from '../../src/types/global';
+import { ERole, EUri } from '../../src/types/global';
 
 import 'whatwg-fetch';
 
@@ -12,7 +12,7 @@ beforeEach(() => {
   });
 
   server.use(
-    rest.get('/api/login', (req, res, ctx) => {
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
@@ -24,7 +24,7 @@ beforeEach(() => {
       );
     }),
 
-    rest.get('/api/users', (req, res, ctx) => {
+    rest.get(EUri.USERS, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
@@ -41,10 +41,10 @@ beforeEach(() => {
       );
     }),
 
-    rest.get('/api/roles', (req, res, ctx) => {
+    rest.get(EUri.ROLES, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json({ roles: [{ id: 22, name: ERole.ADMIN }] }));
     }),
-    rest.get('/api/organizations', (req, res, ctx) => {
+    rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json({ organizations: [{ id: '1', name: '15th MDG', parentId: null }] }));
     })
   );

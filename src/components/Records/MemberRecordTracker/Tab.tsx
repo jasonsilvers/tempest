@@ -1,6 +1,6 @@
 import tw from 'twin.macro';
-import { ECategories } from '../../types/global';
-import setDomRole from '../../utils/SetDomRole';
+import { ECategories } from '../../../types/global';
+import setDomRole from '../../../utils/SetDomRole';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 
 // Tab navigation animations

@@ -27,7 +27,7 @@ const MemberItemTracker: React.FC<{
     <MemberItemTrackerContextProvider categories={categories}>
       <div tw="mr-5 pr-10 w-full">
         <Header>{title}</Header>
-        <TabAndTableContainer ref={TabAndTableRef}>
+        <TabAndTableContainer tw="bg-white p-2 rounded-md" ref={TabAndTableRef}>
           <TabContainer id="Filter Tabs">{children}</TabContainer>
 
           <MemberTrackingItemTable userId={userId} />

@@ -5,8 +5,8 @@ import tw from 'twin.macro';
 
 interface ILinkProps {
   goToUrl?: string;
-  activeLinkStyle?: React.CSSProperties;
   className?: string;
+  icon?: React.ReactNode;
 }
 
 const StyledHeader = tw.a` mr-8 mb-6 uppercase text-4xl`;
@@ -19,17 +19,31 @@ const Header: React.FC<ILinkProps> = ({ children, goToUrl = '/', className = '' 
   );
 };
 
-const StyledLink = tw.a`mr-6 mb-5 text-lg uppercase text-gray-500 flex flex-row items-center space-x-4 cursor-pointer`;
+const StyledLink = tw.a`mb-5 text-base text-secondary flex flex-row items-center space-x-6 cursor-pointer h-14 w-52`;
+const StyledActiveLInk = tw(StyledLink)`bg-secondary text-white rounded-lg`;
+const StyledIcon = tw.div`bg-accent rounded-l-lg h-full flex items-center w-14 justify-center`;
+const StyledChildren = tw.div`w-32`;
+const StyledNonActiveIcon = tw(StyledIcon)`bg-white`;
 
-const Link: React.FC<ILinkProps> = ({ children, goToUrl, className, activeLinkStyle }) => {
+const Link: React.FC<ILinkProps> = ({ children, goToUrl, icon }) => {
   const router = useRouter();
+
+  if (router.asPath === goToUrl) {
+    return (
+      <NextLink href={goToUrl}>
+        <StyledActiveLInk>
+          <StyledIcon>{icon}</StyledIcon>
+          <StyledChildren>{children}</StyledChildren>
+        </StyledActiveLInk>
+      </NextLink>
+    );
+  }
+
   return (
     <NextLink href={goToUrl}>
-      <StyledLink
-        className={className}
-        style={router.asPath === goToUrl ? activeLinkStyle ?? { color: 'white', fontWeight: 'bolder' } : {}}
-      >
-        {children}
+      <StyledLink>
+        <StyledNonActiveIcon>{icon}</StyledNonActiveIcon>
+        <StyledChildren>{children}</StyledChildren>
       </StyledLink>
     </NextLink>
   );

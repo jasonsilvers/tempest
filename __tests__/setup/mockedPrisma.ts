@@ -10,6 +10,10 @@ interface IMockedPrisma {
     create: jest.Mock;
     findMany: jest.Mock;
   };
+  trackingItem: {
+    findMany: jest.Mock;
+    delete: jest.Mock;
+  };
 }
 
 jest.mock(
@@ -24,7 +28,11 @@ jest.mock(
       create: jest.fn(),
       findMany: jest.fn(),
     },
+    trackingItem: {
+      findMany: jest.fn(),
+      delete: jest.fn(),
+    },
   })
 );
 
-export default (prisma as unknown) as IMockedPrisma;
+export default prisma as unknown as IMockedPrisma;

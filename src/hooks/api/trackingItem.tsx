@@ -1,27 +1,25 @@
 import { TrackingItem } from '@prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { TrackingItemsDTO } from '../../types/global';
-
-const TRACKING_ITEM_RESOURCE = 'trackingitems';
+import { EUri, TrackingItemsDTO } from '../../types/global';
 
 export const tiQueryKeys = {
-  memberTrackingItems: () => ['trackingitems'],
+  trackingItems: () => ['trackingitems'],
 };
 
 const useTrackingItems = () => {
-  return useQuery<TrackingItem[]>(tiQueryKeys.memberTrackingItems(), async () => {
-    return axios.get<TrackingItemsDTO>(`/api/${TRACKING_ITEM_RESOURCE}`).then((result) => result.data.trackingItems);
+  return useQuery<TrackingItem[]>(tiQueryKeys.trackingItems(), async () => {
+    return axios.get<TrackingItemsDTO>(EUri.TRACKING_ITEMS).then((result) => result.data.trackingItems);
   });
 };
 
 const useAddTrackingItem = () => {
   const queryClient = useQueryClient();
   return useMutation<AxiosResponse<TrackingItem>, unknown, TrackingItem>(
-    (newTrackingItem: TrackingItem) => axios.post<TrackingItem>(`/api/${TRACKING_ITEM_RESOURCE}`, newTrackingItem),
+    (newTrackingItem: TrackingItem) => axios.post<TrackingItem>(EUri.TRACKING_ITEMS, newTrackingItem),
     {
       onSettled: () => {
-        queryClient.invalidateQueries(tiQueryKeys.memberTrackingItems());
+        queryClient.invalidateQueries(tiQueryKeys.trackingItems());
       },
     }
   );
@@ -31,10 +29,10 @@ const useDeleteTrackingItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async (trackingItemId: number) => (await axios.delete(`/api/${TRACKING_ITEM_RESOURCE}/` + trackingItemId)).data,
+    async (trackingItemId: number) => (await axios.delete(EUri.TRACKING_ITEMS + trackingItemId)).data,
     {
       onSettled: () => {
-        queryClient.invalidateQueries(tiQueryKeys.memberTrackingItems());
+        queryClient.invalidateQueries(tiQueryKeys.trackingItems());
       },
     }
   );

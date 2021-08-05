@@ -182,6 +182,15 @@ const uploadGrants: Grants[] = [
   },
 ];
 
+const trackingItemGrants: Grants[] = [
+  {
+    action: EAction.DELETE_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.ADMIN,
+  },
+];
+
 export const grants: Grants[] = [
   ...pageGrants,
   ...memberTrackingItemGrants,
@@ -189,4 +198,5 @@ export const grants: Grants[] = [
   ...memberTrackingRecordsGrants,
   ...organizationGrants,
   ...uploadGrants,
+  ...trackingItemGrants,
 ];

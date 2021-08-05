@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { MemberTrackingItemWithAll } from '../../repositories/memberTrackingRepo';
 import { UserWithAll } from '../../repositories/userRepo';
+import { EUri } from '../../types/global';
 
 const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
 
@@ -13,7 +14,7 @@ export const mtiQueryKeys = {
 };
 
 export const fetchUserWithMemberTrackingItems = async (userId: string): Promise<UserWithAll> => {
-  const { data } = await axios.get(`/api/users/${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}`);
+  const { data } = await axios.get(EUri.USERS + `${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}`);
 
   return data;
 };

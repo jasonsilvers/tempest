@@ -1,14 +1,14 @@
 import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
 import React from 'react';
-import MemberRecordTracker from '../../../src/components/Records/MemberRecordTracker';
+import MemberRecordTracker from '../../../src/components/Records/MemberRecordTracker/MemberRecordTracker';
 import { rest } from 'msw';
 import dayjs from 'dayjs';
 import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';
 import { TrackingItem } from '.prisma/client';
 import { User } from '@prisma/client';
 import { server } from '../../utils/mocks/msw';
-import Tab from '../../../src/components/Records/Tab';
-import { ECategories } from '../../../src/types/global';
+import Tab from '../../../src/components/Records/MemberRecordTracker/Tab';
+import { ECategories, EUri } from '../../../src/types/global';
 
 import 'whatwg-fetch';
 
@@ -49,17 +49,17 @@ const fireSafetyItem: TrackingItem = {
 
 // use Member tracking items
 const memberTrackingItemsGet = (user, memberTrackingItems) =>
-  rest.get(`/api/users/${user.id}/membertrackingitems`, (req, res, ctx) => {
+  rest.get(EUri.USERS + `${user.id}/membertrackingitems`, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
   });
 // use member tracking item single
 const memberTrackingItemGet = (memberTrackingItem) =>
-  rest.get(`/api/membertrackingitems`, (req, res, ctx) => {
+  rest.get(EUri.MEMBER_TRACKING_ITEMS, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(memberTrackingItem));
   });
 // use member tracking record
 const memberTrackingRecordGet = (memberTrackingRecord) =>
-  rest.get(`/api/membertrackingrecords/${memberTrackingRecord.id}`, (req, res, ctx) => {
+  rest.get(EUri.MEMBER_TRACKING_RECORDS + memberTrackingRecord.id, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(memberTrackingRecord));
   });
 
@@ -385,7 +385,7 @@ test('should sign record as trainee and mark as done', async () => {
     memberTrackingItemsGet(testTrainee, memberTrackingItems_Done),
     memberTrackingItemGet(memberTrackingItems_Done[0]),
     memberTrackingRecordGet(memberTrackingItems_Done[0].memberTrackingRecords[0]),
-    rest.post('/api/membertrackingrecords/*', (req, res, ctx) => {
+    rest.post(EUri.MEMBER_TRACKING_RECORDS + '*', (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({

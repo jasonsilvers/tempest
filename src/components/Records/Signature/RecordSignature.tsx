@@ -4,17 +4,17 @@ import { SnackbarMessage, OptionsObject, SnackbarKey, useSnackbar } from 'notist
 import React from 'react';
 import { UseMutateFunction } from 'react-query';
 import 'twin.macro';
-import setDomRole from '../../utils/SetDomRole';
-import { DoneAllIcon } from '../../assets/Icons';
 import { useUser } from '@tron/nextjs-auth-p1';
-import { useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
-import { LoggedInUser as LoggedInUserType } from '../../repositories/userRepo';
-import { ActionButton, DisabledButton, TableData } from './TwinMacro/Twin';
 
 import RecordSignatureToolTip from './RecordSignatureToolTip';
-import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
-import { EFuncAction, EMtrVerb, EResource } from '../../types/global';
-import { usePermissions } from '../../hooks/usePermissions';
+import { DoneAllIcon } from '../../../assets/Icons';
+import { useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
+import { usePermissions } from '../../../hooks/usePermissions';
+import { MemberTrackingRecordWithUsers } from '../../../repositories/memberTrackingRepo';
+import { EMtrVerb, EFuncAction, EResource } from '../../../types/global';
+import setDomRole from '../../../utils/SetDomRole';
+import { TableData, DisabledButton, ActionButton } from '../TwinMacro/Twin';
+import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
 
 const AwaitingSignature: React.FC = ({ children }) => (
   <TableData tw="mr-3">

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import { usePermissions } from '../../hooks/usePermissions';
-import MemberItemTracker from '../../components/Records/MemberRecordTracker';
-import HeaderUser from '../../components/Records/RecordHeader';
 import { useRouter } from 'next/router';
 import { ECategories, EFuncAction, EResource, EUserIncludes } from '../../types/global';
 import { QueryClient } from 'react-query';
@@ -10,11 +8,13 @@ import { mtiQueryKeys } from '../../hooks/api/memberTrackingItem';
 import { GetStaticPropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
 import { findUserByIdWithMemberTrackingItems, findUserById } from '../../repositories/userRepo';
-import Tab from '../../components/Records/Tab';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
 import { Link } from '../../lib/ui';
 import tw from 'twin.macro';
 import { User } from '@prisma/client';
+import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberRecordTracker';
+import Tab from '../../components/Records/MemberRecordTracker/Tab';
+import HeaderUser from '../../components/Records/ProfileHeader';
 
 const ButtonContainer = tw.div`fixed right-10 bg-white top-5 border border-primary rounded-3xl`;
 const AddNewButton = tw(Link)`italic p-2 outline-none focus:outline-none`;

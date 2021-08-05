@@ -36,6 +36,8 @@ test('Repository User Prisma Mock Test for Get By Id', async () => {
 
 test('Repository User Prisma Mock Test for Get By DoD Id', async () => {
   prisma.user.findUnique.mockImplementationOnce(() => mockUser);
+  prisma.trackingItem.findMany.mockImplementationOnce(() => mockUser);
+
   const returnDoDIdUser = await findUserByDodId('1234');
 
   expect(returnDoDIdUser).toStrictEqual({ ...user, id: '1' });

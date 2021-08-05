@@ -9,6 +9,7 @@ const antialiased = tw`antialiased`;
 const CustomStyles = createGlobalStyle`
   body {
     font-family: ${fontFamily};
+    background-color: #E5E5E5;
     color: ${color}
     ${antialiased}
   }

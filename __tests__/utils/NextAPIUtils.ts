@@ -8,10 +8,8 @@ import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import 'setimmediate';
 
-type ApiHandler = (
-  req: NextApiRequestWithAuthorization<unknown, unknown>,
-  res: NextApiResponse<unknown>
-) => Promise<void>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ApiHandler = (req: NextApiRequestWithAuthorization<any, any>, res: NextApiResponse<any>) => Promise<void>;
 
 async function createNextApiServer(handler: ApiHandler) {
   let server: http.Server;

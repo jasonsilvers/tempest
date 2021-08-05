@@ -21,16 +21,13 @@ const Navbar: React.FC = () => {
       <Header goToUrl="/">Tempest</Header>
       {user ? (
         <div tw="space-y-9">
-          <Link goToUrl="/Dashboard">
-            <DashboardIcon />
+          <Link goToUrl="/Dashboard" icon={<DashboardIcon fontSize="large" />}>
             <div>Dashboard</div>
           </Link>
-          <Link goToUrl={`/Profile/${user.id}`}>
-            <PersonIcon />
+          <Link goToUrl={`/Profile/${user.id}`} icon={<PersonIcon fontSize="large" />}>
             <div>My Profile</div>
           </Link>
-          <Link goToUrl="/Trackingitems">
-            <DescriptionIcon />
+          <Link goToUrl="/Trackingitems" icon={<DescriptionIcon fontSize="large" />}>
             <div>Global Training Catalog</div>
           </Link>
         </div>

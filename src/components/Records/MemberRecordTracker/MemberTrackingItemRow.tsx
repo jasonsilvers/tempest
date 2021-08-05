@@ -1,5 +1,5 @@
 import React from 'react';
-import { useMemberTrackingItem } from '../../hooks/api/memberTrackingItem';
+import { useMemberTrackingItem } from '../../../hooks/api/memberTrackingItem';
 import RecordRow from './RecordRow';
 
 const MemberTrackingRecordSkeleton = () => {

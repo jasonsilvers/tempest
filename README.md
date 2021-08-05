@@ -27,18 +27,52 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Testing With MSW
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Mock Service Worker (MSW) is a network api mock where we define what is returned by a particular endpoint. When using MSW in your unit tests keep in mind that fetch (which is implemented on browsers) is not inside the node environment running the tests. But due to the nature of next we can not simply add a fetch polyfill to jest.config 🙁. MSW has been set up globally for all tests but needs to be tailored per test.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+#### Setting up MSW per test
 
-## Local Dependency Checks
+1. Add fetch polyfill
+   - `import 'whatwg-fetch'`
+2. Add server and rest from ./utils/mocks/msw
+   - `import {server, rest} from '../utils/mocks/msw'`
+3. BeforeAll, AfterEach and AfterAll setup
+   - Recommended to add snippets below for these
+4. Use `server.use(rest.get())` to set up the returned value for an api
 
-Install dependency-check from brew
+##### Before All
 
-- `brew install dependency-check`
+```ts
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: 'bypass',
+  });
+});
+```
 
-Run the npm script to check for issues. This will auto open the report in HTML. Other report formats are located in the .dependency-check folder.
+##### After All
 
-- `npm run dcheck`
+```ts
+afterAll(() => {
+  server.close();
+});
+```
+
+##### After Each
+
+```ts
+afterEach(() => {
+  server.resetHandlers();
+});
+```
+
+##### Server Use Example
+
+```ts
+server.use(
+  rest.get('/api/login', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({ name: 'bob' }));
+  })
+);
+```

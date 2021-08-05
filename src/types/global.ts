@@ -30,6 +30,18 @@ export enum EResource {
   UPLOAD = 'upload',
 }
 
+// All must begin and end in a slash
+export enum EUri {
+  TRACKING_ITEMS = '/api/trackingitems/',
+  PERMISSIONS = '/api/grants/',
+  LOGIN = '/api/login/',
+  MEMBER_TRACKING_RECORDS = '/api/membertrackingrecords/',
+  MEMBER_TRACKING_ITEMS = '/api/membertrackingitems/',
+  USERS = '/api/users/',
+  ROLES = '/api/roles/',
+  ORGANIZATIONS = '/api/organizations/',
+}
+
 export enum EAttribute {
   ALL = '*',
 }

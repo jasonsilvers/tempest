@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import { Button } from '../../src/lib/ui';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import userEvent from '@testing-library/user-event';
+import { EUri } from '../../src/types/global';
 
 const createTestQueryClient = () => {
   const queryClientInit = new QueryClient({
@@ -41,7 +42,7 @@ const createWrapper = (queryClient?: QueryClient) => {
         action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
       >
         <QueryClientProvider client={queryClient ? queryClient : testQueryClient}>
-          <UserContextProvider loginUrl="/api/login">{props.children}</UserContextProvider>
+          <UserContextProvider loginUrl={EUri.LOGIN}>{props.children}</UserContextProvider>
         </QueryClientProvider>
       </SnackbarProvider>
     );
@@ -57,7 +58,7 @@ const Wrapper: React.FC<IWrapperProps> = (props) => {
       action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
     >
       <QueryClientProvider client={testQueryClient}>
-        <UserContextProvider user={props.user} loginUrl="/api/login">
+        <UserContextProvider user={props.user} loginUrl={EUri.LOGIN}>
           {props.children}
         </UserContextProvider>
       </QueryClientProvider>

@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import { Grants } from '../repositories/grantsRepo';
 import { LoggedInUser } from '../repositories/userRepo';
-import { EFuncAction, EResource, GrantsDTO } from '../types/global';
+import { EFuncAction, EResource, EUri, GrantsDTO } from '../types/global';
 
 const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<LoggedInUser>();
@@ -13,7 +13,7 @@ const usePermissions = () => {
 
   const grantsQuery = useQuery<Grants>(
     'grants',
-    () => axios.get<GrantsDTO>('/api/grants').then((result) => result.data.grants),
+    () => axios.get<GrantsDTO>(EUri.PERMISSIONS).then((result) => result.data.grants),
     {
       enabled: !!user,
       staleTime: 100000,
