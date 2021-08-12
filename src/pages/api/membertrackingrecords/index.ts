@@ -2,7 +2,7 @@ import { MemberTrackingRecord } from '.prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied } from '../../../middleware/utils';
-import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 import { createMemberTrackingRecord } from '../../../repositories/memberTrackingRepo';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource } from '../../../types/global';
@@ -27,12 +27,10 @@ async function memberTrackingRecordIndexHandler(
       }
 
       const newMemberTrackingRecord = await createMemberTrackingRecord(body);
-      res.status(200).json(newMemberTrackingRecord);
-      break;
+      return res.status(200).json(newMemberTrackingRecord);
     }
     default:
-      res.status(405).json({ message: `Method ${method} Not Allowed` });
-      break;
+      throw new MethodNotAllowedError(method);
   }
 }
 

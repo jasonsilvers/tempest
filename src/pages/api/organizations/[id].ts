@@ -7,7 +7,7 @@ import { EResource } from '../../../types/global';
 import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
 import { Permission } from 'accesscontrol';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
-import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 
 interface ITempestOrganizationIdApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -68,8 +68,7 @@ export const organizationIdApiHandler = async (
     }
     // If this end point is hit with anything other than GET or PUT return a 405 error
     default:
-      res.setHeader('Allow', ['GET']);
-      res.status(405).json({ message: `Method ${method} Not Allowed` });
+      throw new MethodNotAllowedError(method);
   }
 };
 

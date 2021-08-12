@@ -2,7 +2,7 @@ import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../../../repositories/userRepo';
 import { returnUser } from '../../../repositories/loginRepo';
-import { ApiError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotFoundError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 import { logFactory } from '../../../utils/logger';
 import { LogEventType } from '@prisma/client';
 
@@ -17,7 +17,7 @@ const logHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser, Log
   const log = logFactory(req.user);
 
   if (method !== 'POST') {
-    throw new ApiError({ status: 405, body: 'Method not allowed' });
+    throw new MethodNotFoundError(method);
   }
 
   log.persist(body.logEventType, body.message);

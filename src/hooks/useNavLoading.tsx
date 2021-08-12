@@ -1,5 +1,5 @@
 import { CircularProgress } from '@material-ui/core';
-import router from 'next/router';
+import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import tw from 'twin.macro';
 
@@ -15,6 +15,7 @@ const NavigationLoading = () => {
 
 const useNavLoading = () => {
   const [navigating, setNavigating] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleRouteChange = () => {

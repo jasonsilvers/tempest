@@ -1,6 +1,6 @@
 import { LogEventType } from '@prisma/client';
 import axios from 'axios';
-import router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import { EUri } from '../types/global';
 
@@ -12,19 +12,19 @@ const createLog = (logEventType: LogEventType, message: string) => {
 };
 
 const usePageLogging = () => {
-  const { route } = useRouter();
+  const { route, asPath } = useRouter();
 
   const previousURLRef = useRef('');
 
   useEffect(() => {
-    if (router.asPath === '/Unauthenticated') {
+    if (asPath === '/Unauthenticated') {
       createLog(LogEventType.UNAUTHORIZED, `Unathorized URL: ${previousURLRef.current}`);
     } else {
-      createLog(LogEventType.PAGE_ACCESS, `URL: ${router.asPath}`);
+      createLog(LogEventType.PAGE_ACCESS, `URL: $asPath}`);
     }
 
-    if (router.asPath !== previousURLRef.current) {
-      previousURLRef.current = router.asPath;
+    if (asPath !== previousURLRef.current) {
+      previousURLRef.current = asPath;
     }
   }, [route]);
 };

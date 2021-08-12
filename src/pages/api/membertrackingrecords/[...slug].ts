@@ -1,7 +1,7 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { postMemberTrackingRecordsAction } from '../../../controllers/memberTrackingRecordsController';
-import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 
 async function memberTrackingRecordSlugHandler(
@@ -10,11 +10,11 @@ async function memberTrackingRecordSlugHandler(
 ) {
   const { method } = req;
 
-  if (method === 'POST') {
-    return postMemberTrackingRecordsAction(req, res);
+  if (method !== 'POST') {
+    throw new MethodNotAllowedError(method);
   }
 
-  return res.status(405).json({ message: `Method ${method} Not Allowed` });
+  return postMemberTrackingRecordsAction(req, res);
 }
 
 export default withErrorHandlingAndAuthorization(memberTrackingRecordSlugHandler, findUserByDodId);

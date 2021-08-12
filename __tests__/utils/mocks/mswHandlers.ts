@@ -16,4 +16,7 @@ export const handlers = [
   rest.get(EUri.USERS + '*/membertrackingitems', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json([]));
   }),
+  rest.post(EUri.LOGS, (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({ message: 'Ok' }));
+  }),
 ];

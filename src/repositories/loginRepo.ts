@@ -11,7 +11,7 @@ export async function returnUser(queryString: string, jwt: P1_JWT): Promise<Logg
 
   if (tempestUser) {
     if (isAdmin) {
-      return await updateUserRole(tempestUser.id, ERole.ADMIN);
+      return updateUserRole(tempestUser.id, ERole.ADMIN);
     }
     return tempestUser;
   }
@@ -24,5 +24,5 @@ export async function returnUser(queryString: string, jwt: P1_JWT): Promise<Logg
 
   //No tempest user, no common api user - create user in both
   commonPerson = await createPersonFromJwt(jwt);
-  return await createUserFromCommonApi(commonPerson);
+  return createUserFromCommonApi(commonPerson);
 }

@@ -2,22 +2,25 @@ import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import prisma from '../../../prisma/prisma';
 import { LoggedInUser } from '../../../repositories/userRepo';
+import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { returnUser } from '../../../repositories/loginRepo';
 
 async function trackingItemHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse
 ): Promise<void> {
-  if (req.method === 'DELETE') {
-    const newItem = await prisma.trackingItem.delete({
-      where: {
-        id: parseInt(req.query.id as string),
-      },
-    });
+  const { method } = req;
 
-    return res.status(200).json(newItem);
-  } else {
-    res.status(405).json({ message: `Method ${req.method} Not Allowed` });
+  if (req.method !== 'DELETE') {
+    throw new MethodNotAllowedError(method);
   }
+  const newItem = await prisma.trackingItem.delete({
+    where: {
+      id: parseInt(req.query.id as string),
+    },
+  });
+
+  return res.status(200).json(newItem);
 }
 
-export default trackingItemHandler;
+export default withErrorHandlingAndAuthorization(trackingItemHandler, returnUser);

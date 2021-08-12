@@ -9,7 +9,7 @@ import {
   deleteMemberTrackingItemAction,
   EMemberTrackingItemIncludes,
 } from '../../../controllers/memberTrackingItemsController';
-import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 export interface ITempestMemberTrackingItemApiRequest<T> extends NextApiRequestWithAuthorization<T> {
   query: {
     userId: string;
@@ -44,7 +44,7 @@ async function memberTrackingItemHandler(
     }
 
     default:
-      res.status(405).json({ message: `Method ${method} Not Allowed` });
+      throw new MethodNotAllowedError(method);
   }
 }
 

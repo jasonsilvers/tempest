@@ -44,7 +44,7 @@ export class TempestError extends Error {
   }
 }
 
-export class MethodNotFoundError extends Error {
+export class MethodNotAllowedError extends Error {
   readonly status: number;
   readonly name: string;
   readonly message: string;

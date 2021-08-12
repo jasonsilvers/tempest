@@ -88,5 +88,5 @@ test('GET - should return 403 if not correct permissions', async () => {
 test('should only allow GET', async () => {
   const { status } = await testNextApi.put(memberTrackingRecordIdHandler, { body: {} });
 
-  expect(status).toBe(409);
+  expect(status).toBe(405);
 });
