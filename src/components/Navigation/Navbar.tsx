@@ -30,6 +30,9 @@ const Navbar: React.FC = () => {
           <Link goToUrl="/Trackingitems" icon={<DescriptionIcon fontSize="large" />}>
             <div>Global Training Catalog</div>
           </Link>
+          <Link goToUrl="/Test" icon={<DescriptionIcon fontSize="large" />}>
+            <div>Test</div>
+          </Link>
         </div>
       ) : null}
     </TempestDrawer>

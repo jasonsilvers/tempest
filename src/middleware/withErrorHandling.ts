@@ -1,3 +1,4 @@
+import { LogEventType } from '@prisma/client';
 import { DBQueryFunctionToReturnUser, NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import type { NextApiHandler, NextApiResponse } from 'next';
 import { LoggedInUser } from '../repositories/userRepo';
@@ -43,31 +44,48 @@ export class TempestError extends Error {
   }
 }
 
+export class MethodNotFoundError extends Error {
+  readonly status: number;
+  readonly name: string;
+  readonly message: string;
+
+  constructor(message: string) {
+    super('Method Not Found Error');
+    this.status = 405;
+    this.name = 'MethodNotFound';
+    this.message = message;
+  }
+}
+
 export const withErrorHandling =
   (handler: NextApiHandler) => async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
+    const log = logFactory(req.user);
+
     try {
+      log.persist(LogEventType.API_ACCESS, `URI: ${req.url} Method: ${req.method}`);
       await handler(req, res);
     } catch (e) {
-      const log = logFactory(req.user);
       if (e.name === 'ApiError') {
-        log.trace(e);
         log.error(e);
         return res.status(500).send('server error');
       }
 
       if (e.name === 'PermissionError') {
-        log.trace(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
         log.warn(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
         return res.status(403).send({ message: 'You do not have the appropriate permissions' });
       }
 
       if (e.name === 'TempestError') {
-        log.trace(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
         log.warn(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
         return res.status(e.status).json({ message: e.message });
       }
 
-      log.error(`caught error: ${500} ${e}`);
+      if (e.name === 'MethodNotFound') {
+        log.persist(LogEventType.METHOD_NOT_ALLOWED, `Method: ${e.message}`);
+        return res.status(e.status).json({ message: 'Method Not Found' });
+      }
+
+      log.trace(`caught error: ${500} ${e}`);
       return res.status(500).send(e.body);
     }
   };

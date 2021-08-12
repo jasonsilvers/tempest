@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import tw from 'twin.macro';
 import Head from 'next/head';
 import { useNavLoading, NavigationLoading } from '../hooks/useNavLoading';
+import { usePageLogging } from '../hooks/usePageLogging';
 
 const DynamicDevTools = dynamic(
   function importDevTools() {
@@ -24,6 +25,7 @@ const MainContent = tw.div`ml-80 mt-9`;
 function MyApp({ Component, pageProps }) {
   const [showDevTools, setShowDevTools] = useState(false);
   const { navigating } = useNavLoading();
+  usePageLogging();
 
   useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');

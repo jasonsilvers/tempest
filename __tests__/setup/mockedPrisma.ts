@@ -14,6 +14,9 @@ interface IMockedPrisma {
     findMany: jest.Mock;
     delete: jest.Mock;
   };
+  logEvent: {
+    create: jest.Mock;
+  };
 }
 
 jest.mock(
@@ -31,6 +34,9 @@ jest.mock(
     trackingItem: {
       findMany: jest.fn(),
       delete: jest.fn(),
+    },
+    logEvent: {
+      create: jest.fn(),
     },
   })
 );
