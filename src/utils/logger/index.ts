@@ -1,7 +1,7 @@
 import { LogEventType } from '@prisma/client';
 import { log, LogLevelDesc } from './tempestlog';
 import { LoggedInUser } from '../../repositories/userRepo';
-import prisma from '../../prisma/prisma';
+import { createLog } from '../../repositories/logRepo';
 
 const originalFactory = log.methodFactory;
 /*eslint-disable */
@@ -12,13 +12,7 @@ function logFactory(user: LoggedInUser) {
   log.setLevel(level);
 
   log.persist = async function (logEventType: LogEventType, message: string): Promise<void> {
-    await prisma?.logEvent.create({
-      data: {
-        userId: user.id,
-        logEventType,
-        message,
-      },
-    });
+    createLog(user, logEventType, message);
   };
 
   if (level === 'SILENT') {
