@@ -58,11 +58,14 @@ export class MethodNotFoundError extends Error {
 }
 
 export const withErrorHandling =
-  (handler: NextApiHandler) => async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
+  (handler: NextApiHandler, withLogging = true) =>
+  async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
     const log = logFactory(req.user);
 
     try {
-      log.persist(LogEventType.API_ACCESS, `URI: ${req.url} Method: ${req.method}`);
+      if (withLogging) {
+        log.persist(LogEventType.API_ACCESS, `URI: ${req.url} Method: ${req.method}`);
+      }
       await handler(req, res);
     } catch (e) {
       if (e.name === 'ApiError') {
@@ -90,6 +93,10 @@ export const withErrorHandling =
     }
   };
 
-export function withErrorHandlingAndAuthorization(func: NextApiHandler, getUserFunc: DBQueryFunctionToReturnUser) {
-  return withApiAuth(withErrorHandling(func), getUserFunc);
+export function withErrorHandlingAndAuthorization(
+  func: NextApiHandler,
+  getUserFunc: DBQueryFunctionToReturnUser,
+  withLogging = true
+) {
+  return withApiAuth(withErrorHandling(func, withLogging), getUserFunc);
 }

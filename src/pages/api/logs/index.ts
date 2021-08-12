@@ -24,4 +24,4 @@ const logHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser, Log
   res.status(200).json({ message: 'ok' });
 };
 
-export default withErrorHandlingAndAuthorization(logHandler, returnUser);
+export default withErrorHandlingAndAuthorization(logHandler, returnUser, false);
