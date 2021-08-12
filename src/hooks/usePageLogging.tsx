@@ -20,7 +20,7 @@ const usePageLogging = () => {
     if (asPath === '/Unauthenticated') {
       createLog(LogEventType.UNAUTHORIZED, `Unathorized URL: ${previousURLRef.current}`);
     } else {
-      createLog(LogEventType.PAGE_ACCESS, `URL: $asPath}`);
+      createLog(LogEventType.PAGE_ACCESS, `URL: ${asPath}`);
     }
 
     if (asPath !== previousURLRef.current) {
