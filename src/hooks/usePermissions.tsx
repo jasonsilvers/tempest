@@ -1,17 +1,14 @@
-import { LogEventType } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { AccessControl } from 'accesscontrol';
 import axios from 'axios';
-import { useRouter } from 'next/router';
 import { useCallback } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useQuery } from 'react-query';
 import { Grants } from '../repositories/grantsRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { EFuncAction, EResource, EUri, GrantsDTO } from '../types/global';
 
 const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<LoggedInUser>();
-  const router = useRouter();
   let isLoading = true;
 
   const grantsQuery = useQuery<Grants>(

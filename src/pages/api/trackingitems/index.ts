@@ -8,20 +8,21 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<User>, r
   const { method } = req;
 
   switch (method) {
-    case 'GET':
+    case 'GET': {
       const trackingItems = await prisma.trackingItem.findMany();
 
       return res.status(200).json({ trackingItems });
-
-    case 'POST':
+    }
+    case 'POST': {
       const newItem = await prisma.trackingItem.create({
         data: req.body,
       });
 
       return res.status(200).json(newItem);
-
-    default:
+    }
+    default: {
       throw new MethodNotAllowedError(method);
+    }
   }
 };
 

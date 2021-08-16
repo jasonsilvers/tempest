@@ -92,7 +92,8 @@ it('should render the _app for next js with dev tools', async () => {
 
   // wait for jssStyles to be removed by the use effect in _app
   waitForElementToBeRemoved(() => jssStyles);
-  (window as any).toggleDevtools();
+
+  (window as any).toggleDevtools(); // eslint-disable-line
   const devtool = waitFor(() => document.getElementById('devtoolfab'));
   expect(devtool).toBeTruthy();
 });
