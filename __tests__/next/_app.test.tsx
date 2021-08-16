@@ -1,7 +1,35 @@
 import { unmountComponentAtNode, render } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import App from '../../src/pages/_app';
+import { server } from '../utils/mocks/msw';
 import { waitFor, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
+
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      route: '/',
+      pathname: '',
+      query: '',
+      asPath: '',
+      events: {
+        on: jest.fn(),
+        off: jest.fn(),
+      },
+    };
+  },
+}));
+
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: 'bypass',
+  });
+});
+
+afterEach(() => {
+  server.resetHandlers();
+});
+// // Clean up after the tests are finished.
+afterAll(() => server.close());
 
 // simple component
 const simpleComponent = () => <div id="hello">Hello World</div>;
@@ -64,7 +92,8 @@ it('should render the _app for next js with dev tools', async () => {
 
   // wait for jssStyles to be removed by the use effect in _app
   waitForElementToBeRemoved(() => jssStyles);
-  window.toggleDevtools();
+
+  (window as any).toggleDevtools(); // eslint-disable-line
   const devtool = waitFor(() => document.getElementById('devtoolfab'));
   expect(devtool).toBeTruthy();
 });

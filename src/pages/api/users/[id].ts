@@ -3,7 +3,7 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { Permission } from 'accesscontrol';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
-import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 import { findUserByDodId, findUserById, updateUser, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
@@ -75,7 +75,7 @@ async function userQueryHandler(
 
     // If this end point is hit with anything other than GET or PUT return a 405 error
     default:
-      res.status(405).json({ message: `Method ${method} Not Allowed` });
+      throw new MethodNotAllowedError(method);
   }
 }
 

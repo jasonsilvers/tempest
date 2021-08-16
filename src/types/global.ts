@@ -40,6 +40,7 @@ export enum EUri {
   USERS = '/api/users/',
   ROLES = '/api/roles/',
   ORGANIZATIONS = '/api/organizations/',
+  LOGS = '/api/logs',
 }
 
 export enum EAttribute {

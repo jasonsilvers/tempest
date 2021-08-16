@@ -16,11 +16,11 @@ const UnauthenticatedApp = () => {
   return (
     <div>
       <Head>
-        <title>No User Found</title>
+        <title>Unauthorized</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>You must register before you can continue</h1>
+      <h1>You do not have access to that page</h1>
     </div>
   );
 };

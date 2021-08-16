@@ -4,7 +4,7 @@ import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { createOrganizations, findOrganizations } from '../../../repositories/organizationRepo';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
-import { withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 
 const organizationApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { body, method } = req;
@@ -41,8 +41,7 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
     }
     // If this end point is hit with anything other than GET or PUT return a 405 error
     default:
-      res.setHeader('Allow', ['GET', 'POST']);
-      res.status(405).json({ message: `Method ${method} Not Allowed` });
+      throw new MethodNotAllowedError(method);
   }
 };
 

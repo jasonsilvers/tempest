@@ -4,7 +4,11 @@ import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { findMemberTrackingRecordById } from '../../../repositories/memberTrackingRepo';
 import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
-import { PermissionError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import {
+  MethodNotAllowedError,
+  PermissionError,
+  withErrorHandlingAndAuthorization,
+} from '../../../middleware/withErrorHandling';
 
 interface ITempestMemberTrackingRecordApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -40,13 +44,11 @@ async function memberTrackingRecordIdHandler(
         throw new PermissionError();
       }
 
-      res.status(200).json(memberTrackingRecord);
-      break;
+      return res.status(200).json(memberTrackingRecord);
     }
 
     default:
-      res.status(409).json({ message: 'Not implemented' });
-      break;
+      throw new MethodNotAllowedError(method);
   }
 }
 

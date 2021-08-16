@@ -15,10 +15,13 @@ export const mockMethodAndReturn = <E>(method: any, data: Partial<E>) => {
   try {
     method.mockResolvedValue(data);
   } catch (e) {
-    console.error(
-      `\x1b[47m Please mock the repository that owns ${method.name} \x1b[0m`
-    );
+    console.error(`\x1b[47m Please mock the repository that owns ${method.name} \x1b[0m`);
   }
   return method;
 };
 /*eslint-enable */
+
+export function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {
+  // eslint-disable-line
+  return fn as jest.MockedFunction<T>;
+}

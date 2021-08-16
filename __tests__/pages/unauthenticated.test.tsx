@@ -6,7 +6,7 @@ import { ERole } from '../../src/types/global';
 it('renders the unauthenticated page', async () => {
   const { getByText } = render(<Unauthenticated />);
 
-  expect(getByText(/you must register before you can continue/i)).toBeInTheDocument();
+  expect(getByText(/you do not have access to that page/i)).toBeInTheDocument();
 });
 
 it('renders the unauthenticated page with snackbar', async () => {
@@ -17,6 +17,5 @@ it('renders the unauthenticated page with snackbar', async () => {
   }));
   const { getByText } = render(<Unauthenticated />);
 
-  expect(getByText(/you must register before you can continue/i)).toBeInTheDocument();
-  expect(getByText(/There was an error/i)).toBeInTheDocument();
+  expect(getByText(/you do not have access to that page/i)).toBeInTheDocument();
 });
