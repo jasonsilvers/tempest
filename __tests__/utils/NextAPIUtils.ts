@@ -95,6 +95,7 @@ const baseTestNextApi = async (
       data = await response.json();
     }
   } catch (error) {
+    console.log(error);
     data = { message: error };
   } finally {
     serverRef?.close();
