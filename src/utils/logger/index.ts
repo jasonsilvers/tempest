@@ -21,7 +21,6 @@ function logFactory(user: LoggedInUser) {
 
   log.methodFactory = function (methodName, logLevel, logName) {
     const rawMethod = originalFactory(methodName, logLevel, logName);
-
     return function (message) {
       rawMethod(`User: ${user.id} -- Message:${message}`);
     };
