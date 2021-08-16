@@ -1,9 +1,38 @@
-import { fireEvent, render, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
+import {
+  fireEvent,
+  prettyDOM,
+  render,
+  waitForElementToBeRemoved,
+  within,
+  screen,
+  waitFor,
+  findByText,
+} from '../utils/TempestTestUtils';
 import { Devtools } from '../../src/components/Devtools';
 import { server, rest } from '../utils/mocks/msw';
 import { ERole, EUri } from '../../src/types/global';
 
 import 'whatwg-fetch';
+
+const users = [
+  {
+    id: '123',
+    firstName: 'bob',
+    lastName: 'jones',
+    organizationId: '1',
+    role: { id: 22, name: ERole.ADMIN },
+  },
+];
+
+const getUsers = (userList = users) =>
+  rest.get(EUri.USERS, (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        users: userList,
+      })
+    );
+  });
 
 // Establish API mocking before tests.
 beforeEach(() => {
@@ -12,6 +41,7 @@ beforeEach(() => {
   });
 
   server.use(
+    getUsers(),
     rest.get(EUri.LOGIN, (req, res, ctx) => {
       return res(
         ctx.status(200),
@@ -45,7 +75,28 @@ beforeEach(() => {
       return res(ctx.status(200), ctx.json({ roles: [{ id: 22, name: ERole.ADMIN }] }));
     }),
     rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ organizations: [{ id: '1', name: '15th MDG', parentId: null }] }));
+      return res(
+        ctx.status(200),
+        ctx.json({
+          organizations: [
+            { id: '1', name: '15th MDG', parentId: null },
+            { id: '2', name: 'org2', parentId: null },
+          ],
+        })
+      );
+    }),
+
+    rest.put(`${EUri.USERS}123`, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          id: '123',
+          firstName: 'bob',
+          lastName: 'jones',
+          organizationId: '2',
+          role: { id: 22, name: ERole.ADMIN },
+        })
+      );
     })
   );
 });
@@ -87,3 +138,32 @@ test('should close devtools', async () => {
   fireEvent.click(closeButton);
   await waitForElementToBeRemoved(() => getByText(/users/i));
 });
+
+test('should update a users role', async () => {
+  const { getByText, findByRole, getAllByRole, findByText, queryByText } = render(<Devtools />);
+
+  const button = await findByRole('button', { name: 'devtool-button' });
+  fireEvent.click(button);
+
+  await waitForElementToBeRemoved(() => getByText(/loading users/i));
+
+  const user = getByText(/bob jones/i).parentElement;
+
+  const orgSelect = await within(user).findByRole('button', { name: '15th MDG' });
+
+  fireEvent.mouseDown(orgSelect);
+
+  const options = getAllByRole('option');
+
+  server.use(getUsers([{ ...users[0], organizationId: '2' }]));
+
+  fireEvent.click(options[1]);
+
+  // expect the snackbar to be visible
+  await waitFor(() => queryByText(/organization changed/i));
+
+  const newOrg = await findByText(/org2/i);
+
+  expect(newOrg).toBeInTheDocument();
+});
+test('should update a users organization', async () => {});
