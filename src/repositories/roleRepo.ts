@@ -1,9 +1,13 @@
 import prisma from '../prisma/prisma';
 
 export async function getRoleByName(name: string) {
-  return await prisma.role.findUnique({
+  return prisma.role.findUnique({
     where: {
       name,
     },
   });
+}
+
+export async function getRoles() {
+  return prisma.role.findMany();
 }

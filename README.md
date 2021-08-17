@@ -76,3 +76,17 @@ server.use(
   })
 );
 ```
+
+## Testing With ReactQuery
+
+React Query is a library for fetching, caching and updating server data on the client.
+
+### Gotchas
+
+- React Query does not automatically update it's cache when doing a mutation
+  There are two ways to update the cache after a mutation
+
+  1. Optimistically
+  2. Invalidate a portion of the cache
+
+  What this means for testing is YOU MUST OVERRIDE THE MSW MOCK with the new expected data.

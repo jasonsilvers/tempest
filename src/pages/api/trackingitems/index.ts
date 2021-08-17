@@ -1,22 +1,37 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { User } from '@prisma/client';
-import prisma from '../../../prisma/prisma';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { createTrackingItem, getTrackingItems } from '../../../repositories/trackingItemRepo';
+import { getAc, permissionDenied } from '../../../middleware/utils';
+import { EResource } from '../../../types/global';
+import { LoggedInUser } from '../../../repositories/userRepo';
+import { returnUser } from '../../../repositories/loginRepo';
 
-const trackingItemHandler = async (req: NextApiRequestWithAuthorization<User>, res: NextApiResponse) => {
-  const { method } = req;
+const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
+  const { method, body } = req;
+
+  const ac = await getAc();
 
   switch (method) {
     case 'GET': {
-      const trackingItems = await prisma.trackingItem.findMany();
+      const permission = ac.can(req.user.role.name).readAny(EResource.TRACKING_ITEM);
+
+      if (!permission.granted) {
+        return permissionDenied(res);
+      }
+
+      const trackingItems = await getTrackingItems();
 
       return res.status(200).json({ trackingItems });
     }
     case 'POST': {
-      const newItem = await prisma.trackingItem.create({
-        data: req.body,
-      });
+      const permission = ac.can(req.user.role.name).createAny(EResource.TRACKING_ITEM);
+
+      if (!permission.granted) {
+        return permissionDenied(res);
+      }
+
+      const newItem = await createTrackingItem(body);
 
       return res.status(200).json(newItem);
     }
@@ -26,4 +41,4 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<User>, r
   }
 };
 
-export default trackingItemHandler;
+export default withErrorHandlingAndAuthorization(trackingItemHandler, returnUser);

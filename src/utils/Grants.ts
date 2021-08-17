@@ -171,6 +171,19 @@ const organizationGrants: Grants[] = [
     resource: EResource.ORGANIZATION,
     role: ERole.MONITOR,
   },
+
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.ROLE,
+    role: ERole.ADMIN,
+  },
 ];
 
 const uploadGrants: Grants[] = [
@@ -188,6 +201,18 @@ const trackingItemGrants: Grants[] = [
     attributes: '*',
     resource: EResource.TRACKING_ITEM,
     role: ERole.ADMIN,
+  },
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.MONITOR,
   },
 ];
 

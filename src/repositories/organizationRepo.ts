@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import prisma from '../prisma/prisma';
 
 export async function findOrganizations() {
-  return await prisma.organization.findMany();
+  return prisma.organization.findMany();
 }
 
 export async function findOrganizationById(
@@ -13,13 +13,13 @@ export async function findOrganizationById(
     withUsers: false,
   }
 ) {
-  return await prisma.organization.findUnique({ where: { id }, include: { children: withChildren, users: withUsers } });
+  return prisma.organization.findUnique({ where: { id }, include: { children: withChildren, users: withUsers } });
 }
 
 export type OrganizationWithChildren = Prisma.PromiseReturnType<typeof findOrganizationById>;
 
 export async function createOrganizations(organization: Organization) {
-  return await prisma.organization.create({
+  return prisma.organization.create({
     data: organization,
   });
 }

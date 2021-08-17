@@ -1,5 +1,5 @@
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import { findOrganizations } from '../../../src/repositories/organizationRepo';
+import { findOrganizations, createOrganizations } from '../../../src/repositories/organizationRepo';
 import organizationApiHandler from '../../../src/pages/api/organizations/index';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import { findGrants } from '../../../src/repositories/grantsRepo';
@@ -22,6 +22,13 @@ const testOrganizations = [
     name: 'testOrg2',
   },
 ];
+
+const newOrgId = '67c6657f-0022-48b0-89b3-866dd89831ef';
+
+const newOrg = {
+  name: 'Vaccinations Squadron',
+  parent: null,
+};
 
 beforeEach(() => {
   mockMethodAndReturn(findUserByDodId, {
@@ -48,7 +55,7 @@ test('should return 401 if not authorized', async () => {
   const { status } = await testNextApi.get(organizationApiHandler, { withJwt: false });
   expect(status).toBe(401);
 });
-test('should return 403 if incorrect permission', async () => {
+test('should return 403 if incorrect permission - GET', async () => {
   mockMethodAndReturn(findUserByDodId, {
     id: globalUserId,
     firstName: 'joe',
@@ -56,5 +63,45 @@ test('should return 403 if incorrect permission', async () => {
   });
   mockMethodAndReturn(findOrganizations, testOrganizations);
   const { status } = await testNextApi.get(organizationApiHandler);
+  expect(status).toBe(403);
+});
+
+test('should return method not allowed', async () => {
+  const { status } = await testNextApi.put(organizationApiHandler, { body: {} });
+
+  expect(status).toBe(405);
+});
+
+test('should create organization', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: globalUserId,
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+  });
+  mockMethodAndReturn(createOrganizations, { ...newOrg, id: newOrgId });
+  const { status, data } = await testNextApi.post(organizationApiHandler, { body: newOrg });
+
+  expect(status).toBe(200);
+
+  expect(data).toStrictEqual({ ...newOrg, id: newOrgId });
+});
+test('should return 400 if id is not null', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: globalUserId,
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+  });
+  const { status } = await testNextApi.post(organizationApiHandler, { body: { ...newOrg, id: newOrgId } });
+
+  expect(status).toBe(400);
+});
+test('should return 403 if incorrect permission - POST', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: globalUserId,
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  const { status } = await testNextApi.post(organizationApiHandler, { body: newOrg });
+
   expect(status).toBe(403);
 });

@@ -34,3 +34,9 @@ test('should return 401 if not authorized', async () => {
 
   expect(status).toBe(401);
 });
+
+test('should return 405 if method not allowed', async () => {
+  const { status } = await testNextApi.post(grantsHandler, { withJwt: true, body: {} });
+
+  expect(status).toBe(405);
+});
