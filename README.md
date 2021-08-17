@@ -79,11 +79,11 @@ server.use(
 
 ## Testing With ReactQuery
 
-React Query is a lirbrary for fetching, caching and updating server data on the client.
+React Query is a library for fetching, caching and updating server data on the client.
 
 ### Gotchas
 
-- React Query does not automatically udpate it's cache when doing a mutation
+- React Query does not automatically update it's cache when doing a mutation
   There are two ways to update the cache after a mutation
 
   1. Optimistically
