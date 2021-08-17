@@ -15,7 +15,7 @@ async function createNextApiServer(handler: ApiHandler) {
   let server: http.Server;
   const url = await listen(
     (server = http.createServer((req, res) => {
-      const reqUrl = new URL(req.url, 'http://whocares/');
+      const reqUrl = new URL(req.url, 'http://nextjstesttool/');
       const urlSplit = reqUrl.pathname.split('/');
       const id = urlSplit[3];
       const slug = urlSplit.slice(3, urlSplit.length);

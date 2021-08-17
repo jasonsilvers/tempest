@@ -1,10 +1,10 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
-import prisma from '../../../prisma/prisma';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource, RolesDTO } from '../../../types/global';
 import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { getRoles } from '../../../repositories/roleRepo';
 
 const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse<RolesDTO>) => {
   const { method } = req;
@@ -21,7 +21,7 @@ const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, 
     return permissionDenied(res);
   }
 
-  const roles = await prisma.role.findMany();
+  const roles = await getRoles();
 
   res.status(200).json({ roles });
 };

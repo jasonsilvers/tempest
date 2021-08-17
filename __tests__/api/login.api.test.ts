@@ -49,3 +49,8 @@ test('login should update last login date', async () => {
   expect(data).toEqual(returnedUser);
   expect(updateLastLogin).toHaveBeenCalled();
 });
+
+test('login should return 403 if method not allowed', async () => {
+  const { status } = await testNextApi.post(loginHandler, { body: {} });
+  expect(status).toBe(405);
+});

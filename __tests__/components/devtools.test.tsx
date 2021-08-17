@@ -72,7 +72,15 @@ beforeEach(() => {
     }),
 
     rest.get(EUri.ROLES, (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ roles: [{ id: 22, name: ERole.ADMIN }] }));
+      return res(
+        ctx.status(200),
+        ctx.json({
+          roles: [
+            { id: 22, name: ERole.ADMIN },
+            { id: 33, name: ERole.MEMBER },
+          ],
+        })
+      );
     }),
     rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
       return res(
@@ -166,4 +174,29 @@ test('should update a users role', async () => {
 
   expect(newOrg).toBeInTheDocument();
 });
-test('should update a users organization', async () => {});
+test('should update a users organization', async () => {
+  const { getByText, findByRole, getAllByRole, findByText, queryByText } = render(<Devtools />);
+
+  const button = await findByRole('button', { name: 'devtool-button' });
+  fireEvent.click(button);
+
+  await waitForElementToBeRemoved(() => getByText(/loading users/i));
+
+  const user = getByText(/bob jones/i).parentElement;
+
+  const roleSelect = await within(user).findByRole('button', { name: /admin/i });
+
+  fireEvent.mouseDown(roleSelect);
+
+  const options = getAllByRole('option');
+
+  server.use(getUsers([{ ...users[0], role: { id: 33, name: ERole.MEMBER } }]));
+
+  fireEvent.click(options[1]);
+
+  await waitFor(() => queryByText(/role changed/i));
+
+  const newRole = await findByText(/member/i);
+
+  expect(newRole).toBeInTheDocument();
+});
