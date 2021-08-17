@@ -1,4 +1,4 @@
-import { LogEventType } from '@prisma/client';
+import { ELogEventType } from '../types/global';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import { createLog } from '../utils/Api';
@@ -10,9 +10,9 @@ const usePageLogging = () => {
 
   useEffect(() => {
     if (asPath === '/Unauthenticated') {
-      createLog(LogEventType.UNAUTHORIZED, `Unauthorized URL: ${previousURLRef.current}`);
+      createLog(ELogEventType.UNAUTHORIZED, `Unauthorized URL: ${previousURLRef.current}`);
     } else {
-      createLog(LogEventType.PAGE_ACCESS, `URI: ${asPath}`);
+      createLog(ELogEventType.PAGE_ACCESS, `URI: ${asPath}`);
     }
 
     if (asPath !== previousURLRef.current) {

@@ -4,10 +4,10 @@ import { LoggedInUser } from '../../../repositories/userRepo';
 import { returnUser } from '../../../repositories/loginRepo';
 import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
 import { logFactory } from '../../../utils/logger';
-import { LogEventType } from '@prisma/client';
+import { ELogEventType } from '../../../types/global';
 
 type LogHandlerBody = {
-  logEventType: LogEventType;
+  logEventType: ELogEventType;
   message: string;
 };
 

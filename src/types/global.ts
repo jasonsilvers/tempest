@@ -2,6 +2,16 @@ import { Role, Organization, TrackingItem } from '@prisma/client';
 import { Grants } from '../repositories/grantsRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 
+export enum ELogEventType {
+  AUTHORIZED = 'AUTHORIZED',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  API_ACCESS = 'API_ACCESS',
+  PAGE_ACCESS = 'PAGE_ACCESS',
+  LOGIN = 'LOGIN',
+  METHOD_NOT_ALLOWED = 'METHOD_NOT_ALLOWED',
+  BAD_REQUEST = 'BAD_REQUEST',
+}
+
 export enum EMtrVerb {
   SIGN_TRAINEE = 'sign_trainee',
   SIGN_AUTHORITY = 'sign_authority',

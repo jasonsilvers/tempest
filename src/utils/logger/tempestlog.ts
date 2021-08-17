@@ -1,8 +1,8 @@
-import { LogEventType } from '@prisma/client';
+import { ELogEventType } from '../../types/global';
 import log, { LogLevelDesc } from 'loglevel';
 
 type TempestLog = typeof log & {
-  persist: (logEventType: LogEventType, message: string) => Promise<void>;
+  persist: (logEventType: ELogEventType, message: string) => Promise<void>;
 };
 
 const tempestLog = log as unknown as TempestLog;

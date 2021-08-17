@@ -1,6 +1,6 @@
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { createLog } from '../../src/repositories/logRepo';
-import { LogEventType } from '.prisma/client';
+import { ELogEventType } from '../../src/types/global';
 
 jest.mock('../../src/repositories/logRepo');
 jest.spyOn(global.console, 'info');
@@ -18,7 +18,7 @@ test('should add persist method to logger', () => {
 
   const log = logger(user);
 
-  log.persist(LogEventType.API_ACCESS, 'test');
+  log.persist(ELogEventType.API_ACCESS, 'test');
 
   expect(createLog).toHaveBeenCalled();
 });
