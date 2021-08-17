@@ -25,9 +25,7 @@ async function trackingItemHandler(
     return permissionDenied(res);
   }
 
-  let trackingItemId: number;
-
-  trackingItemId = parseInt(req.query.id as string);
+  const trackingItemId = parseInt(req.query.id as string);
 
   if (isNaN(trackingItemId)) {
     return res.status(400).json({ message: 'Bad Request' });
