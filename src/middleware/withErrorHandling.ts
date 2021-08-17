@@ -1,4 +1,4 @@
-import { LogEventType } from '@prisma/client';
+import { ELogEventType } from '../types/global';
 import { DBQueryFunctionToReturnUser, NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
 import type { NextApiHandler, NextApiResponse } from 'next';
 import { LoggedInUser } from '../repositories/userRepo';
@@ -64,7 +64,7 @@ export const withErrorHandling =
 
     try {
       if (withLogging) {
-        log.persist(LogEventType.API_ACCESS, `URI: ${req.url} Method: ${req.method}`);
+        log.persist(ELogEventType.API_ACCESS, `URI: ${req.url} Method: ${req.method}`);
       }
       await handler(req, res);
     } catch (e) {
@@ -84,7 +84,7 @@ export const withErrorHandling =
       }
 
       if (e.name === 'MethodNotFound') {
-        log.persist(LogEventType.METHOD_NOT_ALLOWED, `Method: ${e.message}`);
+        log.persist(ELogEventType.METHOD_NOT_ALLOWED, `Method: ${e.message}`);
         return res.status(e.status).json({ message: 'Method Not Found' });
       }
 

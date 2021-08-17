@@ -3,7 +3,7 @@ import { server } from '../utils/mocks/msw';
 import { Wrapper } from '../utils/TempestTestUtils';
 import { usePageLogging } from '../../src/hooks/usePageLogging';
 import { useTestRouter } from '../utils/mocks/NextMocks';
-import { LogEventType } from '@prisma/client';
+import { ELogEventType } from '../../src/types/global';
 import { createLog } from '../../src/utils/Api';
 import { mockMethodAndReturn } from '../utils/mocks/repository';
 import React from 'react';
@@ -50,7 +50,7 @@ test('should log when landing on a page', async () => {
     },
   });
 
-  expect(createLog).toHaveBeenCalledWith(LogEventType.PAGE_ACCESS, 'URI: /');
+  expect(createLog).toHaveBeenCalledWith(ELogEventType.PAGE_ACCESS, 'URI: /');
 });
 
 test('should log unathorized when user lands on /unauthorized route', async () => {
@@ -75,5 +75,5 @@ test('should log unathorized when user lands on /unauthorized route', async () =
     },
   });
 
-  expect(createLog).toHaveBeenCalledWith(LogEventType.UNAUTHORIZED, 'Unauthorized URL: /Profile');
+  expect(createLog).toHaveBeenCalledWith(ELogEventType.UNAUTHORIZED, 'Unauthorized URL: /Profile');
 });

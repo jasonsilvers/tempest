@@ -1,4 +1,4 @@
-import { LogEventType } from '@prisma/client';
+import { ELogEventType } from '../../types/global';
 import { log, LogLevelDesc } from './tempestlog';
 import { LoggedInUser } from '../../repositories/userRepo';
 import { createLog } from '../../repositories/logRepo';
@@ -11,7 +11,7 @@ const level = (process.env.LOG_LEVEL as LogLevelDesc) || 'info';
 function logFactory(user: LoggedInUser) {
   log.setLevel(level);
 
-  log.persist = async function (logEventType: LogEventType, message: string): Promise<void> {
+  log.persist = async function (logEventType: ELogEventType, message: string): Promise<void> {
     createLog(user, logEventType, message);
   };
 
