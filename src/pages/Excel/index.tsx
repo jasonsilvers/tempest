@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import Excel from 'exceljs';
+import Excel from 'xlsx';
 import fileToArrayBuffer from 'file-to-array-buffer';
 import { usePermissions } from '../../hooks/usePermissions';
 import { EFuncAction, EResource } from '../../types/global';
@@ -7,12 +7,9 @@ import { EFuncAction, EResource } from '../../types/global';
 // for controlling the files allowed in one place
 const acceptableFiles = ['.xlsx'];
 // function to get the cell A1 value
-const getA1Value = (workbook) => {
-  const worksheet = workbook.getWorksheet(1);
-  return worksheet.getCell('A1').value;
-};
+// const getA1Value = (workbook) => {
+// };
 // define the excel workbook outside of the react component
-const wb = new Excel.Workbook();
 
 const ExcelPage = () => {
   const { role, isLoading, permissionCheck, user } = usePermissions();
@@ -32,7 +29,8 @@ const ExcelPage = () => {
   const handleFileChange = async (e: FormEvent) => {
     e.preventDefault();
     const buffer = (await fileToArrayBuffer(file)) as Buffer;
-    wb.xlsx.load(buffer).then((workbook) => setA1(getA1Value(workbook)));
+    const wb = Excel.read(buffer, { type: 'buffer' });
+    setA1(wb.Sheets[wb.SheetNames[0]]['A1'].v);
   };
 
   const clearFile = () => {
