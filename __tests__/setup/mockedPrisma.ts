@@ -1,18 +1,25 @@
 import prisma from '../../src/prisma/prisma';
 
 interface IMockedPrisma {
+  role: {
+    findMany: jest.Mock;
+    findUnique: jest.Mock;
+  };
   user: {
     create: jest.Mock;
     update: jest.Mock;
     findUnique: jest.Mock;
+    findMany: jest.Mock;
   };
   organization: {
     create: jest.Mock;
     findMany: jest.Mock;
+    findUnique: jest.Mock;
   };
   trackingItem: {
     findMany: jest.Mock;
     delete: jest.Mock;
+    create: jest.Mock;
   };
   logEvent: {
     create: jest.Mock;
@@ -39,18 +46,25 @@ interface IMockedPrisma {
 jest.mock(
   '../../src/prisma/prisma',
   (): IMockedPrisma => ({
+    role: {
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+    },
     user: {
       create: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
+      findMany: jest.fn(),
     },
     organization: {
       create: jest.fn(),
       findMany: jest.fn(),
+      findUnique: jest.fn(),
     },
     trackingItem: {
       findMany: jest.fn(),
       delete: jest.fn(),
+      create: jest.fn(),
     },
     logEvent: {
       create: jest.fn(),
