@@ -17,6 +17,9 @@ interface IMockedPrisma {
   logEvent: {
     create: jest.Mock;
   };
+  grant: {
+    findMany: jest.Mock;
+  };
 }
 
 jest.mock(
@@ -37,6 +40,9 @@ jest.mock(
     },
     logEvent: {
       create: jest.fn(),
+    },
+    grant: {
+      findMany: jest.fn(),
     },
   })
 );
