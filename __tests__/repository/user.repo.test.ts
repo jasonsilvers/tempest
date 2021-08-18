@@ -18,7 +18,6 @@ import {
 import { MemberTrackingRecord, Role, User } from '@prisma/client';
 import { IPerson } from '../../src/repositories/common/types';
 import { EUserIncludes } from '../../src/types/global';
-import dayjs from 'dayjs';
 
 const commonApiPerson = {
   address: '123 Fake St',
