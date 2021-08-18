@@ -202,6 +202,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
               <TableData tw="ml-auto">
                 <IconButton
                   size="small"
+                  aria-label="tracking-item-delete-button"
                   onClick={() => {
                     setMemberTrackingItemsToAdd((old) => {
                       const newMemberTrackingItemsToAdd = { ...old };
