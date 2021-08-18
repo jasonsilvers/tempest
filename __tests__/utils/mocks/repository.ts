@@ -21,7 +21,9 @@ export const mockMethodAndReturn = <E>(method: any, data: Partial<E>) => {
 };
 /*eslint-enable */
 
+/*eslint-disable */
 export function mockFunction<T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> {
-  // eslint-disable-line
   return fn as jest.MockedFunction<T>;
 }
+
+/*eslint-disable */
