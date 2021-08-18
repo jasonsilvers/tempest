@@ -62,11 +62,11 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   const addMemberTrackingItems = () => {
     setIsSaving(true);
     for (const memberTrackingItemToAdd of Object.values(memberTrackingItemsToAdd)) {
-      const shouldCreateMemberTrackingRecord = memberTrackingItemsQuery.data?.some(
+      const shouldOnlyCreateMemberTrackingRecord = memberTrackingItemsQuery.data?.some(
         (memberTrackingItem) => memberTrackingItem.trackingItemId === memberTrackingItemToAdd.trackingItem.id
       );
 
-      if (shouldCreateMemberTrackingRecord) {
+      if (shouldOnlyCreateMemberTrackingRecord) {
         const newMemberTrackingRecord: Partial<MemberTrackingRecord> = {
           trackingItemId: memberTrackingItemToAdd.trackingItem.id,
           completedDate: dayjs(memberTrackingItemToAdd.completedDate).toDate(),
@@ -221,7 +221,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
       </DialogContent>
       <DialogActions>
         <DialogButton
-          disabled={Object.keys(memberTrackingItemsToAdd).length === 0}
+          disabled={Object.keys(memberTrackingItemsToAdd).length === 0 || memberTrackingItemsQuery.isLoading}
           onClick={addMemberTrackingItems}
           size="medium"
           variant="contained"
