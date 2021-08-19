@@ -57,9 +57,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   }, [isOpen]);
 
   const AddPseudoItemToList = () => {
-    if (trackingItem.title) {
-      setTrackingItems((state) => [...state, { ...trackingItem, title: trackingItem.title.trim() }]);
-    }
+    setTrackingItems((state) => [...state, { ...trackingItem, title: trackingItem.title.trim() }]);
   };
 
   return (
@@ -84,6 +82,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             <InputFieldContainer>
               <DialogContentText>Training Title</DialogContentText>
               <AdjustedOutlinedInput
+                inputProps={{ 'aria-label': 'training-title-input' }}
                 value={trackingItem.title}
                 onChange={(e) => setTrackingItem((state) => ({ ...state, title: e.target.value }))}
               />
@@ -91,6 +90,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             <InputFieldContainer>
               <DialogContentText>Training Interval</DialogContentText>
               <AdjustedOutlinedInput
+                inputProps={{ 'aria-label': 'training-interval-input' }}
                 type="number"
                 value={trackingItem.interval}
                 onChange={(e) => setTrackingItem((state) => ({ ...state, interval: parseInt(e.target.value) }))}
@@ -100,6 +100,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           <InputFieldContainer>
             <DialogContentText>Description</DialogContentText>
             <AdjustedOutlinedInput
+              inputProps={{ 'aria-label': 'training-description-input' }}
               value={trackingItem.description}
               onChange={(e) => setTrackingItem((state) => ({ ...state, description: e.target.value }))}
             />
@@ -141,6 +142,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
                 <TableData tw="text-sm w-1/3">{item.description}</TableData>
                 <TableData tw="">
                   <IconButton
+                    aria-label="delete-tracking-item-button"
                     size="small"
                     onClick={() => setTrackingItems((state) => state.filter((stateItem) => stateItem !== item))}
                   >

@@ -1,20 +1,8 @@
-import {
-  fireEvent,
-  render,
-  waitFor,
-  waitForElementToBeRemoved,
-  screen,
-  findAllByRole,
-  getByText,
-  findByText,
-  userEvent,
-} from '../../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved, userEvent } from '../../utils/TempestTestUtils';
 import React, { useState } from 'react';
 import { rest } from 'msw';
 import { AddMemberTrackingItemDialog } from '../../../src/components/Records/Dialog/AddMemberTrackingItemDialog';
-
 import { server } from '../../utils/mocks/msw';
-
 import 'whatwg-fetch';
 import { EUri } from '../../../src/types/global';
 import { TrackingItem, User } from '@prisma/client';
@@ -163,8 +151,8 @@ const trackingItemAndRecordPost = () =>
 test('should be able to add/delete items to list', async () => {
   server.use(trackingItemsGet(trackingItemsList));
 
-  const { getByRole, findByRole, findAllByRole, getByText } = render(
-    <AddMemberTrackingItemDialog handleClose={() => {}} forMemberId={testTrainee.id} />
+  const { getByRole, findAllByRole, getByText } = render(
+    <AddMemberTrackingItemDialog handleClose={() => {}} forMemberId={testTrainee.id} /> // eslint-disable-line
   );
 
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
@@ -191,8 +179,8 @@ test('should be able to add/delete items to list', async () => {
 test('should be able find item by typing in input', async () => {
   server.use(trackingItemsGet(trackingItemsList));
 
-  const { getByRole, findByRole, findAllByRole, getByText } = render(
-    <AddMemberTrackingItemDialog handleClose={() => {}} forMemberId={testTrainee.id} />
+  const { getByRole, findAllByRole, getByText } = render(
+    <AddMemberTrackingItemDialog handleClose={() => {}} forMemberId={testTrainee.id} /> // eslint-disable-line
   );
 
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
