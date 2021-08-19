@@ -9,6 +9,7 @@
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "test": "jest --watchAll",
     "test:unit": "jest",
+    "pre-commit": "pretty-quick --staged",
     "test:e2e-ci": "",
     "ts-node": "ts-node --log-error --pretty --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\"",
     "build:seed:singleDir": "tsc ./src/prisma/seed.ts ./src/prisma/global.d.ts --outDir ./src/prisma/seedPipeline --allowSyntheticDefaultImports --lib 'es2019'",
