@@ -1,5 +1,5 @@
 import prisma from '../setup/mockedPrisma';
-import { createOrganizations, findOrganizations } from '../../src/repositories/organizationRepo';
+import { createOrganizations, findOrganizationById, findOrganizations } from '../../src/repositories/organizationRepo';
 
 const testOrganizations = [
   {
@@ -27,4 +27,11 @@ test('Repo Organization for Prisma create() Happy Case', async () => {
   const organizationCreate = await createOrganizations({ name: 'Org', parentId: '2', id: '23432' });
   expect(spy).toBeCalledTimes(1);
   expect(organizationCreate).toEqual(newObj);
+});
+
+test('should findOrganizationById', async () => {
+  const spy = prisma.organization.findUnique.mockImplementationOnce(() => testOrganizations[0]);
+  const organization = await findOrganizationById('1');
+  expect(organization).toEqual(testOrganizations[0]);
+  expect(spy).toBeCalledTimes(1);
 });
