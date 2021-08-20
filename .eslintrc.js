@@ -59,6 +59,7 @@ module.exports = {
     node: true,
     es2020: true,
   },
+  ignorePatterns: ['cypress/*'],
   parserOptions: lintTS.parserOptions,
   parser: '@typescript-eslint/parser',
   plugins: [...lintTS.plugins, ...lintReact.plugins],

@@ -14,7 +14,7 @@
 // ***********************************************************
 
 // load type definitions that come with Cypress module
-/// <reference types="cypress" />
+// <reference types="cypress" />
 
 // Import commands.js using ES2015 syntax:
 import './commands';

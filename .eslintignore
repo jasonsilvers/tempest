@@ -4,3 +4,4 @@
 ./.vscode/*
 **/*.d*
 ./eslintrc
+./cypress/*
