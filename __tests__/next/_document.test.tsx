@@ -8,8 +8,9 @@ const ctx = {
     writeHead: jest.fn(),
     end: jest.fn(),
   }, // not necessary but useful for testing other files
-  // eslint-disable-lint
+  /*eslint-disable */
   renderPage: (options: any = {}) => {
+    /*eslint-disable */
     // for coverage, call enhanceApp and App
     if (typeof options.enhanceApp === 'function') {
       const app = options.enhanceApp(() => <div>App Rendered</div>);

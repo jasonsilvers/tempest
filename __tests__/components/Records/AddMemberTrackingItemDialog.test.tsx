@@ -232,11 +232,10 @@ test('should create membertrackingrecord if already have membertracking item', a
 
   fireEvent.click(addButton);
 
-  // expect the snackbar to be visible
+  await findByRole('progressbar');
+
   await waitFor(() => queryByText(/a record was successfully added/i));
-
   const snackbar = await findByRole('alert');
-
   expect(snackbar).not.toBeNull();
 });
 
@@ -266,10 +265,9 @@ test('should add membertrackingitem and membertrackingrecord', async () => {
 
   fireEvent.click(addButton);
 
-  // expect the snackbar to be visible
+  await findByRole('progressbar');
+
   await waitFor(() => queryByText(/a record was successfully added/i));
-
   const snackbar = await findByRole('alert');
-
   expect(snackbar).not.toBeNull();
 });
