@@ -14,21 +14,10 @@
 // ***********************************************************
 
 // load type definitions that come with Cypress module
-/// <reference types="cypress" />
+// <reference types="cypress" />
 
 // Import commands.js using ES2015 syntax:
 import './commands';
-/*eslint-disable */
-declare namespace Cypress {
-  interface Chainable {
-    /**
-     * Custom command to select DOM element by data-cy attribute.
-     * @example cy.dataCy('greeting')
-     */
-    dataCy(value: string): Cypress.Chainable;
-  }
-}
-/*eslint-disable */
 
 Cypress.Commands.add('dataCy', (value) => {
   return cy.get(`[data-cy=${value}]`);
