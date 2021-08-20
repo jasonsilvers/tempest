@@ -5,6 +5,7 @@ module.exports = {
   ...defaults,
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: [
+    '<rootDir>/cypress/',
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
     '<rootDir>/__tests__/setup/',

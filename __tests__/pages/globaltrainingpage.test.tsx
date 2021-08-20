@@ -113,18 +113,18 @@ it('test the dashboard searches for the items by description', async () => {
   expect(getByText(/test title/i)).toBeInTheDocument();
 });
 
-it('test the dashboard cancels the search', async () => {
-  const { getByText, getByRole } = render(<TrackingItemPage />);
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
-  expect(getByText(/global training/i)).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
-  const input = getByRole('textbox') as HTMLInputElement;
-  fireEvent.change(input, { target: { value: 'description' } });
-  const clearButton = getByRole('clearButton') as HTMLButtonElement;
-  fireEvent.click(clearButton);
-  expect(input.value).toBe('');
-  expect(getByText(/test title/i)).toBeInTheDocument();
-});
+// it('test the dashboard cancels the search', async () => {
+//   const { getByText, getByRole } = render(<TrackingItemPage />);
+//   await waitForElementToBeRemoved(() => getByText(/loading/i));
+//   expect(getByText(/global training/i)).toBeInTheDocument();
+//   await waitFor(() => getByText(/test title/i));
+//   const input = getByRole('textbox') as HTMLInputElement;
+//   fireEvent.change(input, { target: { value: 'description' } });
+//   const clearButton = getByRole('clearButton') as HTMLButtonElement;
+//   fireEvent.click(clearButton);
+//   expect(input.value).toBe('');
+//   expect(getByText(/test title/i)).toBeInTheDocument();
+// });
 
 /**
  * getStaticProps Test
