@@ -12,7 +12,7 @@ describe('Main', () => {
 
     cy.url().should('include', '/Dashboard');
 
-    cy.findByRole('heading', {name: /Dashboard/i}).should('be.visible');
+    // cy.findByRole('heading', {name: /Dashboard/i}).should('be.visible');
     
   });
 });
