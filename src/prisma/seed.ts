@@ -103,7 +103,7 @@ async function seedDev() {
 
   const adminRole = await prisma.role.findFirst({
     where: {
-      name: ERole.ADMIN,
+      name: ERole.MONITOR,
     },
   });
 
@@ -115,7 +115,7 @@ async function seedDev() {
     },
   });
 
-  const user2 = createUser();
+  const user2 = createUser('1143209890');
 
   await prisma.user.create({
     data: {

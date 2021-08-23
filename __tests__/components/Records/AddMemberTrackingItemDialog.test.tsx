@@ -232,8 +232,6 @@ test('should create membertrackingrecord if already have membertracking item', a
 
   fireEvent.click(addButton);
 
-  await findByRole('progressbar');
-
   await waitFor(() => queryByText(/a record was successfully added/i));
   const snackbar = await findByRole('alert');
   expect(snackbar).not.toBeNull();
@@ -264,8 +262,6 @@ test('should add membertrackingitem and membertrackingrecord', async () => {
   const addButton = getByRole('button', { name: 'Add' });
 
   fireEvent.click(addButton);
-
-  await findByRole('progressbar');
 
   await waitFor(() => queryByText(/a record was successfully added/i));
   const snackbar = await findByRole('alert');

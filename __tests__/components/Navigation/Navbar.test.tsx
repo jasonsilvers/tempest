@@ -25,7 +25,7 @@ afterAll(() => {
 test('should render a navbar', async () => {
   const { getByText } = render(<Navbar />);
 
-  await waitFor(() => getByText(/dashboard/i));
+  await waitFor(() => getByText(/my profile/i));
 
   await waitFor(() => getByText(/Tempest/i));
 

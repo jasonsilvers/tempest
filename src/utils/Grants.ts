@@ -209,6 +209,12 @@ const trackingItemGrants: Grants[] = [
     role: ERole.MONITOR,
   },
   {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.MEMBER
+  },
+  {
     action: EAction.CREATE_ANY,
     attributes: '*',
     resource: EResource.TRACKING_ITEM,
