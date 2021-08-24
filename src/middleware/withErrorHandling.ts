@@ -7,16 +7,15 @@ import { logFactory } from '../utils/logger';
 // by wrapping every api route with this middleware,
 // we can use helper methods that throw: ex if the user did not give a primary key
 // the error bubbles up to this handler that sends the encoded error message as a response
-export class ApiError extends Error {
+export class NotFoundError extends Error {
   readonly status: number;
-  readonly body: unknown;
   readonly name: string;
 
-  constructor({ status, body }: { status: number; body: unknown }) {
+  constructor() {
     super('ApiError');
-    this.status = status;
-    this.body = body;
-    this.name = 'ApiError';
+    this.status = 404;
+
+    this.name = 'NotFoundError';
   }
 }
 
@@ -68,9 +67,9 @@ export const withErrorHandling =
       }
       await handler(req, res);
     } catch (e) {
-      if (e.name === 'ApiError') {
+      if (e.name === 'NotFoundError') {
         log.error(e);
-        return res.status(500).send('server error');
+        return res.status(404).send('The requested entity could not be found');
       }
 
       if (e.name === 'PermissionError') {

@@ -379,7 +379,7 @@ test('should sign record as trainee and mark as done', async () => {
 
   await waitFor(() => getByText(/fire/i));
   await waitFor(() => getByText(/completed/i));
-  const signatureButton = getByRole('signature_button');
+  const signatureButton = getByRole('button', { name: 'signature_button' });
 
   server.use(
     memberTrackingItemsGet(testTrainee, memberTrackingItems_Done),
@@ -405,7 +405,7 @@ test('should sign record as trainee and mark as done', async () => {
   );
 
   fireEvent.click(signatureButton);
-  await waitForElementToBeRemoved(() => getByRole('signature_button'));
+  await waitForElementToBeRemoved(() => getByRole('button', { name: 'signature_button' }));
 
   const doneTab = getByText(/done/i);
 
