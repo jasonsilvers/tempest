@@ -4,7 +4,6 @@ import { testNextApi } from '../../utils/NextAPIUtils';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
-import { createLog } from '../../../src/repositories/logRepo';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/roleRepo');
