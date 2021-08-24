@@ -86,7 +86,11 @@ test('GET - should return 403 if not correct permissions', async () => {
 });
 
 test('should only allow GET', async () => {
-  const { status } = await testNextApi.put(memberTrackingRecordIdHandler, { body: {} });
+  const expectedResult = { ...memberTrackingRecordFromDb, trackingItem: trackingItemFromDb };
+
+  mockMethodAndReturn(findMemberTrackingRecordById, expectedResult);
+
+  const { status } = await testNextApi.put(memberTrackingRecordIdHandler, { body: { urlId: 1 } });
 
   expect(status).toBe(405);
 });

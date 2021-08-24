@@ -119,10 +119,11 @@ export const useCreateMemberTrackingRecord = () => {
   );
 };
 
-export const useDeleteMemberTrackingRecord = (memberTrackingRecordId: number) => {
+export const useDeleteMemberTrackingRecord = () => {
   const queryClient = useQueryClient();
   return useMutation(
-    () => axios.delete(EUri.MEMBER_TRACKING_RECORDS + memberTrackingRecordId).then((response) => response.data),
+    (memberTrackingRecordId: number) =>
+      axios.delete(EUri.MEMBER_TRACKING_RECORDS + memberTrackingRecordId).then((response) => response.data),
     {
       onMutate: (id: number) => {
         queryClient.removeQueries(mtrQueryKeys.memberTrackingRecords(id));

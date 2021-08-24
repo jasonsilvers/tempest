@@ -71,7 +71,7 @@ const RecordRow: React.FC<{
   const { activeCategory, increaseCategoryCount, categories } = useMemberItemTrackerContext();
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
   const completionDate = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
-  const { mutate: deleteRecord } = useDeleteMemberTrackingRecord(memberTrackingRecordId);
+  const { mutate: deleteRecord } = useDeleteMemberTrackingRecord();
   const { user } = useUser<LoggedInUser>();
   const { enqueueSnackbar } = useSnackbar();
   const [modalState, setModalState] = useState({ open: false, date: null });
@@ -180,7 +180,7 @@ const RecordRow: React.FC<{
           <IconButton
             aria-label={`delete-tracking-record-${trackingRecordQuery.data?.id}`}
             size="small"
-            onClick={() => deleteRecord()}
+            onClick={() => deleteRecord(memberTrackingRecordId)}
             tw="ml-auto mr-3 hover:bg-transparent"
           >
             <TempestDeleteIcon />
