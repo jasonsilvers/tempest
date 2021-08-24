@@ -125,11 +125,8 @@ export const useDeleteMemberTrackingRecord = () => {
     (memberTrackingRecordId: number) =>
       axios.delete(EUri.MEMBER_TRACKING_RECORDS + memberTrackingRecordId).then((response) => response.data),
     {
-      onMutate: (id: number) => {
-        queryClient.removeQueries(mtrQueryKeys.memberTrackingRecords(id));
-      },
-      onSuccess: (data: MemberTrackingRecord) => {
-        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItem(data.traineeId, data.trackingItemId));
+      onSettled: (data: MemberTrackingRecord) => {
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId));
       },
     }
   );

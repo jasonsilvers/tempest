@@ -147,7 +147,7 @@ const RecordRow: React.FC<{
             {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
           </div>
         </TableData>
-        <TableData tw={'text-purple-500 w-20 ml-10'}>{getInterval(trackingItem?.interval)}</TableData>
+        <TableData tw={'text-purple-500 w-16 ml-10'}>{getInterval(trackingItem?.interval)}</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
             <>
@@ -176,7 +176,7 @@ const RecordRow: React.FC<{
           traineeSignedDate={trackingRecordQuery.data.traineeSignedDate}
           disabled={!trackingRecordQuery.data.completedDate}
         />
-        <div>
+        <TableData>
           <IconButton
             aria-label={`delete-tracking-record-${trackingRecordQuery.data?.id}`}
             size="small"
@@ -185,7 +185,7 @@ const RecordRow: React.FC<{
           >
             <TempestDeleteIcon />
           </IconButton>
-        </div>
+        </TableData>
       </TableRow>
       <ConfirmDialog open={modalState.open} handleNo={handleNo} handleYes={handleYes}>
         <DialogTitle>Proceed?</DialogTitle>

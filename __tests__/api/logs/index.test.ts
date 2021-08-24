@@ -23,6 +23,7 @@ beforeEach(() => {
 });
 
 test('Succesfully logs and returns 200', async () => {
+  process.env.LOG_LEVEL = 'DEBUG';
   const { status, data } = await testNextApi.post(logHandler, {
     body: {
       logEventType: 'API_ACCESS',
@@ -30,10 +31,9 @@ test('Succesfully logs and returns 200', async () => {
     },
   });
 
-  expect(createLog).toBeCalled();
-
   expect(status).toBe(200);
   expect(data).toEqual({ message: 'ok' });
+  process.env.LOG_LEVEL = 'SILENT';
 });
 
 test('should return method not allowed if not POST', async () => {

@@ -1,7 +1,12 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
-import { deleteMemberTrackingRecord, findMemberTrackingRecordById } from '../../../repositories/memberTrackingRepo';
+import {
+  countMemberTrackingRecordsForMemberTrackingItem,
+  deleteMemberTrackingItem,
+  deleteMemberTrackingRecord,
+  findMemberTrackingRecordById,
+} from '../../../repositories/memberTrackingRepo';
 import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
 import {
@@ -60,8 +65,16 @@ async function memberTrackingRecordIdHandler(
       if (!permission.granted) {
         throw new PermissionError();
       }
-
       const deletedRecord = await deleteMemberTrackingRecord(memberTrackingRecordId);
+
+      const memberTrackingRecordCount = await countMemberTrackingRecordsForMemberTrackingItem(
+        memberTrackingRecord.trackingItemId,
+        memberTrackingRecord.traineeId
+      );
+
+      if (memberTrackingRecordCount._count.trackingItemId === 0) {
+        await deleteMemberTrackingItem(memberTrackingRecord.trackingItemId, memberTrackingRecord.traineeId);
+      }
 
       return res.status(200).json(deletedRecord);
     }

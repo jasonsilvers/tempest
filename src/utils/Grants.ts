@@ -99,7 +99,7 @@ const memberTrackingRecordsGrants: Grants[] = [
     role: ERole.MONITOR,
   },
   {
-    action: EAction.DELETE_ANY,
+    action: EAction.DELETE_OWN,
     attributes: '*, !authorityId',
     resource: EResource.MEMBER_TRACKING_RECORD,
     role: ERole.MEMBER,
