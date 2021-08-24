@@ -31,14 +31,11 @@ describe('Member role', () => {
 
     cy.findByRole('button', { name: /awaiting signature/i }).should('be.disabled');
     cy.findByRole('button', { name: 'signature_button' }).should('be.enabled');
-  });
-
-  it('should sign as trainee', () => {
-
     cy.findByRole('button', { name: 'signature_button' }).click();
+
+    cy.cleanUpRecords();
+    cy.findByText(/fire extinguisher/i).should('not.exist');
   });
-
-
 });
 
 // describe('Monitor role', () => {

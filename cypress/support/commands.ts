@@ -24,4 +24,12 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+Cypress.Commands.add('dataCy', (value) => {
+  return cy.get(`[data-cy=${value}]`);
+});
+
+Cypress.Commands.add('cleanUpRecords', () => {
+  cy.findAllByRole('button', { name: /delete-tracking-record/i }).click({ multiple: true });
+});
+
 import '@testing-library/cypress/add-commands';
