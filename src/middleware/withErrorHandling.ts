@@ -69,7 +69,7 @@ export const withErrorHandling =
     } catch (e) {
       if (e.name === 'NotFoundError') {
         log.error(e);
-        return res.status(404).send('The requested entity could not be found');
+        return res.status(404).send({ message: 'The requested entity could not be found' });
       }
 
       if (e.name === 'PermissionError') {
