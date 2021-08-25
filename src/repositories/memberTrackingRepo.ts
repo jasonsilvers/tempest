@@ -167,6 +167,18 @@ export const findMemberTrackingItemByIdAll = async (userId: string, trackingItem
   });
 };
 
+export const countMemberTrackingRecordsForMemberTrackingItem = (trackingItemId: number, userId: string) => {
+  return prisma.memberTrackingRecord.aggregate({
+    _count: {
+      trackingItemId: true,
+    },
+    where: {
+      traineeId: userId,
+      trackingItemId,
+    },
+  });
+};
+
 export type MemberTrackingItemWithMTRStatus = MemberTrackingItemWithAll & {
   status: {
     [ECategories.OVERDUE]: number;

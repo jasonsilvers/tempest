@@ -17,6 +17,7 @@ import ToolTip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import Paper from '@material-ui/core/Paper';
 import SearchBar from '@snekcode/mui-search-bar';
+import { DeleteIcon } from '../assets/Icons';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -75,6 +76,9 @@ const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="dat
   }
 `;
 
+const TempestDeleteIcon = tw(DeleteIcon)`text-xl`;
+
+
 export {
   TempestDrawer,
   IconButton,
@@ -94,6 +98,7 @@ export {
   TempestSkeleton,
   TempestToolTip,
   TempestDatePicker,
+  TempestDeleteIcon,
   Zoom,
   SearchBar,
 };

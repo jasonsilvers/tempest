@@ -52,7 +52,7 @@ test('should return 403 if incorrect permissions - GET', async () => {
   mockMethodAndReturn(findUserByDodId, {
     id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
-    role: { id: '22', name: 'member' },
+    role: { id: '22', name: 'norole' },
     organizationId: '2',
   });
   const { status } = await testNextApi.get(trackingItemHandler);

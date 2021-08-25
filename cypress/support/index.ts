@@ -12,13 +12,13 @@
 // You can read more here:
 // https://on.cypress.io/configuration
 // ***********************************************************
-
-// load type definitions that come with Cypress module
-// <reference types="cypress" />
-
 // Import commands.js using ES2015 syntax:
-import './commands';
 
-Cypress.Commands.add('dataCy', (value) => {
-  return cy.get(`[data-cy=${value}]`);
-});
+before(() =>
+  Cypress.automation('remote:debugger:protocol', {
+    command: 'Network.setCacheDisabled',
+    params: { cacheDisabled: true },
+  })
+);
+
+import './commands';

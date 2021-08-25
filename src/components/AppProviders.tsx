@@ -30,6 +30,7 @@ function AppProviders({ children, pageProps = null }) {
           vertical: 'top',
           horizontal: 'right',
         }}
+        autoHideDuration={3000}
       >
         <QueryClientProvider client={queryClientRef.current}>
           <Hydrate state={pageProps?.dehydratedState}>

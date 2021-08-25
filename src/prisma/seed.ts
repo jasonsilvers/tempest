@@ -7,13 +7,13 @@ const prisma = new PrismaClient();
 
 const DOD_ID = '2223332221';
 
-function createUser(dodId = null) {
+function createUser(dodId = null, firstName = null, lastName = null) {
   const gender = faker.datatype.number(1);
 
   return {
     id: faker.datatype.uuid(),
-    firstName: faker.name.firstName(gender),
-    lastName: faker.name.lastName(gender),
+    firstName: firstName ? firstName : faker.name.firstName(gender),
+    lastName: lastName ? lastName : faker.name.lastName(gender),
     dodId: dodId ? dodId : faker.datatype.number({ min: 1000000000, max: 1999999999 }).toString(),
     email: faker.internet.email(),
     dutyTitle: faker.company.bsAdjective() + ' ' + faker.company.bsNoun() + ' ' + faker.company.bsBuzz(),
@@ -93,7 +93,7 @@ async function seedDev() {
     },
   });
 
-  const user1 = createUser(DOD_ID);
+  const user1 = createUser(DOD_ID, 'Joe', 'Smith');
 
   const memberRole = await prisma.role.findFirst({
     where: {
@@ -103,7 +103,7 @@ async function seedDev() {
 
   const adminRole = await prisma.role.findFirst({
     where: {
-      name: ERole.ADMIN,
+      name: ERole.MONITOR,
     },
   });
 
@@ -115,7 +115,7 @@ async function seedDev() {
     },
   });
 
-  const user2 = createUser();
+  const user2 = createUser('1143209890', 'Sandra', 'Clark');
 
   await prisma.user.create({
     data: {

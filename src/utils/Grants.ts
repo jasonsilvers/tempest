@@ -99,7 +99,7 @@ const memberTrackingRecordsGrants: Grants[] = [
     role: ERole.MONITOR,
   },
   {
-    action: EAction.DELETE_ANY,
+    action: EAction.DELETE_OWN,
     attributes: '*, !authorityId',
     resource: EResource.MEMBER_TRACKING_RECORD,
     role: ERole.MEMBER,
@@ -207,6 +207,12 @@ const trackingItemGrants: Grants[] = [
     attributes: '*',
     resource: EResource.TRACKING_ITEM,
     role: ERole.MONITOR,
+  },
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.MEMBER
   },
   {
     action: EAction.CREATE_ANY,

@@ -18,7 +18,7 @@ import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo
 
 const AwaitingSignature: React.FC = ({ children }) => (
   <TableData tw="mr-3">
-    <DisabledButton>{children ?? 'Awaiting Signature'}</DisabledButton>
+    <DisabledButton disabled>{children ?? 'Awaiting Signature'}</DisabledButton>
   </TableData>
 );
 
@@ -73,7 +73,7 @@ const getSignature = (
   ) {
     return (
       <TableData>
-        <ActionButton role={setDomRole('Signature Button')} onClick={handleSignTrainee}>
+        <ActionButton aria-label={setDomRole('Signature Button')} onClick={handleSignTrainee}>
           Sign
         </ActionButton>
       </TableData>
@@ -87,7 +87,7 @@ const getSignature = (
         <RecordSignatureToolTip
           traineeSignature={{ signee: memberTrackingRecord[signee], date: memberTrackingRecord[signatureType] }}
         >
-          <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
+          <DisabledButton disabled>{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
             'MM/DD/YY'
           )}`}</DisabledButton>
         </RecordSignatureToolTip>

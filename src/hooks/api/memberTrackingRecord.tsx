@@ -4,13 +4,14 @@ import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RecordWithTrackingItem } from '../../components/Records/MemberRecordTracker/RecordRow';
 import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
-import { EMtrVerb } from '../../types/global';
+import { EMtrVerb, EUri } from '../../types/global';
 import { getCategory } from '../../utils/Status';
 import { mtiQueryKeys } from './memberTrackingItem';
 
 const MEMBER_TRACKING_RECORD_RESOURCE = 'membertrackingrecords';
 
 export const mtrQueryKeys = {
+  memberTrackingRecords: (memberTrackingRecordId: number) => [MEMBER_TRACKING_RECORD_RESOURCE, memberTrackingRecordId],
   memberTrackingRecord: (memberTrackingRecordId: number) => [MEMBER_TRACKING_RECORD_RESOURCE, memberTrackingRecordId],
 };
 
@@ -113,6 +114,19 @@ export const useCreateMemberTrackingRecord = () => {
     {
       onSuccess: (data: MemberTrackingRecord) => {
         queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItem(data.traineeId, data.trackingItemId));
+      },
+    }
+  );
+};
+
+export const useDeleteMemberTrackingRecord = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (memberTrackingRecordId: number) =>
+      axios.delete(EUri.MEMBER_TRACKING_RECORDS + memberTrackingRecordId).then((response) => response.data),
+    {
+      onSettled: (data: MemberTrackingRecord) => {
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId));
       },
     }
   );
