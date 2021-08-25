@@ -11,5 +11,5 @@ export function withTempestHandlers(
 ) {
   const validate = withValidation();
 
-  return withErrorHandling(validate(schemas, withApiAuth(nextApiHandler, getUserFunc)), withLogging);
+  return withErrorHandling(withApiAuth(validate(schemas, nextApiHandler), getUserFunc), withLogging);
 }

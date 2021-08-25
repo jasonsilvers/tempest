@@ -1,10 +1,22 @@
 import { Schema, ValidationError } from 'joi';
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
+export type ApiMethod = 'get' | 'post' | 'put' | 'delete';
 export type ValidableRequestFields = Pick<NextApiRequest, 'body' | 'headers' | 'query'>;
 
 export type ValidationSchemas = {
-  [K in keyof ValidableRequestFields]?: Schema;
+  post?: {
+    [V in keyof ValidableRequestFields]?: Schema;
+  };
+  get?: {
+    [V in keyof ValidableRequestFields]?: Schema;
+  };
+  put?: {
+    [V in keyof ValidableRequestFields]?: Schema;
+  };
+  delete?: {
+    [V in keyof ValidableRequestFields]?: Schema;
+  };
 };
 
 export type ValidationFunction = (schemas: ValidationSchemas, handler?: NextApiHandler) => NextApiHandler;
@@ -18,10 +30,18 @@ export type OnValidationError = (
 export type Configuration = { onValidationError: OnValidationError };
 
 export default function withValidation(config?: Configuration): ValidationFunction {
-  const onValidationError: OnValidationError = config ? config.onValidationError : (_, res) => res.status(400).end();
+  const onValidationError: OnValidationError = config
+    ? config.onValidationError
+    : (_, res) => res.status(400).json({ message: 'Bad Request' });
 
   return (schemas, handler) => {
     return (req: NextApiRequest, res: NextApiResponse) => {
+      const methods = Object.keys(schemas);
+
+      if (!methods.includes(req.method.toLowerCase())) {
+        return handler(req, res);
+      }
+
       const fields: (keyof ValidableRequestFields)[] = ['body', 'headers', 'query'];
 
       const validationError = fields.reduce<ValidationError | undefined>((error, field) => {
@@ -29,7 +49,7 @@ export default function withValidation(config?: Configuration): ValidationFuncti
           return error;
         }
 
-        const schema = schemas[field];
+        const schema = schemas[req.method.toLowerCase()][field];
 
         return schema && schema.required().validate(req[field]).error;
       }, undefined);
@@ -42,7 +62,7 @@ export default function withValidation(config?: Configuration): ValidationFuncti
         return handler(req, res);
       }
 
-      res.status(404).end();
+      res.status(404).json({ message: 'Not Found' });
     };
   };
 }

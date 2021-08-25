@@ -10,11 +10,13 @@ import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import Joi from 'joi';
 
 const trackingItemPostSchema = {
-  body: Joi.object({
-    title: Joi.string().required(),
-    description: Joi.string().optional(),
-    interval: Joi.number().optional(),
-  }),
+  post: {
+    body: Joi.object({
+      title: Joi.string().required(),
+      description: Joi.string().optional(),
+      interval: Joi.number().optional(),
+    }),
+  },
 };
 
 const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
