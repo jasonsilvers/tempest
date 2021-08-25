@@ -3,8 +3,9 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource, RolesDTO } from '../../../types/global';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { getRoles } from '../../../repositories/roleRepo';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
 const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse<RolesDTO>) => {
   const { method } = req;
@@ -26,4 +27,4 @@ const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, 
   res.status(200).json({ roles });
 };
 
-export default withErrorHandlingAndAuthorization(rolesHandler, findUserByDodId);
+export default withTempestHandlers(rolesHandler, findUserByDodId);

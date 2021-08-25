@@ -1,11 +1,21 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { createTrackingItem, getTrackingItems } from '../../../repositories/trackingItemRepo';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
 import { LoggedInUser } from '../../../repositories/userRepo';
 import { returnUser } from '../../../repositories/loginRepo';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+import Joi from 'joi';
+
+const trackingItemPostSchema = {
+  body: Joi.object({
+    title: Joi.string().required(),
+    description: Joi.string().optional(),
+    interval: Joi.number().optional(),
+  }),
+};
 
 const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method, body } = req;
@@ -41,4 +51,4 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedIn
   }
 };
 
-export default withErrorHandlingAndAuthorization(trackingItemHandler, returnUser);
+export default withTempestHandlers(trackingItemHandler, returnUser, trackingItemPostSchema);

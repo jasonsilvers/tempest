@@ -3,7 +3,8 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { Permission } from 'accesscontrol';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { findUserByDodId, findUserById, updateUser, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
@@ -79,4 +80,4 @@ async function userQueryHandler(
   }
 }
 
-export default withErrorHandlingAndAuthorization(userQueryHandler, findUserByDodId);
+export default withTempestHandlers(userQueryHandler, findUserByDodId);

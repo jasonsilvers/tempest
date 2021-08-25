@@ -2,9 +2,10 @@ import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../../../repositories/userRepo';
 import { returnUser } from '../../../repositories/loginRepo';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { logFactory } from '../../../utils/logger';
 import { ELogEventType } from '../../../types/global';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
 type LogHandlerBody = {
   logEventType: ELogEventType;
@@ -24,4 +25,4 @@ const logHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser, Log
   res.status(200).json({ message: 'ok' });
 };
 
-export default withErrorHandlingAndAuthorization(logHandler, returnUser, false);
+export default withTempestHandlers(logHandler, returnUser, false);

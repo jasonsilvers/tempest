@@ -9,7 +9,8 @@ import {
   deleteMemberTrackingItemAction,
   EMemberTrackingItemIncludes,
 } from '../../../controllers/memberTrackingItemsController';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 export interface ITempestMemberTrackingItemApiRequest<T> extends NextApiRequestWithAuthorization<T> {
   query: {
     userId: string;
@@ -48,4 +49,4 @@ async function memberTrackingItemHandler(
   }
 }
 
-export default withErrorHandlingAndAuthorization(memberTrackingItemHandler, findUserByDodId);
+export default withTempestHandlers(memberTrackingItemHandler, findUserByDodId);
