@@ -1,4 +1,11 @@
-import { fireEvent, render, waitFor, waitForElementToBeRemoved, userEvent } from '../../utils/TempestTestUtils';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+  userEvent,
+  queryByRole,
+} from '../../utils/TempestTestUtils';
 import React, { useState } from 'react';
 import { rest } from 'msw';
 import { AddMemberTrackingItemDialog } from '../../../src/components/Records/Dialog/AddMemberTrackingItemDialog';
@@ -232,6 +239,8 @@ test('should create membertrackingrecord if already have membertracking item', a
 
   fireEvent.click(addButton);
 
+  await waitForElementToBeRemoved(() => getByRole('progressbar'));
+
   await waitFor(() => queryByText(/a record was successfully added/i));
 });
 
@@ -260,6 +269,7 @@ test('should add membertrackingitem and membertrackingrecord', async () => {
   const addButton = getByRole('button', { name: 'Add' });
 
   fireEvent.click(addButton);
+  await waitForElementToBeRemoved(() => getByRole('progressbar'));
 
   await waitFor(() => queryByText(/a record was successfully added/i));
 });
