@@ -1,11 +1,4 @@
-import {
-  fireEvent,
-  render,
-  waitFor,
-  waitForElementToBeRemoved,
-  userEvent,
-  queryByRole,
-} from '../../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved, userEvent } from '../../utils/TempestTestUtils';
 import React, { useState } from 'react';
 import { rest } from 'msw';
 import { AddMemberTrackingItemDialog } from '../../../src/components/Records/Dialog/AddMemberTrackingItemDialog';
@@ -220,7 +213,7 @@ test('should create membertrackingrecord if already have membertracking item', a
     memberTrackingItemsGet({ ...testTrainee, memberTrackingItems })
   );
 
-  const { getByRole, findAllByRole, getByText, queryByText, findByRole } = render(<Container />);
+  const { getByRole, findAllByRole, getByText, queryByText } = render(<Container />);
 
   const openDialogTrigger = getByText(/open dialog/i);
   fireEvent.click(openDialogTrigger);
@@ -239,7 +232,7 @@ test('should create membertrackingrecord if already have membertracking item', a
 
   fireEvent.click(addButton);
 
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
+  await waitForElementToBeRemoved(() => getByRole('progressbar')).catch((error) => console.log(error));
 
   await waitFor(() => queryByText(/a record was successfully added/i));
 });
@@ -251,7 +244,7 @@ test('should add membertrackingitem and membertrackingrecord', async () => {
     memberTrackingItemsGet({ ...testTrainee, memberTrackingItems })
   );
 
-  const { getByRole, findAllByRole, getByText, queryByText, findByRole } = render(<Container />);
+  const { getByRole, findAllByRole, getByText, queryByText } = render(<Container />);
 
   const openDialogTrigger = getByText(/open dialog/i);
   fireEvent.click(openDialogTrigger);
@@ -269,7 +262,7 @@ test('should add membertrackingitem and membertrackingrecord', async () => {
   const addButton = getByRole('button', { name: 'Add' });
 
   fireEvent.click(addButton);
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
+  await waitForElementToBeRemoved(() => getByRole('progressbar')).catch((error) => console.log(error));
 
   await waitFor(() => queryByText(/a record was successfully added/i));
 });
