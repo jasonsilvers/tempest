@@ -72,7 +72,7 @@ test('should create new tracking item', async () => {
   expect(data).toStrictEqual({ ...newTrackingItem, id: newTrackingItemId });
 });
 
-test.only('should return 400 if request body is not valid', async () => {
+test('should return 400 if request body is not valid', async () => {
   mockMethodAndReturn(createTrackingItem, { ...newTrackingItem, id: newTrackingItemId });
   const { status, data } = await testNextApi.post(trackingItemHandler, { body: { ...newTrackingItem, title: 329 } });
 

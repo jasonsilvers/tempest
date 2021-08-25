@@ -1,7 +1,6 @@
 import { Schema, ValidationError } from 'joi';
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
-export type ApiMethod = 'get' | 'post' | 'put' | 'delete';
 export type ValidableRequestFields = Pick<NextApiRequest, 'body' | 'headers' | 'query'>;
 
 export type ValidationSchemas = {
