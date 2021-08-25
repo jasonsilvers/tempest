@@ -2,7 +2,7 @@ describe('Member role', () => {
   it('should show No items', () => {
     cy.loginAsMember();
     cy.wait(5000);
-    cy.findAllByText(/no items/i).should('have.length', 2);
+    cy.findAllByText(/nothing to show/i).should('have.length', 2);
   });
 
   it('should add new training and be able to sign', () => {
@@ -20,8 +20,8 @@ describe('Member role', () => {
 
     cy.findByText(/fire extinguisher/i).should('exist');
 
-    cy.findByRole('button', { name: /awaiting signature/i }).should('be.disabled');
-    cy.findByRole('button', { name: 'signature_button' }).should('be.enabled');
+    cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
+    cy.findByRole('button', { name: 'signature_button' }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).click();
 
     cy.cleanUpRecords();
@@ -57,11 +57,11 @@ describe('Monitor role', () => {
 
     cy.addMemberTrackingRecord(trackingItemName);
 
-    cy.findByRole('button', { name: /awaiting signature/i }).should('be.disabled');
-    cy.findByRole('button', { name: 'signature_button' }).should('be.enabled');
+    cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
+    cy.findByRole('button', { name: 'signature_button' }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).click();
-    cy.findByRole('button', { name: /signed on/i }).should('be.disabled');
-    cy.findByRole('button', { name: /awaiting signature/i }).should('be.disabled');
+    cy.findByRole('button', { name: /signed on/i }).should('exist');
+    cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
     cy.cleanUpRecords();
   });
 });

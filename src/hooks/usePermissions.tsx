@@ -37,7 +37,7 @@ const usePermissions = () => {
 
   if (grantsQuery.data) {
     ac = new AccessControl(grantsQuery.data);
-    role = user.role?.name;
+    role = user?.role?.name;
   }
 
   if (!userIsLoading && grantsQuery.data) {
