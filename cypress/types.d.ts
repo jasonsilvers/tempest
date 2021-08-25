@@ -12,6 +12,9 @@ declare namespace Cypress {
      */
     dataCy(value: string): Chainable<Element>;
     cleanUpRecords(): Chainable<Element>;
+    loginAsMonitor(): Chainable<Element>;
+    loginAsMember(): Chainable<Element>;
+    addMemberTrackingRecord(trackingItemName: string): Chainable<Element>;
 
     /**
      * Custom command that adds two given numbers

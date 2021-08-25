@@ -13,4 +13,12 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 // Import commands.js using ES2015 syntax:
+
+before(() =>
+  Cypress.automation('remote:debugger:protocol', {
+    command: 'Network.setCacheDisabled',
+    params: { cacheDisabled: true },
+  })
+);
+
 import './commands';

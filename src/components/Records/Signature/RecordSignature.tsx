@@ -87,7 +87,7 @@ const getSignature = (
         <RecordSignatureToolTip
           traineeSignature={{ signee: memberTrackingRecord[signee], date: memberTrackingRecord[signatureType] }}
         >
-          <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
+          <DisabledButton disabled>{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
             'MM/DD/YY'
           )}`}</DisabledButton>
         </RecordSignatureToolTip>
