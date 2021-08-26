@@ -1,6 +1,6 @@
 import { Role, Organization, TrackingItem } from '@prisma/client';
 import { Grants } from '../repositories/grantsRepo';
-import { LoggedInUser } from '../repositories/userRepo';
+import { LoggedInUser, UserWithAll } from '../repositories/userRepo';
 
 export enum ELogEventType {
   AUTHORIZED = 'AUTHORIZED',
@@ -106,7 +106,7 @@ export enum EUserResources {
 }
 
 export type UsersDTO = {
-  users: LoggedInUser[];
+  users: UserWithAll[];
 };
 
 export type RolesDTO = {

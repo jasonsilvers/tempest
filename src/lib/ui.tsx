@@ -45,6 +45,11 @@ const Dialog = tw(MuiDialog)``;
 
 const TempestOverlay = tw.div`bg-white absolute top-0 left-0 w-full h-full backdrop-filter backdrop-blur-3xl opacity-50 z-10`;
 const TempestSkeleton = tw.div`border border-gray-300 shadow rounded-md`;
+const ProgressLayout = tw.div`absolute top-2 right-2`;
+
+const LoadingSpinner = ({size = '24px'}: {size: string}) => {
+  return <CircularProgress size={size} color="secondary" />;
+};
 
 const LoadingOverlay = () => {
   return (
@@ -80,7 +85,6 @@ const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="dat
 
 const TempestDeleteIcon = tw(DeleteIcon)`text-xl`;
 
-
 export {
   TempestDrawer,
   IconButton,
@@ -97,6 +101,8 @@ export {
   TextField,
   Autocomplete,
   LoadingOverlay,
+  LoadingSpinner,
+  ProgressLayout,
   Fab,
   Drawer,
   TempestSkeleton,

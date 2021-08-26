@@ -1,49 +1,165 @@
-import { getUsers } from '../repositories/userRepo';
+import { getUsers, getUsersWithMemberTrackingRecords } from '../repositories/userRepo';
 import { User } from '@prisma/client';
 import Link from 'next/link';
-import tw from 'twin.macro';
+import tw, { css } from 'twin.macro';
 import { useUser } from '@tron/nextjs-auth-p1';
+import { LoadingSpinner } from '../lib/ui';
+import { CheckCircleOutlineIcon, HighlightOffIcon, MoreHorizIcon, WarningIcon } from '../assets/Icons';
+import { QueryClient } from 'react-query';
+import { dehydrate } from 'react-query/hydration';
+import { useUsers } from '../hooks/api/users';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { getCategory, getStatus } from '../utils/Status';
 
-const Header = tw.h1`text-3xl`;
-const Card = tw.div`overflow-y-auto overflow-x-hidden bg-white rounded-md filter drop-shadow-md p-6`;
+const Card = tw.div`overflow-y-auto overflow-x-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 const UserTable = tw.div``;
-const UserTableRow = tw.div``;
+const UserTableHeader = tw.div`flex text-sm text-gray-400 mb-4 pl-2 border-b border-gray-400`;
+const UserTableRow = tw.div`pl-2 flex pb-4`;
 const UserTableColumn = tw.div``;
 
-const CountCard = ({ variant, count }: { variant: string; count: number }) => {
+type StatusPillVariantType = 'Done' | 'Overdue' | 'Upcoming';
+const StatusPillVariant = {
+  Done: {
+    color: tw`bg-[#6FD9A6]`,
+  },
+  Overdue: {
+    color: tw`bg-[#FB7F7F]`,
+  },
+  Upcoming: {
+    color: tw`bg-[#F6B83F]`,
+  },
+};
+
+const initialCounts = {
+  All: 0,
+  Overdue: 0,
+  Upcoming: 0,
+  Done: 0,
+};
+
+const StatusPill = ({ variant, count }: { variant: StatusPillVariantType; count: number }) => {
   return (
-    <Card tw="h-24 flex-grow">
-      <h1>Overdue</h1>
+    <div css={[StatusPillVariant[variant].color, tw`rounded-full h-5 w-5 flex items-center justify-center text-white`]}>
       {count}
-    </Card>
+    </div>
   );
 };
 
-const DashboardPage: React.FC<{ users: User[] }> = ({ users }) => {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const DashboardPage: React.FC = () => {
   const { user: loggedInUser } = useUser<User>();
+  const users = useUsers();
+  const [counts, setCounts] = useState(initialCounts);
+  const [countsIsLoading, setCountsIsLoading] = useState(true);
+
+  useEffect(() => {
+    setCountsIsLoading(true);
+    const newCounts = { ...initialCounts };
+    users.data?.forEach((user) => {
+      const userCounts = {
+        Overdue: 0,
+        Upcoming: 0,
+        Done: 0,
+      };
+
+      user.memberTrackingItems.forEach((mti) => {
+        newCounts.All = newCounts.All + 1;
+        const filteredRecords = mti.memberTrackingRecords.map((i) => ({ id: i.id }))
+        console.log(filteredRecords)
+        mti.memberTrackingRecords.forEach((mtr) => {
+          console.log(mti.trackingItem.title)
+          const status = getCategory(mtr, mti.trackingItem.interval);
+          newCounts[status] = newCounts[status] + 1;
+
+          userCounts[status] = userCounts[status] + 1;
+        });
+      });
+
+      newCounts[user.id] = userCounts;
+      setCounts(newCounts);
+    });
+
+    setCountsIsLoading(false);
+  }, [users.data]);
 
   if (!loggedInUser && !loggedInUser?.id) {
     return <p>Loading...</p>;
   }
-
   return (
-    <main tw='pr-14 max-width[1440px] min-width[900px]'>
-      <Header>Dashboard</Header>
+    <main tw="pr-14 max-width[900px] min-width[720px]">
       <div tw="flex space-x-8 pb-5">
-        <CountCard variant="error" count={32}></CountCard>
-        <CountCard variant="error" count={32}></CountCard>
-        <CountCard variant="error" count={32}></CountCard>
-        <CountCard variant="error" count={32}></CountCard>
+        <Card tw="h-24 flex-grow border-2 border-primary">
+          <div tw="flex fixed right-2">{countsIsLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
+          <h1 tw="text-primary pl-1 underline">All</h1>
+
+          <div tw="flex items-end pt-3">
+            <HighlightOffIcon fontSize="large" tw="text-primary invisible" />
+            <h2 tw="ml-auto text-4xl text-primary">{counts.All}</h2>
+          </div>
+        </Card>
+        <Card tw="h-24 flex-grow bg-[#FB7F7F]">
+          <div tw="flex fixed right-2">{countsIsLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
+          <h1 tw="text-white pl-1">Overdue</h1>
+
+          <div tw="flex items-end pt-3">
+            <HighlightOffIcon fontSize="large" tw="text-white" />
+            <h2 tw="ml-auto text-4xl text-white">{counts.Overdue}</h2>
+          </div>
+        </Card>
+        <Card tw="h-24 flex-grow bg-[#F6B83F]">
+          <div tw="flex fixed right-2">{countsIsLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
+          <h1 tw="text-white pl-1">Upcoming</h1>
+
+          <div tw="flex items-end pt-3">
+            <WarningIcon fontSize="large" tw="text-white" />
+            <h2 tw="ml-auto text-4xl text-white">{counts.Upcoming}</h2>
+          </div>
+        </Card>
+        <Card tw="h-24 flex-grow bg-[#6FD9A6]">
+          <div tw="flex fixed right-2">{countsIsLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
+          <h1 tw="text-white pl-1">Done</h1>
+
+          <div tw="flex items-end pt-3">
+            <CheckCircleOutlineIcon fontSize="large" tw="text-white" />
+            <h2 tw="ml-auto text-4xl text-white">{counts.Done}</h2>
+          </div>
+        </Card>
       </div>
 
-      <Card>
-        {users.map((user) => (
-          <div key={user.id} tw="text-sm mb-2">
-            <Link href={`/Profile/${user.id}`}>{`${user.lastName},${user.firstName} ${
-              user.id === loggedInUser.id ? '(You)' : ''
-            }`}</Link>
-          </div>
-        ))}
+      <Card tw="p-5">
+        <UserTable>
+          <UserTableHeader>
+            <UserTableColumn tw="w-1/2">Name</UserTableColumn>
+            <UserTableColumn tw="w-1/5">Rank</UserTableColumn>
+            <UserTableColumn tw="w-1/5 flex justify-center">Status</UserTableColumn>
+            <UserTableColumn tw="w-1/5 flex justify-center">Actions</UserTableColumn>
+          </UserTableHeader>
+
+          {users.data?.map((user) => (
+            <UserTableRow key={user.id} tw="text-sm mb-2 flex">
+              <UserTableColumn tw="w-1/2">
+                <Link href={`/Profile/${user.id}`}>{`${user.lastName},${user.firstName} ${
+                  user.id === loggedInUser.id ? '(You)' : ''
+                }`}</Link>
+              </UserTableColumn>
+              <UserTableColumn tw="w-1/5">{user.rank}</UserTableColumn>
+              <UserTableColumn tw="w-1/5 flex justify-center">
+                <div tw="flex space-x-2">
+                  <StatusPill variant="Overdue" count={counts[user.id]?.Overdue}></StatusPill>
+                  <StatusPill variant="Upcoming" count={counts[user.id]?.Upcoming}></StatusPill>
+                  <StatusPill variant="Done" count={counts[user.id]?.Done}></StatusPill>
+                </div>
+              </UserTableColumn>
+              <UserTableColumn tw="w-1/5 flex justify-center">
+                <MoreHorizIcon />
+              </UserTableColumn>
+            </UserTableRow>
+          ))}
+        </UserTable>
       </Card>
     </main>
   );
@@ -52,19 +168,14 @@ const DashboardPage: React.FC<{ users: User[] }> = ({ users }) => {
 export default DashboardPage;
 
 export const getStaticProps = async () => {
-  try {
-    return {
-      props: {
-        users: await getUsers(),
-      },
-      revalidate: 60,
-    };
-  } catch (e) {
-    return {
-      props: {
-        users: [],
-      },
-      revalidate: 60,
-    };
-  }
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(['users'], () => getUsersWithMemberTrackingRecords());
+
+  return {
+    props: {
+      dehyradtedState: dehydrate(queryClient),
+    },
+    revalidate: 60,
+  };
 };
