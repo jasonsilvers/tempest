@@ -25,4 +25,4 @@ const logHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser, Log
   res.status(200).json({ message: 'ok' });
 };
 
-export default withTempestHandlers(logHandler, returnUser, false);
+export default withTempestHandlers(logHandler, returnUser, {}, false);

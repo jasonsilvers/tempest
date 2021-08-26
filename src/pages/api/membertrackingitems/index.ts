@@ -8,6 +8,8 @@ import {
   postMemberTrackingItemAction,
   deleteMemberTrackingItemAction,
   EMemberTrackingItemIncludes,
+  memberTrackingItemPostSchema,
+  memberTrackingItemPutSchema,
 } from '../../../controllers/memberTrackingItemsController';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
@@ -20,6 +22,11 @@ export interface ITempestMemberTrackingItemApiRequest<T> extends NextApiRequestW
   };
   body: MemberTrackingItem;
 }
+
+const memberTrackingItemSchema = {
+  post: memberTrackingItemPostSchema,
+  put: memberTrackingItemPutSchema,
+};
 
 async function memberTrackingItemHandler(
   req: ITempestMemberTrackingItemApiRequest<LoggedInUser>,
@@ -49,4 +56,4 @@ async function memberTrackingItemHandler(
   }
 }
 
-export default withTempestHandlers(memberTrackingItemHandler, findUserByDodId);
+export default withTempestHandlers(memberTrackingItemHandler, findUserByDodId, memberTrackingItemSchema);

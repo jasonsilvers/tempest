@@ -20,9 +20,10 @@ jest.mock('../../../src/repositories/memberTrackingRepo.ts');
 
 const globalUserId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 
-const memberTrackingRecordBody = {
+const memberTrackingItemBody = {
   userId: globalUserId,
-  trackingItemId: 1,
+  trackingItemId: 2,
+  isActive: true
 };
 
 const memberTrackingItemFromDb = {
@@ -350,12 +351,11 @@ test('PUT - Should allow monitor to update isActive', async () => {
   mockMethodAndReturn(findGrants, grants);
 
   const body = {
-    ...memberTrackingItemFromDb,
     isActive: false,
   };
 
   mockMethodAndReturn(findMemberTrackingItemById, { ...memberTrackingItemFromDb });
-  mockMethodAndReturn(updateMemberTrackingItem, body);
+  mockMethodAndReturn(updateMemberTrackingItem, { ...memberTrackingItemFromDb, isActive: false });
 
   const { status, data } = await testNextApi.put(memberTrackingItemHandler, {
     urlId: `?userId=${userId}&trackingItemId=${trackingItemId}`,
@@ -371,7 +371,7 @@ test('PUT - Should allow monitor to update isActive', async () => {
   );
 
   expect(status).toEqual(200);
-  expect(data).toStrictEqual(body);
+  expect(data).toStrictEqual({...memberTrackingItemFromDb, isActive: false});
 });
 
 test('PUT - Should not allow update if role does not have permission', async () => {
@@ -386,12 +386,11 @@ test('PUT - Should not allow update if role does not have permission', async () 
   mockMethodAndReturn(findGrants, grants);
 
   const body = {
-    ...memberTrackingItemFromDb,
     isActive: false,
   };
 
   mockMethodAndReturn(findMemberTrackingItemById, { ...memberTrackingItemFromDb });
-  mockMethodAndReturn(updateMemberTrackingItem, body);
+  mockMethodAndReturn(updateMemberTrackingItem, {...memberTrackingItemFromDb, isActive: false});
 
   const { status } = await testNextApi.put(memberTrackingItemHandler, {
     urlSlug: `/${trackingItemId}/user/${userId}`,
@@ -413,7 +412,6 @@ test('PUT - Should return 404 is record not found', async () => {
   mockMethodAndReturn(findGrants, grants);
 
   const body = {
-    ...memberTrackingItemFromDb,
     isActive: false,
   };
 
@@ -443,7 +441,7 @@ test('POST - should create member tracking item - (create any)', async () => {
   mockMethodAndReturn(createMemberTrackingItem, expectedReturnData);
 
   const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
-    body: memberTrackingRecordBody,
+    body: memberTrackingItemBody,
   });
 
   expect(status).toBe(200);
@@ -465,7 +463,7 @@ test('POST - should create member tracking item - (create own)', async () => {
   mockMethodAndReturn(createMemberTrackingItem, expectedReturnData);
 
   const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
-    body: memberTrackingRecordBody,
+    body: memberTrackingItemBody,
   });
 
   expect(status).toBe(200);
@@ -484,22 +482,23 @@ test('POST - should create member tracking item and member tracking record when 
   };
 
   //Data returned from mocked DB create method for creating a tracking item
-  const returnedMemberTrackingItem = {
+  const memberTrackingItemBody = {
     userId: globalUserId,
+    isActive: true,
     trackingItemId: 1,
   };
 
   //data returned to client
   const expectedReturnData = {
-    ...returnedMemberTrackingItem,
+    ...memberTrackingItemBody,
     memberTrackingRecords: [returnedMemberTrackingRecordDB],
   };
 
-  mockMethodAndReturn(createMemberTrackingItem, returnedMemberTrackingItem);
+  mockMethodAndReturn(createMemberTrackingItem, memberTrackingItemBody);
   mockMethodAndReturn(createMemberTrackingRecord, returnedMemberTrackingRecordDB);
 
   const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
-    body: returnedMemberTrackingItem,
+    body: memberTrackingItemBody,
     urlId: '?create_member_tracking_record=true',
   });
 
@@ -511,6 +510,7 @@ test('POST - should return 401 if user is not authorized', async () => {
 
   const body = {
     userId: globalUserId,
+    isActive: true,
     trackingItemId: 1,
   };
 
@@ -535,6 +535,7 @@ test('POST - should return 403 if user role is not allowed to create member trac
 
   const body = {
     userId: globalUserId,
+    isActive: true,
     trackingItemId: 1,
   };
 
