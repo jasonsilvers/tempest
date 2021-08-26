@@ -9,9 +9,9 @@ export const Token = tw.div`rounded h-5 w-5 mr-2`;
 export const Overdue = tw(Token)`background-color[#AB0D0D]`;
 export const Done = tw(Token)`background-color[#49C68A]`;
 export const All = Token;
-export const Awaiting_Signature = tw(Token)`background-color[#4985c6]`;
+export const Awaiting_Signature = tw(Token)`background-color[#eca00b]`;
 export const Upcoming = tw(Token)`background-color[#FAC50A]`;
-export const To_Do = tw(Token)`background-color[#8b5cf6]`;
+export const To_Do = tw(Token)`background-color[#F6B83F]`;
 export const Archived = tw(Token)`bg-black`;
 // For Dynamic Tokens in the Record Row
 export const TokenObj: { [K in ECategories]: typeof Token } = {

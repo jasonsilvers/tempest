@@ -40,7 +40,7 @@ const DialogContent = tw(MuiDialogContent)`pb-1`;
 const DialogActions = tw(MuiDialogActions)``;
 const DialogButton = tw(Button)`w-32 normal-case bg-primary text-white`;
 const PrimaryButton = tw(Button)`w-32 normal-case bg-primary text-white hover:bg-secondary`;
-const SecondaryButton = tw(Button)`w-32 normal-case bg-secondary text-white hover:bg-primary`;
+const SecondaryButton = tw(Button)`w-32 rounded-lg normal-case bg-secondary text-white hover:bg-primary`;
 const Dialog = tw(MuiDialog)``;
 
 const TempestOverlay = tw.div`bg-white absolute top-0 left-0 w-full h-full backdrop-filter backdrop-blur-3xl opacity-50 z-10`;

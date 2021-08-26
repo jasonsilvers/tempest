@@ -64,6 +64,7 @@ const Profile: React.FC<{ member: User }> = ({ member }) => {
       <ButtonContainer>
         <SecondaryButton
           size="medium"
+          tw='italic'
           variant="contained"
           onClick={() => {
             setAddNewModal(true);
