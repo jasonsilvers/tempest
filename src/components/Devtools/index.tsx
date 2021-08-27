@@ -61,7 +61,7 @@ const UsersList = () => {
   const updateUsersRole = (event: RoleFormEvent, user: UserWithAll) => {
     const selectedRoleId = event.target.value;
 
-    if (selectedRoleId !== user.role.id) {
+    if (selectedRoleId !== user.role?.id) {
       const { organization, role, ...userToUpdate } = user; // eslint-disable-line
       const updatedUser: User = {
         ...userToUpdate,
@@ -121,7 +121,7 @@ const UsersList = () => {
                     <Select
                       onChange={(event: RoleFormEvent) => updateUsersRole(event, user)}
                       tw="text-gray-400"
-                      value={user.role.id}
+                      value={user.role?.id}
                     >
                       {rolesListQuery.data.map((role) => (
                         <MenuItem key={role.id} value={role.id}>
