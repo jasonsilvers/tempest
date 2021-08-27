@@ -51,7 +51,7 @@ const TempestOverlay = tw.div`bg-white absolute top-0 left-0 w-full h-full backd
 const TempestSkeleton = tw.div`border border-gray-300 shadow rounded-md`;
 const ProgressLayout = tw.div`absolute top-2 right-2`;
 
-const LoadingSpinner = ({ size = '24px' }: { size: string }) => {
+const LoadingSpinner = ({ size = '24px' }: { size?: string }) => {
   return <CircularProgress size={size} color="secondary" />;
 };
 
