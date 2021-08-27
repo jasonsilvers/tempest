@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "lint:next": "next lint",
     "start": "next start",
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "test": "jest --watchAll",

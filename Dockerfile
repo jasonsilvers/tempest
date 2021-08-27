@@ -18,7 +18,7 @@ WORKDIR ${HOME}/build
 ENV NODE_ENV=production
 
 COPY --from=dependencies /home/node/deps/node_modules ./node_modules
-COPY ./src package.json tsconfig.json tailwind.config.js .babelrc.js next-env.d.ts ./
+COPY ./src package.json twin.d.ts tsconfig.json tailwind.config.js .babelrc.js next-env.d.ts ./
 
 RUN npx prisma generate && npm run build:seed && npm run build
 USER appuser
@@ -31,6 +31,7 @@ WORKDIR /app
 COPY ./public ./public
 COPY ./src/prisma/migrations ./prisma/migrations
 COPY ./src/prisma/prisma.ts ./src/prisma/schema.prisma ./prisma/
+COPY twin.d.ts ./
 COPY tsconfig.json ./
 COPY package.json ./
 COPY .env.production .env
