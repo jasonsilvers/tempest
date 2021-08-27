@@ -95,9 +95,11 @@ test('should findUserByIdReturnAllIncludes', async () => {
   await findUserByIdReturnAllIncludes('1234');
   expect(spy).toHaveBeenCalledWith({
     where: {
-      id: "1234",
+      id: '1234',
     },
     include: {
+      role: true,
+      organization: true,
       traineeTrackingRecords: {
         include: {
           trackingItem: true,

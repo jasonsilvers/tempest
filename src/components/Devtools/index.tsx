@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
 import { usePermissions } from '../../hooks/usePermissions';
 import { ERole, EUri } from '../../types/global';
-import { LoggedInUser } from '../../repositories/userRepo';
+import { UserWithAll } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
 import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
@@ -19,7 +19,7 @@ type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 
 const UsersList = () => {
   const queryClient = useQueryClient();
-  const usersListQuery = useQuery<LoggedInUser[]>('users', () =>
+  const usersListQuery = useQuery<UserWithAll[]>('users', () =>
     axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.users)
   );
 
@@ -41,7 +41,7 @@ const UsersList = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const updateUsersOrg = (event: OrgFormEvent, user: LoggedInUser) => {
+  const updateUsersOrg = (event: OrgFormEvent, user: UserWithAll) => {
     const selectedOrgId = event.target.value;
 
     if (selectedOrgId !== user.organizationId) {
@@ -58,7 +58,7 @@ const UsersList = () => {
     }
   };
 
-  const updateUsersRole = (event: RoleFormEvent, user: LoggedInUser) => {
+  const updateUsersRole = (event: RoleFormEvent, user: UserWithAll) => {
     const selectedRoleId = event.target.value;
 
     if (selectedRoleId !== user.role.id) {

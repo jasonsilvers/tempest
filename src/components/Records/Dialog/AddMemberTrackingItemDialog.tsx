@@ -83,11 +83,11 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           },
         });
       } else {
-        const newMemberTrackingItem: MemberTrackingItem = {
+        const newMemberTrackingItem = {
           trackingItemId: memberTrackingItemToAdd.trackingItem.id,
           userId: forMemberId,
           isActive: true,
-        };
+        } as MemberTrackingItem;
 
         addMemberTrackingItemAndRecord.mutate(
           {

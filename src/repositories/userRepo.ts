@@ -11,6 +11,8 @@ export const findUserByIdReturnAllIncludes = async (userId: string) => {
       id: userId,
     },
     include: {
+      role: true,
+      organization: true,
       traineeTrackingRecords: {
         include: {
           trackingItem: true,
