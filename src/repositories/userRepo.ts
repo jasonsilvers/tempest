@@ -105,6 +105,7 @@ export const getUsers = async () => prisma.user.findMany();
 export const getUsersWithMemberTrackingRecords = async () => {
   return prisma.user.findMany({
     include: {
+      role: true,
       memberTrackingItems: {
         include: {
           trackingItem: true,
