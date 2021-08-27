@@ -2,7 +2,7 @@ describe('Member role', () => {
   it('should show No items', () => {
     cy.loginAsMember();
     cy.wait(5000);
-    cy.findAllByText(/no items/i).should('have.length', 2);
+    cy.findAllByText(/nothing to show/i).should('have.length', 2);
   });
 
   it('should add new training and be able to sign', () => {
@@ -20,8 +20,8 @@ describe('Member role', () => {
 
     cy.findByText(/fire extinguisher/i).should('exist');
 
-    cy.findByRole('button', { name: /awaiting signature/i }).should('be.disabled');
-    cy.findByRole('button', { name: 'signature_button' }).should('be.enabled');
+    cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
+    cy.findByRole('button', { name: 'signature_button' }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).click();
 
     cy.cleanUpRecords();
@@ -32,7 +32,12 @@ describe('Member role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
-    cy.findByText(/clark,sandra/i).click();
+    cy.findByText(/clark,sandra/i)
+      .parent()
+      .within((elem) => {
+        cy.findByRole('button', { name: 'member-popup-menu' }).click();
+        cy.focused().click();
+      });
     const trackingItemName = 'Fire Extinguisher';
 
     cy.addMemberTrackingRecord(trackingItemName);
@@ -51,17 +56,22 @@ describe('Member role', () => {
 describe('Monitor role', () => {
   it('should show training record for selected member', () => {
     cy.loginAsMonitor();
-    cy.findByText(/clark,sandra/i).click();
+    cy.findByText(/clark,sandra/i)
+      .parent()
+      .within((elem) => {
+        cy.findByRole('button', { name: 'member-popup-menu' }).click();
+        cy.focused().click();
+      });
 
     const trackingItemName = 'Fire Extinguisher';
 
     cy.addMemberTrackingRecord(trackingItemName);
 
-    cy.findByRole('button', { name: /awaiting signature/i }).should('be.disabled');
-    cy.findByRole('button', { name: 'signature_button' }).should('be.enabled');
+    cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
+    cy.findByRole('button', { name: 'signature_button' }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).click();
-    cy.findByRole('button', { name: /signed on/i }).should('be.disabled');
-    cy.findByRole('button', { name: /awaiting signature/i }).should('be.disabled');
+    cy.findByRole('button', { name: /signed on/i }).should('exist');
+    cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
     cy.cleanUpRecords();
   });
 });

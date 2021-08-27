@@ -5,8 +5,9 @@ import AppProviders from '../components/AppProviders';
 import dynamic from 'next/dynamic';
 import tw from 'twin.macro';
 import Head from 'next/head';
-import { useNavLoading, NavigationLoading } from '../hooks/useNavLoading';
+import { useNavLoading } from '../hooks/useNavLoading';
 import { usePageLogging } from '../hooks/usePageLogging';
+import { ProgressLayout, LoadingSpinner } from '../lib/ui';
 
 const DynamicDevTools = dynamic(
   function importDevTools() {
@@ -52,7 +53,11 @@ function MyApp({ Component, pageProps }) {
         <MainContent>
           <Component {...pageProps} />
           {showDevTools ? <DynamicDevTools /> : null}
-          {navigating ? <NavigationLoading /> : null}
+          {navigating ? (
+            <ProgressLayout>
+              <LoadingSpinner />
+            </ProgressLayout>
+          ) : null}
         </MainContent>
       </AppProviders>
     </>
