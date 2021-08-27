@@ -32,7 +32,12 @@ describe('Member role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
-    cy.findByText(/clark,sandra/i).click();
+    cy.findByText(/clark,sandra/i)
+      .parent()
+      .within((elem) => {
+        cy.findByRole('button', { name: 'member-popup-menu' }).click();
+        cy.focused().click();
+      });
     const trackingItemName = 'Fire Extinguisher';
 
     cy.addMemberTrackingRecord(trackingItemName);
@@ -51,7 +56,12 @@ describe('Member role', () => {
 describe('Monitor role', () => {
   it('should show training record for selected member', () => {
     cy.loginAsMonitor();
-    cy.findByText(/clark,sandra/i).click();
+    cy.findByText(/clark,sandra/i)
+      .parent()
+      .within((elem) => {
+        cy.findByRole('button', { name: 'member-popup-menu' }).click();
+        cy.focused().click();
+      });
 
     const trackingItemName = 'Fire Extinguisher';
 

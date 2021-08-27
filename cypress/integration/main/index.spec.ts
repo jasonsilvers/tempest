@@ -14,7 +14,6 @@ describe('Monitor Role', () => {
 
     cy.findByRole('navigation', { name: /dashboard/ }).should('be.visible');
     cy.findByRole('navigation', { name: /global-training-catalog/ }).should('be.visible');
-    cy.findByRole('heading', { name: /Dashboard/i }).should('be.visible');
   });
 });
 

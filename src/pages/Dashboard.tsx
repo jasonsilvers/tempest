@@ -2,8 +2,8 @@ import { getUsersWithMemberTrackingRecords } from '../repositories/userRepo';
 import { User } from '@prisma/client';
 import tw from 'twin.macro';
 import { useUser } from '@tron/nextjs-auth-p1';
-import { LoadingSpinner, IconButton, TempestPopMenu, TempestMenuItem } from '../lib/ui';
-import { CheckCircleOutlineIcon, HighlightOffIcon, MoreHorizIcon, WarningIcon } from '../assets/Icons';
+import { LoadingSpinner, TempestPopMenu } from '../lib/ui';
+import { CancelIcon, CheckCircleIcon, HighlightOffIcon, WarningIcon } from '../assets/Icons';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import { useUsers } from '../hooks/api/users';
@@ -14,19 +14,29 @@ import { getStatus } from '../utils/Status';
 const Card = tw.div`overflow-y-auto overflow-x-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 const UserTable = tw.div``;
 const UserTableHeader = tw.div`flex text-sm text-gray-400 mb-4 pl-2 border-b border-gray-400`;
-const UserTableRow = tw.div`pl-2 flex pb-4`;
+const UserTableRow = ({ isOdd, children }: { isOdd: boolean; children: React.ReactNode }) => {
+  return <div css={[isOdd && tw`bg-gray-100`, tw`pl-2 flex py-2 justify-center items-center`]}>{children}</div>;
+};
+
 const UserTableColumn = tw.div``;
 
-type StatusPillVariantType = 'Done' | 'Overdue' | 'Upcoming';
+type StatusPillVariantType = 'Done' | 'Overdue' | 'Upcoming' | 'None';
 const StatusPillVariant = {
   Done: {
     color: tw`bg-[#6FD9A6]`,
+    textColor: tw`text-white`,
   },
   Overdue: {
     color: tw`bg-[#FB7F7F]`,
+    textColor: tw`text-white`,
   },
   Upcoming: {
     color: tw`bg-[#F6B83F]`,
+    textColor: tw`text-white`,
+  },
+  None: {
+    color: tw`border border-gray-400`,
+    textColor: tw`text-gray-400`,
   },
 };
 
@@ -39,7 +49,13 @@ const initialCounts = {
 
 const StatusPill = ({ variant, count }: { variant: StatusPillVariantType; count: number }) => {
   return (
-    <div css={[StatusPillVariant[variant].color, tw`rounded-full h-5 w-5 flex items-center justify-center text-white`]}>
+    <div
+      css={[
+        StatusPillVariant[variant].color,
+        StatusPillVariant[variant].textColor,
+        tw`rounded-full h-5 w-5 flex items-center justify-center text-sm`,
+      ]}
+    >
       {count}
     </div>
   );
@@ -50,15 +66,6 @@ const DashboardPage: React.FC = () => {
   const users = useUsers();
   const [counts, setCounts] = useState(initialCounts);
   const [countsIsLoading, setCountsIsLoading] = useState(true);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
 
   useEffect(() => {
     setCountsIsLoading(true);
@@ -101,7 +108,7 @@ const DashboardPage: React.FC = () => {
 
           <div tw="flex items-end pt-3">
             <HighlightOffIcon fontSize="large" tw="text-primary invisible" />
-            <h2 tw="ml-auto text-4xl text-primary">{counts.All}</h2>
+            <h2 tw="ml-auto text-5xl text-primary">{counts.All}</h2>
           </div>
         </Card>
         <Card tw="h-24 flex-grow bg-[#FB7F7F]">
@@ -109,8 +116,8 @@ const DashboardPage: React.FC = () => {
           <h1 tw="text-white pl-1">Overdue</h1>
 
           <div tw="flex items-end pt-3">
-            <HighlightOffIcon fontSize="large" tw="text-white" />
-            <h2 tw="ml-auto text-4xl text-white">{counts.Overdue}</h2>
+            <CancelIcon fontSize="large" tw="text-white" />
+            <h2 tw="ml-auto text-5xl text-white">{counts.Overdue}</h2>
           </div>
         </Card>
         <Card tw="h-24 flex-grow bg-[#F6B83F]">
@@ -119,7 +126,7 @@ const DashboardPage: React.FC = () => {
 
           <div tw="flex items-end pt-3">
             <WarningIcon fontSize="large" tw="text-white" />
-            <h2 tw="ml-auto text-4xl text-white">{counts.Upcoming}</h2>
+            <h2 tw="ml-auto text-5xl text-white">{counts.Upcoming}</h2>
           </div>
         </Card>
         <Card tw="h-24 flex-grow bg-[#6FD9A6]">
@@ -127,8 +134,8 @@ const DashboardPage: React.FC = () => {
           <h1 tw="text-white pl-1">Done</h1>
 
           <div tw="flex items-end pt-3">
-            <CheckCircleOutlineIcon fontSize="large" tw="text-white" />
-            <h2 tw="ml-auto text-4xl text-white">{counts.Done}</h2>
+            <CheckCircleIcon fontSize="large" tw="text-white" />
+            <h2 tw="ml-auto text-5xl text-white">{counts.Done}</h2>
           </div>
         </Card>
       </div>
@@ -142,34 +149,37 @@ const DashboardPage: React.FC = () => {
             <UserTableColumn tw="ml-auto mr-4">Actions</UserTableColumn>
           </UserTableHeader>
 
-          {users.data?.map((user) => (
-            <UserTableRow key={user.id} tw="text-sm mb-2 flex">
+          {users.data?.map((user, index) => (
+            <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-sm mb-2 flex">
               <UserTableColumn tw="w-1/3">
                 {`${user.lastName},${user.firstName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
               </UserTableColumn>
               <UserTableColumn tw="w-1/6">{user.rank}</UserTableColumn>
               <UserTableColumn tw="w-1/6 flex justify-center">
                 <div tw="flex space-x-2">
-                  <StatusPill variant="Overdue" count={counts[user.id]?.Overdue}></StatusPill>
-                  <StatusPill variant="Upcoming" count={counts[user.id]?.Upcoming}></StatusPill>
-                  <StatusPill variant="Done" count={counts[user.id]?.Done}></StatusPill>
+                  {/* {counts[user.id]?.Overdue === 0 ? (
+                    <StatusPill variant="None" count={0} />
+                  ) : (
+                    <StatusPill variant="Overdue" count={counts[user.id]?.Overdue} />
+                  )}
+                  {counts[user.id]?.Upcoming === 0 ? (
+                    <StatusPill variant="None" count={0} />
+                  ) : (
+                    <StatusPill variant="Upcoming" count={counts[user.id]?.Upcoming} />
+                  )}
+                  {counts[user.id]?.Done === 0 ? (
+                    <StatusPill variant="None" count={0} />
+                  ) : (
+                    <StatusPill variant="Done" count={counts[user.id]?.Done} />
+                  )} */}
+                  <StatusPill variant="Overdue" count={counts[user.id]?.Overdue} />
+                  <StatusPill variant="Upcoming" count={counts[user.id]?.Upcoming} />
+                  <StatusPill variant="Done" count={counts[user.id]?.Done} />
                 </div>
               </UserTableColumn>
               <UserTableColumn tw="ml-auto mr-6">
-                <IconButton
-                  aria-label={`member-popup-menu`}
-                  size="small"
-                  onClick={handleMenuClick}
-                  tw="hover:bg-transparent"
-                >
-                  <MoreHorizIcon />
-                </IconButton>
+                <TempestPopMenu userId={user.id} />
               </UserTableColumn>
-              <TempestPopMenu anchorEl={anchorEl} handleClose={handleMenuClose}>
-                <TempestMenuItem tw="text-accent text-sm" onClick={handleMenuClose}>
-                  View Member Profile
-                </TempestMenuItem>
-              </TempestPopMenu>
             </UserTableRow>
           ))}
         </UserTable>

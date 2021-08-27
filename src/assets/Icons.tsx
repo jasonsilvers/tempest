@@ -11,9 +11,13 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import WarningIcon from '@material-ui/icons/Warning';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import CancelIcon from '@material-ui/icons/Cancel';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 export {
+  CheckCircleIcon,
   WarningIcon,
+  CancelIcon,
   MoreHorizIcon,
   HighlightOffIcon,
   CheckCircleOutlineIcon,

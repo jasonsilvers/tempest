@@ -19,8 +19,9 @@ import Paper from '@material-ui/core/Paper';
 import SearchBar from '@snekcode/mui-search-bar';
 import Menu from '@material-ui/core/Menu';
 import TempestMenuItem from '@material-ui/core/MenuItem';
-import { DeleteIcon } from '../assets/Icons';
+import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
+import { useRouter } from 'next/router';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -72,23 +73,50 @@ const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} c
   }
 `;
 
-const TempestPopMenu = ({ anchorEl, handleClose, children }) => {
+export default function TempestPopMenu({ userId }: { userId: string }) {
+  const router = useRouter();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuItemClick = () => {
+    router.push(`/Profile/${userId}`);
+  };
+
   return (
-    <Menu
-      id="simple-menu"
-      anchorEl={anchorEl}
-      getContentAnchorEl={null}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-      open={Boolean(anchorEl)}
-      onClose={handleClose}
-    >
-      {children}
-    </Menu>
+    <div>
+      <IconButton aria-label={`member-popup-menu`} size="small" onClick={handleClick} tw="hover:bg-transparent">
+        <MoreHorizIcon />
+      </IconButton>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <TempestMenuItem aria-label="view-member-profile" onClick={handleClose}>
+          <span onClick={handleMenuItemClick}>View Member Profile</span>
+        </TempestMenuItem>
+      </Menu>
+    </div>
   );
-};
+}
 
 const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="date" {...props} />)`
   & .MuiInputBase-input {
