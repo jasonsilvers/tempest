@@ -157,21 +157,6 @@ const DashboardPage: React.FC = () => {
               <UserTableColumn tw="w-1/6">{user.rank}</UserTableColumn>
               <UserTableColumn tw="w-1/6 flex justify-center">
                 <div tw="flex space-x-2">
-                  {/* {counts[user.id]?.Overdue === 0 ? (
-                    <StatusPill variant="None" count={0} />
-                  ) : (
-                    <StatusPill variant="Overdue" count={counts[user.id]?.Overdue} />
-                  )}
-                  {counts[user.id]?.Upcoming === 0 ? (
-                    <StatusPill variant="None" count={0} />
-                  ) : (
-                    <StatusPill variant="Upcoming" count={counts[user.id]?.Upcoming} />
-                  )}
-                  {counts[user.id]?.Done === 0 ? (
-                    <StatusPill variant="None" count={0} />
-                  ) : (
-                    <StatusPill variant="Done" count={counts[user.id]?.Done} />
-                  )} */}
                   <StatusPill variant="Overdue" count={counts[user.id]?.Overdue} />
                   <StatusPill variant="Upcoming" count={counts[user.id]?.Upcoming} />
                   <StatusPill variant="Done" count={counts[user.id]?.Done} />
