@@ -17,7 +17,10 @@ import ToolTip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import Paper from '@material-ui/core/Paper';
 import SearchBar from '@snekcode/mui-search-bar';
+import Menu from '@material-ui/core/Menu';
+import TempestMenuItem from '@material-ui/core/MenuItem';
 import { DeleteIcon } from '../assets/Icons';
+import React from 'react';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -47,7 +50,7 @@ const TempestOverlay = tw.div`bg-white absolute top-0 left-0 w-full h-full backd
 const TempestSkeleton = tw.div`border border-gray-300 shadow rounded-md`;
 const ProgressLayout = tw.div`absolute top-2 right-2`;
 
-const LoadingSpinner = ({size = '24px'}: {size: string}) => {
+const LoadingSpinner = ({ size = '24px' }: { size: string }) => {
   return <CircularProgress size={size} color="secondary" />;
 };
 
@@ -69,6 +72,24 @@ const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} c
   }
 `;
 
+const TempestPopMenu = ({ anchorEl, handleClose, children }) => {
+  return (
+    <Menu
+      id="simple-menu"
+      anchorEl={anchorEl}
+      getContentAnchorEl={null}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      open={Boolean(anchorEl)}
+      onClose={handleClose}
+    >
+      {children}
+    </Menu>
+  );
+};
+
 const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="date" {...props} />)`
   & .MuiInputBase-input {
     padding: 2px;
@@ -86,6 +107,8 @@ const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="dat
 const TempestDeleteIcon = tw(DeleteIcon)`text-xl`;
 
 export {
+  TempestPopMenu,
+  TempestMenuItem,
   TempestDrawer,
   IconButton,
   CircularProgress,

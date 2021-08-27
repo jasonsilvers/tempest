@@ -1,16 +1,15 @@
-import { getUsers, getUsersWithMemberTrackingRecords } from '../repositories/userRepo';
+import { getUsersWithMemberTrackingRecords } from '../repositories/userRepo';
 import { User } from '@prisma/client';
-import Link from 'next/link';
-import tw, { css } from 'twin.macro';
+import tw from 'twin.macro';
 import { useUser } from '@tron/nextjs-auth-p1';
-import { LoadingSpinner } from '../lib/ui';
+import { LoadingSpinner, IconButton, TempestPopMenu, TempestMenuItem } from '../lib/ui';
 import { CheckCircleOutlineIcon, HighlightOffIcon, MoreHorizIcon, WarningIcon } from '../assets/Icons';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import { useUsers } from '../hooks/api/users';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { getCategory, getStatus } from '../utils/Status';
+import { getStatus } from '../utils/Status';
 
 const Card = tw.div`overflow-y-auto overflow-x-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 const UserTable = tw.div``;
@@ -46,15 +45,20 @@ const StatusPill = ({ variant, count }: { variant: StatusPillVariantType; count:
   );
 };
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 const DashboardPage: React.FC = () => {
   const { user: loggedInUser } = useUser<User>();
   const users = useUsers();
   const [counts, setCounts] = useState(initialCounts);
   const [countsIsLoading, setCountsIsLoading] = useState(true);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
     setCountsIsLoading(true);
@@ -67,15 +71,14 @@ const DashboardPage: React.FC = () => {
       };
 
       user.memberTrackingItems.forEach((mti) => {
-        newCounts.All = newCounts.All + 1;
-        const filteredRecords = mti.memberTrackingRecords.map((i) => ({ id: i.id }))
-        console.log(filteredRecords)
         mti.memberTrackingRecords.forEach((mtr) => {
-          console.log(mti.trackingItem.title)
-          const status = getCategory(mtr, mti.trackingItem.interval);
-          newCounts[status] = newCounts[status] + 1;
+          if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
+            newCounts.All = newCounts.All + 1;
+            const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
+            newCounts[status] = newCounts[status] + 1;
 
-          userCounts[status] = userCounts[status] + 1;
+            userCounts[status] = userCounts[status] + 1;
+          }
         });
       });
 
@@ -133,30 +136,40 @@ const DashboardPage: React.FC = () => {
       <Card tw="p-5">
         <UserTable>
           <UserTableHeader>
-            <UserTableColumn tw="w-1/2">Name</UserTableColumn>
-            <UserTableColumn tw="w-1/5">Rank</UserTableColumn>
-            <UserTableColumn tw="w-1/5 flex justify-center">Status</UserTableColumn>
-            <UserTableColumn tw="w-1/5 flex justify-center">Actions</UserTableColumn>
+            <UserTableColumn tw="w-1/3">Name</UserTableColumn>
+            <UserTableColumn tw="w-1/6">Rank</UserTableColumn>
+            <UserTableColumn tw="w-1/6 flex justify-center">Status</UserTableColumn>
+            <UserTableColumn tw="ml-auto mr-4">Actions</UserTableColumn>
           </UserTableHeader>
 
           {users.data?.map((user) => (
             <UserTableRow key={user.id} tw="text-sm mb-2 flex">
-              <UserTableColumn tw="w-1/2">
-                <Link href={`/Profile/${user.id}`}>{`${user.lastName},${user.firstName} ${
-                  user.id === loggedInUser.id ? '(You)' : ''
-                }`}</Link>
+              <UserTableColumn tw="w-1/3">
+                {`${user.lastName},${user.firstName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
               </UserTableColumn>
-              <UserTableColumn tw="w-1/5">{user.rank}</UserTableColumn>
-              <UserTableColumn tw="w-1/5 flex justify-center">
+              <UserTableColumn tw="w-1/6">{user.rank}</UserTableColumn>
+              <UserTableColumn tw="w-1/6 flex justify-center">
                 <div tw="flex space-x-2">
                   <StatusPill variant="Overdue" count={counts[user.id]?.Overdue}></StatusPill>
                   <StatusPill variant="Upcoming" count={counts[user.id]?.Upcoming}></StatusPill>
                   <StatusPill variant="Done" count={counts[user.id]?.Done}></StatusPill>
                 </div>
               </UserTableColumn>
-              <UserTableColumn tw="w-1/5 flex justify-center">
-                <MoreHorizIcon />
+              <UserTableColumn tw="ml-auto mr-6">
+                <IconButton
+                  aria-label={`member-popup-menu`}
+                  size="small"
+                  onClick={handleMenuClick}
+                  tw="hover:bg-transparent"
+                >
+                  <MoreHorizIcon />
+                </IconButton>
               </UserTableColumn>
+              <TempestPopMenu anchorEl={anchorEl} handleClose={handleMenuClose}>
+                <TempestMenuItem tw="text-accent text-sm" onClick={handleMenuClose}>
+                  View Member Profile
+                </TempestMenuItem>
+              </TempestPopMenu>
             </UserTableRow>
           ))}
         </UserTable>

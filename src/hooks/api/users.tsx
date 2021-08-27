@@ -1,4 +1,3 @@
-import { User } from '@prisma/client';
 import axios from 'axios';
 import { useQuery } from 'react-query';
 import { UserWithAll } from '../../repositories/userRepo';

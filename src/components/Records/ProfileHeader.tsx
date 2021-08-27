@@ -4,8 +4,7 @@ import tw from 'twin.macro';
 import { EditIcon } from '../../assets/Icons';
 import { IconButton } from '../../lib/ui';
 
-const Header = tw.h1`text-xl text-black mb-3 font-bold`;
-const Name = tw.h4`text-lg text-black`;
+const Name = tw.h4`text-3xl text-black`;
 const Table = tw.div`text-left mb-6`;
 const Column = tw.div`flex flex-col`;
 const Row = tw.div`flex flex-row`;
@@ -18,13 +17,13 @@ const DutyTitle = tw(Base)``;
 const HeaderUser: React.FC<{ user: User }> = ({ user }) => {
   return user ? (
     <>
-      <Header>EMPLOYEE SAFETY AND HEALTH RECORD</Header>
       <div tw="flex items-center">
         <Name>{`${user.lastName} ${user.firstName}`}</Name>
         <IconButton aria-label={`edit-user`} size="small" tw="ml-2 mr-3 hover:bg-transparent">
           <EditIcon />
         </IconButton>
       </div>
+
       <Table>
         <Column>
           <Row>

@@ -15,6 +15,7 @@ import { EMtrVerb, EFuncAction, EResource } from '../../../types/global';
 import setDomRole from '../../../utils/SetDomRole';
 import { TableData, DisabledButton, ActionButton } from '../TwinMacro/Twin';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
+import { TempestToolTip, Zoom } from '../../../lib/ui';
 
 const AwaitingSignature: React.FC = ({ children }) => (
   <TableData tw="mr-3">
@@ -116,7 +117,32 @@ const RecordSignature: React.FC<{
   const permission = permissionCheck(LoggedInUser.role.name, EFuncAction.UPDATE_ANY, EResource.MEMBER_TRACKING_RECORD);
 
   if (disabled) {
-    return null;
+    return (
+      <div tw="flex ml-auto">
+        <TempestToolTip
+          arrow
+          placement={'top-start'}
+          TransitionComponent={Zoom}
+          TransitionProps={{ timeout: 300 }}
+          title={'No Completed Date'}
+        >
+          <span>
+            <AwaitingSignature />
+          </span>
+        </TempestToolTip>
+        <TempestToolTip
+          arrow
+          placement={'top-start'}
+          TransitionComponent={Zoom}
+          TransitionProps={{ timeout: 300 }}
+          title={'No Completed Date'}
+        >
+          <span>
+            <AwaitingSignature />
+          </span>
+        </TempestToolTip>
+      </div>
+    );
   }
 
   if (isLoading) {
