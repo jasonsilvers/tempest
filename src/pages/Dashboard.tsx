@@ -11,7 +11,7 @@ import { getStatus } from '../utils/Status';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../types/global';
 
-const Card = tw.div`overflow-y-auto overflow-x-hidden bg-white rounded-md filter drop-shadow-md p-2`;
+const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 const UserTable = tw.div``;
 const UserTableHeader = tw.div`flex text-sm text-gray-400 mb-4 pl-2 border-b border-gray-400`;
 const UserTableRow = ({ isOdd, children }: { isOdd: boolean; children: React.ReactNode }) => {
