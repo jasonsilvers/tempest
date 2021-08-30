@@ -32,7 +32,7 @@ describe('Member role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
-    cy.findByText(/clark,sandra/i)
+    cy.findByText(/sandra clark/i)
       .parent()
       .within((elem) => {
         cy.findByRole('button', { name: 'member-popup-menu' }).click();
@@ -56,7 +56,7 @@ describe('Member role', () => {
 describe('Monitor role', () => {
   it('should show training record for selected member', () => {
     cy.loginAsMonitor();
-    cy.findByText(/clark,sandra/i)
+    cy.findByText(/sandra clark/i)
       .parent()
       .within((elem) => {
         cy.findByRole('button', { name: 'member-popup-menu' }).click();

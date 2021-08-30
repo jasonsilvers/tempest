@@ -1,7 +1,5 @@
 import { getUsersWithMemberTrackingRecords } from '../repositories/userRepo';
-import { User } from '@prisma/client';
 import tw from 'twin.macro';
-import { useUser } from '@tron/nextjs-auth-p1';
 import { LoadingSpinner, TempestPopMenu } from '../lib/ui';
 import { CancelIcon, CheckCircleIcon, HighlightOffIcon, WarningIcon } from '../assets/Icons';
 import { QueryClient } from 'react-query';
@@ -10,6 +8,8 @@ import { useUsers } from '../hooks/api/users';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { getStatus } from '../utils/Status';
+import { usePermissions } from '../hooks/usePermissions';
+import { EFuncAction, EResource } from '../types/global';
 
 const Card = tw.div`overflow-y-auto overflow-x-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 const UserTable = tw.div``;
@@ -62,15 +62,16 @@ const StatusPill = ({ variant, count }: { variant: StatusPillVariantType; count:
 };
 
 const DashboardPage: React.FC = () => {
-  const { user: loggedInUser } = useUser<User>();
+  const { user: loggedInUser, permissionCheck, isLoading } = usePermissions();
+
   const users = useUsers();
   const [counts, setCounts] = useState(initialCounts);
-  const [countsIsLoading, setCountsIsLoading] = useState(true);
+
+  const permission = permissionCheck(loggedInUser?.role?.name, EFuncAction.READ_ANY, EResource.USER);
 
   useEffect(() => {
-    setCountsIsLoading(true);
     const newCounts = { ...initialCounts };
-    users.data?.forEach((user) => {
+    users?.data?.forEach((user) => {
       const userCounts = {
         Overdue: 0,
         Upcoming: 0,
@@ -85,6 +86,9 @@ const DashboardPage: React.FC = () => {
             newCounts[status] = newCounts[status] + 1;
 
             userCounts[status] = userCounts[status] + 1;
+          } else {
+            newCounts.Upcoming = newCounts.Upcoming + 1;
+            userCounts.Upcoming = userCounts.Upcoming + 1;
           }
         });
       });
@@ -92,18 +96,21 @@ const DashboardPage: React.FC = () => {
       newCounts[user.id] = userCounts;
       setCounts(newCounts);
     });
+  }, [users?.data]);
 
-    setCountsIsLoading(false);
-  }, [users.data]);
-
-  if (!loggedInUser && !loggedInUser?.id) {
+  if (isLoading) {
     return <p>Loading...</p>;
   }
+
+  if (!permission.granted) {
+    return <div>you are not allowed to view this page</div>;
+  }
+
   return (
     <main tw="pr-14 max-width[900px] min-width[720px]">
       <div tw="flex space-x-8 pb-5">
         <Card tw="h-24 flex-grow border-2 border-primary">
-          <div tw="flex fixed right-2">{countsIsLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
+          <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
           <h1 tw="text-primary pl-1 underline">All</h1>
 
           <div tw="flex items-end pt-3">
@@ -112,7 +119,7 @@ const DashboardPage: React.FC = () => {
           </div>
         </Card>
         <Card tw="h-24 flex-grow bg-[#FB7F7F]">
-          <div tw="flex fixed right-2">{countsIsLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
+          <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
           <h1 tw="text-white pl-1">Overdue</h1>
 
           <div tw="flex items-end pt-3">
@@ -121,7 +128,7 @@ const DashboardPage: React.FC = () => {
           </div>
         </Card>
         <Card tw="h-24 flex-grow bg-[#F6B83F]">
-          <div tw="flex fixed right-2">{countsIsLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
+          <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
           <h1 tw="text-white pl-1">Upcoming</h1>
 
           <div tw="flex items-end pt-3">
@@ -130,7 +137,7 @@ const DashboardPage: React.FC = () => {
           </div>
         </Card>
         <Card tw="h-24 flex-grow bg-[#6FD9A6]">
-          <div tw="flex fixed right-2">{countsIsLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
+          <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
           <h1 tw="text-white pl-1">Done</h1>
 
           <div tw="flex items-end pt-3">
@@ -152,7 +159,7 @@ const DashboardPage: React.FC = () => {
           {users.data?.map((user, index) => (
             <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-sm mb-2 flex">
               <UserTableColumn tw="w-1/3">
-                {`${user.lastName},${user.firstName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
+                {`${user.firstName} ${user.lastName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
               </UserTableColumn>
               <UserTableColumn tw="w-1/6">{user.rank}</UserTableColumn>
               <UserTableColumn tw="w-1/6 flex justify-center">
@@ -182,7 +189,7 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      dehyradtedState: dehydrate(queryClient),
+      dehydratedState: dehydrate(queryClient),
     },
     revalidate: 60,
   };
