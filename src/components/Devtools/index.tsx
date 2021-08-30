@@ -45,7 +45,6 @@ const UsersList = () => {
     const selectedOrgId = event.target.value;
 
     if (selectedOrgId !== user.organizationId) {
-      const { organization, role, ...userToUpdate } = user; // eslint-disable-line
       const updatedUser = {
         id: user.id,
         organizationId: selectedOrgId,
@@ -62,7 +61,6 @@ const UsersList = () => {
     const selectedRoleId = event.target.value;
 
     if (selectedRoleId !== user.role?.id) {
-      const { organization, role, ...userToUpdate } = user; // eslint-disable-line
       const updatedUser = {
         id: user.id,
         roleId: selectedRoleId,
