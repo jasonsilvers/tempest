@@ -45,11 +45,10 @@ const UsersList = () => {
     const selectedOrgId = event.target.value;
 
     if (selectedOrgId !== user.organizationId) {
-      const { organization, role, ...userToUpdate } = user; // eslint-disable-line
-      const updatedUser: User = {
-        ...userToUpdate,
+      const updatedUser = {
+        id: user.id,
         organizationId: selectedOrgId,
-      };
+      } as User;
       mutateUser.mutate(updatedUser, {
         onSuccess: () => {
           enqueueSnackbar('Organization Changed', { variant: 'success' });
@@ -62,11 +61,10 @@ const UsersList = () => {
     const selectedRoleId = event.target.value;
 
     if (selectedRoleId !== user.role?.id) {
-      const { organization, role, ...userToUpdate } = user; // eslint-disable-line
-      const updatedUser: User = {
-        ...userToUpdate,
+      const updatedUser = {
+        id: user.id,
         roleId: selectedRoleId,
-      };
+      } as User;
 
       mutateUser.mutate(updatedUser, {
         onSuccess: () => {

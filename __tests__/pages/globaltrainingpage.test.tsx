@@ -133,8 +133,8 @@ it('test the dashboard searches for the items by description', async () => {
 test('should return props for static props with no prisma', async () => {
   const { props } = await getStaticProps();
 
-  expect(props.dehydrateState.queries[0].state.data).toEqual([]);
-  expect(props.dehydrateState.queries[0].queryKey).toEqual(['trackingitems']);
+  expect(props.dehydratedState.queries[0].state.data).toEqual([]);
+  expect(props.dehydratedState.queries[0].queryKey).toEqual(['trackingitems']);
 });
 
 test('should return props for static props with prisma', async () => {
@@ -142,8 +142,8 @@ test('should return props for static props with prisma', async () => {
   prisma.trackingItem.findMany.mockImplementation(() => [trackingItem]);
   const { props } = await getStaticProps();
 
-  expect(props.dehydrateState.queries[0].state.data).toEqual([trackingItem]);
-  expect(props.dehydrateState.queries[0].queryKey).toEqual(['trackingitems']);
+  expect(props.dehydratedState.queries[0].state.data).toEqual([trackingItem]);
+  expect(props.dehydratedState.queries[0].queryKey).toEqual(['trackingitems']);
 });
 
 /**
