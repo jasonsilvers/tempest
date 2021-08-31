@@ -312,7 +312,7 @@ test('should return 400 if complete date not correct type', async () => {
   mockMethodAndReturn(findMemberTrackingRecordById, returnedMemberTrackingRecordDB);
   mockMethodAndReturn(updateMemberTrackingRecord, updatedMemberTrackingRecordFromDb);
 
-  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+  const { status } = await testNextApi.post(memberTrackingRecordSlugHandler, {
     body: { completedDate: 'daufhaiuhiu23h2' },
     urlSlug: '23/update_completion',
   });

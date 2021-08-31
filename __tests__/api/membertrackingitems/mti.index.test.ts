@@ -482,7 +482,7 @@ test('POST - should create member tracking item and member tracking record when 
   };
 
   //Data returned from mocked DB create method for creating a tracking item
-  const memberTrackingItemBody = {
+  const memberTrackingItemPostBody = {
     userId: globalUserId,
     isActive: true,
     trackingItemId: 1,
@@ -494,11 +494,11 @@ test('POST - should create member tracking item and member tracking record when 
     memberTrackingRecords: [returnedMemberTrackingRecordDB],
   };
 
-  mockMethodAndReturn(createMemberTrackingItem, memberTrackingItemBody);
+  mockMethodAndReturn(createMemberTrackingItem, memberTrackingItemPostBody);
   mockMethodAndReturn(createMemberTrackingRecord, returnedMemberTrackingRecordDB);
 
   const { status, data } = await testNextApi.post(memberTrackingItemHandler, {
-    body: memberTrackingItemBody,
+    body: memberTrackingItemPostBody,
     urlId: '?create_member_tracking_record=true',
   });
 

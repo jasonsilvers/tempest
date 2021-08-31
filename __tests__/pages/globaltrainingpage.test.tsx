@@ -65,7 +65,7 @@ it('renders the Dashboard page', async () => {
 });
 
 it('renders the tracking item page as admin an deletes trackingItem', async () => {
-  const { getByText, getByRole, queryByText } = render(<TrackingItemPage />);
+  const { getByText, getByRole } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
   await waitFor(() => getByText(/test title/i));
