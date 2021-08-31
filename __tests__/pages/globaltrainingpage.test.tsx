@@ -64,18 +64,30 @@ it('renders the Dashboard page', async () => {
   expect(getByText(/test title/i)).toBeInTheDocument();
 });
 
-it('renders the Dashboard page as admin an deletes trackingItem', async () => {
-  const { getByText, getByRole, queryByText } = render(<TrackingItemPage />);
+it('renders the tracking item page as admin an deletes trackingItem', async () => {
+  const { getByText, getByRole } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
   await waitFor(() => getByText(/test title/i));
   expect(getByText(/test title/i)).toBeInTheDocument();
 
+  server.use(
+    rest.get<DefaultRequestBody, TrackingItemsDTO>(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          trackingItems: [],
+        })
+      );
+    })
+  );
+
   fireEvent.click(getByRole('button', { name: /delete/i }));
-  waitFor(() => expect(queryByText(/test title/i)).toBeFalsy());
+
+  await waitForElementToBeRemoved(() => getByText(/test title/i));
 });
 
-it('renders the Dashboard page as user with out delete permissions', async () => {
+it('renders the tracking item page as user with out delete permissions', async () => {
   server.use(
     rest.get(EUri.LOGIN, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 0, name: ERole.MEMBER } } as LoggedInUser));

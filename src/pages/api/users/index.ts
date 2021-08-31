@@ -1,7 +1,8 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied } from '../../../middleware/utils';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { findUserByDodId, getUsersWithMemberTrackingRecords, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource } from '../../../types/global';
 const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
@@ -28,4 +29,4 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
   }
 };
 
-export default withErrorHandlingAndAuthorization(usersApiHandler, findUserByDodId);
+export default withTempestHandlers(usersApiHandler, findUserByDodId);

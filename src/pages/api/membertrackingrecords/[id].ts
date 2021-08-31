@@ -9,12 +9,8 @@ import {
 } from '../../../repositories/memberTrackingRepo';
 import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
-import {
-  MethodNotAllowedError,
-  NotFoundError,
-  PermissionError,
-  withErrorHandlingAndAuthorization,
-} from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
 interface ITempestMemberTrackingRecordApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -84,4 +80,4 @@ async function memberTrackingRecordIdHandler(
   }
 }
 
-export default withErrorHandlingAndAuthorization(memberTrackingRecordIdHandler, findUserByDodId);
+export default withTempestHandlers(memberTrackingRecordIdHandler, findUserByDodId);

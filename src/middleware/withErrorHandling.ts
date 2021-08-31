@@ -1,5 +1,5 @@
 import { ELogEventType } from '../types/global';
-import { DBQueryFunctionToReturnUser, NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import type { NextApiHandler, NextApiResponse } from 'next';
 import { LoggedInUser } from '../repositories/userRepo';
 import { logFactory } from '../utils/logger';
@@ -74,6 +74,7 @@ export const withErrorHandling =
 
       if (e.name === 'PermissionError') {
         log.warn(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
+        log.persist(ELogEventType.UNAUTHORIZED, `Req url: ${req.url}, Req method: ${req.method}`);
         return res.status(403).send({ message: 'You do not have the appropriate permissions' });
       }
 
@@ -91,11 +92,3 @@ export const withErrorHandling =
       return res.status(500).json({ message: 'There was an internal server error' });
     }
   };
-
-export function withErrorHandlingAndAuthorization(
-  func: NextApiHandler,
-  getUserFunc: DBQueryFunctionToReturnUser,
-  withLogging = true
-) {
-  return withApiAuth(withErrorHandling(func, withLogging), getUserFunc);
-}

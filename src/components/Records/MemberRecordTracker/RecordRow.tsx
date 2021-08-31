@@ -135,6 +135,7 @@ const RecordRow: React.FC<{
       handleMutation(date);
     }
   };
+
   const DynamicToken = TokenObj[status];
   return (
     <>
@@ -164,11 +165,7 @@ const RecordRow: React.FC<{
             <>
               <span tw={'opacity-40'}>Due: </span>
               <span>
-                {trackingRecordQuery.data?.completedDate
-                  ? dayjs(trackingRecordQuery.data?.completedDate)
-                      .add(trackingItem?.interval, 'days')
-                      .format('DD MMM YY')
-                  : 'No Date'}
+                {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}
               </span>
             </>
           </TableData>

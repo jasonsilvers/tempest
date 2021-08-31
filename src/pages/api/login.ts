@@ -2,9 +2,10 @@ import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { updateLastLogin, LoggedInUser } from '../../repositories/userRepo';
 import { returnUser } from '../../repositories/loginRepo';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../middleware/withErrorHandling';
 import { logFactory } from '../../utils/logger';
 import { ELogEventType } from '../../types/global';
+import { withTempestHandlers } from '../../middleware/withTempestHandlers';
 
 const loginHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;
@@ -18,4 +19,4 @@ const loginHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, 
   res.status(200).json(req.user);
 };
 
-export default withErrorHandlingAndAuthorization(loginHandler, returnUser);
+export default withTempestHandlers(loginHandler, returnUser);

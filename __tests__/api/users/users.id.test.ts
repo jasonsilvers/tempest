@@ -39,7 +39,7 @@ test('GET - should return user - read any', async () => {
   expect(data).toStrictEqual(userFromDb);
 });
 
-test('GET - should return user - read', async () => {
+test('GET - should return user - read any', async () => {
   mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
@@ -162,11 +162,22 @@ test('PUT - should return user - update any', async () => {
   mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
-    body: { name: 'bob' },
+    body: { rank: 'bob' },
   });
 
   expect(status).toBe(200);
   expect(data).toStrictEqual({ name: 'bob', id: 123 });
+});
+
+test('PUT - should return 400 if data is incorrect - update any', async () => {
+  mockMethodAndReturn(findUserById, userFromDb);
+  mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  const { status } = await testNextApi.put(userQueryHandler, {
+    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    body: { name: 'bob', email: 30322, rank: 32343 },
+  });
+
+  expect(status).toBe(400);
 });
 
 test('PUT - should return 403 - update any', async () => {
@@ -178,7 +189,7 @@ test('PUT - should return 403 - update any', async () => {
   mockMethodAndReturn(findUserById, userFromDb);
   const { status } = await testNextApi.put(userQueryHandler, {
     urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
-    body: { name: 'bob' },
+    body: { rank: 'bob' },
   });
 
   expect(status).toBe(403);

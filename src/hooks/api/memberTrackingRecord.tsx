@@ -41,7 +41,9 @@ export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
   return useMutation<MemberTrackingRecord, unknown, { memberTrackingRecord: RecordWithTrackingItem; userId: string }>(
     ({ memberTrackingRecord }) =>
       axios
-        .post(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}/${memberTrackingRecord.id}/${verb}`, memberTrackingRecord)
+        .post(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}/${memberTrackingRecord.id}/${verb}`, {
+          completedDate: memberTrackingRecord.completedDate,
+        })
         .then((response) => response.data),
     {
       onMutate: async ({ memberTrackingRecord }) => {

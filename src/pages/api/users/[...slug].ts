@@ -2,7 +2,8 @@ import { User } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import {
   findUserByDodId,
   findUserByIdWithMemberTrackingItems,
@@ -61,4 +62,4 @@ async function userSlugHandler(
   }
 }
 
-export default withErrorHandlingAndAuthorization(userSlugHandler, findUserByDodId);
+export default withTempestHandlers(userSlugHandler, findUserByDodId);

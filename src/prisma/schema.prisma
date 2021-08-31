@@ -163,8 +163,8 @@ enum LogEventType {
 
 model LogEvent {
   id           Int          @id @default(autoincrement())
-  user         User         @relation(fields: [userId], references: [id])
-  userId       String       @db.Uuid
+  user         User?         @relation(fields: [userId], references: [id])
+  userId       String?       @db.Uuid
   logEventType LogEventType @map("log_event_type")
   createdAt    DateTime?    @default(now())
   message      String?

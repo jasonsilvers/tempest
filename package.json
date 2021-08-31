@@ -56,6 +56,7 @@
     "faker": "^5.5.3",
     "file-to-array-buffer": "^1.0.0",
     "formidable": "^1.2.2",
+    "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "loglevel": "^1.7.1",

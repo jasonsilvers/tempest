@@ -4,7 +4,8 @@ import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { createOrganizations, findOrganizations } from '../../../repositories/organizationRepo';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
 const organizationApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { body, method } = req;
@@ -45,4 +46,4 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
   }
 };
 
-export default withErrorHandlingAndAuthorization(organizationApiHandler, findUserByDodId);
+export default withTempestHandlers(organizationApiHandler, findUserByDodId);
