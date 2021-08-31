@@ -473,7 +473,7 @@ test('POST - should create member tracking item and member tracking record when 
   //data returned from mocked Db create method for creating tracking record
   const returnedMemberTrackingRecordDB = {
     order: 0,
-    trackingItemId: 1,
+    trackingItemId: 2,
     traineeId: globalUserId,
     authorityId: 'jo2jo2j3o23jo32j',
     authoritySignedDate: null,
@@ -485,12 +485,12 @@ test('POST - should create member tracking item and member tracking record when 
   const memberTrackingItemPostBody = {
     userId: globalUserId,
     isActive: true,
-    trackingItemId: 1,
+    trackingItemId: 2,
   };
 
   //data returned to client
   const expectedReturnData = {
-    ...memberTrackingItemBody,
+    ...memberTrackingItemPostBody,
     memberTrackingRecords: [returnedMemberTrackingRecordDB],
   };
 
