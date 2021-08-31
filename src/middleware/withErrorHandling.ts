@@ -74,6 +74,7 @@ export const withErrorHandling =
 
       if (e.name === 'PermissionError') {
         log.warn(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
+        log.persist(ELogEventType.UNAUTHORIZED, `Req url: ${req.url}, Req method: ${req.method}`);
         return res.status(403).send({ message: 'You do not have the appropriate permissions' });
       }
 
