@@ -50,6 +50,7 @@ model MemberTrackingRecord {
   authority           User?              @relation(name: "AuthorityRecords", fields: [authorityId], references: [id])
   authorityId         String?            @map("authority_id") @db.Uuid
   trainee             User?              @relation(name: "TraineeRecords", fields: [traineeId], references: [id])
+  createdAt           DateTime?          @default(now()) @map("created_at")
   completedDate       DateTime?          @map("completed_date")
   order               Int
   trackingItem        TrackingItem?      @relation(fields: [trackingItemId], references: [id])
@@ -65,6 +66,7 @@ model MemberTrackingItem {
   isActive              Boolean
   user                  User                   @relation(fields: [userId], references: [id])
   userId                String                 @db.Uuid
+  createdAt             DateTime?              @default(now()) @map("created_at")
   trackingItem          TrackingItem           @relation(fields: [trackingItemId], references: [id])
   trackingItemId        Int
   memberTrackingRecords MemberTrackingRecord[]

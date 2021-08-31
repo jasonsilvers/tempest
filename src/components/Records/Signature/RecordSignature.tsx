@@ -11,10 +11,11 @@ import { DoneAllIcon } from '../../../assets/Icons';
 import { useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { MemberTrackingRecordWithUsers } from '../../../repositories/memberTrackingRepo';
-import { EMtrVerb, EFuncAction, EResource } from '../../../types/global';
+import { EMtrVerb } from '../../../types/global';
 import setDomRole from '../../../utils/SetDomRole';
 import { TableData, DisabledButton, ActionButton } from '../TwinMacro/Twin';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
+import { TempestToolTip, Zoom } from '../../../lib/ui';
 
 const AwaitingSignature: React.FC = ({ children }) => (
   <TableData tw="mr-3">
@@ -87,9 +88,11 @@ const getSignature = (
         <RecordSignatureToolTip
           traineeSignature={{ signee: memberTrackingRecord[signee], date: memberTrackingRecord[signatureType] }}
         >
-          <DisabledButton disabled>{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
-            'MM/DD/YY'
-          )}`}</DisabledButton>
+          <span>
+            <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
+              'MM/DD/YY'
+            )}`}</DisabledButton>
+          </span>
         </RecordSignatureToolTip>
       </TableData>
     );
@@ -109,19 +112,40 @@ const RecordSignature: React.FC<{
   const { mutate: signTrainee } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_TRAINEE);
   const { mutate: signAuthority } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_AUTHORITY);
   const { trainee, authority } = memberTrackingRecord;
-  const { permissionCheck, isLoading } = usePermissions();
-
-  const permission = permissionCheck(LoggedInUser.role.name, EFuncAction.UPDATE_ANY, EResource.MEMBER_TRACKING_RECORD);
+  const { isLoading } = usePermissions();
 
   if (disabled) {
-    return null;
+    return (
+      <div tw="flex ml-auto">
+        <TempestToolTip
+          arrow
+          placement={'top-start'}
+          TransitionComponent={Zoom}
+          TransitionProps={{ timeout: 300 }}
+          title={'No Completed Date'}
+        >
+          <span>
+            <AwaitingSignature />
+          </span>
+        </TempestToolTip>
+        <TempestToolTip
+          arrow
+          placement={'top-start'}
+          TransitionComponent={Zoom}
+          TransitionProps={{ timeout: 300 }}
+          title={'No Completed Date'}
+        >
+          <span>
+            <AwaitingSignature />
+          </span>
+        </TempestToolTip>
+      </div>
+    );
   }
 
   if (isLoading) {
     return <></>;
   }
-
-  const canSignAuthority = permission.granted && memberTrackingRecord.traineeId !== LoggedInUser.id;
 
   if (authoritySignedDate && traineeSignedDate) {
     return (
@@ -139,17 +163,13 @@ const RecordSignature: React.FC<{
   }
   return (
     <div tw="flex ml-auto">
-      {canSignAuthority ? (
-        getSignature(
-          'authority',
-          memberTrackingRecord,
-          'authoritySignedDate',
-          LoggedInUser,
-          signAuthority,
-          enqueueSnackbar
-        )
-      ) : (
-        <AwaitingSignature />
+      {getSignature(
+        'authority',
+        memberTrackingRecord,
+        'authoritySignedDate',
+        LoggedInUser,
+        signAuthority,
+        enqueueSnackbar
       )}
       {getSignature('trainee', memberTrackingRecord, 'traineeSignedDate', LoggedInUser, signTrainee, enqueueSnackbar)}
     </div>

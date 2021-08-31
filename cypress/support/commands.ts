@@ -53,7 +53,7 @@ Cypress.Commands.add('loginAsMember', () => {
 });
 
 Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string) => {
-  cy.findByRole('button', { name: /add new/i }).click();
+  cy.findByRole('button', { name: /add new/i, timeout: 6000 }).click();
 
   cy.wait(10000);
 

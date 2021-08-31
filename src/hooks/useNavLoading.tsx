@@ -1,17 +1,5 @@
-import { CircularProgress } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import tw from 'twin.macro';
-
-const ProgressLayout = tw.div`absolute top-2 right-2`;
-
-const NavigationLoading = () => {
-  return (
-    <ProgressLayout>
-      <CircularProgress size="24px" color="secondary" />
-    </ProgressLayout>
-  );
-};
 
 const useNavLoading = () => {
   const [navigating, setNavigating] = useState(false);
@@ -38,4 +26,4 @@ const useNavLoading = () => {
   return { navigating };
 };
 
-export { useNavLoading, NavigationLoading };
+export { useNavLoading };

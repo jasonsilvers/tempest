@@ -88,6 +88,6 @@ export const withErrorHandling =
       }
 
       log.trace(`caught error: ${500} ${e}`);
-      return res.status(500).send(e.body);
+      return res.status(500).json({ message: 'There was an internal server error' });
     }
   };

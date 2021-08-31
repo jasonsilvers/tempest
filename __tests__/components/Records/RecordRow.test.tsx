@@ -412,9 +412,9 @@ test('should prompt user with signatures present but then we click the No button
   fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
 
   // wait for modal then click yes
-  await waitFor(() => getByText(/No/i));
-  expect(getByText(/No/i)).toBeInTheDocument();
-  fireEvent.click(getByText(/No/i));
+  await waitFor(() => getByRole('button', { name: 'No' }));
+  expect(getByRole('button', { name: 'No' })).toBeInTheDocument();
+  fireEvent.click(getByRole('button', { name: 'No' }));
 
   // expect the snackbar to not be visible
   await waitFor(() => queryByText(/date updated/i));
