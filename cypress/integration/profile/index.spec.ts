@@ -8,7 +8,7 @@ describe('Member role', () => {
   it('should add new training and be able to sign', () => {
     cy.loginAsMember();
 
-    cy.findByRole('button', { name: /add new/i }).click();
+    cy.findByRole('button', { name: /add new/i, timeout: 10000 }).click();
 
     cy.wait(10000);
 
