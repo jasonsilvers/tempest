@@ -1,5 +1,6 @@
 import { MemberTrackingRecord } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
+import Joi from 'joi';
 const dayjs = require('dayjs');
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../middleware/utils';
@@ -52,6 +53,24 @@ type MemberTrackingRecordsAction = (
   req: NextApiRequestWithAuthorization<LoggedInUser, MemberTrackingRecord>,
   res: NextApiResponse<MemberTrackingRecord | ITempestApiError>
 ) => void;
+
+export const memberTrackingRecordPostSchema = {
+  body: Joi.object({
+    id: Joi.number().optional(),
+    traineeSignedDate: Joi.date().optional().allow(null),
+    authoritySignedDate: Joi.date().optional().allow(null),
+    authorityId: Joi.string().optional().allow(null),
+    createdAt: Joi.date().optional(),
+    completedDate: Joi.date().optional(),
+    order: Joi.number().optional(),
+    traineeId: Joi.string().optional(),
+    trackingItemId: Joi.number().optional(),
+  }),
+  query: Joi.object({
+    slug: Joi.optional(),
+    id: Joi.optional(),
+  }),
+};
 
 export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = async (req, res) => {
   const {

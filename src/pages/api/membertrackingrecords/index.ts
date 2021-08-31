@@ -1,12 +1,17 @@
 import { MemberTrackingRecord } from '.prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
+import { memberTrackingRecordPostSchema } from '../../../controllers/memberTrackingRecordsController';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { createMemberTrackingRecord } from '../../../repositories/memberTrackingRepo';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource } from '../../../types/global';
+
+const memberTrackingRecordSchema = {
+  post: memberTrackingRecordPostSchema,
+};
 
 async function memberTrackingRecordIndexHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser, MemberTrackingRecord>,
@@ -35,4 +40,4 @@ async function memberTrackingRecordIndexHandler(
   }
 }
 
-export default withTempestHandlers(memberTrackingRecordIndexHandler, findUserByDodId);
+export default withTempestHandlers(memberTrackingRecordIndexHandler, findUserByDodId, memberTrackingRecordSchema);
