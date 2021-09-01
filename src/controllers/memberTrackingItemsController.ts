@@ -42,6 +42,9 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
     withTrackingItems: includesQuery.includes(EMemberTrackingItemIncludes.TRACKING_ITEMS),
   });
 
+  if (!memberTrackingItem) {
+    return recordNotFound(res);
+  }
   const permission =
     memberTrackingItem?.userId !== req.user.id
       ? ac.can(req.user.role.name).readAny(EResource.MEMBER_TRACKING_ITEM)
@@ -49,10 +52,6 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
 
   if (!permission.granted) {
     return permissionDenied(res);
-  }
-
-  if (!memberTrackingItem) {
-    return recordNotFound(res);
   }
 
   res.status(200).json(memberTrackingItem);

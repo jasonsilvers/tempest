@@ -1,6 +1,7 @@
 import { MemberTrackingRecord } from '.prisma/client';
-import { User } from '@prisma/client';
+import { MemberTrackingItem, User } from '@prisma/client';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RecordWithTrackingItem } from '../../components/Records/MemberRecordTracker/RecordRow';
 import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
@@ -11,7 +12,7 @@ import { mtiQueryKeys } from './memberTrackingItem';
 const MEMBER_TRACKING_RECORD_RESOURCE = 'membertrackingrecords';
 
 export const mtrQueryKeys = {
-  memberTrackingRecords: (memberTrackingRecordId: number) => [MEMBER_TRACKING_RECORD_RESOURCE, memberTrackingRecordId],
+  memberTrackingRecords: () => [MEMBER_TRACKING_RECORD_RESOURCE],
   memberTrackingRecord: (memberTrackingRecordId: number) => [MEMBER_TRACKING_RECORD_RESOURCE, memberTrackingRecordId],
 };
 
@@ -123,12 +124,37 @@ export const useCreateMemberTrackingRecord = () => {
 
 export const useDeleteMemberTrackingRecord = () => {
   const queryClient = useQueryClient();
+  const snackbar = useSnackbar();
   return useMutation(
     (memberTrackingRecordId: number) =>
       axios.delete(EUri.MEMBER_TRACKING_RECORDS + memberTrackingRecordId).then((response) => response.data),
     {
+      onMutate: async (memberTrackingRecordId: number) => {
+        const memberTrackingRecord: MemberTrackingRecord = queryClient.getQueryData(
+          mtrQueryKeys.memberTrackingRecord(memberTrackingRecordId)
+        );
+
+        queryClient.removeQueries(mtrQueryKeys.memberTrackingRecord(memberTrackingRecordId));
+        queryClient.removeQueries(
+          mtiQueryKeys.memberTrackingItem(memberTrackingRecord.traineeId, memberTrackingRecord.trackingItemId)
+        );
+
+        const memberTrackingItems = queryClient.getQueryData<MemberTrackingItem[]>(
+          mtiQueryKeys.memberTrackingItems(memberTrackingRecord.traineeId)
+        );
+
+        const updatedMemberTrackingItems = memberTrackingItems.filter(
+          (mti) => mti.trackingItemId !== memberTrackingRecord.trackingItemId
+        );
+
+        queryClient.setQueryData(
+          mtiQueryKeys.memberTrackingItems(memberTrackingRecord.traineeId),
+          updatedMemberTrackingItems
+        );
+      },
       onSettled: (data: MemberTrackingRecord) => {
         queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId));
+        snackbar.enqueueSnackbar('Record Deleted!', { variant: 'success' });
       },
     }
   );

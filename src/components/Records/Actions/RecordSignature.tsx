@@ -8,14 +8,39 @@ import { useUser } from '@tron/nextjs-auth-p1';
 
 import RecordSignatureToolTip from './RecordSignatureToolTip';
 import { DoneAllIcon } from '../../../assets/Icons';
-import { useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
+import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { MemberTrackingRecordWithUsers } from '../../../repositories/memberTrackingRepo';
-import { EMtrVerb } from '../../../types/global';
+import { EFuncAction, EMtrVerb, EResource } from '../../../types/global';
 import setDomRole from '../../../utils/SetDomRole';
 import { TableData, DisabledButton, ActionButton } from '../TwinMacro/Twin';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
-import { TempestToolTip, Zoom } from '../../../lib/ui';
+import { IconButton, TempestDeleteIcon, TempestToolTip, Zoom } from '../../../lib/ui';
+
+type DeterminedActionOnRecord = 'traineeCanSign' | 'authorityCanSign' | 'completed';
+
+export const determineActionOnRecord = (
+  signee: 'trainee' | 'authority',
+  memberTrackingRecord: MemberTrackingRecordWithUsers,
+  signatureType: 'authoritySignedDate' | 'traineeSignedDate',
+  loggedInUser: User
+): DeterminedActionOnRecord => {
+  let action: DeterminedActionOnRecord;
+  if (!memberTrackingRecord[signatureType]) {
+    if (signee === 'authority' && loggedInUser.id !== memberTrackingRecord.traineeId) {
+      action = 'authorityCanSign';
+    }
+    if (signee === 'trainee' && loggedInUser.id === memberTrackingRecord.traineeId) {
+      action = 'traineeCanSign';
+    }
+  }
+
+  if (memberTrackingRecord[signatureType] && memberTrackingRecord[signee]) {
+    action = 'completed';
+  }
+
+  return action;
+};
 
 const AwaitingSignature: React.FC = ({ children }) => (
   <TableData tw="mr-3">
@@ -32,7 +57,7 @@ const AwaitingSignature: React.FC = ({ children }) => (
  * @returns
  */
 
-const getSignature = (
+const getAllowedActions = (
   signee: 'trainee' | 'authority',
   memberTrackingRecord: MemberTrackingRecordWithUsers,
   signatureType: 'authoritySignedDate' | 'traineeSignedDate',
@@ -64,14 +89,12 @@ const getSignature = (
     );
   };
 
+  const determinedAction = determineActionOnRecord(signee, memberTrackingRecord, signatureType, loggedInUser);
+
   // if signature date is false and
   // user logged in is the signature owner
   // render button to sign
-  if (
-    !memberTrackingRecord[signatureType] &&
-    ((signee === 'authority' && loggedInUser.id !== memberTrackingRecord.traineeId) ||
-      (signee === 'trainee' && loggedInUser.id === memberTrackingRecord.traineeId))
-  ) {
+  if (determinedAction === 'authorityCanSign' || determinedAction === 'traineeCanSign') {
     return (
       <TableData>
         <ActionButton aria-label={setDomRole('Signature Button')} onClick={handleSignTrainee}>
@@ -82,7 +105,7 @@ const getSignature = (
   }
   // if signature date is true and signature owner is true
   // render signature based on the signature owner and date
-  if (memberTrackingRecord[signatureType] && memberTrackingRecord[signee]) {
+  if (determinedAction === 'completed') {
     return (
       <TableData>
         <RecordSignatureToolTip
@@ -101,7 +124,7 @@ const getSignature = (
   return <AwaitingSignature />;
 };
 
-const RecordSignature: React.FC<{
+const RecordRowActions: React.FC<{
   authoritySignedDate: Date;
   traineeSignedDate: Date;
   memberTrackingRecord: MemberTrackingRecordWithUsers;
@@ -111,8 +134,16 @@ const RecordSignature: React.FC<{
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: signTrainee } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_TRAINEE);
   const { mutate: signAuthority } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_AUTHORITY);
+  const { mutate: deleteRecord } = useDeleteMemberTrackingRecord();
+
   const { trainee, authority } = memberTrackingRecord;
-  const { isLoading } = usePermissions();
+  const { isLoading, permissionCheck } = usePermissions();
+
+  const canDeleteAny = permissionCheck(
+    LoggedInUser?.role?.name,
+    EFuncAction.DELETE_ANY,
+    EResource.MEMBER_TRACKING_RECORD
+  );
 
   if (disabled) {
     return (
@@ -139,6 +170,16 @@ const RecordSignature: React.FC<{
             <AwaitingSignature />
           </span>
         </TempestToolTip>
+        <TableData>
+          <IconButton
+            aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
+            size="small"
+            onClick={() => deleteRecord(memberTrackingRecord.id)}
+            tw="ml-auto mr-3 hover:bg-transparent"
+          >
+            <TempestDeleteIcon />
+          </IconButton>
+        </TableData>
       </div>
     );
   }
@@ -163,7 +204,7 @@ const RecordSignature: React.FC<{
   }
   return (
     <div tw="flex ml-auto">
-      {getSignature(
+      {getAllowedActions(
         'authority',
         memberTrackingRecord,
         'authoritySignedDate',
@@ -171,9 +212,32 @@ const RecordSignature: React.FC<{
         signAuthority,
         enqueueSnackbar
       )}
-      {getSignature('trainee', memberTrackingRecord, 'traineeSignedDate', LoggedInUser, signTrainee, enqueueSnackbar)}
+      {getAllowedActions(
+        'trainee',
+        memberTrackingRecord,
+        'traineeSignedDate',
+        LoggedInUser,
+        signTrainee,
+        enqueueSnackbar
+      )}
+
+      <TableData>
+        <IconButton
+          disabled={
+            !canDeleteAny.granted &&
+            determineActionOnRecord('authority', memberTrackingRecord, 'authoritySignedDate', LoggedInUser) ===
+              'completed'
+          }
+          aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
+          size="small"
+          onClick={() => deleteRecord(memberTrackingRecord.id)}
+          tw="ml-auto mr-3 hover:bg-transparent"
+        >
+          <TempestDeleteIcon />
+        </IconButton>
+      </TableData>
     </div>
   );
 };
 
-export default RecordSignature;
+export { RecordRowActions };
