@@ -213,7 +213,7 @@ test('should create membertrackingrecord if already have membertracking item', a
     memberTrackingItemsGet({ ...testTrainee, memberTrackingItems })
   );
 
-  const { getByRole, findAllByRole, getByText, queryByText, findByRole } = render(<Container />);
+  const { getByRole, findAllByRole, getByText, queryByText } = render(<Container />);
 
   const openDialogTrigger = getByText(/open dialog/i);
   fireEvent.click(openDialogTrigger);
@@ -232,12 +232,9 @@ test('should create membertrackingrecord if already have membertracking item', a
 
   fireEvent.click(addButton);
 
-  // expect the snackbar to be visible
+  await waitForElementToBeRemoved(() => getByRole('progressbar')).catch((error) => console.log(error));
+
   await waitFor(() => queryByText(/a record was successfully added/i));
-
-  const snackbar = await findByRole('alert');
-
-  expect(snackbar).not.toBeNull();
 });
 
 test('should add membertrackingitem and membertrackingrecord', async () => {
@@ -247,7 +244,7 @@ test('should add membertrackingitem and membertrackingrecord', async () => {
     memberTrackingItemsGet({ ...testTrainee, memberTrackingItems })
   );
 
-  const { getByRole, findAllByRole, getByText, queryByText, findByRole } = render(<Container />);
+  const { getByRole, findAllByRole, getByText, queryByText } = render(<Container />);
 
   const openDialogTrigger = getByText(/open dialog/i);
   fireEvent.click(openDialogTrigger);
@@ -265,11 +262,7 @@ test('should add membertrackingitem and membertrackingrecord', async () => {
   const addButton = getByRole('button', { name: 'Add' });
 
   fireEvent.click(addButton);
+  await waitForElementToBeRemoved(() => getByRole('progressbar')).catch((error) => console.log(error));
 
-  // expect the snackbar to be visible
   await waitFor(() => queryByText(/a record was successfully added/i));
-
-  const snackbar = await findByRole('alert');
-
-  expect(snackbar).not.toBeNull();
 });

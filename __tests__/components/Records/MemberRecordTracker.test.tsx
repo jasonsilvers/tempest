@@ -3,7 +3,6 @@ import React from 'react';
 import MemberRecordTracker from '../../../src/components/Records/MemberRecordTracker/MemberRecordTracker';
 import { rest } from 'msw';
 import dayjs from 'dayjs';
-import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';
 import { TrackingItem } from '.prisma/client';
 import { User } from '@prisma/client';
 import { server } from '../../utils/mocks/msw';
@@ -64,7 +63,7 @@ const memberTrackingRecordGet = (memberTrackingRecord) =>
   });
 
 test('should render a record requiring signature - authority signed', async () => {
-  const memberTrackingItems_authSigned: MemberTrackingItemWithAll[] = [
+  const memberTrackingItems_authSigned = [
     {
       isActive: true,
       trackingItemId: 1,
@@ -75,6 +74,7 @@ test('should render a record requiring signature - authority signed', async () =
         {
           id: 1,
           order: 0,
+          createdAt: dayjs().toDate(),
           trackingItemId: 1,
           trackingItem: fireSafetyItem,
           traineeId: '123',
@@ -115,7 +115,7 @@ test('should render a record requiring signature - authority signed', async () =
 });
 
 test('should render a record requiring signature - trainee signed', async () => {
-  const memberTrackingItems_traineeSigned: MemberTrackingItemWithAll[] = [
+  const memberTrackingItems_traineeSigned = [
     {
       isActive: true,
       trackingItemId: 1,
@@ -165,7 +165,7 @@ test('should render a record requiring signature - trainee signed', async () => 
 });
 
 test('should render a record that is done', async () => {
-  const memberTrackingItems_done: MemberTrackingItemWithAll[] = [
+  const memberTrackingItems_done = [
     {
       isActive: true,
       trackingItemId: 1,
@@ -219,7 +219,7 @@ test('should render a record that is done', async () => {
 });
 
 test('should render a record that is coming due', async () => {
-  const memberTrackingItems_upcoming: MemberTrackingItemWithAll[] = [
+  const memberTrackingItems_upcoming = [
     {
       isActive: true,
       trackingItemId: 1,
@@ -274,7 +274,7 @@ test('should render a record that is coming due', async () => {
 });
 
 test('should render a record that is overdue', async () => {
-  const memberTrackingItems_upcoming: MemberTrackingItemWithAll[] = [
+  const memberTrackingItems_upcoming = [
     {
       isActive: true,
       trackingItemId: 1,
@@ -327,7 +327,7 @@ test('should render a record that is overdue', async () => {
 });
 
 test('should sign record as trainee and mark as done', async () => {
-  const memberTrackingItems_upcoming: MemberTrackingItemWithAll[] = [
+  const memberTrackingItems_upcoming = [
     {
       isActive: true,
       trackingItemId: 1,
@@ -352,7 +352,7 @@ test('should sign record as trainee and mark as done', async () => {
     },
   ];
 
-  const memberTrackingItems_Done: MemberTrackingItemWithAll[] = [
+  const memberTrackingItems_Done = [
     {
       ...memberTrackingItems_upcoming[0],
       memberTrackingRecords: [
@@ -379,7 +379,8 @@ test('should sign record as trainee and mark as done', async () => {
 
   await waitFor(() => getByText(/fire/i));
   await waitFor(() => getByText(/completed/i));
-  const signatureButton = getByRole('signature_button');
+  expect(getByText(/signed on/i)).toBeInTheDocument()
+  const signatureButton = getByRole('button', { name: 'signature_button' });
 
   server.use(
     memberTrackingItemsGet(testTrainee, memberTrackingItems_Done),
@@ -405,7 +406,7 @@ test('should sign record as trainee and mark as done', async () => {
   );
 
   fireEvent.click(signatureButton);
-  await waitForElementToBeRemoved(() => getByRole('signature_button'));
+  await waitForElementToBeRemoved(() => getByRole('button', { name: 'signature_button' }));
 
   const doneTab = getByText(/done/i);
 

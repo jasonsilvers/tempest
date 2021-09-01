@@ -46,6 +46,7 @@ const RecordSignatureToolTip: React.FC<IToolTipProps> = ({ traineeSignature, aut
   return (
     <TempestToolTip
       arrow
+      placement={'top-start'}
       TransitionComponent={Zoom}
       TransitionProps={{ timeout: 300 }}
       title={getTitle(traineeSignature, authoritySignature)}

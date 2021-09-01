@@ -1,4 +1,5 @@
 import { MemberTrackingItem } from '@prisma/client';
+import Joi from 'joi';
 const dayjs = require('dayjs');
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../middleware/utils';
@@ -57,6 +58,18 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
   res.status(200).json(memberTrackingItem);
 };
 
+export const memberTrackingItemPutSchema = {
+  body: Joi.object({
+    isActive: Joi.boolean().required(),
+  }),
+  query: Joi.object({
+    slug: Joi.optional(),
+    id: Joi.optional(),
+    trackingItemId: Joi.string().optional(),
+    userId: Joi.string().optional(),
+  }),
+};
+
 export const putMemberTrackingItemAction: IMemberTrackingItemController = async (req, res) => {
   const {
     // Add query for including membertrackingrecords
@@ -83,6 +96,20 @@ export const putMemberTrackingItemAction: IMemberTrackingItemController = async 
 
   const updatedMemberTrackingItem = await updateMemberTrackingItem(trackingItemIdParam, userId, filteredBody);
   res.status(200).json(updatedMemberTrackingItem);
+};
+
+export const memberTrackingItemPostSchema = {
+  body: Joi.object({
+    isActive: Joi.boolean().required(),
+    userId: Joi.string().required(),
+    trackingItemId: Joi.number().required(),
+  }),
+  query: Joi.object({
+    slug: Joi.optional(),
+    id: Joi.optional(),
+    create_member_tracking_record: Joi.boolean().optional(),
+    complete_date: Joi.date().optional(),
+  }),
 };
 
 export const postMemberTrackingItemAction: IMemberTrackingItemController = async (req, res) => {

@@ -1,14 +1,17 @@
 import React, { useMemo } from 'react';
-import { useUser } from '@tron/nextjs-auth-p1';
 import { Header, Link } from './Navigation';
-import { User } from '.prisma/client';
 import { TempestDrawer } from '../../lib/ui';
 import { DashboardIcon, DescriptionIcon, PersonIcon } from '../../assets/Icons';
 import { useQueryClient } from 'react-query';
+import { usePermissions } from '../../hooks/usePermissions';
+import { EFuncAction, EResource } from '../../types/global';
 
 const Navbar: React.FC = () => {
-  const { user } = useUser<User>();
   const queryClient = useQueryClient();
+  const { user, permissionCheck } = usePermissions();
+  const canViewDashboard = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.DASHBOARD);
+  const canViewMyProfile = permissionCheck(user?.role.name, EFuncAction.READ_OWN, EResource.PROFILE);
+  const canCreateGlobalTrackingItem = permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM);
 
   useMemo(() => {
     if (user) {
@@ -16,25 +19,36 @@ const Navbar: React.FC = () => {
     }
   }, [user]);
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <TempestDrawer>
       <Header goToUrl="/">Tempest</Header>
-      {user ? (
-        <div tw="space-y-9">
+      <div tw="space-y-9">
+        {canViewDashboard?.granted ? (
           <Link goToUrl="/Dashboard" icon={<DashboardIcon fontSize="large" />}>
-            <div>Dashboard</div>
+            <div role="navigation" aria-label="dashboard">
+              Dashboard
+            </div>
           </Link>
+        ) : null}
+        {canViewMyProfile?.granted ? (
           <Link goToUrl={`/Profile/${user.id}`} icon={<PersonIcon fontSize="large" />}>
-            <div>My Profile</div>
+            <div role="navigation" aria-label="my-profile">
+              My Profile
+            </div>
           </Link>
+        ) : null}
+        {canCreateGlobalTrackingItem?.granted ? (
           <Link goToUrl="/Trackingitems" icon={<DescriptionIcon fontSize="large" />}>
-            <div>Global Training Catalog</div>
+            <div role="navigation" aria-label="global-training-catalog">
+              Global Training Catalog
+            </div>
           </Link>
-          <Link goToUrl="/Test" icon={<DescriptionIcon fontSize="large" />}>
-            <div>Test</div>
-          </Link>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </TempestDrawer>
   );
 };

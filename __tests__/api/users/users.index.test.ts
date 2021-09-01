@@ -1,5 +1,5 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId, findUsers } from '../../../src/repositories/userRepo';
+import { findUserByDodId, getUsersWithMemberTrackingRecords, findUsers } from '../../../src/repositories/userRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import { testNextApi } from '../../utils/NextAPIUtils';
@@ -34,7 +34,7 @@ test('should return 401 if not authorized', async () => {
   expect(status).toEqual(401);
 });
 test('should return users', async () => {
-  mockMethodAndReturn(findUsers, [userFromDb]);
+  mockMethodAndReturn(getUsersWithMemberTrackingRecords, [userFromDb]);
   const { status, data } = await testNextApi.get(userHandler);
   expect(status).toEqual(200);
   expect(data).toStrictEqual({ users: [userFromDb] });

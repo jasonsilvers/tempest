@@ -7,7 +7,8 @@ import { EResource } from '../../../types/global';
 import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
 import { Permission } from 'accesscontrol';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
 interface ITempestOrganizationIdApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -72,4 +73,4 @@ export const organizationIdApiHandler = async (
   }
 };
 
-export default withErrorHandlingAndAuthorization(organizationIdApiHandler, findUserByDodId);
+export default withTempestHandlers(organizationIdApiHandler, findUserByDodId);

@@ -1,5 +1,5 @@
 import { ELogEventType } from '../types/global';
-import { DBQueryFunctionToReturnUser, NextApiRequestWithAuthorization, withApiAuth } from '@tron/nextjs-auth-p1';
+import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import type { NextApiHandler, NextApiResponse } from 'next';
 import { LoggedInUser } from '../repositories/userRepo';
 import { logFactory } from '../utils/logger';
@@ -7,16 +7,15 @@ import { logFactory } from '../utils/logger';
 // by wrapping every api route with this middleware,
 // we can use helper methods that throw: ex if the user did not give a primary key
 // the error bubbles up to this handler that sends the encoded error message as a response
-export class ApiError extends Error {
+export class NotFoundError extends Error {
   readonly status: number;
-  readonly body: unknown;
   readonly name: string;
 
-  constructor({ status, body }: { status: number; body: unknown }) {
+  constructor() {
     super('ApiError');
-    this.status = status;
-    this.body = body;
-    this.name = 'ApiError';
+    this.status = 404;
+
+    this.name = 'NotFoundError';
   }
 }
 
@@ -68,13 +67,14 @@ export const withErrorHandling =
       }
       await handler(req, res);
     } catch (e) {
-      if (e.name === 'ApiError') {
+      if (e.name === 'NotFoundError') {
         log.error(e);
-        return res.status(500).send('server error');
+        return res.status(404).send({ message: 'The requested entity could not be found' });
       }
 
       if (e.name === 'PermissionError') {
         log.warn(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
+        log.persist(ELogEventType.UNAUTHORIZED, `Req url: ${req.url}, Req method: ${req.method}`);
         return res.status(403).send({ message: 'You do not have the appropriate permissions' });
       }
 
@@ -89,14 +89,6 @@ export const withErrorHandling =
       }
 
       log.trace(`caught error: ${500} ${e}`);
-      return res.status(500).send(e.body);
+      return res.status(500).json({ message: 'There was an internal server error' });
     }
   };
-
-export function withErrorHandlingAndAuthorization(
-  func: NextApiHandler,
-  getUserFunc: DBQueryFunctionToReturnUser,
-  withLogging = true
-) {
-  return withApiAuth(withErrorHandling(func, withLogging), getUserFunc);
-}

@@ -3,7 +3,8 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { findGrants } from '../../../repositories/grantsRepo';
 import { GrantsDTO } from '../../../types/global';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
 const grantsHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse<GrantsDTO>) => {
   if (req.method !== 'GET') {
@@ -15,4 +16,4 @@ const grantsHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>,
   res.status(200).json({ grants });
 };
 
-export default withErrorHandlingAndAuthorization(grantsHandler, findUserByDodId);
+export default withTempestHandlers(grantsHandler, findUserByDodId);

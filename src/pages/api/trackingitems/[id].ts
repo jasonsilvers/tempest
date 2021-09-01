@@ -1,11 +1,12 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../../../repositories/userRepo';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { returnUser } from '../../../repositories/loginRepo';
 import { deleteTrackingItem } from '../../../repositories/trackingItemRepo';
 import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
 async function trackingItemHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,
@@ -36,4 +37,4 @@ async function trackingItemHandler(
   return res.status(200).json(newItem);
 }
 
-export default withErrorHandlingAndAuthorization(trackingItemHandler, returnUser);
+export default withTempestHandlers(trackingItemHandler, returnUser);

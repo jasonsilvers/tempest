@@ -16,6 +16,7 @@ const MemberTrackingItemTable: React.FC<{
   return (
     <Container>
       {/* Map though items and create Table Data Rows */}
+      {memberTrackingItemsQuery.data?.length == 0 ? <div>Nothing to show</div> : null}
       {memberTrackingItemsQuery.data && memberTrackingItemsQuery.isSuccess ? (
         memberTrackingItemsQuery.data?.map((mti) => (
           <MemberTrackingItemRow key={`${mti.userId}${mti.trackingItemId}`} memberTrackingItemId={mti} />

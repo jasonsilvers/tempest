@@ -94,8 +94,18 @@ test('should findUserByIdReturnAllIncludes', async () => {
   const spy = prisma.user.findUnique;
   await findUserByIdReturnAllIncludes('1234');
   expect(spy).toHaveBeenCalledWith({
-    where: { id: '1234' },
+    where: {
+      id: '1234',
+    },
     include: {
+      role: true,
+      organization: true,
+      traineeTrackingRecords: {
+        include: {
+          trackingItem: true,
+        },
+      },
+      authorityTrackingRecords: true,
       memberTrackingItems: {
         include: {
           memberTrackingRecords: {

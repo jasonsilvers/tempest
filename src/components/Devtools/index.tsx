@@ -6,14 +6,11 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
 import { usePermissions } from '../../hooks/usePermissions';
 import { ERole, EUri } from '../../types/global';
-import { LoggedInUser } from '../../repositories/userRepo';
+import { UserWithAll } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
 import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
 import { UsersDTO, RolesDTO, OrgsDTO } from '../../types/global';
-import faker from 'faker';
-import { TrackingItem } from '@prisma/client';
-import { useAddTrackingItem } from '../../hooks/api/trackingItem';
 const dayjs = require('dayjs');
 
 const Data = tw.div`font-light text-gray-400`;
@@ -22,7 +19,7 @@ type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 
 const UsersList = () => {
   const queryClient = useQueryClient();
-  const usersListQuery = useQuery<LoggedInUser[]>('users', () =>
+  const usersListQuery = useQuery<UserWithAll[]>('users', () =>
     axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.users)
   );
 
@@ -41,19 +38,17 @@ const UsersList = () => {
       },
     }
   );
-  const { mutate: create } = useAddTrackingItem();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const updateUsersOrg = (event: OrgFormEvent, user: LoggedInUser) => {
+  const updateUsersOrg = (event: OrgFormEvent, user: UserWithAll) => {
     const selectedOrgId = event.target.value;
 
     if (selectedOrgId !== user.organizationId) {
-      const { organization, role, ...userToUpdate } = user; // eslint-disable-line
-      const updatedUser: User = {
-        ...userToUpdate,
+      const updatedUser = {
+        id: user.id,
         organizationId: selectedOrgId,
-      };
+      } as User;
       mutateUser.mutate(updatedUser, {
         onSuccess: () => {
           enqueueSnackbar('Organization Changed', { variant: 'success' });
@@ -62,25 +57,14 @@ const UsersList = () => {
     }
   };
 
-  const handleCreateRandomTrackingItem = () => {
-    const newTrackingItem = {
-      title: faker.commerce.productAdjective() + ' ' + faker.commerce.productName() + ' training',
-      description: faker.commerce.productDescription(),
-      interval: faker.datatype.number({ min: 1, max: 365 }),
-    } as TrackingItem;
-
-    create(newTrackingItem);
-  };
-
-  const updateUsersRole = (event: RoleFormEvent, user: LoggedInUser) => {
+  const updateUsersRole = (event: RoleFormEvent, user: UserWithAll) => {
     const selectedRoleId = event.target.value;
 
-    if (selectedRoleId !== user.role.id) {
-      const { organization, role, ...userToUpdate } = user; // eslint-disable-line
-      const updatedUser: User = {
-        ...userToUpdate,
+    if (selectedRoleId !== user.role?.id) {
+      const updatedUser = {
+        id: user.id,
         roleId: selectedRoleId,
-      };
+      } as User;
 
       mutateUser.mutate(updatedUser, {
         onSuccess: () => {
@@ -135,7 +119,7 @@ const UsersList = () => {
                     <Select
                       onChange={(event: RoleFormEvent) => updateUsersRole(event, user)}
                       tw="text-gray-400"
-                      value={user.role.id}
+                      value={user.role?.id}
                     >
                       {rolesListQuery.data.map((role) => (
                         <MenuItem key={role.id} value={role.id}>
@@ -150,10 +134,6 @@ const UsersList = () => {
           </div>
         );
       })}
-      <h2 tw="text-xl pt-4">Create Tracking Item </h2>
-      <Button variant="outlined" onClick={handleCreateRandomTrackingItem}>
-        Create
-      </Button>
     </div>
   );
 };

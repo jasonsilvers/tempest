@@ -11,6 +11,14 @@ export const findUserByIdReturnAllIncludes = async (userId: string) => {
       id: userId,
     },
     include: {
+      role: true,
+      organization: true,
+      traineeTrackingRecords: {
+        include: {
+          trackingItem: true,
+        },
+      },
+      authorityTrackingRecords: true,
       memberTrackingItems: {
         include: {
           memberTrackingRecords: {
@@ -93,6 +101,25 @@ export const findUsers = async () => {
  * @returns User[]
  */
 export const getUsers = async () => prisma.user.findMany();
+
+export const getUsersWithMemberTrackingRecords = async () => {
+  return prisma.user.findMany({
+    include: {
+      role: true,
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: {
+            take: 2,
+            orderBy: {
+              order: 'desc',
+            },
+          },
+        },
+      },
+    },
+  });
+};
 
 /**
  * Post user method to create the PSQL db though the prisma client

@@ -1,9 +1,11 @@
 import { User } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { Permission } from 'accesscontrol';
+import Joi from 'joi';
 import { NextApiResponse } from 'next';
 import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { findUserByDodId, findUserById, updateUser, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
@@ -18,6 +20,22 @@ async function userWithinOrgOrChildOrg(reqUser: LoggedInUser, user: User) {
 
   return false;
 }
+
+const userPutSchema = {
+  put: {
+    body: Joi.object({
+      id: Joi.string().optional().allow(null),
+      email: Joi.string().email().optional().allow(null),
+      roleId: Joi.number().optional().allow(null),
+      organizationId: Joi.string().optional().allow(null),
+      tags: Joi.array().items(Joi.string()).optional().allow(null),
+      rank: Joi.string().optional().allow(null),
+      afsc: Joi.string().optional().allow(null),
+      dutyTitle: Joi.string().optional().allow(null),
+      address: Joi.string().optional().allow(null),
+    }),
+  },
+};
 
 async function userQueryHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,
@@ -79,4 +97,4 @@ async function userQueryHandler(
   }
 }
 
-export default withErrorHandlingAndAuthorization(userQueryHandler, findUserByDodId);
+export default withTempestHandlers(userQueryHandler, findUserByDodId, userPutSchema);

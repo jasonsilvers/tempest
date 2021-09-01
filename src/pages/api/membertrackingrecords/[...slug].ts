@@ -1,8 +1,16 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { postMemberTrackingRecordsAction } from '../../../controllers/memberTrackingRecordsController';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import {
+  memberTrackingRecordPostSchema,
+  postMemberTrackingRecordsAction,
+} from '../../../controllers/memberTrackingRecordsController';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+
+const memberTrackingRecordSchema = {
+  post: memberTrackingRecordPostSchema,
+};
 
 async function memberTrackingRecordSlugHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,
@@ -17,4 +25,4 @@ async function memberTrackingRecordSlugHandler(
   return postMemberTrackingRecordsAction(req, res);
 }
 
-export default withErrorHandlingAndAuthorization(memberTrackingRecordSlugHandler, findUserByDodId);
+export default withTempestHandlers(memberTrackingRecordSlugHandler, findUserByDodId, memberTrackingRecordSchema);

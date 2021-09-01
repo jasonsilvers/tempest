@@ -17,6 +17,11 @@ import ToolTip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import Paper from '@material-ui/core/Paper';
 import SearchBar from '@snekcode/mui-search-bar';
+import Menu from '@material-ui/core/Menu';
+import TempestMenuItem from '@material-ui/core/MenuItem';
+import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
+import React from 'react';
+import { useRouter } from 'next/router';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -38,10 +43,17 @@ const DialogTitle = tw(MuiDialogTitle)`pb-1`;
 const DialogContent = tw(MuiDialogContent)`pb-1`;
 const DialogActions = tw(MuiDialogActions)``;
 const DialogButton = tw(Button)`w-32 normal-case bg-primary text-white`;
+const PrimaryButton = tw(Button)`w-32 normal-case bg-primary text-white hover:bg-secondary`;
+const SecondaryButton = tw(Button)`w-32 rounded-lg normal-case bg-secondary text-white hover:bg-primary`;
 const Dialog = tw(MuiDialog)``;
 
 const TempestOverlay = tw.div`bg-white absolute top-0 left-0 w-full h-full backdrop-filter backdrop-blur-3xl opacity-50 z-10`;
 const TempestSkeleton = tw.div`border border-gray-300 shadow rounded-md`;
+const ProgressLayout = tw.div`absolute top-2 right-2`;
+
+const LoadingSpinner = ({ size = '24px' }: { size?: string }) => {
+  return <CircularProgress size={size} color="secondary" />;
+};
 
 const LoadingOverlay = () => {
   return (
@@ -61,6 +73,51 @@ const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} c
   }
 `;
 
+export default function TempestPopMenu({ userId }: { userId: string }) {
+  const router = useRouter();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuItemClick = () => {
+    router.push(`/Profile/${userId}`);
+  };
+
+  return (
+    <div>
+      <IconButton aria-label={`member-popup-menu`} size="small" onClick={handleClick} tw="hover:bg-transparent">
+        <MoreHorizIcon />
+      </IconButton>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <TempestMenuItem aria-label="view-member-profile" onClick={handleClose}>
+          <span onClick={handleMenuItemClick}>View Member Profile</span>
+        </TempestMenuItem>
+      </Menu>
+    </div>
+  );
+}
+
 const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="date" {...props} />)`
   & .MuiInputBase-input {
     padding: 2px;
@@ -75,7 +132,11 @@ const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="dat
   }
 `;
 
+const TempestDeleteIcon = tw(DeleteIcon)`text-xl`;
+
 export {
+  TempestPopMenu,
+  TempestMenuItem,
   TempestDrawer,
   IconButton,
   CircularProgress,
@@ -85,15 +146,20 @@ export {
   DialogActions,
   DialogButton,
   Button,
+  PrimaryButton,
+  SecondaryButton,
   Dialog,
   TextField,
   Autocomplete,
   LoadingOverlay,
+  LoadingSpinner,
+  ProgressLayout,
   Fab,
   Drawer,
   TempestSkeleton,
   TempestToolTip,
   TempestDatePicker,
+  TempestDeleteIcon,
   Zoom,
   SearchBar,
 };

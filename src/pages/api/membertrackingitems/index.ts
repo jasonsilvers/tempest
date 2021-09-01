@@ -8,8 +8,11 @@ import {
   postMemberTrackingItemAction,
   deleteMemberTrackingItemAction,
   EMemberTrackingItemIncludes,
+  memberTrackingItemPostSchema,
+  memberTrackingItemPutSchema,
 } from '../../../controllers/memberTrackingItemsController';
-import { MethodNotAllowedError, withErrorHandlingAndAuthorization } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 export interface ITempestMemberTrackingItemApiRequest<T> extends NextApiRequestWithAuthorization<T> {
   query: {
     userId: string;
@@ -19,6 +22,11 @@ export interface ITempestMemberTrackingItemApiRequest<T> extends NextApiRequestW
   };
   body: MemberTrackingItem;
 }
+
+const memberTrackingItemSchema = {
+  post: memberTrackingItemPostSchema,
+  put: memberTrackingItemPutSchema,
+};
 
 async function memberTrackingItemHandler(
   req: ITempestMemberTrackingItemApiRequest<LoggedInUser>,
@@ -48,4 +56,4 @@ async function memberTrackingItemHandler(
   }
 }
 
-export default withErrorHandlingAndAuthorization(memberTrackingItemHandler, findUserByDodId);
+export default withTempestHandlers(memberTrackingItemHandler, findUserByDodId, memberTrackingItemSchema);

@@ -1,14 +1,16 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
-import { findMemberTrackingRecordById } from '../../../repositories/memberTrackingRepo';
+import {
+  countMemberTrackingRecordsForMemberTrackingItem,
+  deleteMemberTrackingItem,
+  deleteMemberTrackingRecord,
+  findMemberTrackingRecordById,
+} from '../../../repositories/memberTrackingRepo';
 import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
-import {
-  MethodNotAllowedError,
-  PermissionError,
-  withErrorHandlingAndAuthorization,
-} from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
 interface ITempestMemberTrackingRecordApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -30,15 +32,18 @@ async function memberTrackingRecordIdHandler(
   const memberTrackingRecordId = parseInt(id);
 
   const ac = await getAc();
+  const memberTrackingRecord = await findMemberTrackingRecordById(memberTrackingRecordId, INCLUDE_TRACKING_ITEM);
+
+  if (!memberTrackingRecord) {
+    throw new NotFoundError();
+  }
 
   switch (method) {
     case 'GET': {
-      const memberTrackingRecord = await findMemberTrackingRecordById(memberTrackingRecordId, INCLUDE_TRACKING_ITEM);
-
       const permission =
         req.user.id !== memberTrackingRecord.traineeId
-          ? ac.can(req.user.role.name).readAny(EResource.USER)
-          : ac.can(req.user.role.name).readOwn(EResource.USER);
+          ? ac.can(req.user.role.name).readAny(EResource.MEMBER_TRACKING_RECORD)
+          : ac.can(req.user.role.name).readOwn(EResource.MEMBER_TRACKING_RECORD);
 
       if (!permission.granted) {
         throw new PermissionError();
@@ -47,9 +52,32 @@ async function memberTrackingRecordIdHandler(
       return res.status(200).json(memberTrackingRecord);
     }
 
+    case 'DELETE': {
+      const permission =
+        req.user.id !== memberTrackingRecord.traineeId
+          ? ac.can(req.user.role.name).deleteAny(EResource.MEMBER_TRACKING_RECORD)
+          : ac.can(req.user.role.name).deleteOwn(EResource.MEMBER_TRACKING_RECORD);
+
+      if (!permission.granted) {
+        throw new PermissionError();
+      }
+      const deletedRecord = await deleteMemberTrackingRecord(memberTrackingRecordId);
+
+      const memberTrackingRecordCount = await countMemberTrackingRecordsForMemberTrackingItem(
+        memberTrackingRecord.trackingItemId,
+        memberTrackingRecord.traineeId
+      );
+
+      if (memberTrackingRecordCount._count.trackingItemId === 0) {
+        await deleteMemberTrackingItem(memberTrackingRecord.trackingItemId, memberTrackingRecord.traineeId);
+      }
+
+      return res.status(200).json(deletedRecord);
+    }
+
     default:
       throw new MethodNotAllowedError(method);
   }
 }
 
-export default withErrorHandlingAndAuthorization(memberTrackingRecordIdHandler, findUserByDodId);
+export default withTempestHandlers(memberTrackingRecordIdHandler, findUserByDodId);

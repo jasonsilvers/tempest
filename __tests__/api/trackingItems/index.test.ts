@@ -52,7 +52,7 @@ test('should return 403 if incorrect permissions - GET', async () => {
   mockMethodAndReturn(findUserByDodId, {
     id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
-    role: { id: '22', name: 'member' },
+    role: { id: '22', name: 'norole' },
     organizationId: '2',
   });
   const { status } = await testNextApi.get(trackingItemHandler);
@@ -71,6 +71,15 @@ test('should create new tracking item', async () => {
   expect(status).toBe(200);
   expect(data).toStrictEqual({ ...newTrackingItem, id: newTrackingItemId });
 });
+
+test('should return 400 if request body is not valid', async () => {
+  mockMethodAndReturn(createTrackingItem, { ...newTrackingItem, id: newTrackingItemId });
+  const { status, data } = await testNextApi.post(trackingItemHandler, { body: { ...newTrackingItem, title: 329 } });
+
+  expect(status).toBe(400);
+  expect(data).toStrictEqual({ message: 'Bad Request' });
+});
+
 test('should return 403 if incorrect permissions - POST', async () => {
   mockMethodAndReturn(findUserByDodId, {
     id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',

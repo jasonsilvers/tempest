@@ -51,6 +51,7 @@ test('POST - should create member tracking record', async () => {
   expect(status).toBe(200);
   expect(data).toStrictEqual(returnedMemberTrackingRecordDB);
 });
+
 test('POST - should return 403 if incorrect permissions', async () => {
   mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
