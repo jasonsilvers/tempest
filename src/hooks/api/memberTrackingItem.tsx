@@ -9,14 +9,18 @@ import { EUri } from '../../types/global';
 const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
 
 export const mtiQueryKeys = {
-  memberTrackingItems: (userId: string) => ['membertrackingitems', userId],
-  memberTrackingItem: (userId: string, trackingItemId: number) => ['membertrackingitem', userId, trackingItemId],
+  memberTrackingItems: (userId: string) => [MEMBER_TRACKING_ITEM_RESOURCE, userId],
+  memberTrackingItem: (userId: string, trackingItemId: number) => [
+    MEMBER_TRACKING_ITEM_RESOURCE,
+    userId,
+    trackingItemId,
+  ],
 };
 
-export const fetchUserWithMemberTrackingItems = async (userId: string): Promise<UserWithAll> => {
+export const fetchMemberTrackingItems = async (userId: string): Promise<UserWithAll> => {
   const { data } = await axios.get(EUri.USERS + `${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}`);
 
-  return data;
+  return data.memberTrackingItems;
 };
 
 /**
@@ -27,11 +31,8 @@ export const fetchUserWithMemberTrackingItems = async (userId: string): Promise<
 const useMemberTrackingItems = (userId: string) => {
   return useQuery<UserWithAll, unknown, MemberTrackingItem[]>(
     mtiQueryKeys.memberTrackingItems(userId),
-    () => fetchUserWithMemberTrackingItems(userId),
+    () => fetchMemberTrackingItems(userId),
     {
-      select: (user) => {
-        return user.memberTrackingItems;
-      },
       enabled: !!userId,
     }
   );

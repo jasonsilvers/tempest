@@ -61,7 +61,7 @@ export const memberTrackingRecordPostSchema = {
     authoritySignedDate: Joi.date().optional().allow(null),
     authorityId: Joi.string().optional().allow(null),
     createdAt: Joi.date().optional(),
-    completedDate: Joi.date().optional(),
+    completedDate: Joi.date().optional().allow(null),
     order: Joi.number().optional(),
     traineeId: Joi.string().optional(),
     trackingItemId: Joi.number().optional(),

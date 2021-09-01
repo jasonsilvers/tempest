@@ -11,14 +11,10 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../../../repositories/userRepo';
 import { useSnackbar } from 'notistack';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
-import { DialogContent, DialogTitle, IconButton, TempestDeleteIcon } from '../../../lib/ui';
+import { DialogContent, DialogTitle } from '../../../lib/ui';
 import { getInterval } from '../../../utils/DaysToString';
-import {
-  useDeleteMemberTrackingRecord,
-  useMemberTrackingRecord,
-  useUpdateMemberTrackingRecord,
-} from '../../../hooks/api/memberTrackingRecord';
-import RecordSignature from '../Signature/RecordSignature';
+import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
+import { RecordRowActions } from '../Actions/RecordSignature';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
@@ -71,7 +67,6 @@ const RecordRow: React.FC<{
   const { activeCategory, increaseCategoryCount, categories } = useMemberItemTrackerContext();
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
   const completionDate = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
-  const { mutate: deleteRecord } = useDeleteMemberTrackingRecord();
   const { user } = useUser<LoggedInUser>();
   const { enqueueSnackbar } = useSnackbar();
   const [modalState, setModalState] = useState({ open: false, date: null });
@@ -165,27 +160,21 @@ const RecordRow: React.FC<{
             <>
               <span tw={'opacity-40'}>Due: </span>
               <span>
-                {dayjs(trackingRecordQuery.data?.completedDate).add(trackingItem?.interval, 'days').format('DD MMM YY')}
+                {trackingRecordQuery.data?.completedDate
+                  ? dayjs(trackingRecordQuery.data?.completedDate)
+                      .add(trackingItem?.interval, 'days')
+                      .format('DD MMM YY')
+                  : 'No Date'}
               </span>
             </>
           </TableData>
         </div>
-        <RecordSignature
+        <RecordRowActions
           memberTrackingRecord={trackingRecordQuery.data}
           authoritySignedDate={trackingRecordQuery.data.authoritySignedDate}
           traineeSignedDate={trackingRecordQuery.data.traineeSignedDate}
           disabled={!trackingRecordQuery.data.completedDate}
         />
-        <TableData>
-          <IconButton
-            aria-label={`delete-tracking-record-${trackingRecordQuery.data?.id}`}
-            size="small"
-            onClick={() => deleteRecord(memberTrackingRecordId)}
-            tw="ml-auto mr-3 hover:bg-transparent"
-          >
-            <TempestDeleteIcon />
-          </IconButton>
-        </TableData>
       </TableRow>
       <ConfirmDialog open={modalState.open} handleNo={handleNo} handleYes={handleYes}>
         <DialogTitle>Proceed?</DialogTitle>

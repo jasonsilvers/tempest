@@ -49,6 +49,9 @@ export default function withValidation(config?: Configuration): ValidationFuncti
         }
 
         const schema = schemas[req.method.toLowerCase()][field];
+        
+        const test = schema && schema.required().validate(req[field]).error;
+        console.log(test)
 
         return schema && schema.required().validate(req[field]).error;
 
