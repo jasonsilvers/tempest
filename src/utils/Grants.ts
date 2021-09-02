@@ -186,6 +186,15 @@ const organizationGrants: Grants[] = [
   },
 ];
 
+const mattermostGrants: Grants[] = [
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.MATTERMOST,
+    role: ERole.ADMIN,
+  },
+];
+
 const uploadGrants: Grants[] = [
   {
     action: EAction.CREATE_ANY,
@@ -212,7 +221,7 @@ const trackingItemGrants: Grants[] = [
     action: EAction.READ_ANY,
     attributes: '*',
     resource: EResource.TRACKING_ITEM,
-    role: ERole.MEMBER
+    role: ERole.MEMBER,
   },
   {
     action: EAction.CREATE_ANY,
@@ -223,6 +232,7 @@ const trackingItemGrants: Grants[] = [
 ];
 
 export const grants: Grants[] = [
+  ...mattermostGrants,
   ...pageGrants,
   ...memberTrackingItemGrants,
   ...userGrants,

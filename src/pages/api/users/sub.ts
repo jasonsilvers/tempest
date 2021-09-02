@@ -4,7 +4,7 @@ import { User } from '@prisma/client';
 import { findUserById, updateTempestUserFromCommonApi } from '../../../repositories/userRepo';
 import { IncomingHttpHeaders } from 'http';
 import signatureRequired from '../../../middleware/signatureRequired';
-import { getPersonFromCommonApiById } from '../../../repositories/common/commonRepo';
+import { getPersonFromCommonApi } from '../../../repositories/common/commonRepo';
 
 /** Subscription end point for Common api
  * How common API works
@@ -35,7 +35,7 @@ export const userSubscriptionHandler = async (
       return;
     }
 
-    const person = await getPersonFromCommonApiById(id);
+    const person = await getPersonFromCommonApi(id);
 
     updateTempestUserFromCommonApi(person, tempestUser);
   });

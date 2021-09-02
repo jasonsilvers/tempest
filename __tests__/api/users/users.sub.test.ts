@@ -5,7 +5,7 @@ import verifySignature from '../../../src/utils/Crypto';
 import { server } from '../../utils/mocks/msw';
 import { rest } from 'msw';
 import { findUserById, updateTempestUserFromCommonApi } from '../../../src/repositories/userRepo';
-import { getPersonFromCommonApiById } from '../../../src/repositories/common/commonRepo';
+import { getPersonFromCommonApi } from '../../../src/repositories/common/commonRepo';
 
 jest.mock('../../../src/utils/Crypto');
 jest.mock('../../../src/repositories/userRepo');
@@ -37,7 +37,7 @@ describe('User Subscription Endpoint Tests', () => {
     // verify signature is tested in the signatureRequired.test.ts
     mockMethodAndReturn(verifySignature, true);
     mockMethodAndReturn(updateTempestUserFromCommonApi, commonPerson);
-    mockMethodAndReturn(getPersonFromCommonApiById, commonPerson);
+    mockMethodAndReturn(getPersonFromCommonApi, commonPerson);
     mockMethodAndReturn(findUserById, tempestUser);
 
     server.use(
@@ -67,7 +67,7 @@ describe('User Subscription Endpoint Tests', () => {
     // verify signature is tested in the signatureRequired.test.ts
     mockMethodAndReturn(verifySignature, true);
     mockMethodAndReturn(findUserById, null);
-    mockMethodAndReturn(getPersonFromCommonApiById, commonPerson);
+    mockMethodAndReturn(getPersonFromCommonApi, commonPerson);
     mockMethodAndReturn(updateTempestUserFromCommonApi, commonPerson);
 
     server.use(
@@ -84,7 +84,7 @@ describe('User Subscription Endpoint Tests', () => {
     expect(findUserById).toBeCalledTimes(1);
     //verify that the user was not updated
     expect(updateTempestUserFromCommonApi).toBeCalledTimes(0);
-    expect(getPersonFromCommonApiById).toBeCalledTimes(0);
+    expect(getPersonFromCommonApi).toBeCalledTimes(0);
     expect(status).toBe(202);
     expect(data.message).toBe('Got It');
   });
