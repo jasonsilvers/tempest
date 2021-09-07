@@ -5,12 +5,11 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
 import { usePermissions } from '../../hooks/usePermissions';
-import { ERole, EUri } from '../../types/global';
 import { UserWithAll } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
 import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
-import { UsersDTO, RolesDTO, OrgsDTO } from '../../types/global';
+import { UsersDTO, RolesDTO, OrgsDTO, ERole, EUri } from '../../types/global';
 const dayjs = require('dayjs');
 
 const Data = tw.div`font-light text-gray-400`;

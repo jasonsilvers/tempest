@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
 import React from 'react';
-import MemberRecordTracker from '../../../src/components/Records/MemberRecordTracker/MemberRecordTracker';
+import MemberItemTracker from '../../../src/components/Records/MemberRecordTracker/MemberItemTracker';
 import { rest } from 'msw';
 import dayjs from 'dayjs';
 import { TrackingItem } from '.prisma/client';
@@ -96,12 +96,12 @@ test('should render a record requiring signature - authority signed', async () =
   );
 
   const { getByText, getByRole } = render(
-    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
       <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
-    </MemberRecordTracker>
+    </MemberItemTracker>
   );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
@@ -147,12 +147,12 @@ test('should render a record requiring signature - trainee signed', async () => 
   );
 
   const { getByText, getByRole } = render(
-    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
       <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
-    </MemberRecordTracker>
+    </MemberItemTracker>
   );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
@@ -197,12 +197,12 @@ test('should render a record that is done', async () => {
   );
 
   const { getByText } = render(
-    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
       <Tab category={ECategories.DONE}>Done</Tab>
-    </MemberRecordTracker>
+    </MemberItemTracker>
   );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
@@ -253,11 +253,11 @@ test('should render a record that is coming due', async () => {
   );
 
   const { getByText } = render(
-    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
-    </MemberRecordTracker>
+    </MemberItemTracker>
   );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
@@ -306,11 +306,11 @@ test('should render a record that is overdue', async () => {
   );
 
   const { getByText } = render(
-    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
-    </MemberRecordTracker>
+    </MemberItemTracker>
   );
 
   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
@@ -368,18 +368,18 @@ test('should sign record as trainee and mark as done', async () => {
   );
 
   const { getByText, getByRole, queryByText } = render(
-    <MemberRecordTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
       <Tab category={ECategories.DONE}>Done</Tab>
       <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
-    </MemberRecordTracker>
+    </MemberItemTracker>
   );
 
   await waitFor(() => getByText(/fire/i));
   await waitFor(() => getByText(/completed/i));
-  expect(getByText(/signed on/i)).toBeInTheDocument()
+  expect(getByText(/signed on/i)).toBeInTheDocument();
   const signatureButton = getByRole('button', { name: 'signature_button' });
 
   server.use(

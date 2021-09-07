@@ -14,7 +14,7 @@ const Address = tw(Base)``;
 const AFSC = tw(Base)`w-16`;
 const DutyTitle = tw(Base)``;
 
-const HeaderUser: React.FC<{ user: User }> = ({ user }) => {
+const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
   return user ? (
     <>
       <div tw="flex items-center">
@@ -44,4 +44,4 @@ const HeaderUser: React.FC<{ user: User }> = ({ user }) => {
   );
 };
 
-export default HeaderUser;
+export { ProfileHeader };

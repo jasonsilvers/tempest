@@ -5,8 +5,7 @@ import { CancelIcon, CheckCircleIcon, HighlightOffIcon, WarningIcon } from '../a
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import { useUsers } from '../hooks/api/users';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getStatus } from '../utils/Status';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../types/global';

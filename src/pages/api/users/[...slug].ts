@@ -22,6 +22,10 @@ async function userSlugHandler(
     method,
   } = req;
 
+  if (method !== 'GET') {
+    throw new MethodNotAllowedError(method);
+  }
+
   const userId = slug[0];
   const resource = slug[1];
 
@@ -29,37 +33,29 @@ async function userSlugHandler(
 
   const ac = await getAc();
 
-  switch (method) {
-    case 'GET': {
-      const permission =
-        userId !== req.user.id
-          ? ac.can(req.user.role.name).readAny(EResource.USER)
-          : ac.can(req.user.role.name).readOwn(EResource.USER);
+  const permission =
+    userId !== req.user.id
+      ? ac.can(req.user.role.name).readAny(EResource.USER)
+      : ac.can(req.user.role.name).readOwn(EResource.USER);
 
-      if (!permission.granted) {
-        return permissionDenied(res);
-      }
-
-      let user: UserWithMemberTrackingItems;
-
-      if (resource === EUserResources.MEMBER_TRACKING_ITEMS) {
-        user = await findUserByIdWithMemberTrackingItems(
-          userId,
-          includesQuery.includes(EUserIncludes.TRACKING_ITEMS) ? EUserIncludes.TRACKING_ITEMS : null
-        );
-      }
-
-      if (!user) {
-        return recordNotFound(res);
-      }
-
-      res.status(200).json(user);
-      break;
-    }
-
-    default:
-      throw new MethodNotAllowedError(method);
+  if (!permission.granted) {
+    return permissionDenied(res);
   }
+
+  let user: UserWithMemberTrackingItems;
+
+  if (resource === EUserResources.MEMBER_TRACKING_ITEMS) {
+    user = await findUserByIdWithMemberTrackingItems(
+      userId,
+      includesQuery.includes(EUserIncludes.TRACKING_ITEMS) ? EUserIncludes.TRACKING_ITEMS : null
+    );
+  }
+
+  if (!user) {
+    return recordNotFound(res);
+  }
+
+  res.status(200).json(user);
 }
 
 export default withTempestHandlers(userSlugHandler, findUserByDodId);
