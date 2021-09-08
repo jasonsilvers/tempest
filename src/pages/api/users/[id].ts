@@ -59,7 +59,6 @@ async function userQueryHandler(
 
       let permission: Permission;
 
-      //TODO: Maybe turn this into a reusable function
       if (req.user.id !== userId) {
         if (await userWithinOrgOrChildOrg(req.user, user)) {
           permission = ac.can(req.user.role.name).readAny(EResource.USER);

@@ -12,9 +12,9 @@ import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/Add
 import { SecondaryButton } from '../../lib/ui';
 import tw from 'twin.macro';
 import { User } from '@prisma/client';
-import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberRecordTracker';
+import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberItemTracker';
 import Tab from '../../components/Records/MemberRecordTracker/Tab';
-import HeaderUser from '../../components/Records/ProfileHeader';
+import { ProfileHeader } from '../../components/Records/ProfileHeader';
 
 const ButtonContainer = tw.div`fixed right-10 top-5 border`;
 
@@ -47,7 +47,7 @@ const Profile: React.FC<{ member: User }> = ({ member }) => {
 
   return (
     <div tw="relative min-w-min max-width[1440px]">
-      <HeaderUser user={member} />
+      <ProfileHeader user={member} />
       <MemberItemTracker title="Training in Progress" userId={userId}>
         <Tab category={ECategories.ALL}>All</Tab>
         <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
@@ -64,7 +64,7 @@ const Profile: React.FC<{ member: User }> = ({ member }) => {
       <ButtonContainer>
         <SecondaryButton
           size="medium"
-          tw='italic'
+          tw="italic"
           variant="contained"
           onClick={() => {
             setAddNewModal(true);

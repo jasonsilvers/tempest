@@ -31,6 +31,10 @@ export const organizationIdApiHandler = async (
     query: { id, include },
   } = req;
 
+  if (method !== 'GET') {
+    throw new MethodNotAllowedError(method);
+  }
+
   const includesQuery = getIncludesQueryArray(include);
 
   const ac = await getAc();
@@ -44,33 +48,25 @@ export const organizationIdApiHandler = async (
     return recordNotFound(res);
   }
 
-  switch (method) {
-    case 'GET': {
-      let permission: Permission;
+  let permission: Permission;
 
-      if (id !== req.user.organizationId) {
-        const isChild = isOrgChildOf(id, req.user.organizationId);
-        if (isChild) {
-          permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
-        } else {
-          permission = ac.can(req.user.role.name).readAny(EResource.ORGANIZATION);
-        }
-      } else {
-        permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
-      }
-
-      if (!permission.granted) {
-        return permissionDenied(res);
-      }
-
-      res.status(200);
-      res.json(organization);
-      break;
+  if (id !== req.user.organizationId) {
+    const isChild = isOrgChildOf(id, req.user.organizationId);
+    if (isChild) {
+      permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
+    } else {
+      permission = ac.can(req.user.role.name).readAny(EResource.ORGANIZATION);
     }
-    // If this end point is hit with anything other than GET or PUT return a 405 error
-    default:
-      throw new MethodNotAllowedError(method);
+  } else {
+    permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
   }
+
+  if (!permission.granted) {
+    return permissionDenied(res);
+  }
+
+  res.status(200);
+  res.json(organization);
 };
 
 export default withTempestHandlers(organizationIdApiHandler, findUserByDodId);

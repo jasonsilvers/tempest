@@ -32,7 +32,6 @@ const AdjustedOutlinedInput: React.FC<OutlinedInputProps> = (props) => (
 );
 
 //Move the dialog to the left to account for the sidebar
-//TODO: Might need to change this based on the sidebar
 const Paper = tw.div`ml-80 px-5`;
 
 const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClose, isOpen }) => {

@@ -40,7 +40,6 @@ const TableData = tw.div`pr-3 font-size[12px] flex[0 0 auto] pb-0`;
 const StyledDeleteIcon = tw(DeleteIcon)`text-xl`;
 
 //Move the dialog to the left to account for the sidebar
-//TODO: Might need to change this based on the sidebar
 const Paper = tw.div`ml-80`;
 
 const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = ({ handleClose, forMemberId }) => {
@@ -120,7 +119,6 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
         <Autocomplete
           id="tracking-items-dropdown"
           //This is a hack to get the input box to clear after selecting an option
-          //TODO: Figure out a better way to do this
           key={dayjs().toISOString()}
           options={trackingItemOptions}
           getOptionLabel={(options) => options.title}

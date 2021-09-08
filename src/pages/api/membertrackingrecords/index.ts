@@ -19,25 +19,23 @@ async function memberTrackingRecordIndexHandler(
 ) {
   const { body, method } = req;
 
+  if (method !== 'POST') {
+    throw new MethodNotAllowedError(method);
+  }
+
   const ac = await getAc();
 
-  switch (method) {
-    case 'POST': {
-      const permission =
-        req.user.id !== body.traineeId
-          ? ac.can(req.user.role.name).createAny(EResource.MEMBER_TRACKING_RECORD)
-          : ac.can(req.user.role.name).createOwn(EResource.MEMBER_TRACKING_RECORD);
+  const permission =
+    req.user.id !== body.traineeId
+      ? ac.can(req.user.role.name).createAny(EResource.MEMBER_TRACKING_RECORD)
+      : ac.can(req.user.role.name).createOwn(EResource.MEMBER_TRACKING_RECORD);
 
-      if (!permission.granted) {
-        return permissionDenied(res);
-      }
-
-      const newMemberTrackingRecord = await createMemberTrackingRecord(body);
-      return res.status(200).json(newMemberTrackingRecord);
-    }
-    default:
-      throw new MethodNotAllowedError(method);
+  if (!permission.granted) {
+    return permissionDenied(res);
   }
+
+  const newMemberTrackingRecord = await createMemberTrackingRecord(body);
+  return res.status(200).json(newMemberTrackingRecord);
 }
 
 export default withTempestHandlers(memberTrackingRecordIndexHandler, findUserByDodId, memberTrackingRecordSchema);

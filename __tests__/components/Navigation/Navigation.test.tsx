@@ -23,6 +23,4 @@ test('should render the Link comp with white colors', () => {
   const link = getByText(/Tempest/);
 
   expect(link);
-  //TODO: fix this with dynamic page routes
-  // expect(link.style.color).toBe('white');
 });

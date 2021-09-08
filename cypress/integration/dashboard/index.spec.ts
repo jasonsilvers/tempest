@@ -11,7 +11,7 @@ describe('Can view Global Tracking Items', () => {
   });
 
   it('should show list of users', () => {
-    cy.findByText(/sandra clark/i).should('exist');
-    cy.findByText(/joe smith/i).should('exist');
+    cy.findByText(/sandra clark/i, { timeout: 10000 }).should('exist');
+    cy.findByText(/joe smith/i, { timeout: 10000 }).should('exist');
   });
 });
