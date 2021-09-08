@@ -8,25 +8,20 @@ import { EResource } from '../../../types/global';
 const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;
 
+  if (method !== 'GET') {
+    throw new MethodNotAllowedError(method);
+  }
+
   const ac = await getAc();
 
-  switch (method) {
-    case 'GET': {
-      const permission = ac.can(req.user.role.name).readAny(EResource.USER);
+  const permission = ac.can(req.user.role.name).readAny(EResource.USER);
 
-      if (!permission.granted) {
-        return permissionDenied(res);
-      }
-
-      const users = await getUsersWithMemberTrackingRecords();
-      res.json({ users });
-      break;
-    }
-
-    // Disallow all methods except POST
-    default:
-      throw new MethodNotAllowedError(method);
+  if (!permission.granted) {
+    return permissionDenied(res);
   }
+
+  const users = await getUsersWithMemberTrackingRecords();
+  res.json({ users });
 };
 
 export default withTempestHandlers(usersApiHandler, findUserByDodId);
