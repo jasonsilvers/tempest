@@ -4,9 +4,20 @@ USER root
 RUN mkdir -p "${HOME}"/deps
 WORKDIR ${HOME}/deps
 ENV NODE_ENV=production
+COPY . .
+RUN rm -rf node_modules/public-encrypt/test/1024.priv
+RUN rm -rf node_modules/public-encrypt/test/ec.pass.priv
+RUN rm -rf node_modules/public-encrypt/test/ec.priv
+RUN rm -rf node_modules/public-encrypt/test/pass.1024.priv
+RUN rm -rf node_modules/public-encrypt/test/rsa.1024.priv
+RUN rm -rf node_modules/public-encrypt/test/rsa.2028.priv
+RUN rm -rf node_modules/public-encrypt/test/rsa.pass.priv
+RUN rm -rf node_modules/public-encrypt/test/test_key.pem
+RUN rm -rf node_modules/public-encrypt/test/test_rsa_privkey.pem
+RUN rm -rf node_modules/public-encrypt/test/test_rsa_privkey_encrypted.pem
 
-COPY package.json package-lock.json .npmrc ./
-RUN npm ci --no-fund --no-audit 
+# COPY package.json package-lock.json .npmrc ./
+# RUN npm ci --no-fund --no-audit 
 USER appuser
 
 # Build artifacts
