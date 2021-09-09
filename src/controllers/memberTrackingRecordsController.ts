@@ -64,7 +64,7 @@ export const memberTrackingRecordPostSchema = {
     completedDate: Joi.date().optional().allow(null),
     order: Joi.number().optional(),
     traineeId: Joi.string().optional(),
-    trackingItemId: Joi.number().optional(),
+    trackingItemId: Joi.number().required(),
   }),
   query: Joi.object({
     slug: Joi.optional(),

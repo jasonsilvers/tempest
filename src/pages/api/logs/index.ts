@@ -6,6 +6,16 @@ import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { logFactory } from '../../../utils/logger';
 import { ELogEventType } from '../../../types/global';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+import Joi from 'joi';
+
+const logSchema = {
+  post: {
+    body: Joi.object({
+      logEventType: Joi.string().required(),
+      message: Joi.string().required(),
+    }),
+  },
+};
 
 type LogHandlerBody = {
   logEventType: ELogEventType;
@@ -25,4 +35,4 @@ const logHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser, Log
   res.status(200).json({ message: 'ok' });
 };
 
-export default withTempestHandlers(logHandler, returnUser, {}, false);
+export default withTempestHandlers(logHandler, returnUser, logSchema, false);

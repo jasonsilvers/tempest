@@ -6,6 +6,18 @@ import { getAc, permissionDenied } from '../../../middleware/utils';
 import { EResource } from '../../../types/global';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+import Joi from 'joi';
+
+const organizationPostSchema = {
+  body: Joi.object({
+    name: Joi.string().required(),
+    parentId: Joi.string().optional().allow(null),
+  }),
+};
+
+const organizationSchema = {
+  post: organizationPostSchema,
+};
 
 const organizationApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { body, method } = req;
@@ -46,4 +58,4 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
   }
 };
 
-export default withTempestHandlers(organizationApiHandler, findUserByDodId);
+export default withTempestHandlers(organizationApiHandler, findUserByDodId, organizationSchema);

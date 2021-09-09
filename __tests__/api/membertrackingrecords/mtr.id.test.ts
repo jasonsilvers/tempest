@@ -59,7 +59,6 @@ test('should return 404 if record not found', async () => {
   mockMethodAndReturn(findMemberTrackingRecordById, expectedResult);
   const { status, data } = await testNextApi.get(memberTrackingRecordIdHandler, { urlId: 1 });
 
-  console.log(data)
   expect(status).toBe(404);
   expect(data).toStrictEqual({ message: 'The requested entity could not be found' });
 });

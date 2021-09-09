@@ -10,7 +10,6 @@ const lintTS = {
     },
     warnOnUnsupportedTypeScriptVersion: false, // suppress the typescript version difference
   },
-  // typescript-eslint https://github.com/typescript-eslint/typescript-eslint/tree/d0d71862efd7e079694fa9513ea983cc908ec6f6/packages/eslint-plugin
   rules: {
     '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-shadow': 'error',
