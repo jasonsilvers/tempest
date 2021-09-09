@@ -6,6 +6,8 @@ import { LoggedInUser, findUserByDodId, updateUserRole, createUserFromCommonApi 
 export async function returnUser(queryString: string, jwt: P1_JWT): Promise<LoggedInUser> {
   const tempestUser = await findUserByDodId(queryString);
 
+  console.log('It is past tempest user', tempestUser);
+
   const isAdmin =
     jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
 
