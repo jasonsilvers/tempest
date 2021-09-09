@@ -48,15 +48,15 @@ async function userQueryHandler(
 
   const ac = await getAc();
 
+  const user = await findUserById(userId);
+
+  if (!user) {
+    return recordNotFound(res);
+  }
+
   switch (method) {
     // Get Method to return a single user by id
     case 'GET': {
-      const user = await findUserById(userId);
-
-      if (!user) {
-        return recordNotFound(res);
-      }
-
       let permission: Permission;
 
       if (req.user.id !== userId) {

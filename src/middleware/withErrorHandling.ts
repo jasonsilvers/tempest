@@ -85,7 +85,7 @@ export const withErrorHandling =
 
       if (e.name === 'MethodNotFound') {
         log.persist(ELogEventType.METHOD_NOT_ALLOWED, `Method: ${e.message}`);
-        return res.status(e.status).json({ message: 'Method Not Found' });
+        return res.status(e.status).json({ message: 'Method Not Allowed' });
       }
 
       log.trace(`caught error: ${500} ${e}`);

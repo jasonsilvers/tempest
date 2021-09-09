@@ -53,6 +53,14 @@ test('POST - should create member tracking record', async () => {
 });
 
 test('POST - should return 403 if incorrect permissions', async () => {
+  const returnedMemberTrackingRecordDB = {
+    trackingItemId: 1,
+    traineeId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    authorityId: null,
+    authoritySignedDate: null,
+    traineeSignedDate: null,
+    completedDate: dayjs('2020-5-14').toISOString(),
+  };
   mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
@@ -60,13 +68,21 @@ test('POST - should return 403 if incorrect permissions', async () => {
   });
 
   const { status } = await testNextApi.post(memberTrackingRecordIndexHandler, {
-    body: {},
+    body: returnedMemberTrackingRecordDB,
   });
 
   expect(status).toBe(403);
 });
 
 test('POST - should return 403 if member does not own record', async () => {
+  const returnedMemberTrackingRecordDB = {
+    trackingItemId: 1,
+    traineeId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    authorityId: null,
+    authoritySignedDate: null,
+    traineeSignedDate: null,
+    completedDate: dayjs('2020-5-14').toISOString(),
+  };
   mockMethodAndReturn(findUserByDodId, {
     id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
@@ -74,7 +90,7 @@ test('POST - should return 403 if member does not own record', async () => {
   });
 
   const { status } = await testNextApi.post(memberTrackingRecordIndexHandler, {
-    body: {},
+    body: returnedMemberTrackingRecordDB,
   });
 
   expect(status).toBe(403);

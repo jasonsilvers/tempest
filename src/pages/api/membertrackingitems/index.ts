@@ -10,6 +10,7 @@ import {
   EMemberTrackingItemIncludes,
   memberTrackingItemPostSchema,
   memberTrackingItemPutSchema,
+  memberTrackingItemGetSchema,
 } from '../../../controllers/memberTrackingItemsController';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
@@ -24,6 +25,7 @@ export interface ITempestMemberTrackingItemApiRequest<T> extends NextApiRequestW
 }
 
 const memberTrackingItemSchema = {
+  get: memberTrackingItemGetSchema,
   post: memberTrackingItemPostSchema,
   put: memberTrackingItemPutSchema,
 };

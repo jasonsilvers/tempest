@@ -1,15 +1,23 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
+import Joi from 'joi';
 import { NextApiResponse } from 'next';
-import {
-  memberTrackingRecordPostSchema,
-  postMemberTrackingRecordsAction,
-} from '../../../controllers/memberTrackingRecordsController';
+import { postMemberTrackingRecordsAction } from '../../../controllers/memberTrackingRecordsController';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 
-const memberTrackingRecordSchema = {
-  post: memberTrackingRecordPostSchema,
+const memberTrackingRecordSlugPostSchema = {
+  body: Joi.object({
+    completedDate: Joi.date().optional(),
+  }),
+  query: Joi.object({
+    slug: Joi.required(),
+    id: Joi.optional(),
+  }),
+};
+
+const memberTrackingRecordSlugSchema = {
+  post: memberTrackingRecordSlugPostSchema,
 };
 
 async function memberTrackingRecordSlugHandler(
@@ -25,4 +33,4 @@ async function memberTrackingRecordSlugHandler(
   return postMemberTrackingRecordsAction(req, res);
 }
 
-export default withTempestHandlers(memberTrackingRecordSlugHandler, findUserByDodId, memberTrackingRecordSchema);
+export default withTempestHandlers(memberTrackingRecordSlugHandler, findUserByDodId, memberTrackingRecordSlugSchema);

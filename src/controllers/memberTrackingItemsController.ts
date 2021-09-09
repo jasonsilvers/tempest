@@ -26,6 +26,16 @@ type IMemberTrackingItemController = (
   res: NextApiResponse<MemberTrackingItem | ITempestApiError>
 ) => Promise<void>;
 
+export const memberTrackingItemGetSchema = {
+  query: Joi.object({
+    slug: Joi.optional(),
+    id: Joi.optional(),
+    include: Joi.optional(),
+    userId: Joi.string().required(),
+    trackingItemId: Joi.string().required(),
+  }),
+};
+
 export const getMemberTrackingItemAction: IMemberTrackingItemController = async (req, res) => {
   const {
     // Add query for including membertrackingrecords

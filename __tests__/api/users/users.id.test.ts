@@ -152,6 +152,12 @@ test('GET - should return 404 record not found', async () => {
 });
 
 test('GET - should only allow get', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  mockMethodAndReturn(findUserById, userFromDb);
   const { status } = await testNextApi.post(userQueryHandler, { body: {} });
 
   expect(status).toBe(405);

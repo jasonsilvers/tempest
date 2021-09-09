@@ -35,6 +35,16 @@ test('Succesfully logs and returns 200', async () => {
   process.env.LOG_LEVEL = 'SILENT';
 });
 
+test('Post - should return bad request if no body', async () => {
+  process.env.LOG_LEVEL = 'DEBUG';
+  const { status } = await testNextApi.post(logHandler, {
+    body: {},
+  });
+
+  expect(status).toBe(400);
+  process.env.LOG_LEVEL = 'SILENT';
+});
+
 test('should return method not allowed if not POST', async () => {
   const { status } = await testNextApi.get(logHandler);
 
