@@ -12,6 +12,8 @@ const loginHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, 
   await updateLastLogin(req.user.id);
   const log = logFactory(req.user);
 
+  console.log(req.headers.authorization)
+
   if (method !== 'GET') {
     throw new MethodNotAllowedError(req.method);
   }
