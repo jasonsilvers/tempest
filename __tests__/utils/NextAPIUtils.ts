@@ -75,7 +75,7 @@ const baseTestNextApi = async (
       ? {
           Authorization: `Bearer ${userJWT}`,
         }
-      : {};
+      : { Authorization: `Bearer` };
 
     const base = urlParams.charAt[0] === '?' ? '/api/whocares' : '/api/whocares/';
 

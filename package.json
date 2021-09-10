@@ -39,7 +39,7 @@
     "@next/bundle-analyzer": "^11.1.0",
     "@prisma/client": "^2.29.1",
     "@snekcode/mui-search-bar": "1.0.0",
-    "@tron/nextjs-auth-p1": "^1.2.3",
+    "@tron/nextjs-auth-p1": "^1.2.4",
     "@types/crypto-js": "^4.0.2",
     "@types/faker": "^5.5.8",
     "@types/jest": "^27.0.1",
