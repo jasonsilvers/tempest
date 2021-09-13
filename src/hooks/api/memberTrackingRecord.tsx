@@ -99,6 +99,7 @@ export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
       onSettled: async (data) => {
         //This will need to be updated when signing for authority
 
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItem(data.traineeId, data.trackingItemId));
         queryClient.invalidateQueries(mtrQueryKeys.memberTrackingRecord(data.id));
       },
       onError: async (err, { memberTrackingRecord }, previousState) => {

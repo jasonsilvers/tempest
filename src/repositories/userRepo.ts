@@ -110,7 +110,6 @@ export const getUsersWithMemberTrackingRecords = async () => {
         include: {
           trackingItem: true,
           memberTrackingRecords: {
-            take: 2,
             orderBy: {
               order: 'desc',
             },

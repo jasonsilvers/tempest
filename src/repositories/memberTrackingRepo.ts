@@ -101,7 +101,6 @@ export const findMemberTrackingItemById = async (
               authority: true,
               trackingItem: withTrackingItems,
             },
-            take: 2,
             orderBy: {
               order: 'desc',
             },

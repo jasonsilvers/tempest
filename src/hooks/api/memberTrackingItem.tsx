@@ -60,9 +60,34 @@ export const useMemberTrackingItem = (userId: string, trackingItemId: number) =>
     {
       enabled: !!userId && !!trackingItemId,
       select: (memberTrackingItem): MemberTrackingItemData => {
+        const memberTrackingRecords = memberTrackingItem.memberTrackingRecords;
+        const inProgressMemberTrackingRecords = memberTrackingRecords.filter(
+          (mtr) => mtr.authoritySignedDate === null || mtr.traineeSignedDate === null || mtr.completedDate === null
+        );
+
+        const latestCompleteMemberTrackingRecord = memberTrackingRecords
+          .filter(
+            (mtr) => mtr.authoritySignedDate !== null && mtr.traineeSignedDate !== null && mtr.completedDate !== null
+          )
+          .sort((firstMtr, secondMtr) => {
+            if (firstMtr.completedDate < secondMtr.completedDate) {
+              return 1;
+            }
+
+            if (firstMtr.completedDate > secondMtr.completedDate) {
+              return -1;
+            }
+
+            return 0;
+          })[0];
+
+        const memberTrackingRecordList = [...inProgressMemberTrackingRecords, latestCompleteMemberTrackingRecord]
+          .filter((mtr) => mtr !== undefined)
+          .map((i) => ({ id: i?.id }));
+
         return {
           ...memberTrackingItem,
-          memberTrackingRecords: memberTrackingItem.memberTrackingRecords.map((i) => ({ id: i.id })),
+          memberTrackingRecords: memberTrackingRecordList,
         };
       },
     }
