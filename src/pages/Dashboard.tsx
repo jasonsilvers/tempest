@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { getStatus } from '../utils/Status';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../types/global';
+import { removeOldCompletedRecords } from '../utils';
 
 const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 const UserTable = tw.div``;
@@ -78,7 +79,8 @@ const DashboardPage: React.FC = () => {
       };
 
       user.memberTrackingItems.forEach((mti) => {
-        mti.memberTrackingRecords.forEach((mtr) => {
+        const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
+        mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
           if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
             newCounts.All = newCounts.All + 1;
             const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
