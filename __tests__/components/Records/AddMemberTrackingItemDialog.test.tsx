@@ -1,4 +1,12 @@
-import { fireEvent, render, waitFor, waitForElementToBeRemoved, userEvent } from '../../utils/TempestTestUtils';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+  userEvent,
+  createWrapper,
+  rtlRender,
+} from '../../utils/TempestTestUtils';
 import React, { useState } from 'react';
 import { rest } from 'msw';
 import { AddMemberTrackingItemDialog } from '../../../src/components/Records/Dialog/AddMemberTrackingItemDialog';
@@ -9,6 +17,8 @@ import { TrackingItem, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';
 import { UserWithAll } from '../../../src/repositories/userRepo';
+import { QueryClient } from 'react-query';
+import { mtrQueryKeys } from '../../../src/hooks/api/memberTrackingRecord';
 
 // Establish API mocking before tests.
 beforeAll(() => {
@@ -204,6 +214,40 @@ test('should be able find item by typing in input', async () => {
   fireEvent.click(selectedTrackingItemDeletButton);
 
   expect(selectedTrackingItem).not.toBeInTheDocument();
+});
+
+test('should not allow duplicate memberTrackingRecords in progress', async () => {
+  server.use(trackingItemsGet(trackingItemsList), memberTrackingItemsGet({ ...testTrainee, memberTrackingItems }));
+
+  const queryClient = new QueryClient();
+
+  const singleMemberTrackingRecord = memberTrackingItems[0].memberTrackingRecords[0];
+
+  queryClient.setQueryData(
+    mtrQueryKeys.memberTrackingRecord(singleMemberTrackingRecord.id),
+    singleMemberTrackingRecord
+  );
+
+  const Wrapper = createWrapper(queryClient);
+
+  const { getByRole, findAllByRole, getByText, queryByText } = rtlRender(<Container />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+
+  const openDialogTrigger = getByText(/open dialog/i);
+  fireEvent.click(openDialogTrigger);
+
+  await waitForElementToBeRemoved(() => getByRole('progressbar'));
+  const trackingItemTrigger = getByRole('textbox');
+
+  fireEvent.mouseDown(trackingItemTrigger);
+
+  const options = await findAllByRole('option');
+  expect(options.length).toBe(3);
+
+  expect(queryByText(/fire safety/i)).not.toBeInTheDocument();
 });
 
 test('should create membertrackingrecord if already have membertracking item', async () => {
