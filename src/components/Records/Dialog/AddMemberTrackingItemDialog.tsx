@@ -17,8 +17,10 @@ import { MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '.prisma/
 const dayjs = require('dayjs');
 import { DeleteIcon } from '../../../assets/Icons';
 import { useCreateMemberTrackingItemAndRecord, useMemberTrackingItems } from '../../../hooks/api/memberTrackingItem';
-import { useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
+import { mtrQueryKeys, useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { useSnackbar } from 'notistack';
+import { useQueryClient } from 'react-query';
+import { memberTrackingRecordIsComplete } from '../../../utils/Status';
 
 type IMemberTrackingItemsToAdd = {
   [key: number]: IMemberTrackingItemToAdd;
@@ -47,6 +49,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   const addMemberTrackingItemAndRecord = useCreateMemberTrackingItemAndRecord();
   const addMemberTrackingRecord = useCreateMemberTrackingRecord();
   const memberTrackingItemsQuery = useMemberTrackingItems(forMemberId);
+  const queryClient = useQueryClient();
 
   const [memberTrackingItemsToAdd, setMemberTrackingItemsToAdd] = useState<IMemberTrackingItemsToAdd>([]);
   const [trackingItemOptions, setTrackingItemOptions] = useState<TrackingItem[]>([]);
@@ -55,7 +58,20 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   const [isSaving, setIsSaving] = useState(false);
 
   useMemo(() => {
-    setTrackingItemOptions(trackingItemsQuery.data ?? []);
+    const memberTrackingRecordQueries = queryClient.getQueriesData<MemberTrackingRecord>(
+      mtrQueryKeys.memberTrackingRecords()
+    );
+
+    const memberTrackingRecords = memberTrackingRecordQueries.map((mtrq) => mtrq[1]);
+
+    const trackingItemsList = trackingItemsQuery.data?.filter(
+      (trackingItem) =>
+        !memberTrackingRecords?.find(
+          (mtr) => mtr?.trackingItemId === trackingItem.id && !memberTrackingRecordIsComplete(mtr)
+        )
+    );
+
+    setTrackingItemOptions(trackingItemsList ?? []);
   }, [trackingItemsQuery.data]);
 
   const addMemberTrackingItems = () => {
