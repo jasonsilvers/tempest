@@ -20,7 +20,7 @@ import { useCreateMemberTrackingItemAndRecord, useMemberTrackingItems } from '..
 import { mtrQueryKeys, useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { useSnackbar } from 'notistack';
 import { useQueryClient } from 'react-query';
-import { isMemberTrackingRecordComplete } from '../../../utils/Status';
+import { memberTrackingRecordIsComplete } from '../../../utils/Status';
 
 type IMemberTrackingItemsToAdd = {
   [key: number]: IMemberTrackingItemToAdd;
@@ -67,7 +67,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
     const trackingItemsList = trackingItemsQuery.data?.filter(
       (trackingItem) =>
         !memberTrackingRecords?.find(
-          (mtr) => mtr?.trackingItemId === trackingItem.id && !isMemberTrackingRecordComplete(mtr)
+          (mtr) => mtr?.trackingItemId === trackingItem.id && !memberTrackingRecordIsComplete(mtr)
         )
     );
 

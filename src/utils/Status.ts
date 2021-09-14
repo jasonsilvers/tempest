@@ -36,7 +36,7 @@ export const getCategory = (memberTrackingRecord: MemberTrackingRecord, tracking
   return getStatus(memberTrackingRecord.completedDate, trackingItemInterval);
 };
 
-export const isMemberTrackingRecordComplete = (memberTrackingRecord: MemberTrackingRecord) => {
+export const memberTrackingRecordIsComplete = (memberTrackingRecord: MemberTrackingRecord) => {
   return (
     memberTrackingRecord.completedDate !== null &&
     memberTrackingRecord.authoritySignedDate !== null &&
