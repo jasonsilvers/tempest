@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { MemberTrackingItemWithAll } from '../../repositories/memberTrackingRepo';
 import { UserWithAll } from '../../repositories/userRepo';
 import { EUri } from '../../types/global';
+import { removeOldCompletedRecords } from '../../utils';
 
 const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
 
@@ -60,30 +61,9 @@ export const useMemberTrackingItem = (userId: string, trackingItemId: number) =>
     {
       enabled: !!userId && !!trackingItemId,
       select: (memberTrackingItem): MemberTrackingItemData => {
-        const memberTrackingRecords = memberTrackingItem.memberTrackingRecords;
-        const inProgressMemberTrackingRecords = memberTrackingRecords.filter(
-          (mtr) => mtr.authoritySignedDate === null || mtr.traineeSignedDate === null || mtr.completedDate === null
+        const memberTrackingRecordList = removeOldCompletedRecords(memberTrackingItem.memberTrackingRecords).map(
+          (i) => ({ id: i?.id })
         );
-
-        const latestCompleteMemberTrackingRecord = memberTrackingRecords
-          .filter(
-            (mtr) => mtr.authoritySignedDate !== null && mtr.traineeSignedDate !== null && mtr.completedDate !== null
-          )
-          .sort((firstMtr, secondMtr) => {
-            if (firstMtr.completedDate < secondMtr.completedDate) {
-              return 1;
-            }
-
-            if (firstMtr.completedDate > secondMtr.completedDate) {
-              return -1;
-            }
-
-            return 0;
-          })[0];
-
-        const memberTrackingRecordList = [...inProgressMemberTrackingRecords, latestCompleteMemberTrackingRecord]
-          .filter((mtr) => mtr !== undefined)
-          .map((i) => ({ id: i?.id }));
 
         return {
           ...memberTrackingItem,
