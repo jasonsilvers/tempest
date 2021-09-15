@@ -16,23 +16,26 @@ const getTitle = (traineeSignature: Signature, authoritySignature: Signature) =>
     rank: authorityRank = null,
   } = authoritySignature ? authoritySignature.signee : {};
 
+  const authorityRankDisplay = authorityRank ? authorityRank?.split('/')[0] : '';
+  const traineeRankDisplay = traineeRank ? traineeRank?.split('/')[0] : '';
+
   return (
     <div tw="flex space-x-3">
       {authoritySignature ? (
         <Container>
-          <Name>{`${authorityRank?.split('/')[0]} ${authorityFN} ${authorityLN}`}</Name>
+          <Name>{`${authorityRankDisplay} ${authorityFN} ${authorityLN}`}</Name>
           <Date>{dayjs(authoritySignature.date).format('hhmm MM/DD/YY')}</Date>
         </Container>
       ) : null}
       <Container>
-        <Name>{`${traineeRank?.split('/')[0]} ${tranieeFN} ${traineeLN}`}</Name>
+        <Name>{`${traineeRankDisplay} ${tranieeFN} ${traineeLN}`}</Name>
         <Date>{dayjs(traineeSignature.date).format('hhmm MM/DD/YY')}</Date>
       </Container>
     </div>
   );
 };
 
-type Signature = { signee: User; date: Date };
+export type Signature = { signee: User; date: Date };
 interface IToolTipProps {
   children: ReactElement;
   traineeSignature: Signature;
@@ -56,4 +59,4 @@ const RecordSignatureToolTip: React.FC<IToolTipProps> = ({ traineeSignature, aut
   );
 };
 
-export default RecordSignatureToolTip;
+export { RecordSignatureToolTip };

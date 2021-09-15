@@ -6,7 +6,7 @@ import { UseMutateFunction } from 'react-query';
 import 'twin.macro';
 import { useUser } from '@tron/nextjs-auth-p1';
 
-import RecordSignatureToolTip from './RecordSignatureToolTip';
+import { RecordSignatureToolTip } from './RecordSignatureToolTip';
 import { DoneAllIcon } from '../../../assets/Icons';
 import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
