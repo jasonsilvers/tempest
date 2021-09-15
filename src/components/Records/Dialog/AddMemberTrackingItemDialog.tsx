@@ -67,7 +67,10 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
     const trackingItemsList = trackingItemsQuery.data?.filter(
       (trackingItem) =>
         !memberTrackingRecords?.find(
-          (mtr) => mtr?.trackingItemId === trackingItem.id && !memberTrackingRecordIsComplete(mtr)
+          (mtr) =>
+            mtr?.trackingItemId === trackingItem.id &&
+            !memberTrackingRecordIsComplete(mtr) &&
+            mtr.traineeId === forMemberId
         )
     );
 
