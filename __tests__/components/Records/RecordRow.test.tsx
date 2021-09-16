@@ -216,6 +216,7 @@ test('should render the interval in number form for weird amount', async () => {
 });
 
 test('should mutate and enqueue snackbar success with not signatures', async () => {
+  jest.setTimeout(10000);
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,
@@ -266,8 +267,6 @@ test('should mutate and enqueue snackbar success with not signatures', async () 
   fireEvent.click(calendarButton);
   const dayButtons = getAllByRole('button', { name: '1' });
   fireEvent.click(dayButtons[0]);
-  ``;
-
   await waitFor(() => getByText(/date updated/i));
   expect(getByText(/date updated/i)).toBeInTheDocument();
 });
@@ -315,6 +314,7 @@ test('should mutate and enqueue snackbar success with not signatures', async () 
 // });
 
 test('should prompt user then mutate and enqueue snackbar success with signatures present', async () => {
+  jest.setTimeout(10000);
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,
