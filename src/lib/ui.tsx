@@ -122,6 +122,7 @@ export default function TempestPopMenu({ userId }: { userId: string }) {
 
 const TempestDatePicker = styled((props) => (
   <DatePicker
+    disableToolbar
     InputProps={{
       role: 'date-picker',
       endAdornment: (

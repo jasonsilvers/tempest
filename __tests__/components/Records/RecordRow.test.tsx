@@ -377,6 +377,7 @@ test('should prompt user then mutate and enqueue snackbar success with signature
 });
 
 test('should prompt user with signatures present but then we click the No button', async () => {
+  jest.setTimeout(10000);
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,

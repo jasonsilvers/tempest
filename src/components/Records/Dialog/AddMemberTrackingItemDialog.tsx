@@ -9,6 +9,7 @@ import {
   DialogTitle,
   IconButton,
   LoadingOverlay,
+  TempestDatePicker,
   TextField,
 } from '../../../lib/ui';
 import tw from 'twin.macro';
@@ -193,27 +194,25 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
               <TableData tw="text-sm w-1/3">{memberTrackingItemToAdd.trackingItem.title}</TableData>
               <TableData tw="text-sm w-1/5 text-center">{memberTrackingItemToAdd.trackingItem.interval}</TableData>
               <TableData>
-                <TextField
-                  InputProps={{ style: { fontSize: 14 } }}
-                  onChange={(event) =>
+                <TempestDatePicker
+                  onChange={(date) =>
                     setMemberTrackingItemsToAdd((currentValues) => {
                       return {
                         ...currentValues,
                         [key]: {
                           ...currentValues[key],
-                          completedDate: dayjs(event.target.value).format('YYYY-MM-DD'),
+                          completedDate: dayjs(date).format('YYYY-MM-DD'),
                         } as IMemberTrackingItemToAdd,
                       };
                     })
                   }
-                  id="date"
-                  type="date"
-                  variant="outlined"
+                  format="DD MMM YYYY"
+                  inputVariant="outlined"
+                  disableFuture
+                  autoOk
                   size="small"
-                  defaultValue={null}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                  variant="inline"
+                  value={memberTrackingItemToAdd.completedDate}
                 />
               </TableData>
               <TableData tw="ml-auto">
