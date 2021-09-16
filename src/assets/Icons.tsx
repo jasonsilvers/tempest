@@ -13,8 +13,10 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 
 export {
+  CalendarTodayIcon,
   CheckCircleIcon,
   WarningIcon,
   CancelIcon,

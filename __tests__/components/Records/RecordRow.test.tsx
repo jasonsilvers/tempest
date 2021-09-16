@@ -3,7 +3,7 @@ import React from 'react';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
 import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/MemberRecordTracker/RecordRow';
 import { ECategories, EUri } from '../../../src/types/global';
-import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved, within } from '../../utils/TempestTestUtils';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 // MSW test requirements
 import 'whatwg-fetch';
@@ -254,13 +254,20 @@ test('should mutate and enqueue snackbar success with not signatures', async () 
     })
   );
 
-  const { getByText, queryByRole, getByRole } = render(
+  const { getByText, queryByRole, getByRole, getAllByRole } = render(
     <RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
   await waitFor(() => getByRole(/date-picker/i));
   expect(getByText(/item title/i)).toBeInTheDocument();
-  fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
+
+  const datePicker = getByRole(/date-picker/i);
+  const calendarButton = within(datePicker).getByRole('button');
+  fireEvent.click(calendarButton);
+  const dayButtons = getAllByRole('button', { name: '1' });
+  fireEvent.click(dayButtons[0]);
+  ``;
+
   await waitFor(() => getByText(/date updated/i));
   expect(getByText(/date updated/i)).toBeInTheDocument();
 });
@@ -346,13 +353,18 @@ test('should prompt user then mutate and enqueue snackbar success with signature
     })
   );
 
-  const { getByText, queryByRole, getByRole } = render(
+  const { getByText, queryByRole, getByRole, getAllByRole } = render(
     <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
   await waitFor(() => getByRole(/date-picker/i));
   expect(getByText(/item title/i)).toBeInTheDocument();
-  fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
+
+  const datePicker = getByRole(/date-picker/i);
+  const calendarButton = within(datePicker).getByRole('button');
+  fireEvent.click(calendarButton);
+  const dayButtons = getAllByRole('button', { name: '1' });
+  fireEvent.click(dayButtons[0]);
 
   // wait for modal then click yes
   await waitFor(() => getByText(/Yes/i));
@@ -403,13 +415,18 @@ test('should prompt user with signatures present but then we click the No button
     })
   );
 
-  const { getByText, queryByText, queryByRole, getByRole } = render(
+  const { getByText, queryByText, queryByRole, getByRole, getAllByRole } = render(
     <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
   await waitFor(() => getByRole(/date-picker/i));
   expect(getByText(/item title/i)).toBeInTheDocument();
-  fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
+
+  const datePicker = getByRole(/date-picker/i);
+  const calendarButton = within(datePicker).getByRole('button');
+  fireEvent.click(calendarButton);
+  const dayButtons = getAllByRole('button', { name: '1' });
+  fireEvent.click(dayButtons[0]);
 
   // wait for modal then click yes
   await waitFor(() => getByRole('button', { name: 'No' }));

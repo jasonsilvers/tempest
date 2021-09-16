@@ -8,6 +8,8 @@ import { Button } from '../../src/lib/ui';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import userEvent from '@testing-library/user-event';
 import { EUri } from '../../src/types/global';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DayJsUtils from '@date-io/dayjs';
 
 const createTestQueryClient = () => {
   const queryClientInit = new QueryClient({
@@ -36,15 +38,17 @@ const createWrapper = (queryClient?: QueryClient) => {
 
   return function Wrapper(props) {
     return (
-      <SnackbarProvider
-        maxSnack={3}
-        ref={notistackRef}
-        action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
-      >
-        <QueryClientProvider client={queryClient ? queryClient : testQueryClient}>
-          <UserContextProvider loginUrl={EUri.LOGIN}>{props.children}</UserContextProvider>
-        </QueryClientProvider>
-      </SnackbarProvider>
+      <MuiPickersUtilsProvider utils={DayJsUtils}>
+        <SnackbarProvider
+          maxSnack={3}
+          ref={notistackRef}
+          action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
+        >
+          <QueryClientProvider client={queryClient ? queryClient : testQueryClient}>
+            <UserContextProvider loginUrl={EUri.LOGIN}>{props.children}</UserContextProvider>
+          </QueryClientProvider>
+        </SnackbarProvider>
+      </MuiPickersUtilsProvider>
     );
   };
 };
@@ -52,17 +56,19 @@ const createWrapper = (queryClient?: QueryClient) => {
 const Wrapper: React.FC<IWrapperProps> = (props) => {
   const testQueryClient = createTestQueryClient();
   return (
-    <SnackbarProvider
-      maxSnack={3}
-      ref={notistackRef}
-      action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
-    >
-      <QueryClientProvider client={testQueryClient}>
-        <UserContextProvider user={props.user} loginUrl={EUri.LOGIN}>
-          {props.children}
-        </UserContextProvider>
-      </QueryClientProvider>
-    </SnackbarProvider>
+    <MuiPickersUtilsProvider utils={DayJsUtils}>
+      <SnackbarProvider
+        maxSnack={3}
+        ref={notistackRef}
+        action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
+      >
+        <QueryClientProvider client={testQueryClient}>
+          <UserContextProvider user={props.user} loginUrl={EUri.LOGIN}>
+            {props.children}
+          </UserContextProvider>
+        </QueryClientProvider>
+      </SnackbarProvider>
+    </MuiPickersUtilsProvider>
   );
 };
 
