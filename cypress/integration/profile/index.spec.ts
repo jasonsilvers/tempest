@@ -5,7 +5,7 @@ describe('Member role', () => {
     cy.findAllByText(/nothing to show/i).should('have.length', 2);
   });
 
-  it('should add new training and be able to sign', () => {
+  it.only('should add new training and be able to sign', () => {
     cy.loginAsMember();
 
     cy.findByRole('button', { name: /add new/i, timeout: 10000 }).click();
@@ -15,10 +15,14 @@ describe('Member role', () => {
     cy.findByRole('textbox').type('fire extinguisher');
     cy.findByText(/fire extinguisher/i).click();
 
-    cy.get('#date').type('2021-10-01');
-    cy.findByRole('button', { name: /add/i }).click();
-
     cy.findByText(/fire extinguisher/i).should('exist');
+
+    cy.findByRole('date-picker').within(() => {
+      cy.findByRole('button').click();
+    });
+
+    cy.findByRole('button', { name: '3' }).click();
+    cy.findByRole('button', { name: /add/i }).click();
 
     cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).should('exist');

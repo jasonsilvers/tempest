@@ -3,7 +3,7 @@ import React from 'react';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
 import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/MemberRecordTracker/RecordRow';
 import { ECategories, EUri } from '../../../src/types/global';
-import { fireEvent, render, waitFor, waitForElementToBeRemoved, within, screen } from '../../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 // MSW test requirements
 import 'whatwg-fetch';
@@ -255,7 +255,7 @@ test('should mutate and enqueue snackbar success with no signatures', async () =
     })
   );
 
-  const { getByText, queryByRole, getByRole, getAllByRole } = render(
+  const { getByText, queryByRole, getByRole } = render(
     <RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
@@ -306,7 +306,7 @@ test('should prompt user then mutate and enqueue snackbar success with signature
     })
   );
 
-  const { getByText, queryByRole, getByRole, getAllByRole } = render(
+  const { getByText, queryByRole, getByRole } = render(
     <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
@@ -362,7 +362,7 @@ test('should prompt user with signatures present but then we click the No button
     })
   );
 
-  const { getByText, queryByText, queryByRole, getByRole, getAllByRole } = render(
+  const { queryByRole, getByRole } = render(
     <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));

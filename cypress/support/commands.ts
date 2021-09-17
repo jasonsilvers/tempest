@@ -61,8 +61,13 @@ Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, date:
 
   cy.findByRole('option', { name: trackingItemName }).click();
 
-  cy.get('#date').type(date);
+  cy.findByRole('date-picker').within((elem) => {
+    const input = cy.findByRole('textbox');
+    fireEvent.change(input, { target: { value: '10 Sep 2021' } });
+  });
+
   cy.findByRole('button', { name: /add/i }).click();
 });
 
 import '@testing-library/cypress/add-commands';
+import { fireEvent } from '@testing-library/dom';

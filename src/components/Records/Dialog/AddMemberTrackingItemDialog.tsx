@@ -210,8 +210,6 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
                   inputVariant="outlined"
                   disableFuture
                   autoOk
-                  size="small"
-                  variant="inline"
                   value={memberTrackingItemToAdd.completedDate}
                 />
               </TableData>

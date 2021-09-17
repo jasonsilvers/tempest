@@ -19,11 +19,10 @@ import Paper from '@material-ui/core/Paper';
 import SearchBar from '@snekcode/mui-search-bar';
 import Menu from '@material-ui/core/Menu';
 import TempestMenuItem from '@material-ui/core/MenuItem';
-import { CalendarTodayIcon, DeleteIcon, MoreHorizIcon } from '../assets/Icons';
+import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { KeyboardDatePicker } from '@material-ui/pickers';
-import { InputAdornment } from '@material-ui/core';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -123,15 +122,14 @@ export default function TempestPopMenu({ userId }: { userId: string }) {
 const TempestDatePicker = styled((props) => (
   <KeyboardDatePicker
     disableToolbar
+    variant="inline"
+    aria-label="tempest-date-picker"
+    TextFieldComponent={(keyboardDatePickerProps) => (
+      <TextField {...keyboardDatePickerProps} disabled aria-label="tempest-date-picker" />
+    )}
     InputProps={{
+      id: 'date',
       role: 'date-picker',
-      // endAdornment: (
-      //   <InputAdornment position="end">
-      //     <IconButton>
-      //       <CalendarTodayIcon />
-      //     </IconButton>
-      //   </InputAdornment>
-      // ),
     }}
     {...props}
   />
@@ -142,6 +140,7 @@ const TempestDatePicker = styled((props) => (
     opacity: 60%;
     width: 70px;
     font-weight: 400;
+    color: black;
   }
   & .MuiInputBase-adornedEnd {
     padding-right: 6px;

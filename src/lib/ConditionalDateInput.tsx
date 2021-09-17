@@ -19,8 +19,6 @@ const ConditionalDateInput: React.FC<IConditionalDateInput> = ({ dateValue, cond
         inputVariant="outlined"
         disableFuture
         autoOk
-        size="small"
-        variant="inline"
         value={dateValue ? dayjs(dateValue).format('DD MMM YYYY') : null}
       />
     );
