@@ -3,7 +3,7 @@ import React from 'react';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
 import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/MemberRecordTracker/RecordRow';
 import { ECategories, EUri } from '../../../src/types/global';
-import { fireEvent, render, waitFor, waitForElementToBeRemoved, within } from '../../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved, within, screen } from '../../utils/TempestTestUtils';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 // MSW test requirements
 import 'whatwg-fetch';
@@ -215,7 +215,8 @@ test('should render the interval in number form for weird amount', async () => {
   expect(queryByText(/4 days/i)).toBeTruthy();
 });
 
-test('should mutate and enqueue snackbar success with not signatures', async () => {
+test('should mutate and enqueue snackbar success with no signatures', async () => {
+  jest.setTimeout(30000);
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,
@@ -258,7 +259,6 @@ test('should mutate and enqueue snackbar success with not signatures', async () 
     <RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
-  expect(getByText(/item title/i)).toBeInTheDocument();
 
   const datePicker = getByRole(/date-picker/i);
   const calendarButton = within(datePicker).getByRole('button');
@@ -270,6 +270,7 @@ test('should mutate and enqueue snackbar success with not signatures', async () 
 });
 
 test('should prompt user then mutate and enqueue snackbar success with signatures present', async () => {
+  jest.setTimeout(30000);
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,
@@ -312,7 +313,6 @@ test('should prompt user then mutate and enqueue snackbar success with signature
     <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
-  expect(getByText(/item title/i)).toBeInTheDocument();
 
   const datePicker = getByRole(/date-picker/i);
   const calendarButton = within(datePicker).getByRole('button');
@@ -331,6 +331,7 @@ test('should prompt user then mutate and enqueue snackbar success with signature
 });
 
 test('should prompt user with signatures present but then we click the No button', async () => {
+  jest.setTimeout(30000);
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,
@@ -373,8 +374,6 @@ test('should prompt user with signatures present but then we click the No button
     <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
-  getByRole(/date-picker/i);
-  expect(getByText(/item title/i)).toBeInTheDocument();
 
   const datePicker = getByRole(/date-picker/i);
   const calendarButton = within(datePicker).getByRole('button');
