@@ -22,7 +22,7 @@ import TempestMenuItem from '@material-ui/core/MenuItem';
 import { CalendarTodayIcon, DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
 import { useRouter } from 'next/router';
-import { DatePicker } from '@material-ui/pickers';
+import { KeyboardDatePicker } from '@material-ui/pickers';
 import { InputAdornment } from '@material-ui/core';
 
 const TPaper = styled(Paper)`
@@ -121,17 +121,17 @@ export default function TempestPopMenu({ userId }: { userId: string }) {
 }
 
 const TempestDatePicker = styled((props) => (
-  <DatePicker
+  <KeyboardDatePicker
     disableToolbar
     InputProps={{
       role: 'date-picker',
-      endAdornment: (
-        <InputAdornment position="end">
-          <IconButton>
-            <CalendarTodayIcon />
-          </IconButton>
-        </InputAdornment>
-      ),
+      // endAdornment: (
+      //   <InputAdornment position="end">
+      //     <IconButton>
+      //       <CalendarTodayIcon />
+      //     </IconButton>
+      //   </InputAdornment>
+      // ),
     }}
     {...props}
   />

@@ -260,11 +260,8 @@ test('should mutate and enqueue snackbar success with no signatures', async () =
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
 
-  const datePicker = getByRole(/date-picker/i);
-  const calendarButton = within(datePicker).getByRole('button');
-  fireEvent.click(calendarButton);
-  const dayButtons = getAllByRole('button', { name: '1' });
-  fireEvent.click(dayButtons[0]);
+  fireEvent.change(getByRole('textbox'), { target: { value: '10 Sep 2021' } });
+
   await waitFor(() => getByText(/date updated/i));
   expect(getByText(/date updated/i)).toBeInTheDocument();
 });
@@ -313,12 +310,7 @@ test('should prompt user then mutate and enqueue snackbar success with signature
     <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
-
-  const datePicker = getByRole(/date-picker/i);
-  const calendarButton = within(datePicker).getByRole('button');
-  fireEvent.click(calendarButton);
-  const dayButtons = getAllByRole('button', { name: '1' });
-  fireEvent.click(dayButtons[0]);
+  fireEvent.change(getByRole('textbox'), { target: { value: '10 Sep 2021' } });
 
   // wait for modal then click yes
   await waitFor(() => getByText(/Yes/i));
@@ -375,18 +367,10 @@ test('should prompt user with signatures present but then we click the No button
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
 
-  const datePicker = getByRole(/date-picker/i);
-  const calendarButton = within(datePicker).getByRole('button');
-  fireEvent.click(calendarButton);
-  const dayButtons = getAllByRole('button', { name: '1' });
-  fireEvent.click(dayButtons[0]);
+  fireEvent.change(getByRole('textbox'), { target: { value: '10 Sep 2021' } });
 
   // wait for modal then click yes
   await waitFor(() => getByRole('button', { name: 'No' }));
   expect(getByRole('button', { name: 'No' })).toBeInTheDocument();
   fireEvent.click(getByRole('button', { name: 'No' }));
-
-  // expect the snackbar to not be visible
-  await waitFor(() => queryByText(/date updated/i));
-  expect(queryByText(/date updated/i)).not.toBeInTheDocument();
 });
