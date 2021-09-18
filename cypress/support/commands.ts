@@ -52,8 +52,8 @@ Cypress.Commands.add('loginAsMember', () => {
   cy.visit(baseUrl);
 });
 
-Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, date: string = '2021-10-01') => {
-  cy.findByRole('button', { name: /add new/i, timeout: 6000 }).click();
+Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, timesBack: number, day: string) => {
+  cy.findByRole('button', { name: /add new/i, timeout: 10000 }).click();
 
   cy.wait(10000);
 
@@ -61,13 +61,19 @@ Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, date:
 
   cy.findByRole('option', { name: trackingItemName }).click();
 
-  cy.findByRole('date-picker').within((elem) => {
-    const input = cy.findByRole('textbox');
-    fireEvent.change(input, { target: { value: '10 Sep 2021' } });
+  cy.findByRole('date-picker').within(() => {
+    cy.findByRole('button').click();
+  });
+
+  for (let index = 0; index < timesBack; index++) {
+    cy.get('[d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"]').click();
+  }
+
+  cy.findAllByRole('button', { name: day, hidden: false }).then((elements) => {
+    elements[0].click();
   });
 
   cy.findByRole('button', { name: /add/i }).click();
 });
 
 import '@testing-library/cypress/add-commands';
-import { fireEvent } from '@testing-library/dom';

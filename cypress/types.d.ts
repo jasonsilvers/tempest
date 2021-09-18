@@ -14,7 +14,7 @@ declare namespace Cypress {
     cleanUpRecords(): Chainable<Element>;
     loginAsMonitor(): Chainable<Element>;
     loginAsMember(): Chainable<Element>;
-    addMemberTrackingRecord(trackingItemName: string, date?: string): Chainable<Element>;
+    addMemberTrackingRecord(trackingItemName: string, timesBack: number, day: string): Chainable<Element>;
 
     /**
      * Custom command that adds two given numbers

@@ -128,7 +128,6 @@ const TempestDatePicker = styled((props) => (
       <TextField {...keyboardDatePickerProps} disabled aria-label="tempest-date-picker" />
     )}
     InputProps={{
-      id: 'date',
       role: 'date-picker',
     }}
     {...props}

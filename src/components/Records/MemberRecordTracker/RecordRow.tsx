@@ -146,13 +146,15 @@ const RecordRow: React.FC<{
           <TableData tw="flex space-x-1">
             <>
               <span tw={'opacity-40 pr-1 pt-1'}>Completed: </span>
-              <ConditionalDateInput
-                onChange={handleCompletionDateChange}
-                condition={
-                  !!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate
-                }
-                dateValue={trackingRecordQuery.data.completedDate}
-              />
+              <span tw="pt-1">
+                <ConditionalDateInput
+                  onChange={handleCompletionDateChange}
+                  condition={
+                    !!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate
+                  }
+                  dateValue={trackingRecordQuery.data.completedDate}
+                />
+              </span>
             </>
           </TableData>
           <TableData tw="space-x-1 pt-1">
