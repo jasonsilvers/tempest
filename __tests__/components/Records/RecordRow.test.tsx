@@ -215,7 +215,8 @@ test('should render the interval in number form for weird amount', async () => {
   expect(queryByText(/4 days/i)).toBeTruthy();
 });
 
-test('should mutate and enqueue snackbar success with not signatures', async () => {
+test('should mutate and enqueue snackbar success with no signatures', async () => {
+  jest.setTimeout(30000);
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,
@@ -258,56 +259,15 @@ test('should mutate and enqueue snackbar success with not signatures', async () 
     <RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
-  await waitFor(() => getByRole(/date-picker/i));
-  expect(getByText(/item title/i)).toBeInTheDocument();
-  fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
+
+  fireEvent.change(getByRole('textbox'), { target: { value: '10 Sep 2021' } });
+
   await waitFor(() => getByText(/date updated/i));
   expect(getByText(/date updated/i)).toBeInTheDocument();
 });
 
-// unable to test error snack bar in conjunction with react query because of Error Thrown
-// console.error Error: Request failed with status code 500
-// test('should mutate and enqueue snackbar error', async () => {
-//   const countIncreaseFunction = jest.fn();
-//   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-//     activeCategory: ECategories.ALL,
-//     increaseCategoryCount: countIncreaseFunction,
-//     categories: [ECategories.ALL, ECategories.TODO],
-//     count: {
-//       Archived: 0,
-//       Done: 0,
-//       Draft: 0,
-//       Overdue: 0,
-//       SignatureRequired: 0,
-//       Upcoming: 0,
-//     },
-//     decreaseCategoryCount: jest.fn(),
-//     resetCount: jest.fn(),
-//     setActiveCategory: jest.fn(),
-//   }));
-
-//   server.use(
-//     // return member tracking record with status of 'todo'
-//     rest.post(`/api/membertrackingrecords/1/update_completion`, (req, res, ctx) => {
-//       console.log('GOT THE REQUEST');
-
-//       return res(ctx.status(500), ctx.json({ message: 'error' }));
-//     })
-//   );
-
-//   const { getByText, queryByRole, getByRole } = render(
-//     <RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithAnnualInterval} />
-//   );
-//   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
-//   await waitFor(() => getByRole(/date-picker/i));
-//   expect(getByText(/item title/i)).toBeInTheDocument();
-//   console.log(prettyDOM(getByRole(/date-picker/i)));
-//   fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
-//   await waitFor(() => getByText(/date request failed/i));
-//   expect(getByText(/date request failed/i)).toBeInTheDocument();
-// });
-
 test('should prompt user then mutate and enqueue snackbar success with signatures present', async () => {
+  jest.setTimeout(30000);
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,
@@ -350,9 +310,7 @@ test('should prompt user then mutate and enqueue snackbar success with signature
     <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
-  await waitFor(() => getByRole(/date-picker/i));
-  expect(getByText(/item title/i)).toBeInTheDocument();
-  fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
+  fireEvent.change(getByRole('textbox'), { target: { value: '10 Sep 2021' } });
 
   // wait for modal then click yes
   await waitFor(() => getByText(/Yes/i));
@@ -365,6 +323,7 @@ test('should prompt user then mutate and enqueue snackbar success with signature
 });
 
 test('should prompt user with signatures present but then we click the No button', async () => {
+  jest.setTimeout(30000);
   const countIncreaseFunction = jest.fn();
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategories.ALL,
@@ -403,20 +362,15 @@ test('should prompt user with signatures present but then we click the No button
     })
   );
 
-  const { getByText, queryByText, queryByRole, getByRole } = render(
+  const { queryByRole, getByRole } = render(
     <RecordRow memberTrackingRecordId={2} trackingItem={trackingItemWithAnnualInterval} />
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
-  await waitFor(() => getByRole(/date-picker/i));
-  expect(getByText(/item title/i)).toBeInTheDocument();
-  fireEvent.change(getByRole(/date-picker/i), { target: { value: '2021-01-02' } });
+
+  fireEvent.change(getByRole('textbox'), { target: { value: '10 Sep 2021' } });
 
   // wait for modal then click yes
   await waitFor(() => getByRole('button', { name: 'No' }));
   expect(getByRole('button', { name: 'No' })).toBeInTheDocument();
   fireEvent.click(getByRole('button', { name: 'No' }));
-
-  // expect the snackbar to not be visible
-  await waitFor(() => queryByText(/date updated/i));
-  expect(queryByText(/date updated/i)).not.toBeInTheDocument();
 });

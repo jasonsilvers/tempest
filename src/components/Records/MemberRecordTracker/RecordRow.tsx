@@ -1,7 +1,7 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import { Dayjs } from 'dayjs';
 const dayjs = require('dayjs');
-import React, { ChangeEvent, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { getCategory } from '../../../utils/Status';
 import { ECategories, EMtrVerb } from '../../../types/global';
 import { Token, TableData, TokenObj, TableRow } from '../TwinMacro/Twin';
@@ -121,9 +121,8 @@ const RecordRow: React.FC<{
     return null;
   }
 
-  const handleCompletionDateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const date = dayjs(event.target.value);
+  const handleCompletionDateChange = (inputDate: Date) => {
+    const date = dayjs(inputDate);
     if (trackingRecordQuery.data.authoritySignedDate || trackingRecordQuery.data.traineeSignedDate) {
       setModalState({ open: true, date });
     } else {
@@ -135,28 +134,30 @@ const RecordRow: React.FC<{
   return (
     <>
       <TableRow>
-        <TableData tw={'font-size[16px] w-64'}>
+        <TableData tw={'font-size[16px] w-60 pt-1'}>
           <div tw={'flex'}>
             <DynamicToken />
             <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64">{trackingItem?.title}</div>
             {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
           </div>
         </TableData>
-        <TableData tw={'text-purple-500 w-16 ml-10'}>{getInterval(trackingItem?.interval)}</TableData>
+        <TableData tw={'text-purple-500 w-16 ml-10 pt-1'}>{getInterval(trackingItem?.interval)}</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
             <>
-              <span tw={'opacity-40'}>Completed: </span>
-              <ConditionalDateInput
-                onChange={handleCompletionDateChange}
-                condition={
-                  !!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate
-                }
-                dateValue={trackingRecordQuery.data.completedDate}
-              />
+              <span tw={'opacity-40 pr-1 pt-1'}>Completed: </span>
+              <span tw="pt-1">
+                <ConditionalDateInput
+                  onChange={handleCompletionDateChange}
+                  condition={
+                    !!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate
+                  }
+                  dateValue={trackingRecordQuery.data.completedDate}
+                />
+              </span>
             </>
           </TableData>
-          <TableData tw="space-x-1">
+          <TableData tw="space-x-1 pt-1">
             <>
               <span tw={'opacity-40'}>Due: </span>
               <span>

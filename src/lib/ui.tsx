@@ -10,7 +10,7 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Button from '@material-ui/core/Button';
-import TextField, { TextFieldProps } from '@material-ui/core/TextField';
+import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Fab from '@material-ui/core/Fab';
 import ToolTip from '@material-ui/core/Tooltip';
@@ -22,6 +22,7 @@ import TempestMenuItem from '@material-ui/core/MenuItem';
 import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
 import { useRouter } from 'next/router';
+import { KeyboardDatePicker } from '@material-ui/pickers';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -118,17 +119,42 @@ export default function TempestPopMenu({ userId }: { userId: string }) {
   );
 }
 
-const TempestDatePicker = styled((props: TextFieldProps) => <TextField type="date" {...props} />)`
+const TempestDatePicker = styled((props) => (
+  <KeyboardDatePicker
+    disableToolbar
+    variant="inline"
+    aria-label="tempest-date-picker"
+    TextFieldComponent={(keyboardDatePickerProps) => (
+      <TextField {...keyboardDatePickerProps} disabled aria-label="tempest-date-picker" />
+    )}
+    InputProps={{
+      role: 'date-picker',
+    }}
+    {...props}
+  />
+))`
   & .MuiInputBase-input {
-    padding: 2px;
+    padding: 6px;
     font-size: 12px;
     opacity: 60%;
-    width: 100px;
+    width: 70px;
     font-weight: 400;
-    line-height: 14.06px;
+    color: black;
+  }
+  & .MuiInputBase-adornedEnd {
+    padding-right: 6px;
   }
   & .MuiInputBase-input::-webkit-calendar-picker-indicator {
     margin: 0;
+  }
+
+  & .MuiButtonBase-root {
+    padding: 1px;
+  }
+
+  & .MuiSvgIcon-root {
+    height: 0.75em;
+    width: 0.75em;
   }
 `;
 

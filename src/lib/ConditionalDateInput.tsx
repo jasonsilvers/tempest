@@ -1,11 +1,11 @@
 const dayjs = require('dayjs');
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { TempestDatePicker } from './ui';
 
 interface IConditionalDateInput {
   dateValue: Date;
   condition: boolean;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (inputDate: Date) => void;
 }
 
 const ConditionalDateInput: React.FC<IConditionalDateInput> = ({ dateValue, condition, onChange }) => {
@@ -15,13 +15,11 @@ const ConditionalDateInput: React.FC<IConditionalDateInput> = ({ dateValue, cond
     return (
       <TempestDatePicker
         onChange={onChange}
-        size="small"
-        inputProps={{
-          role: 'date-picker',
-          max: dayjs().format('YYYY-MM-DD'),
-        }}
-        variant="outlined"
-        value={dayjs(dateValue).format('YYYY-MM-DD')}
+        format="DD MMM YYYY"
+        inputVariant="outlined"
+        disableFuture
+        autoOk
+        value={dateValue ? dayjs(dateValue).format('DD MMM YYYY') : null}
       />
     );
 };
