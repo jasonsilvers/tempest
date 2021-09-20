@@ -2,15 +2,16 @@ import { SecurityIcon } from '../../assets/Icons';
 import { Fab, Drawer, Button } from '../../lib/ui';
 import tw from 'twin.macro';
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import axios from 'axios';
 import { usePermissions } from '../../hooks/usePermissions';
 import { UserWithAll } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
-import { Organization, Role, User } from '.prisma/client';
+import { Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
-import { UsersDTO, RolesDTO, OrgsDTO, ERole, EUri } from '../../types/global';
+import { UsersDTO, RolesDTO, ERole, EUri } from '../../types/global';
 import { useOrgs } from '../../hooks/api/organizations';
+import { useUpdateUser } from '../../hooks/api/users';
 const dayjs = require('dayjs');
 
 const Data = tw.div`font-light text-gray-400`;
@@ -18,7 +19,6 @@ type RoleFormEvent = React.ChangeEvent<{ value: number }>;
 type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 
 const UsersList = () => {
-  const queryClient = useQueryClient();
   const usersListQuery = useQuery<UserWithAll[]>('users', () =>
     axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.users)
   );
@@ -28,14 +28,7 @@ const UsersList = () => {
   );
   const orgsListQuery = useOrgs();
 
-  const mutateUser = useMutation<User, unknown, User>(
-    (user: User) => axios.put(EUri.USERS + `${user.id}`, user).then((response) => response.data),
-    {
-      onSettled: () => {
-        queryClient.invalidateQueries('users');
-      },
-    }
-  );
+  const mutateUser = useUpdateUser();
 
   const { enqueueSnackbar } = useSnackbar();
 

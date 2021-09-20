@@ -1,5 +1,6 @@
+import { User } from '@prisma/client';
 import axios from 'axios';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { UserWithAll } from '../../repositories/userRepo';
 import { EUri, UsersDTO } from '../../types/global';
 
@@ -13,4 +14,17 @@ const useUsers = () => {
   });
 };
 
-export { useUsers };
+const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation<User, unknown, User>(
+    (user: User) => axios.put(EUri.USERS + `${user.id}`, user).then((response) => response.data),
+    {
+      onSettled: () => {
+        queryClient.invalidateQueries('loggedInUser');
+        queryClient.invalidateQueries('users');
+      },
+    }
+  );
+};
+
+export { useUsers, useUpdateUser };

@@ -13,11 +13,15 @@ function Home() {
     router.push('/Unauthenticated');
   }
 
-  if (user && user.role.name === ERole.MEMBER) {
+  if (user && !user.organizationId) {
+    router.push('/Welcome');
+  }
+
+  if (user && user.role.name === ERole.MEMBER && user.organizationId) {
     router.push(`/Profile/${user.id}`);
   }
 
-  if (user && user.role.name !== ERole.MEMBER) {
+  if (user && user.role.name !== ERole.MEMBER && user.organizationId) {
     router.push('/Dashboard');
   }
 
