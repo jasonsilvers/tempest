@@ -10,6 +10,7 @@ import { MenuItem, Select } from '@material-ui/core';
 import { Organization, Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
 import { UsersDTO, RolesDTO, OrgsDTO, ERole, EUri } from '../../types/global';
+import { useOrgs } from '../../hooks/api/organizations';
 const dayjs = require('dayjs');
 
 const Data = tw.div`font-light text-gray-400`;
@@ -25,9 +26,7 @@ const UsersList = () => {
   const rolesListQuery = useQuery<Role[]>('roles', () =>
     axios.get<RolesDTO>(EUri.ROLES).then((response) => response.data.roles)
   );
-  const orgsListQuery = useQuery<Organization[]>('organizations', () =>
-    axios.get<OrgsDTO>(EUri.ORGANIZATIONS).then((response) => response.data.organizations)
-  );
+  const orgsListQuery = useOrgs();
 
   const mutateUser = useMutation<User, unknown, User>(
     (user: User) => axios.put(EUri.USERS + `${user.id}`, user).then((response) => response.data),

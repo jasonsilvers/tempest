@@ -23,6 +23,7 @@ import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { KeyboardDatePicker } from '@material-ui/pickers';
+import { Select } from '@material-ui/core';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -44,8 +45,6 @@ const DialogTitle = tw(MuiDialogTitle)`pb-1`;
 const DialogContent = tw(MuiDialogContent)`pb-1`;
 const DialogActions = tw(MuiDialogActions)``;
 const DialogButton = tw(Button)`w-32 normal-case bg-primary text-white`;
-const PrimaryButton = tw(Button)`w-32 normal-case bg-primary text-white hover:bg-secondary`;
-const SecondaryButton = tw(Button)`w-32 rounded-lg normal-case bg-secondary text-white hover:bg-primary`;
 const Dialog = tw(MuiDialog)``;
 
 const TempestOverlay = tw.div`bg-white absolute top-0 left-0 w-full h-full backdrop-filter backdrop-blur-3xl opacity-50 z-10`;
@@ -119,6 +118,12 @@ export default function TempestPopMenu({ userId }: { userId: string }) {
   );
 }
 
+const TempestSelect = styled((props) => <Select {...props} />)`
+  & .MuiOutlinedInput-input {
+    padding: 11.5px 14px;
+  }
+`;
+
 const TempestDatePicker = styled((props) => (
   <KeyboardDatePicker
     disableToolbar
@@ -172,8 +177,6 @@ export {
   DialogActions,
   DialogButton,
   Button,
-  PrimaryButton,
-  SecondaryButton,
   Dialog,
   TextField,
   Autocomplete,
@@ -185,6 +188,7 @@ export {
   TempestSkeleton,
   TempestToolTip,
   TempestDatePicker,
+  TempestSelect,
   TempestDeleteIcon,
   Zoom,
   SearchBar,
