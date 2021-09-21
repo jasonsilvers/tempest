@@ -9,7 +9,7 @@ import { GetStaticPropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
 import { findUserByIdWithMemberTrackingItems, findUserById } from '../../repositories/userRepo';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
-import { SecondaryButton } from '../../lib/ui';
+import { Button } from '../../lib/ui';
 import tw from 'twin.macro';
 import { User } from '@prisma/client';
 import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberItemTracker';
@@ -62,7 +62,8 @@ const Profile: React.FC<{ member: User }> = ({ member }) => {
       </MemberItemTracker>
 
       <ButtonContainer>
-        <SecondaryButton
+        <Button
+          color="secondary"
           size="medium"
           tw="italic"
           variant="contained"
@@ -71,7 +72,7 @@ const Profile: React.FC<{ member: User }> = ({ member }) => {
           }}
         >
           Add New +
-        </SecondaryButton>
+        </Button>
       </ButtonContainer>
 
       {openAddNewModal ? (

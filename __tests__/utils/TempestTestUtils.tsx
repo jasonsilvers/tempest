@@ -1,7 +1,7 @@
 import { UserContextProvider } from '@tron/nextjs-auth-p1/dist/client/UserContextProvider';
 import { useTestRouter } from './mocks/NextMocks';
 import * as React from 'react';
-import { render as rtlRender } from '@testing-library/react';
+import { render as rtlRender, waitForElementToBeRemoved, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SnackbarProvider } from 'notistack';
 import { Button } from '../../src/lib/ui';
@@ -10,6 +10,11 @@ import userEvent from '@testing-library/user-event';
 import { EUri } from '../../src/types/global';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DayJsUtils from '@date-io/dayjs';
+
+export const waitForLoadingToFinish = () =>
+  waitForElementToBeRemoved(() => [...screen.queryAllByLabelText(/loading/i), ...screen.queryAllByText(/loading/i)], {
+    timeout: 4000,
+  });
 
 const createTestQueryClient = () => {
   const queryClientInit = new QueryClient({
