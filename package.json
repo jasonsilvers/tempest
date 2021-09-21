@@ -10,6 +10,7 @@
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "test": "jest --watchAll",
     "test:unit": "jest",
+    "pre-commit": "pretty-quick --staged",
     "cypress:open": "cypress open --config-file cypress/config/development.json",
     "cypress:run": "cypress run --config-file cypress/config/development.json",
     "test:e2e-ci": "cypress run --config-file cypress/config/pipeline.json",
