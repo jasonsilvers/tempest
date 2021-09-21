@@ -1,7 +1,7 @@
 import { User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import axios from 'axios';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { UserWithAll } from '../../repositories/userRepo';
 import { EUri, UsersDTO } from '../../types/global';
 

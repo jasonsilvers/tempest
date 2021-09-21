@@ -7,7 +7,7 @@ import { QueryClient } from 'react-query';
 import { mtiQueryKeys } from '../../hooks/api/memberTrackingItem';
 import { GetStaticPropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
-import { findUserByIdWithMemberTrackingItems, findUserById } from '../../repositories/userRepo';
+import { findUserByIdWithMemberTrackingItems } from '../../repositories/userRepo';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
 import { Button } from '../../lib/ui';
 import tw from 'twin.macro';

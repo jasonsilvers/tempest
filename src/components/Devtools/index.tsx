@@ -2,7 +2,7 @@ import { SecurityIcon } from '../../assets/Icons';
 import { Fab, Drawer, Button } from '../../lib/ui';
 import tw from 'twin.macro';
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
 import { usePermissions } from '../../hooks/usePermissions';
 import { UserWithAll } from '../../repositories/userRepo';
@@ -19,6 +19,7 @@ type RoleFormEvent = React.ChangeEvent<{ value: number }>;
 type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 
 const UsersList = () => {
+  const queryClient = useQueryClient();
   const usersListQuery = useQuery<UserWithAll[]>('users', () =>
     axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.users)
   );
@@ -44,6 +45,9 @@ const UsersList = () => {
         onSuccess: () => {
           enqueueSnackbar('Organization Changed', { variant: 'success' });
         },
+        onSettled: () => {
+          queryClient.invalidateQueries('users');
+        },
       });
     }
   };
@@ -60,6 +64,9 @@ const UsersList = () => {
       mutateUser.mutate(updatedUser, {
         onSuccess: () => {
           enqueueSnackbar('Role Changed', { variant: 'success' });
+        },
+        onSettled: () => {
+          queryClient.invalidateQueries('users');
         },
       });
     }
