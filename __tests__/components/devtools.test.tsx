@@ -165,7 +165,7 @@ test('should update a users organization', async () => {
 
   expect(newOrg).toBeInTheDocument();
 });
-test('should update a users organization', async () => {
+test('should update a users role', async () => {
   const { getByText, findByRole, getAllByRole, findByText, queryByText } = render(<Devtools />);
 
   const button = await findByRole('button', { name: 'devtool-button' });

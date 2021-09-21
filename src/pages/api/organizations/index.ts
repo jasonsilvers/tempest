@@ -26,12 +26,6 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
 
   switch (method) {
     case 'GET': {
-      const permission = ac.can(req.user.role.name).readAny(EResource.ORGANIZATION);
-
-      if (!permission.granted) {
-        return permissionDenied(res);
-      }
-
       const organizations = await findOrganizations();
       res.status(200).json({ organizations });
       break;

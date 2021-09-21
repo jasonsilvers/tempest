@@ -1,6 +1,4 @@
 import Dialog from '@material-ui/core/Dialog';
-import Image from 'next/image';
-import welcomePic from '../../public/img/cascadewelcome.png';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../repositories/userRepo';
 import { Button } from '../lib/ui';
@@ -58,7 +56,7 @@ const WelcomePage = () => {
           </div>
         </div>
         <div tw="w-1/3 relative">
-          <Image layout="fill" src={welcomePic} alt="new drop of water" />
+          <img tw="h-full w-full" src="/img/cascadewelcome.png" />
         </div>
       </div>
     </Dialog>

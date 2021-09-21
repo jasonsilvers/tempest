@@ -44,7 +44,7 @@ export const UpdateUsersOrg = ({ userId, userOrganizationId = '' }: { userId: st
           tw="text-gray-400 w-64"
           value={userOrganizationId}
         >
-          {orgsQuery.data.map((org) => (
+          {orgsQuery.data?.map((org) => (
             <MenuItem key={org.id} value={org.id}>
               {org.name}
             </MenuItem>

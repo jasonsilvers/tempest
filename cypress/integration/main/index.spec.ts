@@ -1,4 +1,4 @@
-import { memberJWT, monitorJWT } from '../../fixtures/jwt';
+import { member2JWTNoOrg, memberJWT, monitorJWT } from '../../fixtures/jwt';
 
 describe('Monitor Role', () => {
   it('Visits the site, should show dashboard and Global Training Catalog', () => {
@@ -32,5 +32,25 @@ describe('Member Role', () => {
 
     cy.contains(/dashboad/i).should('not.exist');
     cy.contains(/global-training-catalog/).should('not.exist');
+  });
+
+  it('vists the site and redirect to welcome page, if user has no organization', () => {
+    const baseUrl = Cypress.config('baseUrl');
+
+    cy.intercept(baseUrl + 'api/**', (req) => {
+      req.headers['Authorization'] = `Bearer ${member2JWTNoOrg}`;
+    });
+
+    cy.visit(baseUrl);
+
+    cy.wait(2000);
+    cy.url().should('include', '/Welcome');
+
+    cy.get('.MuiSelect-root').click();
+    cy.findByRole('option', { name: /mdg/i }).click();
+
+    cy.findByRole('button', { name: /get started/i }).click();
+
+    cy.url({ timeout: 5000 }).should('include', '/Profile');
   });
 });

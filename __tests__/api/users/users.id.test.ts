@@ -163,6 +163,23 @@ test('GET - should only allow get', async () => {
   expect(status).toBe(405);
 });
 
+test('PUT - should return user - update own', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' } });
+  mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  const { data, status } = await testNextApi.put(userQueryHandler, {
+    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    body: { organizationId: 'abc123' },
+  });
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ name: 'bob', id: 123 });
+});
+
 test('PUT - should return user - update any', async () => {
   mockMethodAndReturn(findUserById, userFromDb);
   mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
