@@ -14,6 +14,7 @@ it('routes the user to the Welcom page if they do not have an organization', () 
   useTestUser.mockImplementationOnce(() => ({
     isLoading: true,
     user: { firstName: 'bob', id: '1', role: { name: ERole.MEMBER, id: 1 } },
+    // eslint-disable-next-line
     refreshUser: () => {},
   }));
   const push = jest.fn();
@@ -26,6 +27,7 @@ it('routes the user to the Profile page if they have the role member', () => {
   useTestUser.mockImplementationOnce(() => ({
     isLoading: true,
     user: { firstName: 'bob', id: '1', role: { name: ERole.MEMBER, id: 1 }, organizationId: 'adioj3' },
+    // eslint-disable-next-line
     refreshUser: () => {},
   }));
   const push = jest.fn();
@@ -38,6 +40,7 @@ it('routes the user to the Dashboard page if their role is not Member', () => {
   useTestUser.mockImplementationOnce(() => ({
     isLoading: true,
     user: { firstName: 'bob', role: { name: ERole.MONITOR, id: 1 }, organizationId: 'aji32' },
+    // eslint-disable-next-line
     refreshUser: () => {},
   }));
   const push = jest.fn();

@@ -39,7 +39,13 @@ const WelcomePage = () => {
                   />
                 </div>
                 <div tw="pl-6">
-                  <Button onClick={() => router.push('/')} size="large" color="secondary" variant="outlined">
+                  <Button
+                    disabled={!user?.organizationId}
+                    onClick={() => router.push('/')}
+                    size="large"
+                    color="secondary"
+                    variant="outlined"
+                  >
                     Get Started!
                   </Button>
                 </div>

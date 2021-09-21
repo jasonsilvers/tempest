@@ -1,20 +1,20 @@
 import { Schema, ValidationError } from 'joi';
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
-export type ValidableRequestFields = Pick<NextApiRequest, 'body' | 'headers' | 'query'>;
+export type ValidatableRequestFields = Pick<NextApiRequest, 'body' | 'headers' | 'query'>;
 
 export type ValidationSchemas = {
   post?: {
-    [V in keyof ValidableRequestFields]?: Schema;
+    [V in keyof ValidatableRequestFields]?: Schema;
   };
   get?: {
-    [V in keyof ValidableRequestFields]?: Schema;
+    [V in keyof ValidatableRequestFields]?: Schema;
   };
   put?: {
-    [V in keyof ValidableRequestFields]?: Schema;
+    [V in keyof ValidatableRequestFields]?: Schema;
   };
   delete?: {
-    [V in keyof ValidableRequestFields]?: Schema;
+    [V in keyof ValidatableRequestFields]?: Schema;
   };
 };
 
@@ -41,7 +41,7 @@ export default function withValidation(config?: Configuration): ValidationFuncti
         return handler(req, res);
       }
 
-      const fields: (keyof ValidableRequestFields)[] = ['body', 'headers', 'query'];
+      const fields: (keyof ValidatableRequestFields)[] = ['body', 'headers', 'query'];
 
       const validationError = fields.reduce<ValidationError | undefined>((error, field) => {
         if (undefined !== error) {

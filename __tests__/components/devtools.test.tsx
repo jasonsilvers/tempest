@@ -138,7 +138,7 @@ test('should close devtools', async () => {
   await waitForElementToBeRemoved(() => getByText(/users/i));
 });
 
-test('should update a users role', async () => {
+test('should update a users organization', async () => {
   const { getByText, findByRole, getAllByRole, findByText, queryByText } = render(<Devtools />);
 
   const button = await findByRole('button', { name: 'devtool-button' });

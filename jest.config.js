@@ -25,9 +25,11 @@ module.exports = {
   coverageReporters: ['json', 'lcov', 'text', 'text-summary'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}'],
   moduleNameMapper: {
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-      '<rootDir>/src/assets/svgrMock.tsx',
     '\\.(css|less|scss)$': 'identity-obj-proxy',
+    /* Handle image imports
+    https://jestjs.io/docs/webpack#handling-static-assets */
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+      '<rootDir>/__tests__/utils/__mocks__/fileMock.js',
   },
   setupFilesAfterEnv: ['./__tests__/setup/jest.setup.ts'],
 };
