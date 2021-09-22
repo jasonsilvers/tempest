@@ -54,6 +54,8 @@ const EditItem: React.FC<{
       <TextField
         onChange={onChange}
         label={label}
+        name={`${label}_textfield`}
+        id={`${label}_textfield`}
         style={{ paddingRight: '1rem', ...editStyle }}
         defaultValue={value}
       />
