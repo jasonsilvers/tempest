@@ -88,6 +88,7 @@ export const withErrorHandling =
         return res.status(e.status).json({ message: 'Method Not Allowed' });
       }
 
+      console.log(e);
       log.trace(`caught error: ${500} ${e}`);
       return res.status(500).json({ message: 'There was an internal server error' });
     }

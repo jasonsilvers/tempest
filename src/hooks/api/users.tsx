@@ -1,6 +1,7 @@
 import { User } from '@prisma/client';
+import { useUser } from '@tron/nextjs-auth-p1';
 import axios from 'axios';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { UserWithAll } from '../../repositories/userRepo';
 import { EUri, UsersDTO } from '../../types/global';
 
@@ -15,13 +16,12 @@ const useUsers = () => {
 };
 
 const useUpdateUser = () => {
-  const queryClient = useQueryClient();
+  const { refreshUser } = useUser();
   return useMutation<User, unknown, User>(
     (user: User) => axios.put(EUri.USERS + `${user.id}`, user).then((response) => response.data),
     {
       onSettled: () => {
-        queryClient.invalidateQueries('loggedInUser');
-        queryClient.invalidateQueries('users');
+        refreshUser();
       },
     }
   );

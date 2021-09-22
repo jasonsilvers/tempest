@@ -78,13 +78,18 @@ async function userQueryHandler(
     }
 
     case 'PUT': {
-      const persmision = ac.can(req.user.role.name).updateAny(EResource.USER);
+      const persmission =
+        req.user.id !== userId
+          ? ac.can(req.user.role.name).updateAny(EResource.USER)
+          : ac.can(req.user.role.name).updateOwn(EResource.USER);
 
-      if (!persmision.granted) {
+      if (!persmission.granted) {
         return permissionDenied(res);
       }
 
-      const updatedUser = await updateUser(body);
+      const filteredData = persmission.filter(body);
+
+      const updatedUser = await updateUser(userId, filteredData);
 
       res.status(200).json(updatedUser);
       break;

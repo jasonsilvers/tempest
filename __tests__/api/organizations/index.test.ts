@@ -55,16 +55,6 @@ test('should return 401 if not authorized', async () => {
   const { status } = await testNextApi.get(organizationApiHandler, { withJwt: false });
   expect(status).toBe(401);
 });
-test('should return 403 if incorrect permission - GET', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: globalUserId,
-    firstName: 'joe',
-    role: { id: '22', name: 'norole' },
-  });
-  mockMethodAndReturn(findOrganizations, testOrganizations);
-  const { status } = await testNextApi.get(organizationApiHandler);
-  expect(status).toBe(403);
-});
 
 test('should return method not allowed', async () => {
   const { status } = await testNextApi.put(organizationApiHandler, { body: {} });

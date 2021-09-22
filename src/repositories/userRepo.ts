@@ -146,10 +146,10 @@ export const createUser = async (user: User, role?: Role) => {
  * @param user
  * @returns User
  */
-export const updateUser = async (user: User) => {
+export const updateUser = async (userId: string, data: User) => {
   return prisma.user.update({
-    where: { id: user.id },
-    data: user,
+    where: { id: userId },
+    data,
   });
 };
 

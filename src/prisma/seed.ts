@@ -133,6 +133,19 @@ async function seedDev() {
     },
   });
 
+  const user3 = createUser('2143209891', 'Frank', 'Clark');
+
+  await prisma.user.create({
+    data: {
+      ...user3,
+      role: {
+        connect: {
+          id: memberRole.id,
+        },
+      },
+    },
+  });
+
   const newMemberTrackingItem1 = {
     userId: user1.id,
     isActive: true,
