@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import { P1_JWT } from '@tron/nextjs-auth-p1';
 import { EAction, EResource, ERole } from '../../../src/types/global';
 import { grants as realGrants } from '../../../src/utils/Grants';
@@ -61,6 +62,11 @@ export const bobJones = {
     id: 22,
     name: ERole.MEMBER,
   },
-};
+  address: '123 Main St',
+  afsc: '12345',
+  email: 'bob.jones@email.com',
+  rank: 'E-6',
+  dutyTitle: 'Chief',
+} as unknown as User;
 
 export { grants };

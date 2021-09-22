@@ -46,6 +46,9 @@ const UsersList = () => {
           queryClient.invalidateQueries('users');
           enqueueSnackbar('Organization Changed', { variant: 'success' });
         },
+        onSettled: () => {
+          queryClient.invalidateQueries('users');
+        },
       });
     }
   };
@@ -64,6 +67,9 @@ const UsersList = () => {
           queryClient.invalidateQueries('users');
 
           enqueueSnackbar('Role Changed', { variant: 'success' });
+        },
+        onSettled: () => {
+          queryClient.invalidateQueries('users');
         },
       });
     }
