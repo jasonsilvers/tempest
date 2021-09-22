@@ -73,7 +73,7 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
     setFormState(user);
   }, [user]);
 
-  return user ? (
+  return formState ? (
     <ProfileHeaderContext.Provider value={isActiveEdit}>
       <div tw="flex items-center">
         <Name>{`${user.lastName} ${user.firstName}`}</Name>

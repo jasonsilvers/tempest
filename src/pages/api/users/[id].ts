@@ -78,9 +78,18 @@ async function userQueryHandler(
     }
 
     case 'PUT': {
-      const persmision = ac.can(req.user.role.name).updateAny(EResource.USER);
+      let permission: Permission;
+      if (req.user.id !== userId) {
+        if (await userWithinOrgOrChildOrg(req.user, user)) {
+          permission = ac.can(req.user.role.name).updateAny(EResource.USER);
+        } else {
+          return permissionDenied(res);
+        }
+      } else {
+        permission = ac.can(req.user.role.name).updateOwn(EResource.USER);
+      }
 
-      if (!persmision.granted) {
+      if (!permission.granted) {
         return permissionDenied(res);
       }
 
