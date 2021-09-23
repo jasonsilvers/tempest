@@ -117,7 +117,7 @@ test('GET - should return 403 - read own', async () => {
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
-  mockMethodAndReturn(findUserById, userFromDb);
+  mockMethodAndReturn(findUserById, { id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2', firstName: 'Not Joe' });
 
   const { status } = await testNextApi.get(userQueryHandler, {
     urlId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',

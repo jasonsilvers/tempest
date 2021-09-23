@@ -3,8 +3,8 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { Permission } from 'accesscontrol';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
-import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { getAc, recordNotFound } from '../../../middleware/utils';
+import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { findUserByDodId, findUserById, updateUser, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ITempestApiError } from '../../../types/global';
@@ -19,6 +19,30 @@ async function userWithinOrgOrChildOrg(reqUser: LoggedInUser, user: User) {
   }
 
   return false;
+}
+
+async function getUserPermission(
+  req: NextApiRequestWithAuthorization<LoggedInUser>,
+  res: NextApiResponse<User | ITempestApiError>,
+  user: User,
+  adminQuery: 'readAny' | 'updateAny',
+  userQuery: 'readOwn' | 'updateOwn'
+) {
+  const ac = await getAc();
+  let permission: Permission;
+  if (req.user.id !== user.id) {
+    if (await userWithinOrgOrChildOrg(req.user, user)) {
+      permission = ac.can(req.user.role.name)[adminQuery](EResource.USER);
+    } else {
+      throw new PermissionError();
+    }
+  } else {
+    permission = ac.can(req.user.role.name)[userQuery](EResource.USER);
+  }
+  if (!permission.granted) {
+    throw new PermissionError();
+  }
+  return permission;
 }
 
 const userPutSchema = {
@@ -46,8 +70,6 @@ async function userQueryHandler(
   // Set userId to 0
   const userId = query.id as string;
 
-  const ac = await getAc();
-
   const user = await findUserById(userId);
 
   if (!user) {
@@ -57,47 +79,22 @@ async function userQueryHandler(
   switch (method) {
     // Get Method to return a single user by id
     case 'GET': {
-      let permission: Permission;
-
-      if (req.user.id !== userId) {
-        if (await userWithinOrgOrChildOrg(req.user, user)) {
-          permission = ac.can(req.user.role.name).readAny(EResource.USER);
-        } else {
-          return permissionDenied(res);
-        }
-      } else {
-        permission = ac.can(req.user.role.name).readOwn(EResource.USER);
-      }
-
-      if (!permission.granted) {
-        return permissionDenied(res);
-      }
+      await getUserPermission(req, res, user, 'readAny', 'readOwn');
 
       res.status(200).json(user);
       break;
     }
 
     case 'PUT': {
-      let permission: Permission;
-      if (req.user.id !== userId) {
-        if (await userWithinOrgOrChildOrg(req.user, user)) {
-          permission = ac.can(req.user.role.name).updateAny(EResource.USER);
-        } else {
-          return permissionDenied(res);
-        }
-      } else {
-        permission = ac.can(req.user.role.name).updateOwn(EResource.USER);
+      const permission = await getUserPermission(req, res, user, 'updateAny', 'updateOwn');
+
+      if (permission) {
+        const filteredData = permission.filter(body);
+
+        const updatedUser = await updateUser(userId, filteredData);
+
+        res.status(200).json(updatedUser);
       }
-
-      if (!permission.granted) {
-        return permissionDenied(res);
-      }
-
-      const filteredData = permission.filter(body);
-
-      const updatedUser = await updateUser(userId, filteredData);
-
-      res.status(200).json(updatedUser);
       break;
     }
 
