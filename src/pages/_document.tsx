@@ -5,9 +5,9 @@ import { ServerStyleSheets } from '@material-ui/core/styles';
 import crypto from 'crypto';
 
 const cspHashOf = (text: string) => {
-  const hash = crypto.createHash('sha256');
+  const hash = crypto.createHash('sha512');
   hash.update(text);
-  return `'sha256-${hash.digest('base64')}'`;
+  return `'sha512-${hash.digest('base64')}'`;
 };
 
 export default class MyDocument extends Document {
@@ -40,7 +40,7 @@ export default class MyDocument extends Document {
   }
 
   render() {
-    const csp = `style-src https://fonts.googleapis.com 'unsafe-inline'; img-src *:; font-src https://fonts.gstatic.com data:; default-src 'self'; script-src 'unsafe-eval' 'self' ${cspHashOf(
+    const csp = `style-src https://fonts.googleapis.com 'unsafe-inline'; img-src * data:; font-src https://fonts.gstatic.com data:; default-src 'self'; script-src 'unsafe-eval' 'self' ${cspHashOf(
       NextScript.getInlineScriptSource(this.props)
     )}`;
 
