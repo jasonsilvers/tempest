@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
 
   return (
     <TempestDrawer>
-      <Header goToUrl="/">Tempest</Header>
+      <Header goToUrl="/">Cascade</Header>
       <div tw="space-y-9">
         {canViewDashboard?.granted ? (
           <Link goToUrl="/Dashboard" icon={<DashboardIcon fontSize="large" />}>

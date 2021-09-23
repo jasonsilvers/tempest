@@ -34,7 +34,10 @@ it('renders the profile header', async () => {
 });
 
 it('renders the edit view in the profile header and exits with no data persist', async () => {
-  const { getByText, getByRole, getByLabelText, queryByText } = render(<ProfileHeader user={bobJones} />);
+  const { getByText, getByRole, getByLabelText, queryByText, findAllByRole } = render(
+    <ProfileHeader user={bobJones} />
+  );
+  const startingRank = bobJones.rank;
   await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
 
   fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
@@ -42,13 +45,15 @@ it('renders the edit view in the profile header and exits with no data persist',
   // change data
   const textfield = getByLabelText(/rank/i, { selector: 'input' }) as HTMLInputElement;
   // get value of textfield before change event
-  const value = textfield.value;
-  fireEvent.change(textfield, { target: { value: 'MSgt' } });
-  await waitFor(() => expect(textfield.value).toBe('MSgt'));
+  fireEvent.mouseDown(textfield);
+  const options = await findAllByRole('option');
+  fireEvent.click(options[1]);
+
+  await waitFor(() => expect(textfield.value).toBe('Amn/E-2'));
   // exits the edit mode with out persisting data
   fireEvent.click(getByText(/cancel/i));
-  await waitFor(() => expect(queryByText('MSgt')).not.toBeInTheDocument());
-  await waitFor(() => expect(getByText(value)).toBeInTheDocument());
+  await waitFor(() => expect(queryByText('Amn/E-2')).not.toBeInTheDocument());
+  await waitFor(() => expect(getByText(startingRank)).toBeInTheDocument());
 });
 
 it('renders the edit view in the profile header and persists data', async () => {
@@ -67,18 +72,14 @@ it('renders the edit view in the profile header and persists data', async () => 
   fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
   await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
   // change data
-  const ranktextfield = getByLabelText(/rank/i, { selector: 'input' }) as HTMLInputElement;
   const afsctextfield = getByLabelText(/afsc/i, { selector: 'input' }) as HTMLInputElement;
   const dutytextfield = getByLabelText(/duty title/i, { selector: 'input' }) as HTMLInputElement;
-  const addresstextfield = getByLabelText(/address/i, { selector: 'input' }) as HTMLInputElement;
-  fireEvent.change(ranktextfield, { target: { value: 'MSgt' } });
+  const addresstextfield = getByLabelText(/office/i, { selector: 'input' }) as HTMLInputElement;
   fireEvent.change(afsctextfield, { target: { value: 'AFSC123' } });
   fireEvent.change(dutytextfield, { target: { value: 'DUTYTITLE123' } });
   fireEvent.change(addresstextfield, { target: { value: 'OFFICESYMBOL123' } });
-  await waitFor(() => expect(ranktextfield.value).toBe('MSgt'));
   // exits the edit mode with out persisting data
   fireEvent.click(getByText(/save/i));
-  await waitFor(() => expect(queryByText('MSgt')).toBeInTheDocument());
   await waitFor(() => expect(queryByText('AFSC123')).toBeInTheDocument());
   await waitFor(() => expect(queryByText('DUTYTITLE123')).toBeInTheDocument());
   await waitFor(() => expect(queryByText('OFFICESYMBOL123')).toBeInTheDocument());
