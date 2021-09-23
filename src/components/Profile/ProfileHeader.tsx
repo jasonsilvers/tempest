@@ -72,7 +72,7 @@ const EditItem: React.FC<{
 const EditSelect: React.FC<{
   label: string;
   editStyle?: CSSProperties;
-  onChange?: (value: any) => void;
+  onChange?: (value: { value: string; group: string }) => void;
 }> = ({ children, label, editStyle, onChange }) => {
   const isEdit = useProfileHeaderContext();
   const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);

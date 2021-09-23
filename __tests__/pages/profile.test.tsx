@@ -1,4 +1,4 @@
-import { render, waitFor, waitForElementToBeRemoved, fireEvent } from '../utils/TempestTestUtils';
+import { render, waitFor, fireEvent } from '../utils/TempestTestUtils';
 import Profile, { getStaticPaths, getStaticProps } from '../../src/pages/Profile/[id]';
 import 'whatwg-fetch';
 import { server, rest } from '../utils/mocks/msw';
