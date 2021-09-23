@@ -51,7 +51,7 @@ const WelcomePage = () => {
             </div>
           </div>
           <div tw="flex flex-col text-sm text-center">
-            <p>Organization doesn&apost exist?</p>
+            <p>Organization doesn&apos;t exist?</p>
             <p>*Please contact us at contactus@tron.dso.mil so we can create one!</p>
           </div>
         </div>

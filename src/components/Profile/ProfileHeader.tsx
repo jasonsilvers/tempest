@@ -3,18 +3,23 @@ import { User } from '@prisma/client';
 import React, { ChangeEventHandler, useContext, useEffect, useState } from 'react';
 import tw from 'twin.macro';
 import { EditIcon } from '../../assets/Icons';
+import { ranks } from '../../const/ranks';
 import { useUpdateUser } from '../../hooks/api/users';
-import { Button, IconButton, TextField } from '../../lib/ui';
+import { Button, IconButton, TextField, Autocomplete } from '../../lib/ui';
 
 const Name = tw.h4`text-3xl text-black`;
 const Table = tw.div`text-left mb-6`;
 const Column = tw.div`flex flex-col`;
 const Row = tw.div`flex flex-row`;
 const Base = tw.div`text-sm mb-1 text-hg pr-5 capitalize`;
-const Rank = tw(Base)`w-16`;
+const Rank = tw(Base)`w-24`;
 const Address = tw(Base)``;
-const AFSC = tw(Base)`w-16`;
+const AFSC = tw(Base)`w-24`;
 const DutyTitle = tw(Base)``;
+
+const emptyStringsNotAllowed = (value) => {
+  return value === '' ? null : value;
+};
 
 const ProfileHeaderContext = React.createContext(false);
 
@@ -64,6 +69,40 @@ const EditItem: React.FC<{
   return <div>{children}</div>;
 };
 
+const EditSelect: React.FC<{
+  label: string;
+  editStyle?: CSSProperties;
+  onChange?: (value: { value: string; group: string }) => void;
+}> = ({ children, label, editStyle, onChange }) => {
+  const isEdit = useProfileHeaderContext();
+  const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
+
+  if (isEdit) {
+    return (
+      <Autocomplete
+        defaultValue={ranks.find((rank) => rank.value === value[0])}
+        options={ranks}
+        getOptionLabel={(option) => option.value}
+        groupBy={(option) => option.group}
+        onChange={(event, v) => onChange(v)}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={label}
+            name={`${label}_textfield`}
+            id={`${label}_textfield`}
+            style={{ paddingRight: '1rem', ...editStyle }}
+            InputProps={{
+              ...params.InputProps,
+            }}
+          />
+        )}
+      />
+    );
+  }
+  return <div>{children}</div>;
+};
+
 const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
   const [isActiveEdit, setIsActiveEdit] = useState(false);
   const [formState, setFormState] = useState(user);
@@ -73,7 +112,7 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
     setFormState(user);
   }, [user]);
 
-  return user ? (
+  return formState ? (
     <ProfileHeaderContext.Provider value={isActiveEdit}>
       <div tw="flex items-center">
         <Name>{`${user.lastName} ${user.firstName}`}</Name>
@@ -99,17 +138,21 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
       <Table>
         <Column>
           <Row>
-            <EditItem
-              onChange={(e) => setFormState((state) => ({ ...state, rank: e.target.value }))}
+            <EditSelect
+              onChange={({ value }) => {
+                console.log(value);
+
+                setFormState((state) => ({ ...state, rank: value }));
+              }}
               label="Rank"
-              editStyle={{ width: '6rem' }}
+              editStyle={{ width: '10rem' }}
             >
               <Rank>{formState.rank}</Rank>
-            </EditItem>
+            </EditSelect>
             <EditItem
-              label="Address"
+              label="Office Symbol"
               editStyle={{ width: '20rem' }}
-              onChange={(e) => setFormState((state) => ({ ...state, address: e.target.value }))}
+              onChange={(e) => setFormState((state) => ({ ...state, address: emptyStringsNotAllowed(e.target.value) }))}
             >
               <Address>{formState.address}</Address>
             </EditItem>
@@ -119,15 +162,17 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
           <Row>
             <EditItem
               label="AFSC"
-              editStyle={{ width: '6rem' }}
-              onChange={(e) => setFormState((state) => ({ ...state, afsc: e.target.value }))}
+              editStyle={{ width: '10rem' }}
+              onChange={(e) => setFormState((state) => ({ ...state, afsc: emptyStringsNotAllowed(e.target.value) }))}
             >
               <AFSC>{formState.afsc}</AFSC>
             </EditItem>
             <EditItem
               label="Duty Title"
               editStyle={{ width: '20rem' }}
-              onChange={(e) => setFormState((state) => ({ ...state, dutyTitle: e.target.value }))}
+              onChange={(e) =>
+                setFormState((state) => ({ ...state, dutyTitle: emptyStringsNotAllowed(e.target.value) }))
+              }
             >
               <DutyTitle>{formState.dutyTitle}</DutyTitle>
             </EditItem>

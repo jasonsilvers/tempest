@@ -7,17 +7,18 @@ import { QueryClient } from 'react-query';
 import { mtiQueryKeys } from '../../hooks/api/memberTrackingItem';
 import { GetStaticPropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
-import { findUserByIdWithMemberTrackingItems } from '../../repositories/userRepo';
+import { findUserById, findUserByIdWithMemberTrackingItems, UserWithAll } from '../../repositories/userRepo';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
 import { Button } from '../../lib/ui';
 import tw from 'twin.macro';
 import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberItemTracker';
 import Tab from '../../components/Records/MemberRecordTracker/Tab';
 import { ProfileHeader } from '../../components/Profile/ProfileHeader';
+import { useMember } from '../../hooks/api/users';
 
 const ButtonContainer = tw.div`fixed right-10 top-5 border`;
 
-const Profile: React.FC = () => {
+const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
   const {
     query: { id },
   } = useRouter();
@@ -26,10 +27,7 @@ const Profile: React.FC = () => {
   const [openAddNewModal, setAddNewModal] = useState(false);
 
   const userId = id?.toString();
-  //Used to prevent the count for the tabs incrementing each time the page is loaded
-  // useEffect(() => {
-  //   return () => resetCount();
-  // }, []);
+  const { data: member } = useMember(id, initialMemberData);
 
   if (isLoading || !id) {
     return <div>Loading Profile</div>;
@@ -46,7 +44,8 @@ const Profile: React.FC = () => {
 
   return (
     <div tw="relative min-w-min max-width[1440px]">
-      <ProfileHeader user={user} />
+      {/* should refactor to use a react query in future */}
+      <ProfileHeader user={member} />
       <MemberItemTracker title="Training in Progress" userId={userId}>
         <Tab category={ECategories.ALL}>All</Tab>
         <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
@@ -97,9 +96,13 @@ export async function getStaticProps(context: GetStaticPropsContext) {
     findUserByIdWithMemberTrackingItems(userId, EUserIncludes.TRACKING_ITEMS)
   );
 
+  const initialMemberData = await findUserById(userId);
+
   return {
     props: {
       dehydrateState: dehydrate(queryClient),
+      initialMemberData,
+      userId,
     },
     revalidate: 30,
   };
