@@ -40,7 +40,7 @@ export default class MyDocument extends Document {
   }
 
   render() {
-    const csp = `style-src https://fonts.googleapis.com 'unsafe-inline'; img-src * data:; font-src https://fonts.gstatic.com data:; default-src 'self'; script-src 'unsafe-eval' 'self' ${cspHashOf(
+    const csp = `style-src https://fonts.googleapis.com 'unsafe-inline'; img-src *:; font-src https://fonts.gstatic.com data:; default-src 'self'; script-src 'unsafe-eval' 'self' ${cspHashOf(
       NextScript.getInlineScriptSource(this.props)
     )}`;
 
