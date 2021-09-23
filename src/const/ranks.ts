@@ -1,6 +1,8 @@
 // can replace in future with api call to https://tron-common-api-il4.staging.dso.mil/api/v2/rank/USAF
 
-export const ranks = [
+export type GroupedRank = { value: string; group: string };
+
+export const ranks: GroupedRank[] = [
   { value: 'AB/E-1', group: 'Enlisted' },
   { value: 'Amn/E-2', group: 'Enlisted' },
   { value: 'A1C/E-3', group: 'Enlisted' },

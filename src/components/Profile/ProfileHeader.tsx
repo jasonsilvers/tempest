@@ -3,7 +3,7 @@ import { User } from '@prisma/client';
 import React, { ChangeEventHandler, useContext, useEffect, useState } from 'react';
 import tw from 'twin.macro';
 import { EditIcon } from '../../assets/Icons';
-import { ranks } from '../../const/ranks';
+import { ranks, GroupedRank } from '../../const/ranks';
 import { useUpdateUser } from '../../hooks/api/users';
 import { Button, IconButton, TextField, Autocomplete } from '../../lib/ui';
 
@@ -72,7 +72,7 @@ const EditItem: React.FC<{
 const EditSelect: React.FC<{
   label: string;
   editStyle?: CSSProperties;
-  onChange?: (value: { value: string; group: string }) => void;
+  onChange?: (value: GroupedRank) => void;
 }> = ({ children, label, editStyle, onChange }) => {
   const isEdit = useProfileHeaderContext();
   const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
@@ -84,7 +84,7 @@ const EditSelect: React.FC<{
         options={ranks}
         getOptionLabel={(option) => option.value}
         groupBy={(option) => option.group}
-        onChange={(event, v) => onChange(v)}
+        onChange={(event, v) => onChange(v as GroupedRank)}
         renderInput={(params) => (
           <TextField
             {...params}
