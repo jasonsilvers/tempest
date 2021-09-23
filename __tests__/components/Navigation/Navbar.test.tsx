@@ -27,13 +27,13 @@ test('should render a navbar', async () => {
 
   await waitFor(() => getByText(/my profile/i));
 
-  await waitFor(() => getByText(/Tempest/i));
+  await waitFor(() => getByText(/Cascade/i));
 
-  expect(getByText(/Tempest/i)).toBeInTheDocument;
+  expect(getByText(/Cascade/i)).toBeInTheDocument;
 });
 
 test('should not render navbar with no user', async () => {
   const { queryByText } = render(<Navbar />);
 
-  await waitFor(() => expect(queryByText(/Tempest/i)).toBeFalsy);
+  await waitFor(() => expect(queryByText(/Cascade/i)).toBeFalsy);
 });

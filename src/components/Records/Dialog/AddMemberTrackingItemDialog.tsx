@@ -94,7 +94,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
 
         addMemberTrackingRecord.mutate(newMemberTrackingRecord, {
           onSuccess: () => {
-            enqueueSnackbar('A record was successfully addded', { variant: 'success' });
+            enqueueSnackbar('A record was successfully added', { variant: 'success' });
           },
           onSettled: () => {
             setIsSaving(false);
@@ -115,7 +115,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           },
           {
             onSuccess: () => {
-              enqueueSnackbar('A record was successfully addded', { variant: 'success' });
+              enqueueSnackbar('A record was successfully added', { variant: 'success' });
             },
             onSettled: () => {
               setIsSaving(false);
