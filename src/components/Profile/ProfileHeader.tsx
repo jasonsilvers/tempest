@@ -17,10 +17,6 @@ const Address = tw(Base)``;
 const AFSC = tw(Base)`w-24`;
 const DutyTitle = tw(Base)``;
 
-const emptyStringsNotAllowed = (value) => {
-  return value === '' ? null : value;
-};
-
 const ProfileHeaderContext = React.createContext(false);
 
 const useProfileHeaderContext = () => useContext(ProfileHeaderContext);
@@ -152,7 +148,7 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
             <EditItem
               label="Office Symbol"
               editStyle={{ width: '20rem' }}
-              onChange={(e) => setFormState((state) => ({ ...state, address: emptyStringsNotAllowed(e.target.value) }))}
+              onChange={(e) => setFormState((state) => ({ ...state, address: e.target.value }))}
             >
               <Address>{formState.address}</Address>
             </EditItem>
@@ -163,16 +159,14 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
             <EditItem
               label="AFSC"
               editStyle={{ width: '10rem' }}
-              onChange={(e) => setFormState((state) => ({ ...state, afsc: emptyStringsNotAllowed(e.target.value) }))}
+              onChange={(e) => setFormState((state) => ({ ...state, afsc: e.target.value }))}
             >
               <AFSC>{formState.afsc}</AFSC>
             </EditItem>
             <EditItem
               label="Duty Title"
               editStyle={{ width: '20rem' }}
-              onChange={(e) =>
-                setFormState((state) => ({ ...state, dutyTitle: emptyStringsNotAllowed(e.target.value) }))
-              }
+              onChange={(e) => setFormState((state) => ({ ...state, dutyTitle: e.target.value }))}
             >
               <DutyTitle>{formState.dutyTitle}</DutyTitle>
             </EditItem>

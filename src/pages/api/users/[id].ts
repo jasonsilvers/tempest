@@ -48,15 +48,15 @@ async function getUserPermission(
 const userPutSchema = {
   put: {
     body: Joi.object({
-      id: Joi.string().optional().allow(null),
-      email: Joi.string().email().optional().allow(null),
-      roleId: Joi.number().optional().allow(null),
-      organizationId: Joi.string().optional().allow(null),
-      tags: Joi.array().items(Joi.string()).optional().allow(null),
-      rank: Joi.string().optional().allow(null),
-      afsc: Joi.string().optional().allow(null),
-      dutyTitle: Joi.string().optional().allow(null),
-      address: Joi.string().optional().allow(null),
+      id: Joi.string().optional().allow(null, ''),
+      email: Joi.string().email().optional().allow(null, ''),
+      roleId: Joi.number().optional().allow(null, ''),
+      organizationId: Joi.string().optional().allow(null, ''),
+      tags: Joi.array().items(Joi.string()).optional().allow(null, ''),
+      rank: Joi.string().optional().allow(null, ''),
+      afsc: Joi.string().optional().allow(null, ''),
+      dutyTitle: Joi.string().optional().allow(null, ''),
+      address: Joi.string().optional().allow(null, ''),
     }),
   },
 };
