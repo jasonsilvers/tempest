@@ -61,14 +61,14 @@ const getUserAction = async (
     if (await userWithinOrgOrChildOrg(req.user, user)) {
       permission = ac.can(req.user.role.name).readAny(EResource.USER);
     } else {
-      throw new PermissionError('You do not have the appropriate permissions');
+      throw new PermissionError();
     }
   } else {
     permission = ac.can(req.user.role.name).readOwn(EResource.USER);
   }
 
   if (!permission.granted) {
-    throw new PermissionError('You do not have the appropriate permissions');
+    throw new PermissionError();
   }
 
   res.status(200).json(user);
@@ -78,12 +78,6 @@ const putUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiError>
 ) => {
-  // old logic
-  // const persmission =
-  //   req.user.id !== userId
-  //     ? ac.can(req.user.role.name).updateAny(EResource.USER)
-  //     : ac.can(req.user.role.name).updateOwn(EResource.USER);
-
   const { userId, ac, user, body } = await setup(req);
 
   let permission: Permission;
@@ -91,21 +85,21 @@ const putUserAction = async (
     if (await userWithinOrgOrChildOrg(req.user, user)) {
       permission = ac.can(req.user.role.name).updateAny(EResource.USER);
     } else {
-      throw new PermissionError('You do not have the appropriate permissions');
+      throw new PermissionError();
     }
   } else {
     permission = ac.can(req.user.role.name).updateOwn(EResource.USER);
   }
 
   if (!permission.granted) {
-    throw new PermissionError('You do not have the appropriate permissions');
+    throw new PermissionError();
   }
   let filteredData = permission.filter(body);
 
   // if check on change of orgId is needed
   if (body.organizationId !== user.organizationId) {
-    const role = await getRoleByName(ERole.MEMBER);
-    filteredData = { ...filteredData, role };
+    const memberRole = await getRoleByName(ERole.MEMBER);
+    filteredData = { ...filteredData, role: memberRole };
   }
 
   const updatedUser = await updateUser(userId, filteredData);
