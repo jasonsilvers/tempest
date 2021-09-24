@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 import tw from 'twin.macro';
 import Head from 'next/head';
 import { useNavLoading } from '../hooks/useNavLoading';
-import { usePageLogging } from '../hooks/usePageLogging';
 import { ProgressLayout, LoadingSpinner } from '../lib/ui';
 
 const DynamicDevTools = dynamic(
@@ -26,7 +25,6 @@ const MainContent = tw.div`ml-80 mt-9`;
 function MyApp({ Component, pageProps }) {
   const [showDevTools, setShowDevTools] = useState(false);
   const { navigating } = useNavLoading();
-  usePageLogging();
 
   useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');

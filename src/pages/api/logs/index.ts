@@ -1,7 +1,6 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { LoggedInUser } from '../../../repositories/userRepo';
-import { returnUser } from '../../../repositories/loginRepo';
+import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { logFactory } from '../../../utils/logger';
 import { ELogEventType } from '../../../types/global';
@@ -35,4 +34,4 @@ const logHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser, Log
   res.status(200).json({ message: 'ok' });
 };
 
-export default withTempestHandlers(logHandler, returnUser, logSchema, false);
+export default withTempestHandlers(logHandler, findUserByDodId, logSchema, false);

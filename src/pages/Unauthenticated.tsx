@@ -2,10 +2,12 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import Head from 'next/head';
 import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
+import { usePageLogging } from '../hooks/usePageLogging';
 
 const UnauthenticatedApp = () => {
   const { error } = useUser();
   const { enqueueSnackbar } = useSnackbar();
+  usePageLogging();
 
   useEffect(() => {
     if (error) {

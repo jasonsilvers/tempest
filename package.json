@@ -10,6 +10,7 @@
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "test": "jest --watchAll",
     "test:unit": "jest",
+    "pre-commit": "pretty-quick --staged",
     "cypress:open": "cypress open --config-file cypress/config/development.json",
     "cypress:run": "cypress run --config-file cypress/config/development.json",
     "test:e2e-ci": "cypress run --config-file cypress/config/pipeline.json",
@@ -27,7 +28,8 @@
     "jwt-proxy": "jwt-proxy 9000 3000 --silent --jwt user.jwt",
     "db:reset": "prisma db push --schema ./src/prisma/schema.prisma --force-reset && npm run db:seed",
     "db:generate": "prisma generate --schema ./src/prisma/schema.prisma",
-    "dcheck": "mkdir -p .dependency-check && dependency-check --project .next --scan package-lock.json --format 'ALL' --out .dependency-check && open ./.dependency-check/dependency-check-report.html"
+    "dcheck": "mkdir -p .dependency-check && dependency-check --project .next --scan package-lock.json --format 'ALL' --out .dependency-check && open ./.dependency-check/dependency-check-report.html",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.14.9",

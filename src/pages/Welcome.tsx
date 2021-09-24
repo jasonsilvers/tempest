@@ -6,10 +6,12 @@ import { UpdateUsersOrg } from '../components/UpdateUsersOrg';
 import { useRouter } from 'next/router';
 
 import 'twin.macro';
+import { usePageLogging } from '../hooks/usePageLogging';
 
 const WelcomePage = () => {
   const { user, isLoading } = useUser<LoggedInUser>();
   const router = useRouter();
+  usePageLogging();
 
   return (
     <Dialog fullScreen open={true}>
