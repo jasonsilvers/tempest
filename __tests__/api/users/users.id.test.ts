@@ -245,7 +245,7 @@ test('PUT - should set role to member when org changes', async () => {
     role: { id: '22', name: 'member' },
     organizationId: 'abc123',
   });
-  mockMethodAndReturn(getRoleByName, { roleId: 2, name: 'member' });
+  mockMethodAndReturn(getRoleByName, { id: 2, name: 'member' });
   mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
@@ -269,10 +269,7 @@ test('PUT - should set role to member when org changes', async () => {
     afsc: 'afsc',
     dutyTitle: 'dutyTitle',
     address: 'address',
-    role: {
-      roleId: 2,
-      name: 'member',
-    },
+    roleId: 2,
   });
 
   expect(status).toBe(200);

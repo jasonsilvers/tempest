@@ -99,7 +99,7 @@ const putUserAction = async (
   // if check on change of orgId is needed
   if (body.organizationId !== user.organizationId) {
     const memberRole = await getRoleByName(ERole.MEMBER);
-    filteredData = { ...filteredData, role: memberRole };
+    filteredData = { ...filteredData, roleId: memberRole.id };
   }
 
   const updatedUser = await updateUser(userId, filteredData);
