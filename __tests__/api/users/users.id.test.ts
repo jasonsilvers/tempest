@@ -5,8 +5,11 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../utils/mocks/fixtures';
 import { testNextApi } from '../../utils/NextAPIUtils';
 import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';
+import { User } from '@prisma/client';
+import { getRoleByName } from '../../../src/repositories/roleRepo';
 
 jest.mock('../../../src/repositories/userRepo');
+jest.mock('../../../src/repositories/roleRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/utils/isOrgChildOf.ts');
 
@@ -168,12 +171,108 @@ test('PUT - should return user - update own', async () => {
     id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
     role: { id: '22', name: 'member' },
+    organizationId: 'abc123',
   });
-  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' } });
-  mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
+  const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
-    body: { organizationId: 'abc123' },
+    body: { organizationId: 'abc123', dutyTitle: 'test Title', roleId: 1 } as User,
+  });
+
+  expect(spy).toHaveBeenCalledWith('b100e2fa-50d0-49a6-b10f-00adde24d0c2', {
+    organizationId: 'abc123',
+    dutyTitle: 'test Title',
+  } as User);
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ name: 'bob', id: 123 });
+});
+
+/**
+ * 
+ *    id: Joi.string().optional().allow(null, ''),
+      email: Joi.string().email().optional().allow(null, ''),
+      roleId: Joi.number().optional().allow(null, ''),
+      organizationId: Joi.string().optional().allow(null, ''),
+      tags: Joi.array().items(Joi.string()).optional().allow(null, ''),
+      rank: Joi.string().optional().allow(null, ''),
+      afsc: Joi.string().optional().allow(null, ''),
+      dutyTitle: Joi.string().optional().allow(null, ''),
+      address: Joi.string().optional().allow(null, ''),
+ * 
+ */
+test('PUT - should filter data for member', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+    organizationId: 'abc123',
+  });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
+  const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  const { data, status } = await testNextApi.put(userQueryHandler, {
+    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    body: {
+      organizationId: 'abc123',
+      email: 'email@email.com',
+      roleId: 1,
+      rank: 'rank',
+      tags: ['tags'],
+      afsc: 'afsc',
+      dutyTitle: 'dutyTitle',
+      address: 'address',
+    },
+  });
+
+  expect(spy).toHaveBeenCalledWith('b100e2fa-50d0-49a6-b10f-00adde24d0c2', {
+    organizationId: 'abc123',
+    tags: ['tags'],
+    rank: 'rank',
+    afsc: 'afsc',
+    dutyTitle: 'dutyTitle',
+    address: 'address',
+  });
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ name: 'bob', id: 123 });
+});
+
+test('PUT - should set role to member when org changes', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+    organizationId: 'abc123',
+  });
+  mockMethodAndReturn(getRoleByName, { roleId: 2, name: 'member' });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
+  const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  const { data, status } = await testNextApi.put(userQueryHandler, {
+    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    body: {
+      organizationId: 'zyx987',
+      email: 'email@email.com',
+      roleId: 1,
+      rank: 'rank',
+      tags: ['tags'],
+      afsc: 'afsc',
+      dutyTitle: 'dutyTitle',
+      address: 'address',
+    },
+  });
+
+  expect(spy).toHaveBeenCalledWith('b100e2fa-50d0-49a6-b10f-00adde24d0c2', {
+    organizationId: 'zyx987',
+    tags: ['tags'],
+    rank: 'rank',
+    afsc: 'afsc',
+    dutyTitle: 'dutyTitle',
+    address: 'address',
+    role: {
+      roleId: 2,
+      name: 'member',
+    },
   });
 
   expect(status).toBe(200);

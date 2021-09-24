@@ -23,10 +23,11 @@ export class PermissionError extends Error {
   readonly status: number;
   readonly name: string;
 
-  constructor() {
+  constructor(message?: string) {
     super('PermissionError');
     this.status = 403;
     this.name = 'PermissionError';
+    this.message = message ?? 'You do not have permission to perform this action';
   }
 }
 
