@@ -7,6 +7,9 @@
 postgres-data
 .dependency-check
 
+#cypress
+/cypress/screenshots
+
 
 # testing
 /coverage
