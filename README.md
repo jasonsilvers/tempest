@@ -90,3 +90,10 @@ React Query is a library for fetching, caching and updating server data on the c
   2. Invalidate a portion of the cache
 
   What this means for testing is YOU MUST OVERRIDE THE MSW MOCK with the new expected data.
+
+## Husky
+
+- Before first use run:
+  ```
+  npm run prepare
+  ```
