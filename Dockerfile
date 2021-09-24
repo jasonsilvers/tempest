@@ -15,6 +15,7 @@ RUN rm -rf node_modules/public-encrypt/test/rsa.pass.priv
 RUN rm -rf node_modules/public-encrypt/test/test_key.pem
 RUN rm -rf node_modules/public-encrypt/test/test_rsa_privkey.pem
 RUN rm -rf node_modules/public-encrypt/test/test_rsa_privkey_encrypted.pem
+RUN rm -rf node_modules/npm/node_modules/node-gyp/test/fixtures/server.key
 
 # COPY package.json package-lock.json .npmrc ./
 # RUN npm ci --no-fund --no-audit 
