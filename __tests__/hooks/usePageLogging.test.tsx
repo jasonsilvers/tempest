@@ -77,3 +77,28 @@ test('should log unathorized when user lands on /unauthorized route', async () =
 
   expect(createLog).toHaveBeenCalledWith(ELogEventType.UNAUTHORIZED, 'Unauthorized URL: /Profile');
 });
+
+test('should not log if no user', async () => {
+  jest.spyOn(React, 'useRef').mockReturnValue({
+    current: '/Profile',
+  });
+
+  useTestRouter.mockImplementationOnce(() => ({
+    route: '/Welcome',
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    prefetch: async () => {},
+    push: jest.fn(),
+    asPath: '/Welcome',
+  }));
+
+  mockMethodAndReturn(createLog, {});
+
+  renderHook(() => usePageLogging(), {
+    wrapper: Wrapper,
+    initialProps: {
+      user: null,
+    },
+  });
+
+  expect(createLog).not.toBeCalled();
+});
