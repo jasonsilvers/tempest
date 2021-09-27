@@ -1,7 +1,4 @@
-import React, { useRef } from 'react';
-import { Hydrate } from 'react-query/hydration';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import React from 'react';
 import { UserContextProvider } from '@tron/nextjs-auth-p1'; // auth lib
 import { StylesProvider, ThemeProvider } from '@material-ui/styles';
 import { SnackbarProvider } from 'notistack';
@@ -9,6 +6,8 @@ import { Button } from '../lib/ui';
 import { createTheme } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DayJsUtils from '@date-io/dayjs';
+
+import { QueryProvider } from './QueryProvider';
 
 const notistackRef = React.createRef<SnackbarProvider>();
 const onClickDismiss = (key: string) => () => {
@@ -27,13 +26,6 @@ const theme = createTheme({
 });
 
 function AppProviders({ children, pageProps = null }) {
-  //Ensures that data is not shared between different users and requests
-  const queryClientRef = useRef<QueryClient | undefined>();
-
-  if (!queryClientRef.current) {
-    queryClientRef.current = new QueryClient();
-  }
-
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst>
@@ -48,12 +40,9 @@ function AppProviders({ children, pageProps = null }) {
             }}
             autoHideDuration={3000}
           >
-            <QueryClientProvider client={queryClientRef.current}>
-              <Hydrate state={pageProps?.dehydratedState}>
-                <UserContextProvider user={pageProps?.user}>{children}</UserContextProvider>
-              </Hydrate>
-              <ReactQueryDevtools />
-            </QueryClientProvider>
+            <QueryProvider>
+              <UserContextProvider user={pageProps?.user}>{children}</UserContextProvider>
+            </QueryProvider>
           </SnackbarProvider>
         </MuiPickersUtilsProvider>
       </StylesProvider>
