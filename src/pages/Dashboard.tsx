@@ -68,7 +68,6 @@ const DashboardPage: React.FC = () => {
   const [counts, setCounts] = useState(initialCounts);
 
   const permission = permissionCheck(loggedInUser?.role?.name, EFuncAction.READ_ANY, EResource.USER);
-
   useEffect(() => {
     const newCounts = { ...initialCounts };
     users?.data?.forEach((user) => {

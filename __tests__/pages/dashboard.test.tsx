@@ -1,5 +1,13 @@
 import Dashboard, { getStaticProps } from '../../src/pages/Dashboard';
-import { render, waitFor, waitForElementToBeRemoved, within } from '../utils/TempestTestUtils';
+import {
+  render,
+  rtlRender,
+  waitFor,
+  waitForElementToBeRemoved,
+  waitForLoadingToFinish,
+  within,
+} from '../utils/TempestTestUtils';
+import { QueryProvider } from '../../src/components/QueryProvider';
 import { getUsersWithMemberTrackingRecords, LoggedInUser } from '../../src/repositories/userRepo';
 import { mockMethodAndReturn } from '../utils/mocks/repository';
 import { rest } from 'msw';
@@ -8,6 +16,10 @@ import { bobJones } from '../utils/mocks/fixtures';
 import { server } from '../utils/mocks/msw';
 
 import 'whatwg-fetch';
+import React from 'react';
+import { SnackbarProvider } from 'notistack';
+import { Button } from '../../src/lib/ui';
+import { UserContextProvider } from '@tron/nextjs-auth-p1';
 
 jest.mock('../../src/repositories/userRepo');
 
@@ -203,8 +215,46 @@ it('should show correct counts', async () => {
   const upcomingContainer = getByText(/upcoming/i);
   const overdueContainer = getByText(/overdue/i);
   expect(within(allContainer.parentElement).getByText('1')).toBeInTheDocument();
-  expect(within(upcomingContainer.parentElement).getByText('3')).toBeInTheDocument();
+  expect(within(upcomingContainer.parentElement).getByText('4')).toBeInTheDocument();
   expect(within(overdueContainer.parentElement).getByText('0')).toBeInTheDocument();
+});
+
+it('should show error on query failure', async () => {
+  server.use(
+    rest.get(EUri.USERS, (req, res, ctx) => {
+      return res(ctx.status(500), ctx.json({ message: 'There was an error' }));
+    })
+  );
+
+  const notistackRef = React.createRef<SnackbarProvider>();
+  const onClickDismiss = (key: string) => () => {
+    notistackRef.current.closeSnackbar(key);
+  };
+
+  const { findByText } = rtlRender(
+    <SnackbarProvider
+      maxSnack={3}
+      ref={notistackRef}
+      action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
+    >
+      <QueryProvider
+        queryClientOptions={{
+          defaultOptions: {
+            queries: {
+              retry: false,
+            },
+          },
+        }}
+      >
+        <UserContextProvider loginUrl={EUri.LOGIN}>
+          <Dashboard />
+        </UserContextProvider>
+      </QueryProvider>
+    </SnackbarProvider>
+  );
+  await waitForLoadingToFinish();
+
+  await findByText(/error retrieving/i);
 });
 
 it('should not allow access with incorrect permissions', async () => {
