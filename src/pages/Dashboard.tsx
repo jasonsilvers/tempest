@@ -11,7 +11,7 @@ import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../types/global';
 import { removeOldCompletedRecords } from '../utils';
 import dayjs from 'dayjs';
-import { MemberTrackingItem, MemberTrackingRecord } from '.prisma/client';
+import { MemberTrackingRecord } from '.prisma/client';
 import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
 
 const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
