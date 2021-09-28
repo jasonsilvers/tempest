@@ -10,6 +10,7 @@ import { getStatus } from '../utils/Status';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../types/global';
 import { removeOldCompletedRecords } from '../utils';
+import dayjs from 'dayjs';
 
 const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 const UserTable = tw.div``;
@@ -87,8 +88,17 @@ const DashboardPage: React.FC = () => {
 
             userCounts[status] = userCounts[status] + 1;
           } else {
-            newCounts.Upcoming = newCounts.Upcoming + 1;
-            userCounts.Upcoming = userCounts.Upcoming + 1;
+            const today = dayjs();
+            const dateTrainingGivenToMember = dayjs(mtr.createdAt);
+
+            const differenceInDays = today.diff(dateTrainingGivenToMember, 'days');
+            if (differenceInDays && differenceInDays > 30) {
+              newCounts.Overdue = newCounts.Overdue + 1;
+              userCounts.Overdue = userCounts.Overdue + 1;
+            } else {
+              newCounts.Upcoming = newCounts.Upcoming + 1;
+              userCounts.Upcoming = userCounts.Upcoming + 1;
+            }
           }
         });
       });
