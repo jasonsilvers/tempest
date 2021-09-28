@@ -4,8 +4,13 @@ import React, { ChangeEventHandler, useContext, useEffect, useState } from 'reac
 import tw from 'twin.macro';
 import { EditIcon } from '../../assets/Icons';
 import { ranks, GroupedRank } from '../../const/ranks';
+import { useOrg } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
+import { usePermissions } from '../../hooks/usePermissions';
 import { Button, IconButton, TextField, Autocomplete } from '../../lib/ui';
+import { ERole } from '../../types/global';
+import ConfirmDialog from '../Dialog/ConfirmDialog';
+import { UpdateUsersOrg } from '../UpdateUsersOrg';
 
 const Name = tw.h4`text-3xl text-black`;
 const Table = tw.div`text-left mb-6`;
@@ -15,9 +20,9 @@ const Base = tw.div`text-sm mb-1 text-hg pr-5 capitalize`;
 const Rank = tw(Base)`w-24`;
 const Address = tw(Base)``;
 const AFSC = tw(Base)`w-24`;
-const DutyTitle = tw(Base)``;
+const Organization = tw(Base)``;
 
-const ProfileHeaderContext = React.createContext(false);
+const ProfileHeaderContext = React.createContext({ userId: null, isEdit: false });
 
 const useProfileHeaderContext = () => useContext(ProfileHeaderContext);
 
@@ -26,7 +31,7 @@ const EditButtonGroup: React.FC<{ onSave: () => void; onCancel: () => void; onEd
   onSave,
   onEdit,
 }) => {
-  const isEdit = useProfileHeaderContext();
+  const { isEdit } = useProfileHeaderContext();
   if (isEdit) {
     return (
       <>
@@ -47,7 +52,7 @@ const EditItem: React.FC<{
   editStyle?: CSSProperties;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 }> = ({ children, label, editStyle, onChange }) => {
-  const isEdit = useProfileHeaderContext();
+  const { isEdit } = useProfileHeaderContext();
   const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
@@ -65,12 +70,29 @@ const EditItem: React.FC<{
   return <div>{children}</div>;
 };
 
+const EditOrg: React.FC<{
+  label: string;
+  editStyle?: CSSProperties;
+  onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  orgId: string;
+}> = ({ children, label, onChange, orgId }) => {
+  const { userId, isEdit } = useProfileHeaderContext();
+  const { role, user } = usePermissions();
+
+  console.log(user, role);
+
+  if (isEdit && (role === ERole.MEMBER || userId === user?.id)) {
+    return <UpdateUsersOrg label={label} userId={userId} userOrganizationId={orgId} onChange={onChange} />;
+  }
+  return <div>{children}</div>;
+};
+
 const EditSelect: React.FC<{
   label: string;
   editStyle?: CSSProperties;
   onChange?: (value: GroupedRank) => void;
 }> = ({ children, label, editStyle, onChange }) => {
-  const isEdit = useProfileHeaderContext();
+  const { isEdit } = useProfileHeaderContext();
   const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
@@ -99,17 +121,19 @@ const EditSelect: React.FC<{
   return <div>{children}</div>;
 };
 
-const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
+const ProfileHeader: React.FC<{ user: User; role: string }> = ({ user, role }) => {
   const [isActiveEdit, setIsActiveEdit] = useState(false);
   const [formState, setFormState] = useState(user);
   const updateUserMutation = useUpdateUser();
+  const { data: userOrg } = useOrg(formState?.organizationId);
+  const [orgModel, setOrgModel] = useState({ open: false, transientId: user?.organizationId });
 
   useEffect(() => {
     setFormState(user);
   }, [user]);
 
   return formState ? (
-    <ProfileHeaderContext.Provider value={isActiveEdit}>
+    <ProfileHeaderContext.Provider value={{ userId: user?.id, isEdit: isActiveEdit }}>
       <div tw="flex items-center">
         <Name>{`${user.lastName} ${user.firstName}`}</Name>
         <EditButtonGroup
@@ -118,7 +142,7 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
             updateUserMutation.mutate({
               id: formState.id,
               afsc: formState.afsc,
-              dutyTitle: formState.dutyTitle,
+              organizationId: formState.organizationId,
               rank: formState.rank,
               address: formState.address,
             } as User);
@@ -163,16 +187,33 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
             >
               <AFSC>{formState.afsc}</AFSC>
             </EditItem>
-            <EditItem
-              label="Duty Title"
+            <EditOrg
+              label="Organization"
               editStyle={{ width: '20rem' }}
-              onChange={(e) => setFormState((state) => ({ ...state, dutyTitle: e.target.value }))}
+              onChange={(e) => {
+                if (role === ERole.MEMBER) {
+                  setFormState((state) => ({ ...state, organizationId: e.target.value }));
+                } else {
+                  setOrgModel({ open: true, transientId: e.target.value });
+                }
+              }}
+              orgId={formState.organizationId}
             >
-              <DutyTitle>{formState.dutyTitle}</DutyTitle>
-            </EditItem>
+              <Organization>{userOrg?.name ?? ''}</Organization>
+            </EditOrg>
           </Row>
         </Column>
       </Table>
+      <ConfirmDialog
+        open={orgModel.open}
+        handleNo={() => setOrgModel((state) => ({ ...state, open: false }))}
+        handleYes={() => {
+          setFormState((state) => ({ ...state, organizationId: orgModel.transientId }));
+          setOrgModel((state) => ({ ...state, open: false }));
+        }}
+      >
+        Changing Organizations will result in loss of permissions. Do you want to continue?
+      </ConfirmDialog>
     </ProfileHeaderContext.Provider>
   ) : (
     <></>

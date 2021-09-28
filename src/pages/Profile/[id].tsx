@@ -28,6 +28,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
   const userId = id?.toString();
   const { data: member } = useMember(id, initialMemberData);
+  console.log(role);
 
   if (isLoading || !id) {
     return <div>Loading Profile</div>;
@@ -45,7 +46,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   return (
     <div tw="relative min-w-min max-width[1440px]">
       {/* should refactor to use a react query in future */}
-      <ProfileHeader user={member} />
+      <ProfileHeader user={member} role={member.role.name} />
       <MemberItemTracker title="Training in Progress" userId={userId}>
         <Tab category={ECategories.ALL}>All</Tab>
         <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>

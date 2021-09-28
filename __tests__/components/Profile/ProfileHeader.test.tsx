@@ -6,6 +6,7 @@ import { ProfileHeader } from '../../../src/components/Profile/ProfileHeader';
 
 jest.mock('../../../src/repositories/userRepo');
 import { bobJones } from '../../utils/mocks/fixtures';
+import { ERole } from '../../../src/types/global';
 
 beforeAll(() => {
   server.listen({
@@ -24,18 +25,18 @@ afterEach(() => {
 afterAll(() => server.close());
 
 it('does not render the profile header', async () => {
-  const { queryByText } = render(<ProfileHeader user={null} />);
+  const { queryByText } = render(<ProfileHeader role={ERole.MEMBER} user={null} />);
   await waitFor(() => expect(queryByText(/jones/i)).not.toBeInTheDocument());
 });
 
 it('renders the profile header', async () => {
-  const { getByText } = render(<ProfileHeader user={bobJones} />);
+  const { getByText } = render(<ProfileHeader role={ERole.MEMBER} user={bobJones} />);
   await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
 });
 
 it('renders the edit view in the profile header and exits with no data persist', async () => {
   const { getByText, getByRole, getByLabelText, queryByText, findAllByRole } = render(
-    <ProfileHeader user={bobJones} />
+    <ProfileHeader role={ERole.MEMBER} user={bobJones} />
   );
   const startingRank = bobJones.rank;
   await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
@@ -66,14 +67,16 @@ it('renders the edit view in the profile header and persists data', async () => 
     })
   );
 
-  const { getByText, getByRole, getByLabelText, queryByText } = render(<ProfileHeader user={bobJones} />);
+  const { getByText, getByRole, getByLabelText, queryByText } = render(
+    <ProfileHeader user={bobJones} role={ERole.MEMBER} />
+  );
   await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
 
   fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
   await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
   // change data
   const afsctextfield = getByLabelText(/afsc/i, { selector: 'input' }) as HTMLInputElement;
-  const dutytextfield = getByLabelText(/duty title/i, { selector: 'input' }) as HTMLInputElement;
+  const dutytextfield = getByLabelText(/organization/i, { selector: 'input' }) as HTMLInputElement;
   const addresstextfield = getByLabelText(/office/i, { selector: 'input' }) as HTMLInputElement;
   fireEvent.change(afsctextfield, { target: { value: 'AFSC123' } });
   fireEvent.change(dutytextfield, { target: { value: 'DUTYTITLE123' } });

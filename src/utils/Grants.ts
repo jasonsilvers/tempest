@@ -171,6 +171,12 @@ const organizationGrants: Grants[] = [
     resource: EResource.ORGANIZATION,
     role: ERole.MONITOR,
   },
+  {
+    action: EAction.READ_OWN,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.MEMBER,
+  },
 
   {
     action: EAction.CREATE_ANY,

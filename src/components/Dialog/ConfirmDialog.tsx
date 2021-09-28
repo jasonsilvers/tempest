@@ -1,5 +1,5 @@
 import { DialogActions } from '@material-ui/core';
-import { Dialog, Button } from '../../../lib/ui';
+import { Dialog, Button } from '../../lib/ui';
 
 interface IConfirmDialogProps {
   handleNo: () => void;

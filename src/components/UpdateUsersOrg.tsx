@@ -10,7 +10,17 @@ import 'twin.macro';
 
 type OrgFormEvent = React.ChangeEvent<{ value: string }>;
 
-export const UpdateUsersOrg = ({ userId, userOrganizationId = '' }: { userId: string; userOrganizationId: string }) => {
+export const UpdateUsersOrg = ({
+  userId,
+  userOrganizationId = '',
+  onChange = null,
+  label = 'Organization',
+}: {
+  userId: string;
+  userOrganizationId: string;
+  onChange?: (event: OrgFormEvent) => void;
+  label?: string;
+}) => {
   const { refreshUser } = useUser();
   const orgsQuery = useOrgs();
   const { enqueueSnackbar } = useSnackbar();
@@ -19,7 +29,8 @@ export const UpdateUsersOrg = ({ userId, userOrganizationId = '' }: { userId: st
   const updateOrg = (event: OrgFormEvent) => {
     const selectedOrgId = event.target.value;
 
-    if (selectedOrgId !== userOrganizationId) {
+    // if no onchange function execute update on change of org id
+    if (!onChange && selectedOrgId !== userOrganizationId) {
       const updatedUser = {
         id: userId,
         organizationId: selectedOrgId,
@@ -30,6 +41,8 @@ export const UpdateUsersOrg = ({ userId, userOrganizationId = '' }: { userId: st
           enqueueSnackbar('Organization Changed', { variant: 'success' });
         },
       });
+    } else {
+      onChange(event);
     }
   };
 
@@ -39,6 +52,7 @@ export const UpdateUsersOrg = ({ userId, userOrganizationId = '' }: { userId: st
         <div>...loading</div>
       ) : (
         <TempestSelect
+          label={label}
           variant="outlined"
           onChange={(event: OrgFormEvent) => updateOrg(event)}
           tw="text-gray-400 w-64"
