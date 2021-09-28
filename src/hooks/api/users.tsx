@@ -10,13 +10,21 @@ export const usersQueryKeys = {
   member: (id: string) => ['member', id],
 };
 
+type SortOrder = 'ASC' | 'DESC';
+const sortUsers = (userList: UserWithAll[], order: SortOrder = 'ASC') => {
+  if (order === 'ASC') {
+    return userList.sort((userA, userB) => (userA.lastName >= userB.lastName ? 1 : -1));
+  }
+  return userList.sort((userA, userB) => (userA.lastName > userB.lastName ? -1 : 1));
+};
+
 const useUsers = () => {
   return useQuery<UserWithAll[]>(usersQueryKeys.users(), async () => {
-    return axios.get<UsersDTO>(EUri.USERS).then((result) => result.data.users);
+    return axios.get<UsersDTO>(EUri.USERS).then((result) => sortUsers(result.data.users));
   });
 };
 
-const useMember = (id, initialMemberData) => {
+const useMember = (id: string, initialMemberData: UserWithAll) => {
   return useQuery<User>(
     usersQueryKeys.member(id),
     async () => axios.get<User>(EUri.USERS + `${id}`).then((result) => result.data),

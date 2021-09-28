@@ -27,7 +27,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   const [openAddNewModal, setAddNewModal] = useState(false);
 
   const userId = id?.toString();
-  const { data: member } = useMember(id, initialMemberData);
+  const { data: member } = useMember(userId, initialMemberData);
 
   if (isLoading || !id) {
     return <div>Loading Profile</div>;

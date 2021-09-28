@@ -157,7 +157,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
             }));
           }}
           size="small"
-          loading={trackingItemsQuery?.isLoading}
+          loading={trackingItemsQuery?.isLoading || memberTrackingItemsQuery?.isLoading}
           fullWidth
           renderInput={(params) => (
             <TextField
