@@ -66,13 +66,13 @@ const StatusPill = ({ variant, count }: { variant: StatusPillVariantType; count:
 
 type StatusCounts = typeof initialCounts;
 
-interface AllCounts {
+type AllCounts = {
   All: number;
   Overdue: number;
   Upcoming: number;
   Done: number;
   [key: string]: StatusCounts | number;
-}
+};
 
 type UserCounts = Omit<StatusCounts, 'All'>;
 const determineMemberCounts = (
