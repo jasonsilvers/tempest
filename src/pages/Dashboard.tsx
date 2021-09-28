@@ -11,6 +11,8 @@ import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../types/global';
 import { removeOldCompletedRecords } from '../utils';
 import dayjs from 'dayjs';
+import { MemberTrackingItem, MemberTrackingRecord } from '.prisma/client';
+import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
 
 const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 const UserTable = tw.div``;
@@ -62,6 +64,46 @@ const StatusPill = ({ variant, count }: { variant: StatusPillVariantType; count:
   );
 };
 
+type StatusCounts = typeof initialCounts;
+
+interface AllCounts {
+  All: number;
+  Overdue: number;
+  Upcoming: number;
+  Done: number;
+  [key: string]: StatusCounts | number;
+}
+
+type UserCounts = Omit<StatusCounts, 'All'>;
+const determineMemberCounts = (
+  userId: string,
+  mti: MemberTrackingItemWithAll,
+  mtr: MemberTrackingRecord,
+  newCounts: StatusCounts,
+  userCounts: UserCounts
+): AllCounts => {
+  if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
+    newCounts.All = newCounts.All + 1;
+    const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
+    newCounts[status] = newCounts[status] + 1;
+    userCounts[status] = userCounts[status] + 1;
+  } else {
+    const today = dayjs();
+    const dateTrainingGivenToMember = dayjs(mtr.createdAt);
+
+    const differenceInDays = today.diff(dateTrainingGivenToMember, 'days');
+    if (differenceInDays && differenceInDays > 30) {
+      newCounts.Overdue = newCounts.Overdue + 1;
+      userCounts.Overdue = userCounts.Overdue + 1;
+    } else {
+      newCounts.Upcoming = newCounts.Upcoming + 1;
+      userCounts.Upcoming = userCounts.Upcoming + 1;
+    }
+  }
+
+  return newCounts;
+};
+
 const DashboardPage: React.FC = () => {
   const { user: loggedInUser, permissionCheck, isLoading } = usePermissions();
 
@@ -77,34 +119,15 @@ const DashboardPage: React.FC = () => {
         Upcoming: 0,
         Done: 0,
       };
-
+      newCounts[user.id] = userCounts;
       user.memberTrackingItems.forEach((mti) => {
         const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
         mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
-          if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
-            newCounts.All = newCounts.All + 1;
-            const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
-            newCounts[status] = newCounts[status] + 1;
-
-            userCounts[status] = userCounts[status] + 1;
-          } else {
-            const today = dayjs();
-            const dateTrainingGivenToMember = dayjs(mtr.createdAt);
-
-            const differenceInDays = today.diff(dateTrainingGivenToMember, 'days');
-            if (differenceInDays && differenceInDays > 30) {
-              newCounts.Overdue = newCounts.Overdue + 1;
-              userCounts.Overdue = userCounts.Overdue + 1;
-            } else {
-              newCounts.Upcoming = newCounts.Upcoming + 1;
-              userCounts.Upcoming = userCounts.Upcoming + 1;
-            }
-          }
+          determineMemberCounts(user.id, mti, mtr, newCounts, userCounts);
         });
-      });
 
-      newCounts[user.id] = userCounts;
-      setCounts(newCounts);
+        setCounts(newCounts);
+      });
     });
   }, [users?.data]);
 
