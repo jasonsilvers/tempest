@@ -46,7 +46,7 @@ describe('Member Role', () => {
     cy.wait(2000);
     cy.url().should('include', '/Welcome');
 
-    cy.get('.MuiSelect-root').click();
+    cy.get('.MuiAutocomplete-popupIndicator').click();
     cy.findByRole('option', { name: /mdg/i }).click();
 
     cy.findByRole('button', { name: /get started/i }).click();
