@@ -28,8 +28,6 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
   const userId = id?.toString();
   const { data: member } = useMember(id, initialMemberData);
-  console.log(role);
-
   if (isLoading || !id) {
     return <div>Loading Profile</div>;
   }

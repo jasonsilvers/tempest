@@ -67,10 +67,7 @@ export const bobJones = {
   email: 'bob.jones@email.com',
   rank: 'E-6',
   dutyTitle: 'Chief',
-  organization: {
-    id: 'orgid123',
-    name: 'test org',
-  },
+  organizationId: 1,
 } as unknown as User;
 
 export { grants };

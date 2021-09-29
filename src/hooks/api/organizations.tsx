@@ -15,7 +15,9 @@ export const useOrgs = () => {
 };
 
 export const useOrg = (organizationId: string) => {
-  return useQuery<Organization>(organizationQueryKeys.single(organizationId), () =>
-    axios.get<Organization>(EUri.ORGANIZATIONS + organizationId).then((res) => res.data)
+  return useQuery<Organization>(
+    organizationQueryKeys.single(organizationId),
+    () => axios.get<Organization>(EUri.ORGANIZATIONS + organizationId).then((res) => res.data),
+    { enabled: !!organizationId }
   );
 };

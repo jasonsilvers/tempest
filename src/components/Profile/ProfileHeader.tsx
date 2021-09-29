@@ -1,5 +1,5 @@
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { User } from '@prisma/client';
+import { Organization, User } from '@prisma/client';
 import React, { ChangeEventHandler, useContext, useEffect, useState } from 'react';
 import tw from 'twin.macro';
 import { EditIcon } from '../../assets/Icons';
@@ -20,7 +20,7 @@ const Base = tw.div`text-sm mb-1 text-hg pr-5 capitalize`;
 const Rank = tw(Base)`w-24`;
 const Address = tw(Base)``;
 const AFSC = tw(Base)`w-24`;
-const Organization = tw(Base)``;
+const OrganizationField = tw(Base)``;
 
 const ProfileHeaderContext = React.createContext({ userId: null, isEdit: false });
 
@@ -73,16 +73,22 @@ const EditItem: React.FC<{
 const EditOrg: React.FC<{
   label: string;
   editStyle?: CSSProperties;
-  onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onChange?: (org: Organization) => void;
   orgId: string;
-}> = ({ children, label, onChange, orgId }) => {
+}> = ({ children, label, onChange, orgId, editStyle }) => {
   const { userId, isEdit } = useProfileHeaderContext();
-  const { role, user } = usePermissions();
+  const { role, user, isLoading } = usePermissions();
 
-  console.log(user, role);
-
-  if (isEdit && (role === ERole.MEMBER || userId === user?.id)) {
-    return <UpdateUsersOrg label={label} userId={userId} userOrganizationId={orgId} onChange={onChange} />;
+  if (!isLoading && isEdit && (role === ERole.MEMBER || userId === user?.id)) {
+    return (
+      <UpdateUsersOrg
+        editStyle={editStyle}
+        label={label}
+        userId={userId}
+        userOrganizationId={orgId}
+        onChange={onChange}
+      />
+    );
   }
   return <div>{children}</div>;
 };
@@ -160,8 +166,6 @@ const ProfileHeader: React.FC<{ user: User; role: string }> = ({ user, role }) =
           <Row>
             <EditSelect
               onChange={({ value }) => {
-                console.log(value);
-
                 setFormState((state) => ({ ...state, rank: value }));
               }}
               label="Rank"
@@ -187,19 +191,20 @@ const ProfileHeader: React.FC<{ user: User; role: string }> = ({ user, role }) =
             >
               <AFSC>{formState.afsc}</AFSC>
             </EditItem>
+
             <EditOrg
               label="Organization"
               editStyle={{ width: '20rem' }}
-              onChange={(e) => {
+              onChange={(org: Organization) => {
                 if (role === ERole.MEMBER) {
-                  setFormState((state) => ({ ...state, organizationId: e.target.value }));
+                  setFormState((state) => ({ ...state, organizationId: org.id }));
                 } else {
-                  setOrgModel({ open: true, transientId: e.target.value });
+                  setOrgModel({ open: true, transientId: org.id });
                 }
               }}
               orgId={formState.organizationId}
             >
-              <Organization>{userOrg?.name ?? ''}</Organization>
+              <OrganizationField>{userOrg?.name ?? ''}</OrganizationField>
             </EditOrg>
           </Row>
         </Column>

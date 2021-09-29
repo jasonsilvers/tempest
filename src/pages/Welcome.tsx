@@ -36,6 +36,7 @@ const WelcomePage = () => {
                   <UpdateUsersOrg
                     userId={user?.id}
                     userOrganizationId={user?.organizationId ? user.organizationId : ''}
+                    editStyle={{ width: '20rem' }}
                   />
                 </div>
                 <div tw="pl-6">

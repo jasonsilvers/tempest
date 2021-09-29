@@ -59,15 +59,15 @@ afterEach(() => {
 afterAll(() => server.close());
 
 test('should update users organization', async () => {
-  const { getAllByRole, findByRole, queryByText } = render(
+  const { findAllByRole, findByRole, queryByText } = render(
     <UpdateUsersOrg userId={'123'} userOrganizationId={'a2147994-d964-40a9-985b-0f4381828de8'} />
   );
 
-  const orgSelect = await findByRole('button', { name: '15th MDG' });
+  const orgSelect = await findByRole('textbox');
 
   fireEvent.mouseDown(orgSelect);
 
-  const options = getAllByRole('option');
+  const options = await findAllByRole('option');
 
   server.use(
     // return a user with the right permissions
