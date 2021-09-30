@@ -8,7 +8,6 @@ import { useOrg } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
 import { Button, IconButton, TextField, Autocomplete } from '../../lib/ui';
-import membertrackingitems from '../../pages/api/membertrackingitems';
 import { ERole } from '../../types/global';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 import { UpdateUsersOrg } from '../UpdateUsersOrg';

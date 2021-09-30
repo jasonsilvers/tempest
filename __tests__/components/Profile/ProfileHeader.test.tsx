@@ -6,7 +6,8 @@ import { ProfileHeader } from '../../../src/components/Profile/ProfileHeader';
 
 jest.mock('../../../src/repositories/userRepo');
 import { bobJones } from '../../utils/mocks/fixtures';
-import { ERole, EUri } from '../../../src/types/global';
+import { EUri } from '../../../src/types/global';
+import { Role, User } from '.prisma/client';
 
 beforeAll(() => {
   server.listen({
@@ -45,19 +46,21 @@ beforeEach(() => {
   );
 });
 
+const bobJones2 = bobJones as User & { role: Role };
+
 it('does not render the profile header', async () => {
-  const { queryByText } = render(<ProfileHeader role={ERole.MEMBER} user={null} />);
+  const { queryByText } = render(<ProfileHeader member={null} />);
   await waitFor(() => expect(queryByText(/jones/i)).not.toBeInTheDocument());
 });
 
 it('renders the profile header', async () => {
-  const { getByText } = render(<ProfileHeader role={ERole.MEMBER} user={bobJones} />);
+  const { getByText } = render(<ProfileHeader member={bobJones2} />);
   await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
 });
 
 it('renders the edit view in the profile header and edits the rank drop down', async () => {
   const { getByText, getByRole, getByLabelText, queryByText, findAllByRole } = render(
-    <ProfileHeader role={ERole.MEMBER} user={bobJones} />
+    <ProfileHeader member={bobJones2} />
   );
   const startingRank = bobJones.rank;
   await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
@@ -80,7 +83,7 @@ it('renders the edit view in the profile header and edits the rank drop down', a
 
 it('renders the edit view in the profile header and edits the org drop down', async () => {
   const { getByText, getByRole, getByLabelText, queryByText, findAllByRole } = render(
-    <ProfileHeader role={ERole.MEMBER} user={bobJones} />
+    <ProfileHeader member={bobJones2} />
   );
 
   server.use(
@@ -114,9 +117,7 @@ it('renders the edit view in the profile header and persists data', async () => 
     })
   );
 
-  const { getByText, getByRole, getByLabelText, queryByText } = render(
-    <ProfileHeader user={bobJones} role={ERole.MEMBER} />
-  );
+  const { getByText, getByRole, getByLabelText, queryByText } = render(<ProfileHeader member={bobJones2} />);
   await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
 
   fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
