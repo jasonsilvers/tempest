@@ -8,7 +8,7 @@ import { createLog } from '../../src/utils/Api';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import React from 'react';
 
-jest.mock('../../src/utils/Api.ts');
+jest.mock('../../src/utils/api.ts');
 
 useTestRouter.mockImplementation(() => ({
   route: '/',
