@@ -4,7 +4,7 @@ import { Wrapper } from '../testutils/TempestTestUtils';
 import { usePageLogging } from '../../src/hooks/usePageLogging';
 import { useTestRouter } from '../testutils/mocks/NextMocks';
 import { ELogEventType } from '../../src/const/enums';
-import { createLog } from '../../src/utils/Api';
+import { createLog } from '../../src/utils/api';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import React from 'react';
 
