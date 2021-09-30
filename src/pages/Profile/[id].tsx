@@ -44,7 +44,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   return (
     <div tw="relative min-w-min max-width[1440px]">
       {/* should refactor to use a react query in future */}
-      <ProfileHeader user={member} role={member.role.name} />
+      <ProfileHeader member={member} />
       <MemberItemTracker title="Training in Progress" userId={userId}>
         <Tab category={ECategories.ALL}>All</Tab>
         <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>

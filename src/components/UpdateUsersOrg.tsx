@@ -26,7 +26,7 @@ export const UpdateUsersOrg = ({
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: updateUser } = useUpdateUser();
 
-  const updateOrg = (event, selectedOrg) => {
+  const updateOrg = (_, selectedOrg) => {
     // if the selected org from the autocomplete field is null aka a user cleared the text then return nothing
     if (!selectedOrg) {
       return null;

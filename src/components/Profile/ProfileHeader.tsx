@@ -1,5 +1,5 @@
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { Organization, User } from '@prisma/client';
+import { Organization, Role, User } from '@prisma/client';
 import React, { ChangeEventHandler, useContext, useEffect, useState } from 'react';
 import tw from 'twin.macro';
 import { EditIcon } from '../../assets/Icons';
@@ -8,6 +8,7 @@ import { useOrg } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
 import { Button, IconButton, TextField, Autocomplete } from '../../lib/ui';
+import membertrackingitems from '../../pages/api/membertrackingitems';
 import { ERole } from '../../types/global';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 import { UpdateUsersOrg } from '../UpdateUsersOrg';
@@ -127,21 +128,21 @@ const EditSelect: React.FC<{
   return <div>{children}</div>;
 };
 
-const ProfileHeader: React.FC<{ user: User; role: string }> = ({ user, role }) => {
+const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) => {
   const [isActiveEdit, setIsActiveEdit] = useState(false);
-  const [formState, setFormState] = useState(user);
+  const [formState, setFormState] = useState(member);
   const updateUserMutation = useUpdateUser();
   const { data: userOrg } = useOrg(formState?.organizationId);
-  const [orgModel, setOrgModel] = useState({ open: false, transientId: user?.organizationId });
+  const [orgModal, setOrgModal] = useState({ open: false, transientId: member?.organizationId });
 
   useEffect(() => {
-    setFormState(user);
-  }, [user]);
+    setFormState(member);
+  }, [member]);
 
   return formState ? (
-    <ProfileHeaderContext.Provider value={{ userId: user?.id, isEdit: isActiveEdit }}>
+    <ProfileHeaderContext.Provider value={{ userId: member?.id, isEdit: isActiveEdit }}>
       <div tw="flex items-center">
-        <Name>{`${user.lastName} ${user.firstName}`}</Name>
+        <Name>{`${member.lastName} ${member.firstName}`}</Name>
         <EditButtonGroup
           onEdit={() => setIsActiveEdit(true)}
           onSave={() => {
@@ -155,7 +156,7 @@ const ProfileHeader: React.FC<{ user: User; role: string }> = ({ user, role }) =
             setIsActiveEdit(false);
           }}
           onCancel={() => {
-            setFormState(user);
+            setFormState(member);
             setIsActiveEdit(false);
           }}
         />
@@ -196,10 +197,10 @@ const ProfileHeader: React.FC<{ user: User; role: string }> = ({ user, role }) =
               label="Organization"
               editStyle={{ width: '20rem' }}
               onChange={(org: Organization) => {
-                if (role === ERole.MEMBER) {
+                if (member.role.name === ERole.MEMBER) {
                   setFormState((state) => ({ ...state, organizationId: org.id }));
                 } else {
-                  setOrgModel({ open: true, transientId: org.id });
+                  setOrgModal({ open: true, transientId: org.id });
                 }
               }}
               orgId={formState.organizationId}
@@ -210,11 +211,11 @@ const ProfileHeader: React.FC<{ user: User; role: string }> = ({ user, role }) =
         </Column>
       </Table>
       <ConfirmDialog
-        open={orgModel.open}
-        handleNo={() => setOrgModel((state) => ({ ...state, open: false }))}
+        open={orgModal.open}
+        handleNo={() => setOrgModal((state) => ({ ...state, open: false }))}
         handleYes={() => {
-          setFormState((state) => ({ ...state, organizationId: orgModel.transientId }));
-          setOrgModel((state) => ({ ...state, open: false }));
+          setFormState((state) => ({ ...state, organizationId: orgModal.transientId }));
+          setOrgModal((state) => ({ ...state, open: false }));
         }}
       >
         Changing Organizations will result in loss of permissions. Do you want to continue?
