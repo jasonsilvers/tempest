@@ -1,8 +1,8 @@
 import logHandler from '../../../src/pages/api/logs';
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { testNextApi } from '../../utils/NextAPIUtils';
-import { grants } from '../../utils/mocks/fixtures';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { testNextApi } from '../../testutils/NextAPIUtils';
+import { grants } from '../../testutils/mocks/fixtures';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 
 jest.mock('../../../src/repositories/userRepo');

@@ -9,7 +9,7 @@ module.exports = {
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
     '<rootDir>/__tests__/setup/',
-    '<rootDir>/__tests__/utils/',
+    '<rootDir>/__tests__/testutils/',
     '<rootDir?/src/prisma/seed.ts',
   ],
   collectCoverage: true,

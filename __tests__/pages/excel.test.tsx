@@ -1,8 +1,8 @@
-import { fireEvent, render, waitFor, userEvent, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, userEvent, waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
 import Excel from '../../src/pages/Excel/index';
 import fs from 'fs';
 import { ERole, EUri } from '../../src/const/enums';
-import { server, rest } from '../utils/mocks/msw';
+import { server, rest } from '../testutils/mocks/msw';
 import 'whatwg-fetch';
 
 const blob = fs.readFileSync('__tests__/setup/test.xlsx');

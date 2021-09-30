@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../../../src/components/Navigation/Navbar';
-import { render, waitFor } from '../../utils/TempestTestUtils';
-import { server } from '../../utils/mocks/msw';
+import { render, waitFor } from '../../testutils/TempestTestUtils';
+import { server } from '../../testutils/mocks/msw';
 
 import 'whatwg-fetch';
 

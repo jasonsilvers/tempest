@@ -1,11 +1,11 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../../../src/repositories/memberTrackingRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
-import { grants } from '../../utils/mocks/fixtures';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { grants } from '../../testutils/mocks/fixtures';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import memberTrackingRecordSlugHandler from '../../../src/pages/api/membertrackingrecords/[...slug]';
 import dayjs from 'dayjs';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import MockDate from 'mockdate';
 import { MemberTrackingRecord } from '@prisma/client';
 

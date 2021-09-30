@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor, screen, fireEvent, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
+import { render, waitFor, screen, fireEvent, waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
 import AppProviders from '../../src/components/AppProviders';
 import { useSnackbar } from 'notistack';
 import { useLayoutEffect } from 'react';

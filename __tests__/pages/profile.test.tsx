@@ -1,13 +1,13 @@
-import { render, waitFor, fireEvent } from '../utils/TempestTestUtils';
+import { render, waitFor, fireEvent } from '../testutils/TempestTestUtils';
 import Profile, { getStaticPaths, getStaticProps } from '../../src/pages/Profile/[id]';
 import 'whatwg-fetch';
-import { server, rest } from '../utils/mocks/msw';
+import { server, rest } from '../testutils/mocks/msw';
 import * as nextRouter from 'next/router';
-import { mockMethodAndReturn } from '../utils/mocks/repository';
+import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import { findUserByIdWithMemberTrackingItems, UserWithAll } from '../../src/repositories/userRepo';
 
 jest.mock('../../src/repositories/userRepo');
-import { bobJones } from '../utils/mocks/fixtures';
+import { bobJones } from '../testutils/mocks/fixtures';
 import { EUri } from '../../src/const/enums';
 
 beforeAll(() => {

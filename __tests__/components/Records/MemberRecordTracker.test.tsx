@@ -1,11 +1,11 @@
-import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../testutils/TempestTestUtils';
 import React from 'react';
 import MemberItemTracker from '../../../src/components/Records/MemberRecordTracker/MemberItemTracker';
 import { rest } from 'msw';
 import dayjs from 'dayjs';
 import { TrackingItem } from '.prisma/client';
 import { User } from '@prisma/client';
-import { server } from '../../utils/mocks/msw';
+import { server } from '../../testutils/mocks/msw';
 import Tab from '../../../src/components/Records/MemberRecordTracker/Tab';
 import { ECategories, EUri } from '../../../src/const/enums';
 

@@ -1,8 +1,8 @@
 import { UpdateUsersOrg } from '../../src/components/UpdateUsersOrg';
 import { ERole, EUri } from '../../src/const/enums';
-import { bobJones } from '../utils/mocks/fixtures';
-import { rest, server } from '../utils/mocks/msw';
-import { fireEvent, render, waitFor } from '../utils/TempestTestUtils';
+import { bobJones } from '../testutils/mocks/fixtures';
+import { rest, server } from '../testutils/mocks/msw';
+import { fireEvent, render, waitFor } from '../testutils/TempestTestUtils';
 
 beforeAll(() => {
   server.listen({

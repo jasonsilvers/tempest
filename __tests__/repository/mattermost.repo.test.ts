@@ -1,4 +1,4 @@
-import { rest, server } from '../utils/mocks/msw';
+import { rest, server } from '../testutils/mocks/msw';
 import { sendMessage } from '../../src/repositories/mattermost/mattermostRepo';
 
 beforeAll(() => {

@@ -1,9 +1,9 @@
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findUserByDodId, findUserById, updateUser } from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/users/[id]';
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { grants } from '../../utils/mocks/fixtures';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { grants } from '../../testutils/mocks/fixtures';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';
 import { User } from '@prisma/client';
 import { getRoleByName } from '../../../src/repositories/roleRepo';

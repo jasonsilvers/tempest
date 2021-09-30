@@ -1,4 +1,4 @@
-import { render } from '../../utils/TempestTestUtils';
+import { render } from '../../testutils/TempestTestUtils';
 import { Header, Link } from '../../../src/components/Navigation/Navigation';
 
 test('should render the Header comp', () => {

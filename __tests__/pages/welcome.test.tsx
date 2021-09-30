@@ -1,8 +1,8 @@
-import { render, waitFor, fireEvent, waitForLoadingToFinish } from '../utils/TempestTestUtils';
+import { render, waitFor, fireEvent, waitForLoadingToFinish } from '../testutils/TempestTestUtils';
 import WelcomePage from '../../src/pages/Welcome';
-import { rest, server } from '../utils/mocks/msw';
+import { rest, server } from '../testutils/mocks/msw';
 import { ERole, EUri } from '../../src/const/enums';
-import { bobJones } from '../utils/mocks/fixtures';
+import { bobJones } from '../testutils/mocks/fixtures';
 
 import 'whatwg-fetch';
 

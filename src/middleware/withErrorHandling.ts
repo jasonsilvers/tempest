@@ -2,7 +2,7 @@ import { ELogEventType } from '../const/enums';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import type { NextApiHandler, NextApiResponse } from 'next';
 import { LoggedInUser } from '../repositories/userRepo';
-import { logFactory } from '../utils/logger';
+import { logFactory } from '../lib/logger';
 
 // by wrapping every api route with this middleware,
 // we can use helper methods that throw: ex if the user did not give a primary key

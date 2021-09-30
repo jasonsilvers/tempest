@@ -1,5 +1,5 @@
 import prisma from '../setup/mockedPrisma';
-import { grants } from '../utils/mocks/fixtures';
+import { grants } from '../testutils/mocks/fixtures';
 import { findGrants } from '../../src/repositories/grantsRepo';
 
 test('should find grants', async () => {

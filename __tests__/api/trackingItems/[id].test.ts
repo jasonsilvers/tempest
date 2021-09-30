@@ -1,9 +1,9 @@
 import trackingItemQueryHandler from '../../../src/pages/api/trackingitems/[id]';
-import { testNextApi } from '../../utils/NextAPIUtils';
-import { grants } from '../../utils/mocks/fixtures';
+import { testNextApi } from '../../testutils/NextAPIUtils';
+import { grants } from '../../testutils/mocks/fixtures';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { deleteTrackingItem } from '../../../src/repositories/trackingItemRepo';
 
 jest.mock('../../../src/repositories/userRepo');

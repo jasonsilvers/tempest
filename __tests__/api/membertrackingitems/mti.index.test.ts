@@ -1,5 +1,5 @@
-import { grants } from '../../utils/mocks/fixtures';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { grants } from '../../testutils/mocks/fixtures';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import {
@@ -10,7 +10,7 @@ import {
   findMemberTrackingRecords,
   updateMemberTrackingItem,
 } from '../../../src/repositories/memberTrackingRepo';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import memberTrackingItemHandler from '../../../src/pages/api/membertrackingitems';
 import dayjs from 'dayjs';
 
@@ -23,7 +23,7 @@ const globalUserId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 const memberTrackingItemBody = {
   userId: globalUserId,
   trackingItemId: 2,
-  isActive: true
+  isActive: true,
 };
 
 const memberTrackingItemFromDb = {
@@ -371,7 +371,7 @@ test('PUT - Should allow monitor to update isActive', async () => {
   );
 
   expect(status).toEqual(200);
-  expect(data).toStrictEqual({...memberTrackingItemFromDb, isActive: false});
+  expect(data).toStrictEqual({ ...memberTrackingItemFromDb, isActive: false });
 });
 
 test('PUT - Should not allow update if role does not have permission', async () => {
@@ -390,7 +390,7 @@ test('PUT - Should not allow update if role does not have permission', async () 
   };
 
   mockMethodAndReturn(findMemberTrackingItemById, { ...memberTrackingItemFromDb });
-  mockMethodAndReturn(updateMemberTrackingItem, {...memberTrackingItemFromDb, isActive: false});
+  mockMethodAndReturn(updateMemberTrackingItem, { ...memberTrackingItemFromDb, isActive: false });
 
   const { status } = await testNextApi.put(memberTrackingItemHandler, {
     urlSlug: `/${trackingItemId}/user/${userId}`,

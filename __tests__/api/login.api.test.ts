@@ -1,10 +1,10 @@
-import { mockMethodAndReturn } from '../utils/mocks/repository';
+import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import loginHandler from '../../src/pages/api/login';
 import { updateLastLogin } from '../../src/repositories/userRepo';
 import { findGrants } from '../../src/repositories/grantsRepo';
 import { returnUser } from '../../src/repositories/loginRepo';
-import { testNextApi } from '../utils/NextAPIUtils';
-import { grants } from '../utils/mocks/fixtures';
+import { testNextApi } from '../testutils/NextAPIUtils';
+import { grants } from '../testutils/mocks/fixtures';
 
 jest.mock('../../src/repositories/userRepo');
 jest.mock('../../src/repositories/roleRepo');

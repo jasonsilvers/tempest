@@ -1,11 +1,11 @@
-import { render, waitFor, fireEvent, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
+import { render, waitFor, fireEvent, waitForElementToBeRemoved } from '../../testutils/TempestTestUtils';
 import 'whatwg-fetch';
-import { server, rest } from '../../utils/mocks/msw';
+import { server, rest } from '../../testutils/mocks/msw';
 import * as nextRouter from 'next/router';
 import { ProfileHeader } from '../../../src/components/Profile/ProfileHeader';
 
 jest.mock('../../../src/repositories/userRepo');
-import { bobJones } from '../../utils/mocks/fixtures';
+import { bobJones } from '../../testutils/mocks/fixtures';
 import { EUri } from '../../../src/const/enums';
 import { Role, User } from '.prisma/client';
 
