@@ -10,7 +10,7 @@ import ConditionalDateInput from '../../../lib/ConditionalDateInput';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../../../repositories/userRepo';
 import { useSnackbar } from 'notistack';
-import ConfirmDialog from '../Dialog/ConfirmDialog';
+import ConfirmDialog from '../../Dialog/ConfirmDialog';
 import { DialogContent, DialogTitle } from '../../../lib/ui';
 import { getInterval } from '../../../utils/DaysToString';
 import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';

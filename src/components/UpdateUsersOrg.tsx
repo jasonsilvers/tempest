@@ -1,28 +1,41 @@
 import { useOrgs } from '../hooks/api/organizations';
 import { useUpdateUser } from '../hooks/api/users';
-import { MenuItem } from '@material-ui/core';
-import { TempestSelect } from '../lib/ui';
-import { User } from '@prisma/client';
+import { Autocomplete, TextField } from '../lib/ui';
+import { Organization, User } from '@prisma/client';
 import { useSnackbar } from 'notistack';
 import { useUser } from '@tron/nextjs-auth-p1';
 
 import 'twin.macro';
+import React, { CSSProperties } from 'react';
 
-type OrgFormEvent = React.ChangeEvent<{ value: string }>;
-
-export const UpdateUsersOrg = ({ userId, userOrganizationId = '' }: { userId: string; userOrganizationId: string }) => {
+export const UpdateUsersOrg = ({
+  userId,
+  userOrganizationId = '',
+  onChange = null,
+  label = '',
+  editStyle,
+}: {
+  userId: string;
+  userOrganizationId: string;
+  onChange?: (org: Organization) => void;
+  label?: string;
+  editStyle?: CSSProperties;
+}) => {
   const { refreshUser } = useUser();
   const orgsQuery = useOrgs();
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: updateUser } = useUpdateUser();
 
-  const updateOrg = (event: OrgFormEvent) => {
-    const selectedOrgId = event.target.value;
-
-    if (selectedOrgId !== userOrganizationId) {
+  const updateOrg = (_, selectedOrg) => {
+    // if the selected org from the autocomplete field is null aka a user cleared the text then return nothing
+    if (!selectedOrg) {
+      return null;
+    }
+    // if no onchange function execute update on change of org id
+    if (!onChange && selectedOrg.id !== userOrganizationId) {
       const updatedUser = {
         id: userId,
-        organizationId: selectedOrgId,
+        organizationId: selectedOrg.id,
       } as User;
       updateUser(updatedUser, {
         onSuccess: () => {
@@ -31,26 +44,33 @@ export const UpdateUsersOrg = ({ userId, userOrganizationId = '' }: { userId: st
         },
       });
     }
+    if (onChange) {
+      onChange(selectedOrg);
+    }
   };
 
+  if (orgsQuery.isLoading) {
+    return <div>...loading</div>;
+  }
+
   return (
-    <>
-      {orgsQuery.isLoading ? (
-        <div>...loading</div>
-      ) : (
-        <TempestSelect
-          variant="outlined"
-          onChange={(event: OrgFormEvent) => updateOrg(event)}
-          tw="text-gray-400 w-64"
-          value={userOrganizationId}
-        >
-          {orgsQuery.data?.map((org) => (
-            <MenuItem key={org.id} value={org.id}>
-              {org.name}
-            </MenuItem>
-          ))}
-        </TempestSelect>
+    <Autocomplete
+      defaultValue={orgsQuery.data?.find((org) => org.id === userOrganizationId)}
+      options={orgsQuery.data ?? []}
+      getOptionLabel={(option) => option.name}
+      onChange={updateOrg}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          name={`${label}_textfield`}
+          id={`${label}_textfield`}
+          style={{ paddingRight: '1rem', ...editStyle }}
+          InputProps={{
+            ...params.InputProps,
+          }}
+        />
       )}
-    </>
+    />
   );
 };

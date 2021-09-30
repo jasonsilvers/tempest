@@ -1,11 +1,16 @@
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { User } from '@prisma/client';
+import { Organization, Role, User } from '@prisma/client';
 import React, { ChangeEventHandler, useContext, useEffect, useState } from 'react';
 import tw from 'twin.macro';
 import { EditIcon } from '../../assets/Icons';
 import { ranks, GroupedRank } from '../../const/ranks';
+import { useOrg } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
+import { usePermissions } from '../../hooks/usePermissions';
 import { Button, IconButton, TextField, Autocomplete } from '../../lib/ui';
+import { ERole } from '../../types/global';
+import ConfirmDialog from '../Dialog/ConfirmDialog';
+import { UpdateUsersOrg } from '../UpdateUsersOrg';
 
 const Name = tw.h4`text-3xl text-black`;
 const Table = tw.div`text-left mb-6`;
@@ -15,9 +20,9 @@ const Base = tw.div`text-sm mb-1 text-hg pr-5 capitalize`;
 const Rank = tw(Base)`w-24`;
 const Address = tw(Base)``;
 const AFSC = tw(Base)`w-24`;
-const DutyTitle = tw(Base)``;
+const OrganizationField = tw(Base)``;
 
-const ProfileHeaderContext = React.createContext(false);
+const ProfileHeaderContext = React.createContext({ userId: null, isEdit: false });
 
 const useProfileHeaderContext = () => useContext(ProfileHeaderContext);
 
@@ -26,7 +31,7 @@ const EditButtonGroup: React.FC<{ onSave: () => void; onCancel: () => void; onEd
   onSave,
   onEdit,
 }) => {
-  const isEdit = useProfileHeaderContext();
+  const { isEdit } = useProfileHeaderContext();
   if (isEdit) {
     return (
       <>
@@ -47,7 +52,7 @@ const EditItem: React.FC<{
   editStyle?: CSSProperties;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 }> = ({ children, label, editStyle, onChange }) => {
-  const isEdit = useProfileHeaderContext();
+  const { isEdit } = useProfileHeaderContext();
   const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
@@ -65,12 +70,35 @@ const EditItem: React.FC<{
   return <div>{children}</div>;
 };
 
+const EditOrg: React.FC<{
+  label: string;
+  editStyle?: CSSProperties;
+  onChange?: (org: Organization) => void;
+  orgId: string;
+}> = ({ children, label, onChange, orgId, editStyle }) => {
+  const { userId, isEdit } = useProfileHeaderContext();
+  const { role, user, isLoading } = usePermissions();
+
+  if (!isLoading && isEdit && (role === ERole.MEMBER || userId === user?.id)) {
+    return (
+      <UpdateUsersOrg
+        editStyle={editStyle}
+        label={label}
+        userId={userId}
+        userOrganizationId={orgId}
+        onChange={onChange}
+      />
+    );
+  }
+  return <div>{children}</div>;
+};
+
 const EditSelect: React.FC<{
   label: string;
   editStyle?: CSSProperties;
   onChange?: (value: GroupedRank) => void;
 }> = ({ children, label, editStyle, onChange }) => {
-  const isEdit = useProfileHeaderContext();
+  const { isEdit } = useProfileHeaderContext();
   const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
@@ -99,33 +127,35 @@ const EditSelect: React.FC<{
   return <div>{children}</div>;
 };
 
-const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
+const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) => {
   const [isActiveEdit, setIsActiveEdit] = useState(false);
-  const [formState, setFormState] = useState(user);
+  const [formState, setFormState] = useState(member);
   const updateUserMutation = useUpdateUser();
+  const { data: userOrg } = useOrg(formState?.organizationId);
+  const [orgModal, setOrgModal] = useState({ open: false, transientId: member?.organizationId });
 
   useEffect(() => {
-    setFormState(user);
-  }, [user]);
+    setFormState(member);
+  }, [member]);
 
   return formState ? (
-    <ProfileHeaderContext.Provider value={isActiveEdit}>
+    <ProfileHeaderContext.Provider value={{ userId: member?.id, isEdit: isActiveEdit }}>
       <div tw="flex items-center">
-        <Name>{`${user.lastName} ${user.firstName}`}</Name>
+        <Name>{`${member.lastName} ${member.firstName}`}</Name>
         <EditButtonGroup
           onEdit={() => setIsActiveEdit(true)}
           onSave={() => {
             updateUserMutation.mutate({
               id: formState.id,
               afsc: formState.afsc,
-              dutyTitle: formState.dutyTitle,
+              organizationId: formState.organizationId,
               rank: formState.rank,
               address: formState.address,
             } as User);
             setIsActiveEdit(false);
           }}
           onCancel={() => {
-            setFormState(user);
+            setFormState(member);
             setIsActiveEdit(false);
           }}
         />
@@ -136,8 +166,6 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
           <Row>
             <EditSelect
               onChange={({ value }) => {
-                console.log(value);
-
                 setFormState((state) => ({ ...state, rank: value }));
               }}
               label="Rank"
@@ -163,16 +191,34 @@ const ProfileHeader: React.FC<{ user: User }> = ({ user }) => {
             >
               <AFSC>{formState.afsc}</AFSC>
             </EditItem>
-            <EditItem
-              label="Duty Title"
+
+            <EditOrg
+              label="Organization"
               editStyle={{ width: '20rem' }}
-              onChange={(e) => setFormState((state) => ({ ...state, dutyTitle: e.target.value }))}
+              onChange={(org: Organization) => {
+                if (member.role.name === ERole.MEMBER) {
+                  setFormState((state) => ({ ...state, organizationId: org.id }));
+                } else {
+                  setOrgModal({ open: true, transientId: org.id });
+                }
+              }}
+              orgId={formState.organizationId}
             >
-              <DutyTitle>{formState.dutyTitle}</DutyTitle>
-            </EditItem>
+              <OrganizationField>{userOrg?.name ?? ''}</OrganizationField>
+            </EditOrg>
           </Row>
         </Column>
       </Table>
+      <ConfirmDialog
+        open={orgModal.open}
+        handleNo={() => setOrgModal((state) => ({ ...state, open: false }))}
+        handleYes={() => {
+          setFormState((state) => ({ ...state, organizationId: orgModal.transientId }));
+          setOrgModal((state) => ({ ...state, open: false }));
+        }}
+      >
+        Changing Organizations will result in loss of permissions. Do you want to continue?
+      </ConfirmDialog>
     </ProfileHeaderContext.Provider>
   ) : (
     <></>
