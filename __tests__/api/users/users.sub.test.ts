@@ -1,7 +1,7 @@
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import userSubscriptionHandler from '../../../src/pages/api/users/sub';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import verifySignature from '../../../src/utils/Crypto';
+import verifySignature from '../../../src/utils/crypto';
 import { server } from '../../testutils/mocks/msw';
 import { rest } from 'msw';
 import { findUserById, updateTempestUserFromCommonApi } from '../../../src/repositories/userRepo';

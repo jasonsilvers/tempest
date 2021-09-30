@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'http';
-import verifySignature, { getSignature } from '../../src/utils/Crypto';
+import verifySignature, { getSignature } from '../../src/utils/crypto';
 import crypto from 'crypto-js';
 
 // can not wrap the process.env assignment in a before all here due to using it's value at a global scope level

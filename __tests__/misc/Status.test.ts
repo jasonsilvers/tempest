@@ -1,4 +1,4 @@
-import { getCategory, getStatus } from '../../src/utils/Status';
+import { getCategory, getStatus } from '../../src/utils/status';
 import dayjs from 'dayjs';
 import { MemberTrackingRecord } from '@prisma/client';
 import { ECategories } from '../../src/const/enums';

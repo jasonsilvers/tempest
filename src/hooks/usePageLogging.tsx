@@ -1,7 +1,7 @@
 import { ELogEventType } from '../const/enums';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
-import { createLog } from '../utils/api';
+import { createLog } from '../../src/utils/api';
 import { useUser } from '@tron/nextjs-auth-p1';
 
 const usePageLogging = () => {
