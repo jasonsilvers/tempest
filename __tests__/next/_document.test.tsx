@@ -1,7 +1,6 @@
 import { DocumentContext } from 'next/document';
 import React from 'react';
 import MyDocument from '../../src/pages/_document';
-import { getPage } from 'next-page-tester';
 
 const ctx = {
   asPath: '/',
@@ -42,12 +41,4 @@ test('should return html, head and styles in getInitialProps', async () => {
   expect(result.html.props.children).toBe('App Rendered');
   expect(result.head.props.children.props.children).toBe('App Title');
   expect(result.styles.props.children[2].props.id).toBe('jss-server-side');
-});
-
-test('should add CSP policy to head', async () => {
-  const { render } = await getPage({ route: '/Unauthenticated', useDocument: true });
-  render();
-
-  const metaCSP = getMetaTagsContentByName(document.documentElement, 'Content-Security-Policy');
-  expect(metaCSP.length).toBe(1);
 });
