@@ -11,7 +11,7 @@ import { QueryProvider } from '../../src/components/QueryProvider';
 import { getUsersWithMemberTrackingRecords, LoggedInUser } from '../../src/repositories/userRepo';
 import { mockMethodAndReturn } from '../utils/mocks/repository';
 import { rest } from 'msw';
-import { EUri, ERole } from '../../src/types/global';
+import { EUri, ERole } from '../../src/const/enums';
 import { bobJones } from '../utils/mocks/fixtures';
 import { server } from '../utils/mocks/msw';
 

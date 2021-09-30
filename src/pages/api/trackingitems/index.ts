@@ -1,9 +1,9 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { createTrackingItem, getTrackingItems } from '../../../repositories/trackingItemRepo';
-import { getAc, permissionDenied } from '../../../middleware/utils';
-import { EResource } from '../../../types/global';
+import { getAc } from '../../../middleware/utils';
+import { EResource } from '../../../const/enums';
 import { LoggedInUser } from '../../../repositories/userRepo';
 import { returnUser } from '../../../repositories/loginRepo';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
@@ -29,7 +29,7 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedIn
       const permission = ac.can(req.user.role.name).readAny(EResource.TRACKING_ITEM);
 
       if (!permission.granted) {
-        return permissionDenied(res);
+        throw new PermissionError();
       }
 
       const trackingItems = await getTrackingItems();
@@ -40,7 +40,7 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedIn
       const permission = ac.can(req.user.role.name).createAny(EResource.TRACKING_ITEM);
 
       if (!permission.granted) {
-        return permissionDenied(res);
+        throw new PermissionError();
       }
 
       const newItem = await createTrackingItem(body);

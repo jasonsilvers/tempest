@@ -1,7 +1,7 @@
 import { fireEvent, render, waitForElementToBeRemoved, within, waitFor } from '../utils/TempestTestUtils';
 import { Devtools } from '../../src/components/Devtools';
 import { server, rest } from '../utils/mocks/msw';
-import { ERole, EUri } from '../../src/types/global';
+import { ERole, EUri } from '../../src/const/enums';
 
 import 'whatwg-fetch';
 

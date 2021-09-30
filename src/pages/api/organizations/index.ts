@@ -2,9 +2,9 @@ import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { createOrganizations, findOrganizations } from '../../../repositories/organizationRepo';
-import { getAc, permissionDenied } from '../../../middleware/utils';
-import { EResource } from '../../../types/global';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { getAc } from '../../../middleware/utils';
+import { EResource } from '../../../const/enums';
+import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import Joi from 'joi';
 
@@ -34,7 +34,7 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
       const permission = ac.can(req.user.role.name).createAny(EResource.ORGANIZATION);
 
       if (!permission.granted) {
-        return permissionDenied(res);
+        throw new PermissionError();
       }
 
       if (body.id) {

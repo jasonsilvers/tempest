@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '../utils/TempestTestUtils';
 import Unauthenticated from '../../src/pages/Unauthenticated';
 import { useTestUser } from '../utils/mocks/NextMocks';
-import { ERole } from '../../src/types/global';
+import { ERole } from '../../src/const/enums';
 it('renders the unauthenticated page', async () => {
   const { getByText } = render(<Unauthenticated />);
 

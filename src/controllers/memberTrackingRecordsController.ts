@@ -3,15 +3,15 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import Joi from 'joi';
 const dayjs = require('dayjs');
 import { NextApiResponse } from 'next';
-import { getAc, permissionDenied, recordNotFound } from '../middleware/utils';
-import { TempestError } from '../middleware/withErrorHandling';
+import { getAc } from '../middleware/utils';
+import { NotFoundError, PermissionError, TempestError } from '../middleware/withErrorHandling';
 import {
   findMemberTrackingRecordById,
   MemberTrackingRecordWithUsers,
   updateMemberTrackingRecord,
 } from '../repositories/memberTrackingRepo';
 import { LoggedInUser } from '../repositories/userRepo';
-import { EMtrVerb, EResource, ITempestApiError } from '../types/global';
+import { EMtrVerb, EResource, ITempestApiError } from '../const/enums';
 import { filterObject } from '../utils/FilterObject';
 
 const signTrainee = (userId: string, recordFromDb: MemberTrackingRecordWithUsers) => {
@@ -88,13 +88,13 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
   const recordFromDb = await findMemberTrackingRecordById(memberTrackingRecordId);
 
   if (!recordFromDb) {
-    return recordNotFound(res);
+    throw new NotFoundError();
   }
 
   // reduces cognitive complexity score by 1
   const granted = await checkPermission(req.user, recordFromDb.traineeId);
   if (!granted) {
-    return permissionDenied(res);
+    throw new PermissionError();
   }
 
   let updatedRecord: MemberTrackingRecordWithUsers;

@@ -3,7 +3,7 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { logFactory } from '../../../utils/logger';
-import { ELogEventType } from '../../../types/global';
+import { ELogEventType } from '../../../const/enums';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import Joi from 'joi';
 

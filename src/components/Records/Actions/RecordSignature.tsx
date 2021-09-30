@@ -11,7 +11,7 @@ import { DoneAllIcon } from '../../../assets/Icons';
 import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { MemberTrackingRecordWithUsers } from '../../../repositories/memberTrackingRepo';
-import { EFuncAction, EMtrVerb, EResource } from '../../../types/global';
+import { EFuncAction, EMtrVerb, EResource } from '../../../const/enums';
 import setDomRole from '../../../utils/SetDomRole';
 import { TableData, DisabledButton, ActionButton } from '../TwinMacro/Twin';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';

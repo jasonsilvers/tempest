@@ -1,4 +1,4 @@
-import { ELogEventType } from '../types/global';
+import { ELogEventType } from '../const/enums';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import { createLog } from '../utils/Api';

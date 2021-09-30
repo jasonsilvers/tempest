@@ -4,7 +4,7 @@ import { server } from '../utils/mocks/msw';
 import { renderHook } from '@testing-library/react-hooks';
 import { Wrapper } from '../utils/TempestTestUtils';
 import { AccessControl } from 'accesscontrol';
-import { ERole, EFuncAction, EResource } from '../../src/types/global';
+import { ERole, EFuncAction, EResource } from '../../src/const/enums';
 
 // Establish API mocking before tests.
 beforeAll(() => {

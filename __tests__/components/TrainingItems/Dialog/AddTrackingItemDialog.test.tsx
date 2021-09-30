@@ -4,7 +4,7 @@ import { rest } from 'msw';
 import { AddTrackingItemDialog } from '../../../../src/components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { server } from '../../../utils/mocks/msw';
 import 'whatwg-fetch';
-import { EUri } from '../../../../src/types/global';
+import { EUri } from '../../../../src/const/enums';
 
 // Establish API mocking before tests.
 beforeAll(() => {

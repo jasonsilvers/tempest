@@ -1,7 +1,8 @@
 import { Organization } from '.prisma/client';
 import axios from 'axios';
 import { useQuery } from 'react-query';
-import { OrgsDTO, EUri } from '../../types/global';
+import { EUri } from '../../const/enums';
+import { OrgsDTO } from '../../types';
 
 export const organizationQueryKeys = {
   organizations: () => ['organizations'],

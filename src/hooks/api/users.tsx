@@ -3,7 +3,8 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { UserWithAll } from '../../repositories/userRepo';
-import { EUri, UsersDTO } from '../../types/global';
+import { EUri } from '../../const/enums';
+import { UsersDTO } from '../../types';
 
 export const usersQueryKeys = {
   users: () => ['users'],

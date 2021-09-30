@@ -3,7 +3,7 @@ import React from 'react';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useRouter } from 'next/router';
 import { LoggedInUser } from '../repositories/userRepo';
-import { ERole } from '../types/global';
+import { ERole } from '../const/enums';
 
 function Home() {
   const { user, isLoading } = useUser<LoggedInUser>();

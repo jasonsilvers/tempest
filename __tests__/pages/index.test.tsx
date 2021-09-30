@@ -1,7 +1,7 @@
 import { render } from '../utils/TempestTestUtils';
 import Index from '../../src/pages/index';
 import { useTestUser } from '../utils/mocks/NextMocks';
-import { ERole } from '../../src/types/global';
+import { ERole } from '../../src/const/enums';
 
 it('routes the user to the Unauthenticated app', async () => {
   const push = jest.fn();

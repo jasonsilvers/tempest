@@ -8,7 +8,7 @@ import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { getRoleByName } from '../../../repositories/roleRepo';
 import { findUserByDodId, findUserById, updateUser, LoggedInUser } from '../../../repositories/userRepo';
-import { EResource, ERole, ITempestApiError } from '../../../types/global';
+import { EResource, ERole, ITempestApiError } from '../../../const/enums';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
 
 async function userWithinOrgOrChildOrg(reqUser: LoggedInUser, user: User) {

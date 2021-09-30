@@ -6,7 +6,7 @@ import { ProfileHeader } from '../../../src/components/Profile/ProfileHeader';
 
 jest.mock('../../../src/repositories/userRepo');
 import { bobJones } from '../../utils/mocks/fixtures';
-import { EUri } from '../../../src/types/global';
+import { EUri } from '../../../src/const/enums';
 import { Role, User } from '.prisma/client';
 
 beforeAll(() => {

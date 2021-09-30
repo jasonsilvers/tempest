@@ -2,7 +2,7 @@ import TrackingItemPage, { getStaticProps } from '../../src/pages/Trackingitems'
 import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../utils/TempestTestUtils';
 import 'whatwg-fetch';
 import { server, rest } from '../utils/mocks/msw';
-import { ERole, EUri, TrackingItemsDTO } from '../../src/types/global';
+import { ERole, EUri, TrackingItemsDTO } from '../../src/const/enums';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { bobJones } from '../utils/mocks/fixtures';
 import { DefaultRequestBody } from 'msw';

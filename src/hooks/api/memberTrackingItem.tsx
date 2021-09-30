@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { MemberTrackingItemWithAll } from '../../repositories/memberTrackingRepo';
 import { UserWithAll } from '../../repositories/userRepo';
-import { EUri } from '../../types/global';
+import { EUri } from '../../const/enums';
 import { removeOldCompletedRecords } from '../../utils';
 
 const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';

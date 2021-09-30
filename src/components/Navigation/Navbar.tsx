@@ -4,7 +4,7 @@ import { TempestDrawer } from '../../lib/ui';
 import { DashboardIcon, DescriptionIcon, PersonIcon } from '../../assets/Icons';
 import { useQueryClient } from 'react-query';
 import { usePermissions } from '../../hooks/usePermissions';
-import { EFuncAction, EResource } from '../../types/global';
+import { EFuncAction, EResource } from '../../const/enums';
 
 const Navbar: React.FC = () => {
   const queryClient = useQueryClient();

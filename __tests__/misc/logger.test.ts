@@ -1,6 +1,6 @@
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { createLog } from '../../src/repositories/logRepo';
-import { ELogEventType } from '../../src/types/global';
+import { ELogEventType } from '../../src/const/enums';
 
 jest.mock('../../src/repositories/logRepo');
 jest.spyOn(global.console, 'info');

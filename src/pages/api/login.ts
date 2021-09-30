@@ -4,7 +4,7 @@ import { updateLastLogin, LoggedInUser } from '../../repositories/userRepo';
 import { returnUser } from '../../repositories/loginRepo';
 import { MethodNotAllowedError } from '../../middleware/withErrorHandling';
 import { logFactory } from '../../utils/logger';
-import { ELogEventType } from '../../types/global';
+import { ELogEventType } from '../../const/enums';
 import { withTempestHandlers } from '../../middleware/withTempestHandlers';
 
 const loginHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {

@@ -3,7 +3,7 @@ import { Dayjs } from 'dayjs';
 const dayjs = require('dayjs');
 import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { getCategory } from '../../../utils/Status';
-import { ECategories, EMtrVerb } from '../../../types/global';
+import { ECategories, EMtrVerb } from '../../../const/enums';
 import { Token, TableData, TokenObj, TableRow } from '../TwinMacro/Twin';
 import 'twin.macro';
 import ConditionalDateInput from '../../../lib/ConditionalDateInput';

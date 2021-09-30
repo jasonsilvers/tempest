@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RecordWithTrackingItem } from '../../components/Records/MemberRecordTracker/RecordRow';
 import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
-import { EMtrVerb, EUri } from '../../types/global';
+import { EMtrVerb, EUri } from '../../const/enums';
 import { getCategory } from '../../utils/Status';
 import { mtiQueryKeys } from './memberTrackingItem';
 

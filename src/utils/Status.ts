@@ -1,4 +1,4 @@
-import { ECategories } from '../types/global';
+import { ECategories } from '../const/enums';
 const dayjs = require('dayjs');
 import { MemberTrackingRecord } from '.prisma/client';
 /**

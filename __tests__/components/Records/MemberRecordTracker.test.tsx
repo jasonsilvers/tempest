@@ -7,7 +7,7 @@ import { TrackingItem } from '.prisma/client';
 import { User } from '@prisma/client';
 import { server } from '../../utils/mocks/msw';
 import Tab from '../../../src/components/Records/MemberRecordTracker/Tab';
-import { ECategories, EUri } from '../../../src/types/global';
+import { ECategories, EUri } from '../../../src/const/enums';
 
 import 'whatwg-fetch';
 

@@ -1,5 +1,5 @@
 import { UpdateUsersOrg } from '../../src/components/UpdateUsersOrg';
-import { ERole, EUri } from '../../src/types/global';
+import { ERole, EUri } from '../../src/const/enums';
 import { bobJones } from '../utils/mocks/fixtures';
 import { rest, server } from '../utils/mocks/msw';
 import { fireEvent, render, waitFor } from '../utils/TempestTestUtils';

@@ -8,7 +8,7 @@ import { findUserByIdWithMemberTrackingItems, UserWithAll } from '../../src/repo
 
 jest.mock('../../src/repositories/userRepo');
 import { bobJones } from '../utils/mocks/fixtures';
-import { EUri } from '../../src/types/global';
+import { EUri } from '../../src/const/enums';
 
 beforeAll(() => {
   server.listen({

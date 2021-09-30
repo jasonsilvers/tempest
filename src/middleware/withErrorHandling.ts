@@ -1,4 +1,4 @@
-import { ELogEventType } from '../types/global';
+import { ELogEventType } from '../const/enums';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import type { NextApiHandler, NextApiResponse } from 'next';
 import { LoggedInUser } from '../repositories/userRepo';

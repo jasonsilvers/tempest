@@ -1,6 +1,6 @@
 import { User, Role, Prisma } from '@prisma/client';
 import prisma from '../prisma/prisma';
-import { ERole, EUserIncludes } from '../types/global';
+import { ERole, EUserIncludes } from '../const/enums';
 import { IPerson } from './common/types';
 import { getRoleByName } from './roleRepo';
 const dayjs = require('dayjs');

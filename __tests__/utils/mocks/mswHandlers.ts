@@ -1,5 +1,5 @@
 import { rest } from 'msw';
-import { EUri } from '../../../src/types/global';
+import { EUri } from '../../../src/const/enums';
 import { bobJones, grants } from './fixtures';
 
 export const handlers = [

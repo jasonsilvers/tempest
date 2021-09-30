@@ -1,4 +1,4 @@
-import { ELogEventType } from '../../types/global';
+import { ELogEventType } from '../../const/enums';
 import { log, LogLevelDesc } from './tempestlog';
 import { LoggedInUser } from '../../repositories/userRepo';
 import { createLog } from '../../repositories/logRepo';
@@ -19,7 +19,7 @@ function logFactory(user: LoggedInUser) {
   if (level === 'SILENT') {
     return log;
   }
-  
+
   log.persist = async function (logEventType: ELogEventType, message: string): Promise<void> {
     createLog(user, logEventType, message);
   };

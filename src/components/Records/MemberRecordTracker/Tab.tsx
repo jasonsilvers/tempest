@@ -1,5 +1,5 @@
 import tw from 'twin.macro';
-import { ECategories } from '../../../types/global';
+import { ECategories } from '../../../const/enums';
 import setDomRole from '../../../utils/SetDomRole';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 

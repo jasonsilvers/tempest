@@ -208,16 +208,13 @@ test('should return 400 if url is incorrect', async () => {
 test('should return 404 if record is not found', async () => {
   mockMethodAndReturn(findMemberTrackingRecordById, null);
 
-  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+  const { status } = await testNextApi.post(memberTrackingRecordSlugHandler, {
     body: {},
     urlSlug: '23/sign_authority',
   });
 
   expect(updateMemberTrackingRecord).not.toBeCalled();
   expect(status).toBe(404);
-  expect(data).toStrictEqual({
-    message: 'Record Not Found',
-  });
 });
 
 test('Should not accept GET', async () => {

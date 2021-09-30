@@ -1,7 +1,3 @@
-import { Role, Organization, TrackingItem } from '@prisma/client';
-import { Grants } from '../repositories/grantsRepo';
-import { UserWithAll } from '../repositories/userRepo';
-
 export enum ELogEventType {
   AUTHORIZED = 'AUTHORIZED',
   UNAUTHORIZED = 'UNAUTHORIZED',
@@ -105,23 +101,3 @@ export enum EUserResources {
   MEMBER_TRACKING_ITEMS = 'membertrackingitems',
   MEMBER_TRACKING_RECORDS = 'membertrackingrecords',
 }
-
-export type UsersDTO = {
-  users: UserWithAll[];
-};
-
-export type RolesDTO = {
-  roles: Role[];
-};
-
-export type OrgsDTO = {
-  organizations: Organization[];
-};
-
-export type GrantsDTO = {
-  grants: Grants;
-};
-
-export type TrackingItemsDTO = {
-  trackingItems: TrackingItem[];
-};

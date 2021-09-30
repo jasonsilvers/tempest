@@ -4,7 +4,7 @@ import { grants } from '../../utils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import { testNextApi } from '../../utils/NextAPIUtils';
 import userHandler from '../../../src/pages/api/users/index';
-import { ERole } from '../../../src/types/global';
+import { ERole } from '../../../src/const/enums';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');

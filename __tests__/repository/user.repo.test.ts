@@ -17,7 +17,7 @@ import {
 } from '../../src/repositories/userRepo';
 import { MemberTrackingRecord, Role, User } from '@prisma/client';
 import { IPerson } from '../../src/repositories/common/types';
-import { EUserIncludes } from '../../src/types/global';
+import { EUserIncludes } from '../../src/const/enums';
 
 const commonApiPerson = {
   address: '123 Fake St',

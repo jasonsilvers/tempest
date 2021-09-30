@@ -2,12 +2,12 @@ import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { findOrganizationById } from '../../../repositories/organizationRepo';
-import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
-import { EResource } from '../../../types/global';
+import { getAc } from '../../../middleware/utils';
+import { EResource } from '../../../const/enums';
 import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
 import { Permission } from 'accesscontrol';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
 interface ITempestOrganizationIdApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
@@ -45,7 +45,7 @@ export const organizationIdApiHandler = async (
   });
 
   if (!organization) {
-    return recordNotFound(res);
+    throw new NotFoundError();
   }
 
   let permission: Permission;
@@ -62,7 +62,7 @@ export const organizationIdApiHandler = async (
   }
 
   if (!permission.granted) {
-    return permissionDenied(res);
+    throw new PermissionError();
   }
 
   res.status(200);

@@ -9,9 +9,10 @@ import { UserWithAll } from '../../repositories/userRepo';
 import { MenuItem, Select } from '@material-ui/core';
 import { Role, User } from '.prisma/client';
 import { useSnackbar } from 'notistack';
-import { UsersDTO, RolesDTO, ERole, EUri } from '../../types/global';
+import { ERole, EUri } from '../../const/enums';
 import { useOrgs } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
+import { RolesDTO, UsersDTO } from '../../types';
 const dayjs = require('dayjs');
 
 const Data = tw.div`font-light text-gray-400`;

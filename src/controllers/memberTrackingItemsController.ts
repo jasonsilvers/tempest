@@ -2,7 +2,7 @@ import { MemberTrackingItem } from '@prisma/client';
 import Joi from 'joi';
 const dayjs = require('dayjs');
 import { NextApiResponse } from 'next';
-import { getAc, permissionDenied, recordNotFound } from '../middleware/utils';
+import { getAc } from '../middleware/utils';
 import { ITempestMemberTrackingItemApiRequest } from '../pages/api/membertrackingitems';
 import {
   findMemberTrackingItemById,
@@ -13,8 +13,9 @@ import {
   deleteMemberTrackingItem,
 } from '../repositories/memberTrackingRepo';
 import { LoggedInUser } from '../repositories/userRepo';
-import { ITempestApiError, EResource } from '../types/global';
+import { ITempestApiError, EResource } from '../const/enums';
 import { getIncludesQueryArray } from '../utils/IncludeQuery';
+import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
 
 export enum EMemberTrackingItemIncludes {
   MEMBER_TRACKING_RECORDS = 'membertrackingrecords',
@@ -53,7 +54,7 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
   });
 
   if (!memberTrackingItem) {
-    return recordNotFound(res);
+    throw new NotFoundError();
   }
   const permission =
     memberTrackingItem?.userId !== req.user.id
@@ -61,7 +62,7 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
       : ac.can(req.user.role.name).readOwn(EResource.MEMBER_TRACKING_ITEM);
 
   if (!permission.granted) {
-    return permissionDenied(res);
+    throw new PermissionError();
   }
 
   res.status(200).json(memberTrackingItem);
@@ -92,13 +93,13 @@ export const putMemberTrackingItemAction: IMemberTrackingItemController = async 
   const trackingRecordFromDb = await findMemberTrackingItemById(trackingItemIdParam, userId);
 
   if (!trackingRecordFromDb) {
-    return recordNotFound(res);
+    throw new NotFoundError();
   }
 
   const permission = ac.can(req.user.role.name).updateAny(EResource.MEMBER_TRACKING_ITEM);
 
   if (!permission.granted) {
-    return permissionDenied(res);
+    throw new PermissionError();
   }
 
   const filteredBody = permission.filter(body);
@@ -137,7 +138,7 @@ export const postMemberTrackingItemAction: IMemberTrackingItemController = async
       : ac.can(req.user.role.name).createOwn(EResource.MEMBER_TRACKING_ITEM);
 
   if (!permission.granted) {
-    return permissionDenied(res);
+    throw new PermissionError();
   }
 
   const newMemberTrackingItem = await createMemberTrackingItem(body);
@@ -170,7 +171,7 @@ export const deleteMemberTrackingItemAction: IMemberTrackingItemController = asy
   const trackingRecordFromDb = await findMemberTrackingItemById(trackingItemIdParam, userId);
 
   if (!trackingRecordFromDb) {
-    return recordNotFound(res);
+    throw new NotFoundError();
   }
   const permission =
     trackingRecordFromDb.userId !== req.user.id
@@ -178,7 +179,7 @@ export const deleteMemberTrackingItemAction: IMemberTrackingItemController = asy
       : ac.can(req.user.role.name).deleteOwn(EResource.MEMBER_TRACKING_ITEM);
 
   if (!permission.granted) {
-    return permissionDenied(res);
+    throw new PermissionError();
   }
 
   const memberTrackingRecords = await findMemberTrackingRecords(trackingItemIdParam, userId);

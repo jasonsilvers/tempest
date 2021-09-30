@@ -3,7 +3,7 @@ import { server } from '../utils/mocks/msw';
 import { Wrapper } from '../utils/TempestTestUtils';
 import { usePageLogging } from '../../src/hooks/usePageLogging';
 import { useTestRouter } from '../utils/mocks/NextMocks';
-import { ELogEventType } from '../../src/types/global';
+import { ELogEventType } from '../../src/const/enums';
 import { createLog } from '../../src/utils/Api';
 import { mockMethodAndReturn } from '../utils/mocks/repository';
 import React from 'react';

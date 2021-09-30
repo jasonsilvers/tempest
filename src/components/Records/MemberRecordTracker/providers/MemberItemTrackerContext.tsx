@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ECategories } from '../../../../types/global';
+import { ECategories } from '../../../../const/enums';
 import { MemberItemTrackerContext } from './useMemberItemTrackerContext';
 
 export const MemberItemTrackerContextProvider: React.FC<{ categories: ECategories[] }> = ({ children, categories }) => {

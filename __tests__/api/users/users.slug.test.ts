@@ -5,7 +5,7 @@ import { mockMethodAndReturn } from '../../utils/mocks/repository';
 import userSlugHandler from '../../../src/pages/api/users/[...slug]';
 import { testNextApi } from '../../utils/NextAPIUtils';
 import dayjs from 'dayjs';
-import { EUserIncludes } from '../../../src/types/global';
+import { EUserIncludes } from '../../../src/const/enums';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');

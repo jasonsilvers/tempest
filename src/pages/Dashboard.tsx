@@ -8,7 +8,7 @@ import { useUsers } from '../hooks/api/users';
 import { useEffect, useState } from 'react';
 import { getStatus } from '../utils/Status';
 import { usePermissions } from '../hooks/usePermissions';
-import { EFuncAction, EResource } from '../types/global';
+import { EFuncAction, EResource } from '../const/enums';
 import { removeOldCompletedRecords } from '../utils';
 import dayjs from 'dayjs';
 import { MemberTrackingRecord } from '.prisma/client';
