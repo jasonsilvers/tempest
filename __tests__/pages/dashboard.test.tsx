@@ -20,6 +20,7 @@ import React from 'react';
 import { SnackbarProvider } from 'notistack';
 import { Button } from '../../src/lib/ui';
 import { UserContextProvider } from '@tron/nextjs-auth-p1';
+import dayjs from 'dayjs';
 
 jest.mock('../../src/repositories/userRepo');
 
@@ -74,7 +75,7 @@ const users = {
               traineeSignedDate: null,
               authoritySignedDate: null,
               authorityId: null,
-              createdAt: '2021-08-27T19:28:10.643Z',
+              createdAt: dayjs().toDate(),
               completedDate: null,
               order: 3,
               traineeId: '4e3de847-e79a-465d-af8f-81cf5b900c38',
@@ -215,8 +216,8 @@ it('should show correct counts', async () => {
   const upcomingContainer = getByText(/upcoming/i);
   const overdueContainer = getByText(/overdue/i);
   expect(within(allContainer.parentElement).getByText('1')).toBeInTheDocument();
-  expect(within(upcomingContainer.parentElement).getByText('4')).toBeInTheDocument();
-  expect(within(overdueContainer.parentElement).getByText('0')).toBeInTheDocument();
+  expect(within(upcomingContainer.parentElement).getByText('2')).toBeInTheDocument();
+  expect(within(overdueContainer.parentElement).getByText('2')).toBeInTheDocument();
 });
 
 it('should show error on query failure', async () => {
