@@ -1,4 +1,4 @@
-import { EAction, EResource, ERole } from '../const/enums';
+import { EAction, EResource, ERole } from './enums';
 
 export type Grants = {
   action: EAction;

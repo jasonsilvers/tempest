@@ -6,7 +6,7 @@ import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import { useUsers } from '../hooks/api/users';
 import { useEffect, useState } from 'react';
-import { getStatus } from '../utils/Status';
+import { getStatus } from '../utils/status';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
 import { removeOldCompletedRecords } from '../utils';

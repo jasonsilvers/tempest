@@ -4,7 +4,7 @@ import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
 import { findOrganizationById } from '../../../repositories/organizationRepo';
 import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../const/enums';
-import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
+import { getIncludesQueryArray } from '../../../utils/includeQuery';
 import { Permission } from 'accesscontrol';
 import { isOrgChildOf } from '../../../utils/isOrgChildOf';
 import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';

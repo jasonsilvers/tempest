@@ -12,7 +12,7 @@ import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '..
 import { usePermissions } from '../../../hooks/usePermissions';
 import { MemberTrackingRecordWithUsers } from '../../../repositories/memberTrackingRepo';
 import { EFuncAction, EMtrVerb, EResource } from '../../../const/enums';
-import setDomRole from '../../../utils/SetDomRole';
+import setDomRole from '../../../utils/setDomRole';
 import { TableData, DisabledButton, ActionButton } from '../TwinMacro/Twin';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
 import { IconButton, TempestDeleteIcon, TempestToolTip, Zoom } from '../../../lib/ui';

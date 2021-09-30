@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RecordWithTrackingItem } from '../../components/Records/MemberRecordTracker/RecordRow';
 import { MemberTrackingRecordWithUsers } from '../../repositories/memberTrackingRepo';
 import { EMtrVerb, EUri } from '../../const/enums';
-import { getCategory } from '../../utils/Status';
+import { getCategory } from '../../utils/status';
 import { mtiQueryKeys } from './memberTrackingItem';
 
 const MEMBER_TRACKING_RECORD_RESOURCE = 'membertrackingrecords';

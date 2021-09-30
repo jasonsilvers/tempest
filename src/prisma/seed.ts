@@ -1,6 +1,6 @@
 import { Grant, PrismaClient } from '@prisma/client';
 import { EAction, EResource, ERole } from '../const/enums';
-import { grants } from '../utils/Grants';
+import { grants } from '../const/grants';
 const faker = require('faker');
 
 const prisma = new PrismaClient();

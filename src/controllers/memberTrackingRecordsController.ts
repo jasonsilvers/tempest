@@ -12,7 +12,7 @@ import {
 } from '../repositories/memberTrackingRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { EMtrVerb, EResource, ITempestApiError } from '../const/enums';
-import { filterObject } from '../utils/FilterObject';
+import { filterObject } from '../utils/filterObject';
 
 const signTrainee = (userId: string, recordFromDb: MemberTrackingRecordWithUsers) => {
   if (userId === recordFromDb.authorityId) {

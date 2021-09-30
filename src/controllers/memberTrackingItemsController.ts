@@ -14,7 +14,7 @@ import {
 } from '../repositories/memberTrackingRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { ITempestApiError, EResource } from '../const/enums';
-import { getIncludesQueryArray } from '../utils/IncludeQuery';
+import { getIncludesQueryArray } from '../utils/includeQuery';
 import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
 
 export enum EMemberTrackingItemIncludes {

@@ -11,7 +11,7 @@ import {
   LoggedInUser,
 } from '../../../repositories/userRepo';
 import { EResource, EUserIncludes, EUserResources, ITempestApiError } from '../../../const/enums';
-import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
+import { getIncludesQueryArray } from '../../../utils/includeQuery';
 
 async function userSlugHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,

@@ -1,7 +1,7 @@
 import { User } from '@prisma/client';
 import { P1_JWT } from '@tron/nextjs-auth-p1';
 import { EAction, EResource, ERole } from '../../../src/const/enums';
-import { grants as realGrants } from '../../../src/utils/Grants';
+import { grants as realGrants } from '../../../src/const/grants';
 
 const grants = [
   ...realGrants,

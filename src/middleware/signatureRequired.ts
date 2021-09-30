@@ -1,5 +1,5 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
-import verifySignature from '../utils/Crypto';
+import verifySignature from '../utils/crypto';
 import { PermissionError } from './withErrorHandling';
 
 const signatureRequired = (handler: NextApiHandler) => {
