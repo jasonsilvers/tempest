@@ -7,7 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import { Button } from '../../src/lib/ui';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import userEvent from '@testing-library/user-event';
-import { EUri } from '../../src/types/global';
+import { EUri } from '../../src/const/enums';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DayJsUtils from '@date-io/dayjs';
 

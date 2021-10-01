@@ -1,4 +1,4 @@
-import { mockMethodAndReturn } from '../utils/mocks/repository';
+import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import {
   findUserByDodId,
   createUserFromCommonApi,
@@ -6,9 +6,9 @@ import {
   updateUserRole,
 } from '../../src/repositories/userRepo';
 import { getRoleByName } from '../../src/repositories/roleRepo';
-import { explodedJwt, explodedJwt_admin, grants } from '../utils/mocks/fixtures';
+import { explodedJwt, explodedJwt_admin, grants } from '../testutils/mocks/fixtures';
 import { IPerson } from '../../src/repositories/common/types';
-import { server, rest } from '../utils/mocks/msw';
+import { server, rest } from '../testutils/mocks/msw';
 import { Role } from '.prisma/client';
 import { findGrants } from '../../src/repositories/grantsRepo';
 import { returnUser } from '../../src/repositories/loginRepo';

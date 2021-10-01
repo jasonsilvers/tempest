@@ -1,5 +1,5 @@
 import { P1_JWT } from '@tron/nextjs-auth-p1';
-import { ERole } from '../types/global';
+import { ERole } from '../const/enums';
 import { getPersonFromCommonApi, createPersonFromJwt } from './common/commonRepo';
 import { LoggedInUser, findUserByDodId, updateUserRole, createUserFromCommonApi } from './userRepo';
 

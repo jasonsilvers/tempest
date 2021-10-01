@@ -1,4 +1,4 @@
-import { ELogEventType } from '../../types/global';
+import { ELogEventType } from '../../const/enums';
 import log, { LogLevelDesc } from 'loglevel';
 
 type TempestLog = typeof log & {

@@ -1,11 +1,11 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../../../src/repositories/memberTrackingRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
-import { grants } from '../../utils/mocks/fixtures';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { grants } from '../../testutils/mocks/fixtures';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import memberTrackingRecordSlugHandler from '../../../src/pages/api/membertrackingrecords/[...slug]';
 import dayjs from 'dayjs';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import MockDate from 'mockdate';
 import { MemberTrackingRecord } from '@prisma/client';
 
@@ -208,16 +208,13 @@ test('should return 400 if url is incorrect', async () => {
 test('should return 404 if record is not found', async () => {
   mockMethodAndReturn(findMemberTrackingRecordById, null);
 
-  const { status, data } = await testNextApi.post(memberTrackingRecordSlugHandler, {
+  const { status } = await testNextApi.post(memberTrackingRecordSlugHandler, {
     body: {},
     urlSlug: '23/sign_authority',
   });
 
   expect(updateMemberTrackingRecord).not.toBeCalled();
   expect(status).toBe(404);
-  expect(data).toStrictEqual({
-    message: 'Record Not Found',
-  });
 });
 
 test('Should not accept GET', async () => {

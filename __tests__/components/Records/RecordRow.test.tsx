@@ -2,12 +2,12 @@ import { TrackingItem } from '.prisma/client';
 import React from 'react';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
 import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/MemberRecordTracker/RecordRow';
-import { ECategories, EUri } from '../../../src/types/global';
-import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../utils/TempestTestUtils';
+import { ECategories, EUri } from '../../../src/const/enums';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../testutils/TempestTestUtils';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 // MSW test requirements
 import 'whatwg-fetch';
-import { server, rest } from '../../utils/mocks/msw';
+import { server, rest } from '../../testutils/mocks/msw';
 import dayjs from 'dayjs';
 
 const trackingItemWithAnnualInterval: TrackingItem = {

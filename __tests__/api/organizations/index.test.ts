@@ -1,10 +1,10 @@
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findOrganizations, createOrganizations } from '../../../src/repositories/organizationRepo';
 import organizationApiHandler from '../../../src/pages/api/organizations/index';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { grants } from '../../utils/mocks/fixtures';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { grants } from '../../testutils/mocks/fixtures';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/organizationRepo');

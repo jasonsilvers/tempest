@@ -2,7 +2,7 @@ import { TrackingItem } from '@prisma/client';
 import React from 'react';
 import tw from 'twin.macro';
 import { TempestDeleteIcon, IconButton } from '../../lib/ui';
-import { getInterval } from '../../utils/DaysToString';
+import { getInterval } from '../../utils/daysToString';
 import { useDeleteTrackingItem } from '../../hooks/api/trackingItem';
 
 const Container = tw.div`flex h-10 items-center border-b-2`;

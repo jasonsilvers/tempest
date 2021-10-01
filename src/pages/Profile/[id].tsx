@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useRouter } from 'next/router';
-import { ECategories, EFuncAction, EResource, EUserIncludes } from '../../types/global';
+import { ECategories, EFuncAction, EResource, EUserIncludes } from '../../const/enums';
 import { QueryClient } from 'react-query';
 import { mtiQueryKeys } from '../../hooks/api/memberTrackingItem';
 import { GetStaticPropsContext } from 'next';

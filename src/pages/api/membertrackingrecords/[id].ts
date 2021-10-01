@@ -8,7 +8,7 @@ import {
   findMemberTrackingRecordById,
 } from '../../../repositories/memberTrackingRepo';
 import { getAc } from '../../../middleware/utils';
-import { EResource } from '../../../types/global';
+import { EResource } from '../../../const/enums';
 import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 

@@ -7,7 +7,7 @@ import { TrainingItemRow, TrainingItemHeader } from '../components/TrainingItems
 import { Button, SearchBar } from '../lib/ui';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { usePermissions } from '../hooks/usePermissions';
-import { EFuncAction, EResource } from '../types/global';
+import { EFuncAction, EResource } from '../const/enums';
 
 const H1 = tw.h1`text-xl text-primary font-family[DM Sans] mb-2`;
 

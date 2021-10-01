@@ -1,9 +1,9 @@
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import grantsHandler from '../../../src/pages/api/grants';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { grants } from '../../utils/mocks/fixtures';
+import { grants } from '../../testutils/mocks/fixtures';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');

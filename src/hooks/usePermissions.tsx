@@ -5,7 +5,8 @@ import { useCallback } from 'react';
 import { useQuery } from 'react-query';
 import { Grants } from '../repositories/grantsRepo';
 import { LoggedInUser } from '../repositories/userRepo';
-import { EFuncAction, EResource, EUri, GrantsDTO } from '../types/global';
+import { EFuncAction, EResource, EUri } from '../const/enums';
+import { GrantsDTO } from '../types';
 
 const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<LoggedInUser>();

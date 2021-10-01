@@ -1,7 +1,7 @@
 import { MemberTrackingItem, MemberTrackingRecord, Prisma } from '.prisma/client';
 import prisma from '../prisma/prisma';
-import { ECategories } from '../types/global';
-import { filterObject } from '../utils/FilterObject';
+import { ECategories } from '../const/enums';
+import { filterObject } from '../utils/filterObject';
 
 export const updateMemberTrackingRecord = async (id: number, memberTrackingRecord: MemberTrackingRecord) => {
   return prisma.memberTrackingRecord.update({

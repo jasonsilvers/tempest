@@ -2,7 +2,7 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import Excel from 'xlsx';
 import fileToArrayBuffer from 'file-to-array-buffer';
 import { usePermissions } from '../../hooks/usePermissions';
-import { EFuncAction, EResource } from '../../types/global';
+import { EFuncAction, EResource } from '../../const/enums';
 
 // for controlling the files allowed in one place
 const acceptableFiles = ['.xlsx'];

@@ -1,11 +1,12 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
-import { getAc, permissionDenied } from '../../../middleware/utils';
-import { EResource, RolesDTO } from '../../../types/global';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { getAc } from '../../../middleware/utils';
+import { EResource } from '../../../const/enums';
+import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { getRoles } from '../../../repositories/roleRepo';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+import { RolesDTO } from '../../../types';
 
 const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse<RolesDTO>) => {
   const { method } = req;
@@ -19,7 +20,7 @@ const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, 
   const permission = ac.can(req.user.role.name).readAny(EResource.ROLE);
 
   if (!permission.granted) {
-    return permissionDenied(res);
+    throw new PermissionError();
   }
 
   const roles = await getRoles();

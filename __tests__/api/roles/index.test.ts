@@ -1,9 +1,9 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
-import { grants } from '../../utils/mocks/fixtures';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { grants } from '../../testutils/mocks/fixtures';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import roleHandler from '../../../src/pages/api/roles';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import { getRoles } from '../../../src/repositories/roleRepo';
 
 jest.mock('../../../src/repositories/userRepo.ts');

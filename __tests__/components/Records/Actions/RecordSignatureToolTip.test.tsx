@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import dayjs from 'dayjs';
-import { act, fireEvent, render } from '../../../utils/TempestTestUtils';
+import { act, fireEvent, render } from '../../../testutils/TempestTestUtils';
 import { RecordSignatureToolTip } from '../../../../src/components/Records/Actions/RecordSignatureToolTip';
 
 beforeEach(() => {

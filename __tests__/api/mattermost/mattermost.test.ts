@@ -1,10 +1,10 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
-import { grants } from '../../utils/mocks/fixtures';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { grants } from '../../testutils/mocks/fixtures';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import mattermostHandler from '../../../src/pages/api/mattermost/[id]';
 import { sendMessage } from '../../../src/repositories/mattermost/mattermostRepo';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 
 jest.mock('../../../src/repositories/mattermost/mattermostRepo.ts');
 jest.mock('../../../src/repositories/userRepo.ts');

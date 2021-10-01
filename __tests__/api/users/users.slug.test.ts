@@ -1,11 +1,11 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId, findUserByIdWithMemberTrackingItems } from '../../../src/repositories/userRepo';
-import { grants } from '../../utils/mocks/fixtures';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { grants } from '../../testutils/mocks/fixtures';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import userSlugHandler from '../../../src/pages/api/users/[...slug]';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import dayjs from 'dayjs';
-import { EUserIncludes } from '../../../src/types/global';
+import { EUserIncludes } from '../../../src/const/enums';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');

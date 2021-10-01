@@ -1,9 +1,9 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId } from '../../../src/repositories/userRepo';
-import { grants } from '../../utils/mocks/fixtures';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
+import { grants } from '../../testutils/mocks/fixtures';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import organizationsIdApiHandler from '../../../src/pages/api/organizations/[id]';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import { findOrganizationById, OrganizationWithChildren } from '../../../src/repositories/organizationRepo';
 import { User } from '@prisma/client';
 import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';

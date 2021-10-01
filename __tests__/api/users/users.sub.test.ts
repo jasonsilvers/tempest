@@ -1,13 +1,13 @@
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import userSubscriptionHandler from '../../../src/pages/api/users/sub';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import verifySignature from '../../../src/utils/Crypto';
-import { server } from '../../utils/mocks/msw';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
+import verifySignature from '../../../src/utils/crypto';
+import { server } from '../../testutils/mocks/msw';
 import { rest } from 'msw';
 import { findUserById, updateTempestUserFromCommonApi } from '../../../src/repositories/userRepo';
 import { getPersonFromCommonApi } from '../../../src/repositories/common/commonRepo';
 
-jest.mock('../../../src/utils/Crypto');
+jest.mock('../../../src/utils/crypto');
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/common/commonRepo');
 process.env.COMMON_API_URL = 'https://whatever.com';

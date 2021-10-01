@@ -21,7 +21,7 @@ import { useCreateMemberTrackingItemAndRecord, useMemberTrackingItems } from '..
 import { mtrQueryKeys, useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { useSnackbar } from 'notistack';
 import { useQueryClient } from 'react-query';
-import { memberTrackingRecordIsComplete } from '../../../utils/Status';
+import { memberTrackingRecordIsComplete } from '../../../utils/status';
 
 type IMemberTrackingItemsToAdd = {
   [key: number]: IMemberTrackingItemToAdd;

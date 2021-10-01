@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import { ELogEventType } from '../types/global';
+import { ELogEventType } from '../const/enums';
 import prisma from '../prisma/prisma';
 
 const createLog = async (user: User, logEventType: ELogEventType, message: string) => {

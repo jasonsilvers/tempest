@@ -23,7 +23,6 @@ import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { KeyboardDatePicker } from '@material-ui/pickers';
-import { Select } from '@material-ui/core';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -118,12 +117,6 @@ export default function TempestPopMenu({ userId }: { userId: string }) {
   );
 }
 
-const TempestSelect = styled((props) => <Select {...props} />)`
-  & .MuiOutlinedInput-input {
-    padding: 11.5px 14px;
-  }
-`;
-
 const TempestDatePicker = styled((props) => (
   <KeyboardDatePicker
     disableToolbar
@@ -188,7 +181,6 @@ export {
   TempestSkeleton,
   TempestToolTip,
   TempestDatePicker,
-  TempestSelect,
   TempestDeleteIcon,
   Zoom,
   SearchBar,

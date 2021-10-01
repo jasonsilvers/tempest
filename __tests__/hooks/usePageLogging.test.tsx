@@ -1,14 +1,14 @@
 import { renderHook } from '@testing-library/react-hooks';
-import { server } from '../utils/mocks/msw';
-import { Wrapper } from '../utils/TempestTestUtils';
+import { server } from '../testutils/mocks/msw';
+import { Wrapper } from '../testutils/TempestTestUtils';
 import { usePageLogging } from '../../src/hooks/usePageLogging';
-import { useTestRouter } from '../utils/mocks/NextMocks';
-import { ELogEventType } from '../../src/types/global';
-import { createLog } from '../../src/utils/Api';
-import { mockMethodAndReturn } from '../utils/mocks/repository';
+import { useTestRouter } from '../testutils/mocks/NextMocks';
+import { ELogEventType } from '../../src/const/enums';
+import { createLog } from '../../src/utils/api';
+import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import React from 'react';
 
-jest.mock('../../src/utils/Api.ts');
+jest.mock('../../src/utils/api.ts');
 
 useTestRouter.mockImplementation(() => ({
   route: '/',

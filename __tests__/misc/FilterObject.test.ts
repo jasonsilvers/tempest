@@ -1,4 +1,5 @@
-import { filterObject } from '../../src/utils/FilterObject';
+import { filterObject } from '../../src/utils/filterObject';
+
 test('should test the blacklisting util function', () => {
   const x = { a: 1, b: 2, c: 3, d: 4, 5: 'test' };
 

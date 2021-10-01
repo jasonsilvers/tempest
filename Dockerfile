@@ -50,8 +50,8 @@ COPY .env.production .env
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/node_modules ./node_modules
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/.next ./.next
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/prisma/seed.js ./prisma/
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/utils/Grants.js ./utils/
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/types/global.js ./types/
+COPY --chown=appuser:appuser --from=builder ${HOME}/build/const/grants.js ./utils/
+COPY --chown=appuser:appuser --from=builder ${HOME}/build/const/enums.js ./types/
 COPY --chown=appuser:appuser  startup.sh timeout.js ./
 
 ENV NODE_ENV=production

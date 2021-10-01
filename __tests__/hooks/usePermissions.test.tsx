@@ -1,10 +1,10 @@
 import { usePermissions } from '../../src/hooks/usePermissions';
-import { grants } from '../utils/mocks/fixtures';
-import { server } from '../utils/mocks/msw';
+import { grants } from '../testutils/mocks/fixtures';
+import { server } from '../testutils/mocks/msw';
 import { renderHook } from '@testing-library/react-hooks';
-import { Wrapper } from '../utils/TempestTestUtils';
+import { Wrapper } from '../testutils/TempestTestUtils';
 import { AccessControl } from 'accesscontrol';
-import { ERole, EFuncAction, EResource } from '../../src/types/global';
+import { ERole, EFuncAction, EResource } from '../../src/const/enums';
 
 // Establish API mocking before tests.
 beforeAll(() => {

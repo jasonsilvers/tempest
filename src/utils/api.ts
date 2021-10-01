@@ -1,4 +1,4 @@
-import { ELogEventType, EUri } from '../types/global';
+import { ELogEventType, EUri } from '../const/enums';
 import axios from 'axios';
 
 const createLog = (logEventType: ELogEventType, message: string) => {

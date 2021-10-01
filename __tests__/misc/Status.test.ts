@@ -1,7 +1,7 @@
-import { getCategory, getStatus } from '../../src/utils/Status';
+import { getCategory, getStatus } from '../../src/utils/status';
 import dayjs from 'dayjs';
 import { MemberTrackingRecord } from '@prisma/client';
-import { ECategories } from '../../src/types/global';
+import { ECategories } from '../../src/const/enums';
 
 test('Should return Done when interval is greater than 60 days completed Date before due Date --Left', () => {
   const completedDate = dayjs().toDate();

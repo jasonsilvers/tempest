@@ -1,10 +1,10 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByDodId, getUsersWithMemberTrackingRecords, findUsers } from '../../../src/repositories/userRepo';
-import { grants } from '../../utils/mocks/fixtures';
-import { mockMethodAndReturn } from '../../utils/mocks/repository';
-import { testNextApi } from '../../utils/NextAPIUtils';
+import { grants } from '../../testutils/mocks/fixtures';
+import { mockMethodAndReturn } from '../../testutils/mocks/repository';
+import { testNextApi } from '../../testutils/NextAPIUtils';
 import userHandler from '../../../src/pages/api/users/index';
-import { ERole } from '../../../src/types/global';
+import { ERole } from '../../../src/const/enums';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');

@@ -1,8 +1,8 @@
 import { User } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { getAc, permissionDenied, recordNotFound } from '../../../middleware/utils';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { getAc } from '../../../middleware/utils';
+import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import {
   findUserByDodId,
@@ -10,8 +10,8 @@ import {
   UserWithMemberTrackingItems,
   LoggedInUser,
 } from '../../../repositories/userRepo';
-import { EResource, EUserIncludes, EUserResources, ITempestApiError } from '../../../types/global';
-import { getIncludesQueryArray } from '../../../utils/IncludeQuery';
+import { EResource, EUserIncludes, EUserResources, ITempestApiError } from '../../../const/enums';
+import { getIncludesQueryArray } from '../../../utils/includeQuery';
 
 async function userSlugHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,
@@ -39,7 +39,7 @@ async function userSlugHandler(
       : ac.can(req.user.role.name).readOwn(EResource.USER);
 
   if (!permission.granted) {
-    return permissionDenied(res);
+    throw new PermissionError();
   }
 
   let user: UserWithMemberTrackingItems;
@@ -52,7 +52,7 @@ async function userSlugHandler(
   }
 
   if (!user) {
-    return recordNotFound(res);
+    throw new NotFoundError();
   }
 
   res.status(200).json(user);

@@ -6,13 +6,13 @@ import {
   userEvent,
   createWrapper,
   rtlRender,
-} from '../../utils/TempestTestUtils';
+} from '../../testutils/TempestTestUtils';
 import React, { useState } from 'react';
 import { rest } from 'msw';
 import { AddMemberTrackingItemDialog } from '../../../src/components/Records/Dialog/AddMemberTrackingItemDialog';
-import { server } from '../../utils/mocks/msw';
+import { server } from '../../testutils/mocks/msw';
 import 'whatwg-fetch';
-import { EUri } from '../../../src/types/global';
+import { EUri } from '../../../src/const/enums';
 import { TrackingItem, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';

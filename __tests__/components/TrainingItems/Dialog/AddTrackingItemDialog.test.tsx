@@ -1,10 +1,10 @@
-import { fireEvent, render, waitForElementToBeRemoved, userEvent } from '../../../utils/TempestTestUtils';
+import { fireEvent, render, waitForElementToBeRemoved, userEvent } from '../../../testutils/TempestTestUtils';
 import React, { useState } from 'react';
 import { rest } from 'msw';
 import { AddTrackingItemDialog } from '../../../../src/components/TrainingItems/Dialog/AddTrackingItemDialog';
-import { server } from '../../../utils/mocks/msw';
+import { server } from '../../../testutils/mocks/msw';
 import 'whatwg-fetch';
-import { EUri } from '../../../../src/types/global';
+import { EUri } from '../../../../src/const/enums';
 
 // Establish API mocking before tests.
 beforeAll(() => {

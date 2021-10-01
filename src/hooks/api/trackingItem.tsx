@@ -1,7 +1,8 @@
 import { TrackingItem } from '@prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { EUri, TrackingItemsDTO } from '../../types/global';
+import { EUri } from '../../const/enums';
+import { TrackingItemsDTO } from '../../types';
 
 export const tiQueryKeys = {
   trackingItems: () => ['trackingitems'],

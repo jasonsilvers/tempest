@@ -1,6 +1,6 @@
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { createLog } from '../../src/repositories/logRepo';
-import { ELogEventType } from '../../src/types/global';
+import { ELogEventType } from '../../src/const/enums';
 
 jest.mock('../../src/repositories/logRepo');
 jest.spyOn(global.console, 'info');
@@ -14,7 +14,7 @@ const user = {
 test('should add persist method to logger', () => {
   process.env.LOG_LEVEL = 'DEBUG';
 
-  const logger = require('../../src/utils/logger').logFactory;
+  const logger = require('../../src/lib/logger').logFactory;
 
   const log = logger(user);
 
@@ -26,7 +26,7 @@ test('should add persist method to logger', () => {
 test('should return factory function with user attached to logger', () => {
   process.env.LOG_LEVEL = 'DEBUG';
 
-  const logger = require('../../src/utils/logger').logFactory;
+  const logger = require('../../src/lib/logger').logFactory;
 
   const log = logger(user);
 

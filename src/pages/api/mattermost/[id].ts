@@ -1,12 +1,12 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { AxiosResponse } from 'axios';
 import { NextApiResponse } from 'next';
-import { getAc, permissionDenied } from '../../../middleware/utils';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
+import { getAc } from '../../../middleware/utils';
+import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { MattermostWebhookResponse, sendMessage } from '../../../repositories/mattermost/mattermostRepo';
 import { LoggedInUser, findUserByDodId } from '../../../repositories/userRepo';
-import { EResource } from '../../../types/global';
+import { EResource } from '../../../const/enums';
 
 const mattermostHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const {
@@ -27,7 +27,7 @@ const mattermostHandler = async (req: NextApiRequestWithAuthorization<LoggedInUs
   const permission = ac.can(req.user.role.name).createAny(EResource.MATTERMOST);
 
   if (!permission.granted) {
-    return permissionDenied(res);
+    throw new PermissionError();
   }
 
   let call: AxiosResponse<MattermostWebhookResponse>;

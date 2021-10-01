@@ -35,8 +35,8 @@ Mock Service Worker (MSW) is a network api mock where we define what is returned
 
 1. Add fetch polyfill
    - `import 'whatwg-fetch'`
-2. Add server and rest from ./utils/mocks/msw
-   - `import {server, rest} from '../utils/mocks/msw'`
+2. Add server and rest from ./testutils/mocks/msw
+   - `import {server, rest} from '../testutils/mocks/msw'`
 3. BeforeAll, AfterEach and AfterAll setup
    - Recommended to add snippets below for these
 4. Use `server.use(rest.get())` to set up the returned value for an api
