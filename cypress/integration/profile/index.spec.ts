@@ -8,21 +8,8 @@ describe('Member role', () => {
   it('should add new training and be able to sign', () => {
     cy.loginAsMember();
 
-    cy.findByRole('button', { name: /add new/i, timeout: 10000 }).click();
-
-    cy.wait(10000);
-
-    cy.findByRole('textbox').type('fire extinguisher');
-    cy.findByText(/fire extinguisher/i).click();
-
-    cy.findByText(/fire extinguisher/i).should('exist');
-
-    cy.findByRole('date-picker').within(() => {
-      cy.findByRole('button').click();
-    });
-
-    cy.findByRole('button', { name: '3' }).click();
-    cy.findByRole('button', { name: /add/i }).click();
+    const trackingItemName = 'Fire Extinguisher';
+    cy.addMemberTrackingRecord(trackingItemName, 1, '1');
 
     cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).should('exist');
