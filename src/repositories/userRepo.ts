@@ -105,6 +105,27 @@ export const findUsers = async () => {
  */
 export const getUsers = async () => prisma.user.findMany();
 
+export const getUsersWithMemberTrackingRecordsByOrgId = async (organizationId: string) => {
+  return prisma.user.findMany({
+    where: {
+      organizationId,
+    },
+    include: {
+      role: true,
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: {
+            orderBy: {
+              order: 'desc',
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
 export const getUsersWithMemberTrackingRecords = async () => {
   return prisma.user.findMany({
     include: {
@@ -255,3 +276,4 @@ export async function updateUserRole(id: string, roleName: string) {
 export type UserWithMemberTrackingItems = Prisma.PromiseReturnType<typeof findUserByIdWithMemberTrackingItems>;
 export type UserWithAll = Prisma.PromiseReturnType<typeof findUserByIdReturnAllIncludes>;
 export type LoggedInUser = Prisma.PromiseReturnType<typeof findUserByDodId>;
+export type UsersWithMemberTrackingRecords = Prisma.PromiseReturnType<typeof getUsersWithMemberTrackingRecordsByOrgId>;

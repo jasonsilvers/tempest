@@ -1,6 +1,10 @@
 import { findOrganizationById } from '../repositories/organizationRepo';
 
 export async function isOrgChildOf(childOrganizationId: string, organizationId: string): Promise<boolean> {
+  if (childOrganizationId === null) {
+    return false;
+  }
+
   const childOrganization = await findOrganizationById(childOrganizationId);
   let parentId = childOrganization.parentId;
 

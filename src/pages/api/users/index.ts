@@ -3,8 +3,14 @@ import { NextApiResponse } from 'next';
 import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { findUserByDodId, getUsersWithMemberTrackingRecords, LoggedInUser } from '../../../repositories/userRepo';
+import {
+  findUserByDodId,
+  getUsersWithMemberTrackingRecordsByOrgId,
+  LoggedInUser,
+  UsersWithMemberTrackingRecords,
+} from '../../../repositories/userRepo';
 import { EResource } from '../../../const/enums';
+import { getOrganizationTree } from '../../../repositories/organizationRepo';
 const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;
 
@@ -20,7 +26,20 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
     throw new PermissionError();
   }
 
-  const users = await getUsersWithMemberTrackingRecords();
+  const userPromises: Promise<UsersWithMemberTrackingRecords>[] = [];
+
+  const organizations = await getOrganizationTree(req.user.organizationId);
+
+  organizations.forEach(async (organization) => {
+    userPromises.push(getUsersWithMemberTrackingRecordsByOrgId(organization.id));
+  });
+
+  let users: UsersWithMemberTrackingRecords = [];
+
+  await Promise.all(userPromises).then((allUserData) => {
+    users = allUserData.flat();
+  });
+
   res.json({ users });
 };
 

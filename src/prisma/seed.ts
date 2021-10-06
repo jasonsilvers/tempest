@@ -183,7 +183,7 @@ async function seedDev() {
       authoritySignedDate: faker.date.recent(15).toISOString(),
       traineeSignedDate: faker.date.recent(18).toISOString(),
       authority: { connect: { id: user2.id } },
-      memberTrackingItems: {
+      memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
             userId: user1.id,
@@ -201,7 +201,7 @@ async function seedDev() {
       authoritySignedDate: faker.date.recent(15).toISOString(),
       traineeSignedDate: faker.date.recent(18).toISOString(),
       authority: { connect: { id: user2.id } },
-      memberTrackingItems: {
+      memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
             userId: user1.id,
@@ -215,7 +215,7 @@ async function seedDev() {
   await prisma.memberTrackingRecord.create({
     data: {
       order: 1,
-      memberTrackingItems: {
+      memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
             userId: user1.id,
@@ -229,7 +229,7 @@ async function seedDev() {
   await prisma.memberTrackingRecord.create({
     data: {
       order: 1,
-      memberTrackingItems: {
+      memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
             userId: user1.id,
@@ -243,7 +243,7 @@ async function seedDev() {
   await prisma.memberTrackingRecord.create({
     data: {
       order: 3,
-      memberTrackingItems: {
+      memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
             userId: user1.id,

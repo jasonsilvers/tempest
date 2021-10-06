@@ -10,17 +10,29 @@ import {
   countMemberTrackingRecordsForMemberTrackingItem,
   deleteMemberTrackingItem,
 } from '../../../src/repositories/memberTrackingRepo';
+import { userHasPermissionWithinOrg } from '../../../src/utils/userWithinOrg';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/memberTrackingRepo.ts');
+jest.mock('../../../src/utils/userWithinOrg.ts');
 
 const memberTrackingRecordFromDb = {
   id: 1,
   order: 0,
   trackingItemId: 1,
   traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  trainee: {
+    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    organizationId: '123',
+  },
   authorityId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  memberTrackingItem: {
+    user: {
+      id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+      organizationId: '123',
+    },
+  },
   authoritySignedDate: null,
   traineeSignedDate: null,
   completedDate: null,
@@ -40,6 +52,7 @@ beforeEach(() => {
     role: { id: '22', name: 'monitor' },
   });
   mockMethodAndReturn(findGrants, grants);
+  mockMethodAndReturn(userHasPermissionWithinOrg, true);
 });
 
 afterEach(() => {
@@ -70,6 +83,15 @@ test('GET - should return membertrackingrecord - read any', async () => {
 
   expect(status).toBe(200);
   expect(data).toStrictEqual(expectedResult);
+});
+
+test('GET - should return 403 if member not in monitors organization - read any', async () => {
+  const expectedResult = { ...memberTrackingRecordFromDb, trackingItem: trackingItemFromDb };
+  mockMethodAndReturn(findMemberTrackingRecordById, expectedResult);
+  mockMethodAndReturn(userHasPermissionWithinOrg, false);
+  const { status } = await testNextApi.get(memberTrackingRecordIdHandler, { urlId: 1 });
+
+  expect(status).toBe(403);
 });
 
 test('GET - should return membertrackingrecord - read own', async () => {
