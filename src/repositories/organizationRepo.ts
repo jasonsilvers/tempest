@@ -23,3 +23,26 @@ export async function createOrganizations(organization: Organization) {
     data: organization,
   });
 }
+
+export async function getOrganizationTree(organizationId: string) {
+  return prisma.$queryRaw<Organization[]>(
+    Prisma.sql`
+    WITH RECURSIVE orgs AS (
+      SELECT 
+        id,
+        org_name
+      FROM 
+        organization
+      where 
+        id = ${organizationId}
+      UNION
+        SELECT
+          o.id,
+          o.org_name
+        FROM
+          organization o
+        JOIN orgs ON orgs.id = o.parent_id
+      
+      ) SELECT * from orgs`
+  );
+}

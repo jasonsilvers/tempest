@@ -1,13 +1,19 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId, getUsersWithMemberTrackingRecords, findUsers } from '../../../src/repositories/userRepo';
+import {
+  findUserByDodId,
+  findUsers,
+  getUsersWithMemberTrackingRecordsByOrgId,
+} from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import userHandler from '../../../src/pages/api/users/index';
 import { ERole } from '../../../src/const/enums';
+import { getOrganizationTree } from '../../../src/repositories/organizationRepo';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');
+jest.mock('../../../src/repositories/organizationRepo.ts');
 
 const userFromDb = {
   id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
@@ -15,6 +21,13 @@ const userFromDb = {
   lastName: 'anderson',
   role: { id: '22', name: 'monitor' },
 };
+
+const testOrganizations = [
+  {
+    id: '1',
+    name: 'testOrg1',
+  },
+];
 
 beforeEach(() => {
   mockMethodAndReturn(findUserByDodId, {
@@ -34,9 +47,11 @@ test('should return 401 if not authorized', async () => {
   expect(status).toEqual(401);
 });
 test('should return users', async () => {
-  mockMethodAndReturn(getUsersWithMemberTrackingRecords, [userFromDb]);
+  mockMethodAndReturn(getOrganizationTree, testOrganizations);
+  mockMethodAndReturn(getUsersWithMemberTrackingRecordsByOrgId, [userFromDb]);
   const { status, data } = await testNextApi.get(userHandler);
   expect(status).toEqual(200);
+
   expect(data).toStrictEqual({ users: [userFromDb] });
 });
 

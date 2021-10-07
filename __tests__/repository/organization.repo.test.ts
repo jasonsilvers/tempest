@@ -1,5 +1,10 @@
 import prisma from '../setup/mockedPrisma';
-import { createOrganizations, findOrganizationById, findOrganizations } from '../../src/repositories/organizationRepo';
+import {
+  createOrganizations,
+  findOrganizationById,
+  findOrganizations,
+  getOrganizationTree,
+} from '../../src/repositories/organizationRepo';
 
 const testOrganizations = [
   {
@@ -33,5 +38,12 @@ test('should findOrganizationById', async () => {
   const spy = prisma.organization.findUnique.mockImplementationOnce(() => testOrganizations[0]);
   const organization = await findOrganizationById('1');
   expect(organization).toEqual(testOrganizations[0]);
+  expect(spy).toBeCalledTimes(1);
+});
+
+test('should return organization and all child organizations', async () => {
+  const spy = prisma.$queryRaw.mockImplementationOnce(() => testOrganizations);
+  const organizations = await getOrganizationTree('sadojwae');
+  expect(organizations).toEqual(testOrganizations);
   expect(spy).toBeCalledTimes(1);
 });

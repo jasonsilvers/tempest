@@ -9,18 +9,7 @@ import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { getRoleByName } from '../../../repositories/roleRepo';
 import { findUserByDodId, findUserById, updateUser, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ERole, ITempestApiError } from '../../../const/enums';
-import { isOrgChildOf } from '../../../utils/isOrgChildOf';
-
-async function userWithinOrgOrChildOrg(reqUser: LoggedInUser, user: User) {
-  if (
-    reqUser.organizationId === user.organizationId ||
-    (await isOrgChildOf(user.organizationId, reqUser.organizationId))
-  ) {
-    return true;
-  }
-
-  return false;
-}
+import { userWithinOrgOrChildOrg } from '../../../utils/userWithinOrg';
 
 const userPutSchema = {
   put: {
@@ -58,7 +47,7 @@ const getUserAction = async (
   let permission: Permission;
 
   if (req.user.id !== userId) {
-    if (await userWithinOrgOrChildOrg(req.user, user)) {
+    if (await userWithinOrgOrChildOrg(req.user.organizationId, user.organizationId)) {
       permission = ac.can(req.user.role.name).readAny(EResource.USER);
     } else {
       throw new PermissionError();
@@ -82,7 +71,7 @@ const putUserAction = async (
 
   let permission: Permission;
   if (req.user.id !== userId) {
-    if (await userWithinOrgOrChildOrg(req.user, user)) {
+    if (await userWithinOrgOrChildOrg(req.user.organizationId, user.organizationId)) {
       permission = ac.can(req.user.role.name).updateAny(EResource.USER);
     } else {
       throw new PermissionError();
@@ -94,10 +83,11 @@ const putUserAction = async (
   if (!permission.granted) {
     throw new PermissionError();
   }
+
   let filteredData = permission.filter(body);
 
   // if check on change of orgId is needed
-  if (body.organizationId !== user.organizationId) {
+  if (body.organizationId && body.organizationId !== user.organizationId) {
     const memberRole = await getRoleByName(ERole.MEMBER);
     filteredData = { ...filteredData, roleId: memberRole.id };
   }

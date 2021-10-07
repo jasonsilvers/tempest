@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "test": "jest --watchAll",
-    "test:unit": "jest",
+    "test:unit": "prisma generate --schema ./src/prisma/schema.prisma && jest",
     "pre-commit": "pretty-quick --staged",
     "cypress:open": "cypress open --config-file cypress/config/development.json",
     "cypress:run": "npm run db:reset && cypress run --config-file cypress/config/development.json",

@@ -21,7 +21,7 @@ export const deleteMemberTrackingRecord = async (id: number) => {
 export const findMemberTrackingRecords = async (trackingItemId: number, userId: string) => {
   return prisma.memberTrackingRecord.findMany({
     where: {
-      memberTrackingItems: {
+      memberTrackingItem: {
         userId,
         trackingItemId,
       },
@@ -37,6 +37,11 @@ export const findMemberTrackingRecordById = async (id: number, withTrackingItem 
       id,
     },
     include: {
+      memberTrackingItem: {
+        include: {
+          user: true,
+        },
+      },
       trackingItem: withTrackingItem,
       authority: true,
       trainee: true,
@@ -63,7 +68,7 @@ export const createMemberTrackingRecord = async (
   const newMtrData: Prisma.MemberTrackingRecordCreateInput = {
     ...filteredData,
     order: count + 1,
-    memberTrackingItems: {
+    memberTrackingItem: {
       connect: {
         userId_trackingItemId: {
           userId: newMtr.traineeId,

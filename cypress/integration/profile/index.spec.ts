@@ -103,7 +103,7 @@ describe('Member role', () => {
     cy.findAllByRole('button', { name: /delete-tracking-record/i }).click({ multiple: true });
     cy.contains(/fire extinguisher/i).should('not.exist');
   });
-  it('should not be able to delete record if signed by monitor - part 1', () => {
+  it.only('should not be able to delete record if signed by monitor - part 1', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
@@ -118,9 +118,9 @@ describe('Member role', () => {
     cy.addMemberTrackingRecord(trackingItemName, 1, '1');
     cy.findByRole('button', { name: 'signature_button' }).click();
   });
-  it('should not be able to delete record if signed by monitor - part 2', () => {
+  it.only('should not be able to delete record if signed by monitor - part 2', () => {
     cy.loginAsMember();
-    cy.findAllByRole('button', { name: /delete-tracking-record/i, timeout: 5000 }).should('be.disabled');
+    cy.findAllByRole('button', { name: /delete-tracking-record/i, timeout: 20000 }).should('be.disabled');
   });
 
   it('should complete record and replace the old one', () => {

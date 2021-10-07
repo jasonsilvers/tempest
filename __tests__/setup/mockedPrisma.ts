@@ -1,6 +1,7 @@
 import prisma from '../../src/prisma/prisma';
 
 interface IMockedPrisma {
+  $queryRaw: jest.Mock;
   role: {
     findMany: jest.Mock;
     findUnique: jest.Mock;
@@ -46,6 +47,7 @@ interface IMockedPrisma {
 jest.mock(
   '../../src/prisma/prisma',
   (): IMockedPrisma => ({
+    $queryRaw: jest.fn(),
     role: {
       findUnique: jest.fn(),
       findMany: jest.fn(),

@@ -107,19 +107,19 @@ const memberTrackingRecordsGrants: Grants[] = [
 
   {
     action: EAction.UPDATE_ANY,
-    attributes: 'authoritySignedDate, authorityId',
+    attributes: 'authoritySignedDate, authorityId, completedDate',
     resource: EResource.MEMBER_TRACKING_RECORD,
     role: ERole.MONITOR,
   },
   {
     action: EAction.UPDATE_OWN,
-    attributes: 'traineeSignedDate',
+    attributes: 'traineeSignedDate, completedDate',
     resource: EResource.MEMBER_TRACKING_RECORD,
     role: ERole.MONITOR,
   },
   {
     action: EAction.UPDATE_OWN,
-    attributes: 'traineeSignedDate',
+    attributes: 'traineeSignedDate, completedDate',
     resource: EResource.MEMBER_TRACKING_RECORD,
     role: ERole.MEMBER,
   },

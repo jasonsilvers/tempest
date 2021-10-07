@@ -12,7 +12,6 @@ import {
 } from '../repositories/memberTrackingRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { EMtrVerb, EResource, ITempestApiError } from '../const/enums';
-import { filterObject } from '../utils/filterObject';
 
 const signTrainee = (userId: string, recordFromDb: MemberTrackingRecordWithUsers) => {
   if (userId === recordFromDb.authorityId) {
@@ -38,15 +37,12 @@ const signAuthority = (userId: string, recordFromDb: MemberTrackingRecordWithUse
   } as MemberTrackingRecordWithUsers;
 };
 
-const checkPermission = async (user: LoggedInUser, traineeId) => {
+const checkPermission = async (user: LoggedInUser, traineeId: string) => {
   const ac = await getAc();
 
-  const permission =
-    user.id !== traineeId
-      ? ac.can(user.role.name).updateAny(EResource.MEMBER_TRACKING_RECORD)
-      : ac.can(user.role.name).updateOwn(EResource.MEMBER_TRACKING_RECORD);
-
-  return permission.granted;
+  return user.id !== traineeId
+    ? ac.can(user.role.name).updateAny(EResource.MEMBER_TRACKING_RECORD)
+    : ac.can(user.role.name).updateOwn(EResource.MEMBER_TRACKING_RECORD);
 };
 
 type MemberTrackingRecordsAction = (
@@ -92,8 +88,9 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
   }
 
   // reduces cognitive complexity score by 1
-  const granted = await checkPermission(req.user, recordFromDb.traineeId);
-  if (!granted) {
+  const permission = await checkPermission(req.user, recordFromDb.traineeId);
+
+  if (!permission.granted) {
     throw new PermissionError();
   }
 
@@ -122,7 +119,7 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
     };
   }
 
-  const filteredRecord = filterObject(updatedRecord, ['authority', 'trainee']) as MemberTrackingRecord;
+  const filteredRecord = permission.filter(updatedRecord);
 
   const updatedRecordFromDb = await updateMemberTrackingRecord(memberTrackingRecordId, filteredRecord);
 

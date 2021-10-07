@@ -11,6 +11,7 @@ import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../const/enums';
 import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+import { userHasPermissionWithinOrg } from '../../../utils/userWithinOrg';
 
 interface ITempestMemberTrackingRecordApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -36,6 +37,19 @@ async function memberTrackingRecordIdHandler(
 
   if (!memberTrackingRecord) {
     throw new NotFoundError();
+  }
+
+  //A monitor should not be able to retrieve a MTR for a member not in their organization
+  if (
+    !(await userHasPermissionWithinOrg(
+      { id: req.user.id, orgId: req.user.organizationId },
+      {
+        id: memberTrackingRecord.memberTrackingItem.user.id,
+        orgId: memberTrackingRecord.memberTrackingItem.user.organizationId,
+      }
+    ))
+  ) {
+    throw new PermissionError();
   }
 
   switch (method) {
