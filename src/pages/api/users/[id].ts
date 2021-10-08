@@ -9,7 +9,7 @@ import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { getRoleByName } from '../../../repositories/roleRepo';
 import { findUserByDodId, findUserById, updateUser, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource, ERole, ITempestApiError } from '../../../const/enums';
-import { userWithinOrgOrChildOrg } from '../../../utils/userWithinOrg';
+import { userWithinOrgOrChildOrg } from '../../../utils/userWithinOrgorChildOrg';
 
 const userPutSchema = {
   put: {

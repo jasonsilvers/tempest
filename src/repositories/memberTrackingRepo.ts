@@ -99,6 +99,7 @@ export const findMemberTrackingItemById = async (
       },
     },
     include: {
+      user: true,
       trackingItem: withTrackingItems,
       memberTrackingRecords: withMemberTrackingRecords
         ? {
