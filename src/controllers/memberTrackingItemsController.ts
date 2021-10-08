@@ -16,6 +16,7 @@ import { LoggedInUser } from '../repositories/userRepo';
 import { ITempestApiError, EResource } from '../const/enums';
 import { getIncludesQueryArray } from '../utils/includeQuery';
 import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
+import { userHasPermissionWithinOrg } from '../utils/userHasPermissionWithinOrg';
 
 export enum EMemberTrackingItemIncludes {
   MEMBER_TRACKING_RECORDS = 'membertrackingrecords',
@@ -56,10 +57,23 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
   if (!memberTrackingItem) {
     throw new NotFoundError();
   }
+
   const permission =
     memberTrackingItem?.userId !== req.user.id
       ? ac.can(req.user.role.name).readAny(EResource.MEMBER_TRACKING_ITEM)
       : ac.can(req.user.role.name).readOwn(EResource.MEMBER_TRACKING_ITEM);
+
+  if (
+    !(await userHasPermissionWithinOrg(
+      { id: req.user.id, orgId: req.user.organizationId },
+      {
+        id: memberTrackingItem.user.id,
+        orgId: memberTrackingItem.user.organizationId,
+      }
+    ))
+  ) {
+    throw new PermissionError();
+  }
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -90,13 +104,25 @@ export const putMemberTrackingItemAction: IMemberTrackingItemController = async 
   const trackingItemIdParam = parseInt(trackingItemId);
   const ac = await getAc();
 
-  const trackingRecordFromDb = await findMemberTrackingItemById(trackingItemIdParam, userId);
+  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userId);
 
-  if (!trackingRecordFromDb) {
+  if (!memberTrackingItem) {
     throw new NotFoundError();
   }
 
   const permission = ac.can(req.user.role.name).updateAny(EResource.MEMBER_TRACKING_ITEM);
+
+  if (
+    !(await userHasPermissionWithinOrg(
+      { id: req.user.id, orgId: req.user.organizationId },
+      {
+        id: memberTrackingItem.user.id,
+        orgId: memberTrackingItem.user.organizationId,
+      }
+    ))
+  ) {
+    throw new PermissionError();
+  }
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -141,6 +167,18 @@ export const postMemberTrackingItemAction: IMemberTrackingItemController = async
     throw new PermissionError();
   }
 
+  if (
+    !(await userHasPermissionWithinOrg(
+      { id: req.user.id, orgId: req.user.organizationId },
+      {
+        id: body.userId,
+        orgId: null,
+      }
+    ))
+  ) {
+    throw new PermissionError();
+  }
+
   const newMemberTrackingItem = await createMemberTrackingItem(body);
 
   if (create_member_tracking_record) {
@@ -168,17 +206,29 @@ export const deleteMemberTrackingItemAction: IMemberTrackingItemController = asy
   const trackingItemIdParam = parseInt(trackingItemId);
 
   const ac = await getAc();
-  const trackingRecordFromDb = await findMemberTrackingItemById(trackingItemIdParam, userId);
+  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userId);
 
-  if (!trackingRecordFromDb) {
+  if (!memberTrackingItem) {
     throw new NotFoundError();
   }
   const permission =
-    trackingRecordFromDb.userId !== req.user.id
+    memberTrackingItem.userId !== req.user.id
       ? ac.can(req.user.role.name).delete(EResource.MEMBER_TRACKING_ITEM)
       : ac.can(req.user.role.name).deleteOwn(EResource.MEMBER_TRACKING_ITEM);
 
   if (!permission.granted) {
+    throw new PermissionError();
+  }
+
+  if (
+    !(await userHasPermissionWithinOrg(
+      { id: req.user.id, orgId: req.user.organizationId },
+      {
+        id: memberTrackingItem.user.id,
+        orgId: memberTrackingItem.user.organizationId,
+      }
+    ))
+  ) {
     throw new PermissionError();
   }
 

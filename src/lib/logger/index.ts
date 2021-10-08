@@ -2,6 +2,7 @@ import { ELogEventType } from '../../const/enums';
 import { log, LogLevelDesc } from './tempestlog';
 import { LoggedInUser } from '../../repositories/userRepo';
 import { createLog } from '../../repositories/logRepo';
+import { methodFactory } from 'loglevel';
 
 const originalFactory = log.methodFactory;
 /*eslint-disable */
@@ -11,7 +12,6 @@ const noop = () => {
   return undefined;
 };
 
-//factory that returns a logger with the user
 function logFactory(user: LoggedInUser) {
   log.setLevel(level);
 
@@ -23,6 +23,10 @@ function logFactory(user: LoggedInUser) {
   log.persist = async function (logEventType: ELogEventType, message: string): Promise<void> {
     createLog(user, logEventType, message);
   };
+
+  if (log.methodFactory !== methodFactory) {
+    return log;
+  }
 
   log.methodFactory = function (methodName, logLevel, logName) {
     const rawMethod = originalFactory(methodName, logLevel, logName);

@@ -10,12 +10,12 @@ import {
   countMemberTrackingRecordsForMemberTrackingItem,
   deleteMemberTrackingItem,
 } from '../../../src/repositories/memberTrackingRepo';
-import { userHasPermissionWithinOrg } from '../../../src/utils/userWithinOrg';
+import { userHasPermissionWithinOrg } from '../../../src/utils/userHasPermissionWithinOrg';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/memberTrackingRepo.ts');
-jest.mock('../../../src/utils/userWithinOrg.ts');
+jest.mock('../../../src/utils/userHasPermissionWithinOrg.ts');
 
 const memberTrackingRecordFromDb = {
   id: 1,

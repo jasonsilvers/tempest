@@ -11,7 +11,7 @@ import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../const/enums';
 import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { userHasPermissionWithinOrg } from '../../../utils/userWithinOrg';
+import { userHasPermissionWithinOrg } from '../../../utils/userHasPermissionWithinOrg';
 
 interface ITempestMemberTrackingRecordApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {

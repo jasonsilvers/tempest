@@ -13,10 +13,12 @@ import {
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import memberTrackingItemHandler from '../../../src/pages/api/membertrackingitems';
 import dayjs from 'dayjs';
+import { userHasPermissionWithinOrg } from '../../../src/utils/userHasPermissionWithinOrg';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/memberTrackingRepo.ts');
+jest.mock('../../../src/utils/userHasPermissionWithinOrg.ts');
 
 const globalUserId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
 
@@ -28,6 +30,10 @@ const memberTrackingItemBody = {
 
 const memberTrackingItemFromDb = {
   userId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  user: {
+    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    organizationId: '123',
+  },
   trackingItemId: 2,
   isActive: true,
 };
@@ -55,6 +61,7 @@ beforeEach(() => {
     role: { id: '22', name: 'monitor' },
   });
   mockMethodAndReturn(findGrants, grants);
+  mockMethodAndReturn(userHasPermissionWithinOrg, true);
 });
 
 afterEach(() => {
@@ -85,6 +92,10 @@ test('GET - should return membertrackingitem (read - own)', async () => {
 
   const memberTrackingItem = {
     userId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    user: {
+      id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+      organizationId: '123',
+    },
     trackingItemId: 2,
     isActive: true,
   };
@@ -109,7 +120,7 @@ test('GET - should return membertrackingitem with membertrackingrecords', async 
   const trackingItemId = 2;
 
   const expectedResult = {
-    ...memberTrackingRecordFromDb,
+    ...memberTrackingItemFromDb,
     memberTrackingRecords: [memberTrackingRecordFromDb],
   };
   mockMethodAndReturn(findMemberTrackingItemById, expectedResult);
@@ -132,7 +143,7 @@ test('GET - should return membertrackingitem with membertrackingrecords and trac
   const trackingItemId = 2;
 
   const expectedResult = {
-    ...memberTrackingRecordFromDb,
+    ...memberTrackingItemFromDb,
     memberTrackingRecords: [{ ...memberTrackingRecordFromDb, trackingItem: trackingItemFromDb }],
   };
   mockMethodAndReturn(findMemberTrackingItemById, expectedResult);
@@ -177,7 +188,7 @@ test('GET - should return 403 if incorrect permission (read - any)', async () =>
     role: { id: '22', name: 'member' },
   });
 
-  mockMethodAndReturn(findMemberTrackingItemById, {});
+  mockMethodAndReturn(findMemberTrackingItemById, memberTrackingItemFromDb);
 
   const { status } = await testNextApi.get(memberTrackingItemHandler, {
     urlId: `?userId=${userId}&trackingItemId=${trackingItemId}&include=membertrackingrecords&include=trackingitems`,
@@ -190,19 +201,13 @@ test('GET - should return 403 if incorrect permission (read - own)', async () =>
   const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
   const trackingItemId = 2;
 
-  const memberTrackingItem = {
-    userId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
-    trackingItemId: 2,
-    isActive: true,
-  };
-
   mockMethodAndReturn(findUserByDodId, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
 
-  mockMethodAndReturn(findMemberTrackingItemById, memberTrackingItem);
+  mockMethodAndReturn(findMemberTrackingItemById, memberTrackingItemFromDb);
 
   const { status } = await testNextApi.get(memberTrackingItemHandler, {
     urlId: `?userId=${userId}&trackingItemId=${trackingItemId}&include=membertrackingrecords&include=trackingitems`,
