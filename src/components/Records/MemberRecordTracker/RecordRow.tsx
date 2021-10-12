@@ -134,14 +134,14 @@ const RecordRow: React.FC<{
   return (
     <>
       <TableRow>
-        <TableData tw={'font-size[16px] w-60 pt-1'}>
+        <TableData tw={'text-base w-60 pt-1'}>
           <div tw={'flex'}>
             <DynamicToken />
             <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64">{trackingItem?.title}</div>
             {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
           </div>
         </TableData>
-        <TableData tw={'text-purple-500 w-16 ml-10 pt-1'}>{getInterval(trackingItem?.interval)}</TableData>
+        <TableData tw={'text-sm text-purple-500 w-16 ml-10 pt-1'}>{getInterval(trackingItem?.interval)}</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
             <>

@@ -56,7 +56,7 @@ it('renders the profile page', async () => {
   const { getByText } = render(<Profile initialMemberData={bobJones} />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
-  await waitFor(() => expect(getByText(/jones bob/i)).toBeInTheDocument());
+  await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
 });
 
 it('renders opens the dialog modal', async () => {
@@ -80,7 +80,7 @@ it('renders opens the dialog modal', async () => {
   const { getByText, queryByText } = render(<Profile initialMemberData={bobJones} />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
-  await waitFor(() => expect(getByText(/jones bob/i)).toBeInTheDocument());
+  await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
   fireEvent.click(getByText(/add new/i));
   await waitFor(() => expect(getByText(/add new training/i)).toBeInTheDocument());
 

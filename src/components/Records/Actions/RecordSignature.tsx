@@ -43,7 +43,7 @@ export const determineActionOnRecord = (
 };
 
 const AwaitingSignature: React.FC = ({ children }) => (
-  <TableData tw="mr-3">
+  <TableData tw="text-xs mr-3">
     <DisabledButton disabled>{children ?? 'Awaiting Signature'}</DisabledButton>
   </TableData>
 );

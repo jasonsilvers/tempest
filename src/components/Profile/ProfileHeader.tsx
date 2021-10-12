@@ -17,7 +17,7 @@ const Name = tw.h4`text-3xl text-black`;
 const Table = tw.div`text-left mb-6`;
 const Column = tw.div`flex flex-col`;
 const Row = tw.div`flex flex-row`;
-const Base = tw.div`text-sm mb-1 text-hg pr-5 capitalize`;
+const Base = tw.div`text-lg mb-1 text-hg pr-5 capitalize`;
 const Rank = tw(Base)`w-24`;
 const Address = tw(Base)``;
 const AFSC = tw(Base)`w-24`;
@@ -142,7 +142,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
   return formState ? (
     <ProfileHeaderContext.Provider value={{ userId: member?.id, isEdit: isActiveEdit }}>
       <div tw="flex items-center">
-        <Name>{`${member.lastName} ${member.firstName}`}</Name>
+        <Name>{`${member.lastName}, ${member.firstName}`}</Name>
         <EditButtonGroup
           onEdit={() => setIsActiveEdit(true)}
           onSave={() => {
