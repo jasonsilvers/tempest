@@ -112,7 +112,7 @@ const getAllowedActions = (
           traineeSignature={{ signee: memberTrackingRecord[signee], date: memberTrackingRecord[signatureType] }}
         >
           <span>
-            <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
+            <DisabledButton tw="text-xs">{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
               'MM/DD/YY'
             )}`}</DisabledButton>
           </span>

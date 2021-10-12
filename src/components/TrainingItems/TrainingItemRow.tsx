@@ -6,19 +6,19 @@ import { getInterval } from '../../utils/daysToString';
 import { useDeleteTrackingItem } from '../../hooks/api/trackingItem';
 
 const Container = tw.div`flex h-10 items-center border-b-2`;
-const RowTitle = tw.div`font-size[12px] mx-3 w-60`;
-const RowInterval = tw.div`font-size[12px] mx-3 w-20`;
+const RowTitle = tw.div`mx-3 w-72`;
+const RowInterval = tw.div`mx-3 w-28`;
 const DescriptionTable = tw.div`w-7/12 ml-10`;
 const DescriptionContainer = tw.div`table-cell align-middle h-10`;
-const RowDescription = tw.div`font-size[12px] min-height[20px] max-height[40px] line-clamp[2] overflow-ellipsis overflow-hidden -webkit-box-orient[vertical] display[-webkit-box]`;
+const RowDescription = tw.div`min-height[20px] max-height[40px] line-clamp[2] overflow-ellipsis overflow-hidden -webkit-box-orient[vertical] display[-webkit-box]`;
 
 export const TrainingItemHeader = () => (
-  <Container tw="font-bold">
-    <RowTitle>Title</RowTitle>
-    <RowInterval>Interval</RowInterval>
+  <Container>
+    <RowTitle tw="text-lg">Title</RowTitle>
+    <RowInterval tw="text-lg">Interval</RowInterval>
     <DescriptionTable>
       <DescriptionContainer>
-        <RowDescription>Description</RowDescription>
+        <RowDescription tw="text-lg">Description</RowDescription>
       </DescriptionContainer>
     </DescriptionTable>
   </Container>

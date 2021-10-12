@@ -9,7 +9,7 @@ import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTra
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
 
-const H1 = tw.h1`text-xl text-primary font-family[DM Sans] mb-2`;
+const H1 = tw.h1`text-2xl mb-2`;
 
 const TrackingItems = () => {
   const { data: trackingItems } = useTrackingItems();
@@ -28,7 +28,7 @@ const TrackingItems = () => {
       <div tw="flex items-center mb-5">
         <H1>Global Training Catalog</H1>
         <SearchBar
-          tw="ml-auto"
+          tw="ml-auto w-56"
           value={search}
           onChange={(searchValue) => setSearch(searchValue)}
           onCancelSearch={() => setSearch('')}

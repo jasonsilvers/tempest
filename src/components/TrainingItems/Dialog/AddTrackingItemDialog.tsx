@@ -32,17 +32,14 @@ const AdjustedOutlinedInput: React.FC<OutlinedInputProps> = (props) => (
 );
 
 //Move the dialog to the left to account for the sidebar
-const Paper = tw.div`ml-80 px-5`;
+const Paper = tw.div`ml-80`;
+const initialTrackingItemToAdd: TrackingItemToAdd = { title: '', description: '', interval: 0 };
 
 const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClose, isOpen }) => {
   const { mutate: create } = useAddTrackingItem();
   const [isSaving] = useState(false);
-  const [trackingItems, setTrackingItems] = useState([] as TrackingItemToAdd[]);
-  const [trackingItem, setTrackingItem] = useState({
-    title: '',
-    description: '',
-    interval: 0,
-  } as TrackingItemToAdd);
+  const [trackingItems, setTrackingItems] = useState<TrackingItemToAdd[]>(null);
+  const [trackingItem, setTrackingItem] = useState<TrackingItemToAdd>(initialTrackingItemToAdd);
 
   useEffect(() => {
     return () => {
@@ -56,6 +53,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   }, [isOpen]);
 
   const AddPseudoItemToList = () => {
+    setTrackingItem(initialTrackingItemToAdd);
     setTrackingItems((state) => [...state, { ...trackingItem, title: trackingItem.title.trim() }]);
   };
 
@@ -72,7 +70,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
     >
       {isSaving ? <LoadingOverlay /> : null}
       <DialogTitle>Create New Training</DialogTitle>
-      <DialogContent tw="pr-2 min-height[220px]">
+      <DialogContent tw="min-height[220px]">
         <p tw="text-xs pb-4">
           Please create the training title, interval of training, and write a brief description of training.
         </p>
@@ -106,7 +104,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           </InputFieldContainer>
         </DialogContent>
       </DialogContent>
-      <DialogActions>
+      <DialogActions tw="py-4 mr-6">
         <DialogButton
           disabled={
             !trackingItem.title ||
@@ -118,13 +116,13 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
         >
           Create
         </DialogButton>
-        {trackingItems.length === 0 ? (
+        {trackingItems?.length === 0 ? (
           <DialogButton onClick={handleClose} size="small" variant="contained">
             Close
           </DialogButton>
         ) : null}
       </DialogActions>
-      {trackingItems.length > 0 ? (
+      {trackingItems?.length > 0 ? (
         <>
           <DialogTitle>Trainings to be Added</DialogTitle>
           <DialogContent>
