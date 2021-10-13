@@ -63,7 +63,7 @@ export const findUserByIdWithMemberTrackingItems = async (id: string, variant: E
     include: {
       memberTrackingItems: {
         include: {
-          trackingItem: variant === EUserIncludes.TRACKING_ITEMS,
+          trackingItem: variant === EUserIncludes.TRACKING_ITEM,
         },
       },
     },

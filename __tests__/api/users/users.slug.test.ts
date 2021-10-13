@@ -96,12 +96,12 @@ test('GET - should return member tracking items.  member tracking records and tr
   };
   mockMethodAndReturn(findUserByIdWithMemberTrackingItems, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=trackingitems',
+    urlSlug: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=trackingitem',
   });
 
   expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(
     'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
-    EUserIncludes.TRACKING_ITEMS
+    EUserIncludes.TRACKING_ITEM
   );
   expect(status).toBe(200);
   expect(data).toStrictEqual(recordFromDb);

@@ -174,6 +174,6 @@ describe('Monitor role', () => {
 
     cy.addMemberTrackingRecord(trackingItemName, 1, '1');
     cy.findByRole('button', { name: 'signature_button' }).click();
-    cy.findAllByRole('button', { name: /delete-tracking-record/i, timeout: 5000 }).should('not.be.disabled');
+    cy.findAllByRole('button', { name: /delete-tracking-record/i }).should('not.be.disabled');
   });
 });

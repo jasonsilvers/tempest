@@ -125,7 +125,7 @@ test('should findUserByIdReturnAllIncludes', async () => {
 
 test('should findUserByIdWithMemberTrackingItems', async () => {
   const spy = prisma.user.findUnique.mockImplementationOnce(() => mockUser);
-  const result = await findUserByIdWithMemberTrackingItems('1234', EUserIncludes.TRACKING_ITEMS);
+  const result = await findUserByIdWithMemberTrackingItems('1234', EUserIncludes.TRACKING_ITEM);
   expect(spy).toHaveBeenCalledWith({
     where: {
       id: '1234',
