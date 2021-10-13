@@ -76,16 +76,13 @@ type AllCounts = {
 
 type UserCounts = Omit<StatusCounts, 'All'>;
 const determineMemberCounts = (
-  userId: string,
   mti: MemberTrackingItemWithAll,
   mtr: MemberTrackingRecord,
   newCounts: StatusCounts,
   userCounts: UserCounts
 ): AllCounts => {
   if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
-    newCounts.All = newCounts.All + 1;
     const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
-    newCounts[status] = newCounts[status] + 1;
     userCounts[status] = userCounts[status] + 1;
   } else {
     const today = dayjs();
@@ -93,10 +90,8 @@ const determineMemberCounts = (
 
     const differenceInDays = today.diff(dateTrainingGivenToMember, 'days');
     if (differenceInDays && differenceInDays > 30) {
-      newCounts.Overdue = newCounts.Overdue + 1;
       userCounts.Overdue = userCounts.Overdue + 1;
     } else {
-      newCounts.Upcoming = newCounts.Upcoming + 1;
       userCounts.Upcoming = userCounts.Upcoming + 1;
     }
   }
@@ -114,6 +109,7 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const newCounts = { ...initialCounts };
     users?.data?.forEach((user) => {
+      newCounts.All = newCounts.All + 1;
       const userCounts = {
         Overdue: 0,
         Upcoming: 0,
@@ -123,12 +119,24 @@ const DashboardPage: React.FC = () => {
       user.memberTrackingItems.forEach((mti) => {
         const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
         mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
-          determineMemberCounts(user.id, mti, mtr, newCounts, userCounts);
+          determineMemberCounts(mti, mtr, newCounts, userCounts);
         });
-
-        setCounts(newCounts);
       });
+
+      if (userCounts.Overdue > 0) {
+        newCounts.Overdue = newCounts.Overdue + 1;
+      }
+
+      if (userCounts.Overdue === 0 && userCounts.Upcoming > 0) {
+        newCounts.Upcoming = newCounts.Upcoming + 1;
+      }
+
+      if (userCounts.Upcoming === 0 && userCounts.Overdue === 0 && userCounts.Done > 1) {
+        newCounts.Done = newCounts.Done + 1;
+      }
     });
+
+    setCounts(newCounts);
   }, [users?.data]);
 
   if (isLoading) {

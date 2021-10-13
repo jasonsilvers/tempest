@@ -215,9 +215,9 @@ it('should show correct counts', async () => {
   const allContainer = getByText(/all/i);
   const upcomingContainer = getByText(/upcoming/i);
   const overdueContainer = getByText(/overdue/i);
-  expect(within(allContainer.parentElement).getByText('1')).toBeInTheDocument();
-  expect(within(upcomingContainer.parentElement).getByText('1')).toBeInTheDocument();
-  expect(within(overdueContainer.parentElement).getByText('2')).toBeInTheDocument();
+  expect(within(allContainer.parentElement).getByText('2')).toBeInTheDocument();
+  expect(within(upcomingContainer.parentElement).getByText('0')).toBeInTheDocument();
+  expect(within(overdueContainer.parentElement).getByText('1')).toBeInTheDocument();
 });
 
 it('should show error on query failure', async () => {
