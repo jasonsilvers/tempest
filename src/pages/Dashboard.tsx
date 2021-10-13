@@ -99,6 +99,20 @@ const determineMemberCounts = (
   return newCounts;
 };
 
+const determineOverallUserCounts = (userCounts: UserCounts, newCounts: StatusCounts) => {
+  if (userCounts.Overdue > 0) {
+    newCounts.Overdue = newCounts.Overdue + 1;
+  }
+
+  if (userCounts.Overdue === 0 && userCounts.Upcoming > 0) {
+    newCounts.Upcoming = newCounts.Upcoming + 1;
+  }
+
+  if (userCounts.Upcoming === 0 && userCounts.Overdue === 0 && userCounts.Done > 1) {
+    newCounts.Done = newCounts.Done + 1;
+  }
+};
+
 const DashboardPage: React.FC = () => {
   const { user: loggedInUser, permissionCheck, isLoading } = usePermissions();
 
@@ -123,17 +137,7 @@ const DashboardPage: React.FC = () => {
         });
       });
 
-      if (userCounts.Overdue > 0) {
-        newCounts.Overdue = newCounts.Overdue + 1;
-      }
-
-      if (userCounts.Overdue === 0 && userCounts.Upcoming > 0) {
-        newCounts.Upcoming = newCounts.Upcoming + 1;
-      }
-
-      if (userCounts.Upcoming === 0 && userCounts.Overdue === 0 && userCounts.Done > 1) {
-        newCounts.Done = newCounts.Done + 1;
-      }
+      determineOverallUserCounts(userCounts, newCounts);
     });
 
     setCounts(newCounts);
