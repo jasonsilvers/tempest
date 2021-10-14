@@ -12,7 +12,6 @@ import { LoggedInUser } from '../../../repositories/userRepo';
 import { useSnackbar } from 'notistack';
 import ConfirmDialog from '../../Dialog/ConfirmDialog';
 import { DialogContent, DialogTitle } from '../../../lib/ui';
-import { getInterval } from '../../../utils/daysToString';
 import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { RecordRowActions } from '../Actions/RecordSignature';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
@@ -134,28 +133,24 @@ const RecordRow: React.FC<{
   return (
     <>
       <TableRow>
-        <TableData tw={'text-base w-60 pt-1'}>
+        <TableData tw={'text-base w-60'}>
           <div tw={'flex'}>
-            <DynamicToken />
-            <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64">{trackingItem?.title}</div>
+            <div tw="pt-1">
+              <DynamicToken />
+            </div>
+            <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64 pt-[2px]">{trackingItem?.title}</div>
             {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
           </div>
         </TableData>
-        <TableData tw={'text-sm text-purple-500 w-16 ml-10 pt-1'}>{getInterval(trackingItem?.interval)}</TableData>
+        <TableData tw={'text-sm text-purple-500 w-16 ml-10 pt-1'}>{trackingItem?.interval} days</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
-            <>
-              <span tw={'opacity-40 pr-1 pt-1'}>Completed: </span>
-              <span tw="pt-1">
-                <ConditionalDateInput
-                  onChange={handleCompletionDateChange}
-                  condition={
-                    !!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate
-                  }
-                  dateValue={trackingRecordQuery.data.completedDate}
-                />
-              </span>
-            </>
+            <span tw={'opacity-40 pr-1 pt-1'}>Completed: </span>
+            <ConditionalDateInput
+              onChange={handleCompletionDateChange}
+              condition={!!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate}
+              dateValue={trackingRecordQuery.data.completedDate}
+            />
           </TableData>
           <TableData tw="space-x-1 pt-1">
             <>
