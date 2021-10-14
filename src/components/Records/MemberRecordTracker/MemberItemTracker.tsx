@@ -5,7 +5,7 @@ import { ITabProps } from './Tab';
 import { MemberItemTrackerContextProvider } from './providers/MemberItemTrackerContext';
 
 // Twin macro styles for table and headers
-const Header = tw.h1`text-xl font-bold text-black mb-2`;
+const Header = tw.h1`text-2xl font-bold text-black mb-6`;
 
 const TabContainer = tw.div`flex space-x-10 border-b border-color[#AEAEAE]`;
 

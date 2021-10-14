@@ -47,7 +47,7 @@ async function userSlugHandler(
   if (resource === EUserResources.MEMBER_TRACKING_ITEMS) {
     user = await findUserByIdWithMemberTrackingItems(
       userId,
-      includesQuery.includes(EUserIncludes.TRACKING_ITEMS) ? EUserIncludes.TRACKING_ITEMS : null
+      includesQuery.includes(EUserIncludes.TRACKING_ITEM) ? EUserIncludes.TRACKING_ITEM : null
     );
   }
 

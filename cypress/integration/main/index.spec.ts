@@ -51,6 +51,6 @@ describe('Member Role', () => {
 
     cy.findByRole('button', { name: /get started/i }).click();
 
-    cy.url({ timeout: 5000 }).should('include', '/Profile');
+    cy.url().should('include', '/Profile');
   });
 });

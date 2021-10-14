@@ -68,7 +68,7 @@ const users = {
           userId: '4e3de847-e79a-465d-af8f-81cf5b900c38',
           createdAt: '2021-08-27T19:28:10.525Z',
           trackingItemId: 3,
-          trackingItem: { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 60 },
+          trackingItem: { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 365 },
           memberTrackingRecords: [
             {
               id: 5,
@@ -128,7 +128,7 @@ const users = {
             id: 5,
             title: 'Keyboard Warrior Training',
             description: 'How to be a true keyboard warrior via writing code',
-            interval: 180,
+            interval: 365,
           },
           memberTrackingRecords: [
             {
@@ -215,9 +215,9 @@ it('should show correct counts', async () => {
   const allContainer = getByText(/all/i);
   const upcomingContainer = getByText(/upcoming/i);
   const overdueContainer = getByText(/overdue/i);
-  expect(within(allContainer.parentElement).getByText('1')).toBeInTheDocument();
-  expect(within(upcomingContainer.parentElement).getByText('2')).toBeInTheDocument();
-  expect(within(overdueContainer.parentElement).getByText('2')).toBeInTheDocument();
+  expect(within(allContainer.parentElement).getByText('2')).toBeInTheDocument();
+  expect(within(upcomingContainer.parentElement).getByText('0')).toBeInTheDocument();
+  expect(within(overdueContainer.parentElement).getByText('1')).toBeInTheDocument();
 });
 
 it('should show error on query failure', async () => {

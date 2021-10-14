@@ -9,6 +9,14 @@ import { removeOldCompletedRecords } from '../../utils';
 
 const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
 
+type SortOrder = 'ASC' | 'DESC';
+const sortMemberTrackingItems = (memberTrackingItems: MemberTrackingItemWithAll[], order: SortOrder = 'ASC') => {
+  if (order === 'ASC') {
+    return memberTrackingItems.sort((mtiA, mtiB) => (mtiA.trackingItem.title >= mtiB.trackingItem.title ? 1 : -1));
+  }
+  return memberTrackingItems.sort((mtiA, mtiB) => (mtiA.trackingItem.title > mtiB.trackingItem.title ? -1 : 1));
+};
+
 export const mtiQueryKeys = {
   memberTrackingItems: (userId: string) => [MEMBER_TRACKING_ITEM_RESOURCE, userId],
   memberTrackingItem: (userId: string, trackingItemId: number) => [
@@ -18,10 +26,12 @@ export const mtiQueryKeys = {
   ],
 };
 
-export const fetchMemberTrackingItems = async (userId: string): Promise<UserWithAll> => {
-  const { data } = await axios.get(EUri.USERS + `${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}`);
+export const fetchMemberTrackingItems = async (userId: string): Promise<MemberTrackingItemWithAll[]> => {
+  const { data } = await axios.get<UserWithAll>(
+    EUri.USERS + `${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}?include=trackingitem`
+  );
 
-  return data.memberTrackingItems;
+  return sortMemberTrackingItems(data.memberTrackingItems);
 };
 
 /**
@@ -30,7 +40,7 @@ export const fetchMemberTrackingItems = async (userId: string): Promise<UserWith
  * @returns
  */
 const useMemberTrackingItems = (userId: string) => {
-  return useQuery<UserWithAll, unknown, MemberTrackingItem[]>(
+  return useQuery<MemberTrackingItemWithAll[], unknown, MemberTrackingItem[]>(
     mtiQueryKeys.memberTrackingItems(userId),
     () => fetchMemberTrackingItems(userId),
     {

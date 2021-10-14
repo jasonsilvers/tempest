@@ -1,7 +1,7 @@
 import tw from 'twin.macro';
 import { ECategories } from '../../../const/enums';
 
-export const TableData = tw.div`font-size[12px] mx-3`;
+export const TableData = tw.div`mx-3`;
 export const TableRow = tw.div`text-black border-b text-sm flex max-width[1440px] min-width[1040px] min-height[40px]`;
 
 // Tokens

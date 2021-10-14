@@ -23,14 +23,14 @@ const WelcomePage = () => {
           </div>
           <div tw="pl-20">
             <div tw="pb-8">
-              <h2 tw="text-2xl">Welcome To Cascade!</h2>
-              <h3 tw="text-lg text-secondary">
+              <h2 tw="text-4xl">Welcome To Cascade!</h2>
+              <h3 tw="text-3xl text-secondary">
                 {isLoading && '...Loading'}
                 {user?.rank ? user?.rank : ''} {user?.lastName}, {user?.firstName}
               </h3>
             </div>
             <div>
-              <p tw="pb-2 text-sm">Please select your organization</p>
+              <p tw="pb-2 text-lg">Please select your organization</p>
               <div tw="flex items-center">
                 <div>
                   <UpdateUsersOrg

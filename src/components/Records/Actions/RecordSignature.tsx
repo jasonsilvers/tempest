@@ -43,7 +43,7 @@ export const determineActionOnRecord = (
 };
 
 const AwaitingSignature: React.FC = ({ children }) => (
-  <TableData tw="mr-3">
+  <TableData tw="text-xs mr-3">
     <DisabledButton disabled>{children ?? 'Awaiting Signature'}</DisabledButton>
   </TableData>
 );
@@ -112,7 +112,7 @@ const getAllowedActions = (
           traineeSignature={{ signee: memberTrackingRecord[signee], date: memberTrackingRecord[signatureType] }}
         >
           <span>
-            <DisabledButton>{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
+            <DisabledButton tw="text-xs">{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
               'MM/DD/YY'
             )}`}</DisabledButton>
           </span>

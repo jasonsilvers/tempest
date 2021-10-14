@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
         {canCreateGlobalTrackingItem?.granted ? (
           <Link goToUrl="/Trackingitems" icon={<DescriptionIcon fontSize="large" />}>
             <div role="navigation" aria-label="global-training-catalog">
-              Global Training Catalog
+              Training List
             </div>
           </Link>
         ) : null}

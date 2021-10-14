@@ -76,16 +76,13 @@ type AllCounts = {
 
 type UserCounts = Omit<StatusCounts, 'All'>;
 const determineMemberCounts = (
-  userId: string,
   mti: MemberTrackingItemWithAll,
   mtr: MemberTrackingRecord,
   newCounts: StatusCounts,
   userCounts: UserCounts
 ): AllCounts => {
   if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
-    newCounts.All = newCounts.All + 1;
     const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
-    newCounts[status] = newCounts[status] + 1;
     userCounts[status] = userCounts[status] + 1;
   } else {
     const today = dayjs();
@@ -93,15 +90,27 @@ const determineMemberCounts = (
 
     const differenceInDays = today.diff(dateTrainingGivenToMember, 'days');
     if (differenceInDays && differenceInDays > 30) {
-      newCounts.Overdue = newCounts.Overdue + 1;
       userCounts.Overdue = userCounts.Overdue + 1;
     } else {
-      newCounts.Upcoming = newCounts.Upcoming + 1;
       userCounts.Upcoming = userCounts.Upcoming + 1;
     }
   }
 
   return newCounts;
+};
+
+const determineOverallUserCounts = (userCounts: UserCounts, newCounts: StatusCounts) => {
+  if (userCounts.Overdue > 0) {
+    newCounts.Overdue = newCounts.Overdue + 1;
+  }
+
+  if (userCounts.Overdue === 0 && userCounts.Upcoming > 0) {
+    newCounts.Upcoming = newCounts.Upcoming + 1;
+  }
+
+  if (userCounts.Upcoming === 0 && userCounts.Overdue === 0 && userCounts.Done > 1) {
+    newCounts.Done = newCounts.Done + 1;
+  }
 };
 
 const DashboardPage: React.FC = () => {
@@ -114,6 +123,7 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const newCounts = { ...initialCounts };
     users?.data?.forEach((user) => {
+      newCounts.All = newCounts.All + 1;
       const userCounts = {
         Overdue: 0,
         Upcoming: 0,
@@ -123,12 +133,14 @@ const DashboardPage: React.FC = () => {
       user.memberTrackingItems.forEach((mti) => {
         const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
         mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
-          determineMemberCounts(user.id, mti, mtr, newCounts, userCounts);
+          determineMemberCounts(mti, mtr, newCounts, userCounts);
         });
-
-        setCounts(newCounts);
       });
+
+      determineOverallUserCounts(userCounts, newCounts);
     });
+
+    setCounts(newCounts);
   }, [users?.data]);
 
   if (isLoading) {
@@ -142,38 +154,38 @@ const DashboardPage: React.FC = () => {
   return (
     <main tw="pr-14 max-width[900px] min-width[720px]">
       <div tw="flex space-x-8 pb-5">
-        <Card tw="h-24 flex-grow border-2 border-primary">
+        <Card tw="h-24 flex-grow border-2 border-primary w-24">
           <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
-          <h1 tw="text-primary pl-1 underline">All</h1>
+          <h1 tw="text-2xl pl-1 underline">All</h1>
 
-          <div tw="flex items-end pt-3">
+          <div tw="flex items-end">
             <HighlightOffIcon fontSize="large" tw="text-primary invisible" />
             <h2 tw="ml-auto text-5xl text-primary">{counts.All}</h2>
           </div>
         </Card>
-        <Card tw="h-24 flex-grow bg-[#FB7F7F]">
+        <Card tw="h-24 flex-grow bg-[#FB7F7F] w-24">
           <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
-          <h1 tw="text-white pl-1">Overdue</h1>
+          <h1 tw="text-2xl text-white pl-1">Overdue</h1>
 
-          <div tw="flex items-end pt-3">
+          <div tw="flex items-end">
             <CancelIcon fontSize="large" tw="text-white" />
             <h2 tw="ml-auto text-5xl text-white">{counts.Overdue}</h2>
           </div>
         </Card>
-        <Card tw="h-24 flex-grow bg-[#F6B83F]">
+        <Card tw="h-24 flex-grow bg-[#F6B83F] w-24">
           <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
-          <h1 tw="text-white pl-1">Upcoming</h1>
+          <h1 tw="text-white text-2xl pl-1">Upcoming</h1>
 
-          <div tw="flex items-end pt-3">
+          <div tw="flex items-end">
             <WarningIcon fontSize="large" tw="text-white" />
             <h2 tw="ml-auto text-5xl text-white">{counts.Upcoming}</h2>
           </div>
         </Card>
-        <Card tw="h-24 flex-grow bg-[#6FD9A6]">
+        <Card tw="h-24 flex-grow bg-[#6FD9A6] w-24">
           <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
-          <h1 tw="text-white pl-1">Done</h1>
+          <h1 tw="text-white text-3xl pl-1">Done</h1>
 
-          <div tw="flex items-end pt-3">
+          <div tw="flex items-end">
             <CheckCircleIcon fontSize="large" tw="text-white" />
             <h2 tw="ml-auto text-5xl text-white">{counts.Done}</h2>
           </div>
@@ -183,14 +195,14 @@ const DashboardPage: React.FC = () => {
       <Card tw="p-5">
         <UserTable>
           <UserTableHeader>
-            <UserTableColumn tw="w-1/3">Name</UserTableColumn>
-            <UserTableColumn tw="w-1/6">Rank</UserTableColumn>
-            <UserTableColumn tw="w-1/6 flex justify-center">Status</UserTableColumn>
-            <UserTableColumn tw="ml-auto mr-4">Actions</UserTableColumn>
+            <UserTableColumn tw="w-1/3 text-lg">Name</UserTableColumn>
+            <UserTableColumn tw="w-1/6 text-lg">Rank</UserTableColumn>
+            <UserTableColumn tw="w-1/6 flex text-lg justify-center">Status</UserTableColumn>
+            <UserTableColumn tw="ml-auto mr-4 text-lg">Actions</UserTableColumn>
           </UserTableHeader>
 
           {users.data?.map((user, index) => (
-            <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-sm mb-2 flex">
+            <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-base mb-2 flex">
               <UserTableColumn tw="w-1/3">
                 {`${user.firstName} ${user.lastName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
               </UserTableColumn>

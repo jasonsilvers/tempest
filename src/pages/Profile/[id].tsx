@@ -93,7 +93,7 @@ export async function getStaticProps(context: GetStaticPropsContext) {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(userId), () =>
-    findUserByIdWithMemberTrackingItems(userId, EUserIncludes.TRACKING_ITEMS)
+    findUserByIdWithMemberTrackingItems(userId, EUserIncludes.TRACKING_ITEM)
   );
 
   const initialMemberData = await findUserById(userId);
