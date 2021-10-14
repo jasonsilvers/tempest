@@ -33,7 +33,7 @@
     "preinstall": "npx npm-force-resolutions"
   },
   "resolutions": {
-    "ansi-regex": "5.0.1"
+    "ansi-regex": "^5.0.1"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.14.9",
