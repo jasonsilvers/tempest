@@ -13,6 +13,8 @@ import { ERole, EUri } from '../../const/enums';
 import { useOrgs } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { RolesDTO, UsersDTO } from '../../types';
+import { DevDataGrid } from './datagrid';
+
 const dayjs = require('dayjs');
 
 const Data = tw.div`font-light text-gray-400`;
@@ -136,6 +138,9 @@ const UsersList = () => {
           </div>
         );
       })}
+      <div>
+        <DevDataGrid></DevDataGrid>
+      </div>
     </div>
   );
 };
