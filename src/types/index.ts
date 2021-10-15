@@ -25,5 +25,5 @@ export type TrackingItemsDTO = {
 };
 
 export type LogEventDTO = {
-  logEvents: LogEvent;
+  logEvents: LogEvent[];
 };

@@ -4,22 +4,38 @@ import React, { useState, useEffect } from 'react';
 import { DataGrid, SearchBar } from '../../lib/ui';
 import { useQuery, useQueryClient } from 'react-query';
 import { ERole, EUri } from '../../const/enums';
-import { user, LogEvent } from '.prisma/client';
+import { User, LogEvent } from '.prisma/client';
 import { UserWithAll } from '../../repositories/userRepo';
 import { LogEventDTO, UsersDTO } from '../../types';
 
+//Step 2: Update LogHandler to include get request
+//Step 3: Call Database to get logEvents
+//Step 4: Return logEvents data when /api/logs endpoint is used
+//Step 5: Make API call from Client and get logEvents Data
+//Step 6: Display LogeventsData in divs
+
 const LogEvents = () => {
-  const queryClient = useQueryClient();
+  //   const queryClient = useQueryClient();
 
-  const userQuery = useQuery<User[]>('ID', () =>
-    axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.dodId)
-  );
+  //   const userQuery = useQuery<User[]>('users', () =>
+  //     axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.users)
+  //   );
 
-  const logEventQuery = useQuery<LogEvent[]>('LogEvent', () =>
-    axios.get<LogEventDTO>(EUri.LOGS).then((response) => response.data.logEvents)
-  );
+  //   const logEventQuery = useQuery<LogEvent[]>('logevents', () =>
+  //     axios.get<LogEventDTO>(EUri.LOGS).then((response) => response.data.logEvents)
+  //   );
 
-  return <div></div>;
+  //   if (!logEventQuery.data  && logEventQuery.isLoading) {
+  //       return <div>....getting logevents</div>
+  //   }
+
+  //   return (
+  //       logEventQuery.data.map(logEvent => (
+  //           <div>{logEvent.message}</div>
+  //       ))
+  //   );
+
+  return <div>This will be the log view</div>;
 };
 
 const columns = [

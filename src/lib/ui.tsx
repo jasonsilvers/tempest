@@ -18,6 +18,10 @@ import Zoom from '@material-ui/core/Zoom';
 import Paper from '@material-ui/core/Paper';
 import SearchBar from '@snekcode/mui-search-bar';
 import Menu from '@material-ui/core/Menu';
+import Box from '@material-ui/core/Box';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import Typography from '@material-ui/core/Typography';
 import TempestMenuItem from '@material-ui/core/MenuItem';
 import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
@@ -186,6 +190,10 @@ export {
   Zoom,
   SearchBar,
   DataGrid,
+  Box,
+  Tab,
+  Tabs,
+  Typography,
 };
 
 export type { TempestModalProps };
