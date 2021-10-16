@@ -204,7 +204,7 @@ const DashboardPage: React.FC = () => {
           {users.data?.map((user, index) => (
             <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-base mb-2 flex">
               <UserTableColumn tw="w-1/3">
-                {`${user.firstName} ${user.lastName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
+                {`${user.lastName}, ${user.firstName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
               </UserTableColumn>
               <UserTableColumn tw="w-1/6">{user.rank}</UserTableColumn>
               <UserTableColumn tw="w-1/6 flex justify-center">

@@ -27,6 +27,13 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
+## Commit Checklist
+
+1. npm run t - 100% passing
+2. npm run lint - No errors or warning
+3. npm run cypress:run - 100% passing
+4. npm run build - clean build
+
 ## Testing With MSW
 
 Mock Service Worker (MSW) is a network api mock where we define what is returned by a particular endpoint. When using MSW in your unit tests keep in mind that fetch (which is implemented on browsers) is not inside the node environment running the tests. But due to the nature of next we can not simply add a fetch polyfill to jest.config 🙁. MSW has been set up globally for all tests but needs to be tailored per test.
