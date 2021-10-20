@@ -1,17 +1,70 @@
-import { SecurityIcon } from '../../assets/Icons';
-import { Fab, Drawer, Button } from '../../lib/ui';
-import tw from 'twin.macro';
 import { useState } from 'react';
-import { Users, TabPanel, BasicTabs } from './User';
-import { usePermissions } from '../../hooks/usePermissions';
+import tw from 'twin.macro';
+import { SecurityIcon } from '../../assets/Icons';
 import { ERole } from '../../const/enums';
-import { Tab } from '@mui/material';
+import { usePermissions } from '../../hooks/usePermissions';
+import { Button, Drawer, Fab, Tab, Tabs } from '../../lib/ui';
+import { Users } from './Users';
+import { Logs } from './Logs';
+
+interface ITabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+const TabPanel = (props: ITabPanelProps) => {
+  const { children, value, index } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+    >
+      {value === index && <div tw="p-2">{children}</div>}
+    </div>
+  );
+};
+
+const a11yProps = (index: number) => {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+};
+
+export const BasicTabs = () => {
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
+  return (
+    <div tw="w-full">
+      <div tw="border-b">
+        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tab label="Users" {...a11yProps(0)} />
+          <Tab label="Log Data" {...a11yProps(1)} />
+        </Tabs>
+      </div>
+      <TabPanel value={value} index={0}>
+        <Users />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <Logs />
+      </TabPanel>
+    </div>
+  );
+};
 
 const DevDrawer = ({ showDrawer, toggleDrawer }: { showDrawer: boolean; toggleDrawer: () => void }) => {
   return (
     <>
       <Drawer anchor="bottom" open={showDrawer}>
-        <div tw="ml-auto pt-2 pr-2">
+        <div tw="absolute top-2 right-2 z-30">
           <Button size="small" variant="contained" onClick={toggleDrawer}>
             Close
           </Button>

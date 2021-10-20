@@ -1,4 +1,3 @@
-import { DevDataGrid } from './LogView';
 import { useOrgs } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { RolesDTO, UsersDTO } from '../../types';
@@ -9,8 +8,7 @@ import { useSnackbar } from 'notistack';
 import { EUri } from '../../const/enums';
 import { useQuery } from 'react-query';
 import { useQueryClient } from 'react-query';
-import { Box, Tab, Tabs, Typography } from '../../lib/ui';
-import React, { useState } from 'react';
+import React from 'react';
 import axios from 'axios';
 import tw from 'twin.macro';
 
@@ -82,7 +80,7 @@ const Users = () => {
   }
 
   return (
-    <div tw="pl-48 pb-4">
+    <div tw="p-6">
       {usersListQuery?.data.map((user) => {
         return (
           <div key={user.id}>
@@ -140,62 +138,4 @@ const Users = () => {
   );
 };
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-const TabPanel = (props: TabPanelProps) => {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-};
-
-const a11yProps = (index: number) => {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-};
-
-export const BasicTabs = () => {
-  const [value, setValue] = useState(0);
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
-  return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Users" {...a11yProps(0)} />
-          <Tab label="Log Data" {...a11yProps(1)} />
-        </Tabs>
-      </Box>
-      <TabPanel value={value} index={0}>
-        <Users />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <DevDataGrid />
-      </TabPanel>
-    </Box>
-  );
-};
-
-export { Users, TabPanel };
+export { Users };

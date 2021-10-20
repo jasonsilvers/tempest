@@ -27,7 +27,7 @@ import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { KeyboardDatePicker } from '@material-ui/pickers';
-import { DataGrid } from '@material-ui/data-grid';
+import { DataGrid, useGridSlotComponentProps } from '@material-ui/data-grid';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -189,11 +189,12 @@ export {
   TempestDeleteIcon,
   Zoom,
   SearchBar,
-  DataGrid,
   Box,
   Tab,
   Tabs,
   Typography,
+  DataGrid,
+  useGridSlotComponentProps,
 };
 
 export type { TempestModalProps };
