@@ -79,6 +79,14 @@ const alertIfDuplicate = (trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[
     : '';
 };
 
+const formIsInValid = (trackingItem: TrackingItemToAdd): boolean => {
+  return !trackingItem.title || !trackingItem.description || trackingItem.interval === 0 ? true : false;
+};
+
+const isDuplicate = (title: string, trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[]) => {
+  return title === '' || trackingItemsThatMatch?.some((ti) => +ti.score.toFixed(4) === 0);
+};
+
 const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClose, isOpen }) => {
   const { mutate: create } = useAddTrackingItem();
   const [isSaving, setIsSaving] = useState(false);
@@ -102,7 +110,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   }, [isOpen]);
 
   useEffect(() => {
-    if (!trackingItem.title || !trackingItem.description || trackingItem.interval === 0) {
+    if (formIsInValid(trackingItem)) {
       setFormIsInvalid(true);
     } else {
       setFormIsInvalid(false);
@@ -123,9 +131,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       PaperProps={{ component: Paper }}
       open={isOpen}
       onClose={() => {
-        if (trackingItems.length < 1) {
-          handleClose();
-        }
+        handleClose();
       }}
       aria-labelledby="tracking-dialog"
     >
@@ -139,7 +145,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           <div tw="flex space-x-5 mb-3">
             <InputFieldContainer>
               <FormControl>
-                {trackingItem.title === '' || trackingItemsThatMatch?.some((ti) => +ti.score.toFixed(4) === 0) ? (
+                {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
                   <DialogContentText tw="text-red-300 flex">* Title</DialogContentText>
                 ) : (
                   <DialogContentText>Title</DialogContentText>
