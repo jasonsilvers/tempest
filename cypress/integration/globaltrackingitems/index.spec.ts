@@ -40,14 +40,10 @@ describe('Can view Global Tracking Items', () => {
     cy.findByRole('textbox', { name: 'training-description-input' }).type(newTrainingItemDescription);
     cy.findByRole('spinbutton', { name: 'training-interval-input' }).type('2');
 
-    cy.findByRole('button', {name: /create/i}).click()
+    cy.findByRole('button', { name: /create/i }).click();
 
-    cy.findByRole('button', {name: /add all/i}).click()
-
-    cy.findByText(newTrainingItemTitle).should('exist')
-    cy.findByText(/2 days/i).should('exist')
-    cy.findByText(newTrainingItemDescription).should('exist')
-
-
+    cy.findByText(newTrainingItemTitle).should('exist');
+    cy.findByText(/2 days/i).should('exist');
+    cy.findByText(newTrainingItemDescription).should('exist');
   });
 });

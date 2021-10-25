@@ -1,4 +1,11 @@
-import { fireEvent, render, waitForElementToBeRemoved, userEvent } from '../../../testutils/TempestTestUtils';
+import {
+  fireEvent,
+  render,
+  waitForElementToBeRemoved,
+  userEvent,
+  screen,
+  waitForLoadingToFinish,
+} from '../../../testutils/TempestTestUtils';
 import React, { useState } from 'react';
 import { AddTrackingItemDialog } from '../../../../src/components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { server, rest } from '../../../testutils/mocks/msw';
@@ -98,6 +105,110 @@ test('should add new training to list waiting to be added', async () => {
 
   const createButton = getByRole('button', { name: /create/i });
   fireEvent.click(createButton);
+
+  await waitForElementToBeRemoved(() => getByText(/create new training/i));
+});
+
+test('should show duplicates', async () => {
+  server.use(
+    rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+      );
+    })
+  );
+
+  const { getByRole, queryByText } = render(<Container />);
+
+  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  fireEvent.click(openDialogButton);
+
+  await waitForElementToBeRemoved(() => getByRole('progressbar'));
+  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  const trainingIntervalInput = getByRole('spinbutton', { name: 'training-interval-input' });
+
+  const newTrainingItemTitle = 'Big';
+  const newTrainingItemDescription = 'New training item description';
+
+  userEvent.type(trainingTitleInput, newTrainingItemTitle);
+  fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  userEvent.type(trainingIntervalInput, '2');
+
+  expect(queryByText(/Bug Safety/i)).toBeInTheDocument();
+
+  const createButton = getByRole('button', { name: /create/i });
+  fireEvent.click(createButton);
+
+  expect(queryByText(/this is a potential duplicate/i)).toBeInTheDocument();
+
+  fireEvent.click(getByRole('button', { name: 'No' }));
+});
+
+test('should tell user they cannot add a duplicate', async () => {
+  server.use(
+    rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+      );
+    })
+  );
+
+  const { getByRole, queryByText } = render(<Container />);
+
+  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  fireEvent.click(openDialogButton);
+
+  await waitForElementToBeRemoved(() => getByRole('progressbar'));
+  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  const trainingIntervalInput = getByRole('spinbutton', { name: 'training-interval-input' });
+
+  const newTrainingItemTitle = 'Big Bug Safety';
+  const newTrainingItemDescription = 'New training item description';
+
+  userEvent.type(trainingTitleInput, newTrainingItemTitle);
+  fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  userEvent.type(trainingIntervalInput, '2');
+
+  expect(queryByText(/unable to add/i)).toBeInTheDocument();
+});
+
+test('should tell user they cannot add a duplicate', async () => {
+  server.use(
+    rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+      );
+    })
+  );
+
+  const { getByRole, queryByText, getByText } = render(<Container />);
+
+  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  fireEvent.click(openDialogButton);
+
+  await waitForElementToBeRemoved(() => getByRole('progressbar'));
+  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  const trainingIntervalInput = getByRole('spinbutton', { name: 'training-interval-input' });
+
+  const newTrainingItemTitle = 'Big Bug';
+  const newTrainingItemDescription = 'New training item description';
+
+  userEvent.type(trainingTitleInput, newTrainingItemTitle);
+  fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  userEvent.type(trainingIntervalInput, '2');
+
+  const createButton = getByRole('button', { name: /create/i });
+  fireEvent.click(createButton);
+
+  expect(queryByText(/this is a potential duplicate/i)).toBeInTheDocument();
+
+  fireEvent.click(getByRole('button', { name: 'Yes' }));
 
   await waitForElementToBeRemoved(() => getByText(/create new training/i));
 });

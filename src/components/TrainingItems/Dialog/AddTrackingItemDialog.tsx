@@ -90,7 +90,7 @@ const isDuplicate = (title: string, trackingItemsThatMatch: Fuse.FuseResult<Trac
 const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClose, isOpen }) => {
   const { mutate: create } = useAddTrackingItem();
   const [isSaving, setIsSaving] = useState(false);
-  const { data: trackingItems } = useTrackingItems();
+  const { data: trackingItems, isLoading } = useTrackingItems();
   const [trackingItemsThatMatch, setTrackingItemsThatMatch] = useState<Fuse.FuseResult<TrackingItem>[]>(null);
   const [formIsInvalid, setFormIsInvalid] = useState(true);
   const [confirmationIsOpen, setConfirmationIsOpen] = useState(false);
@@ -119,6 +119,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   const handleTrackingItemMatch = (e: ChangeEvent<{ value: string }>) => {
     const results = fuse.search(e.target.value.trimEnd());
+
     setTrackingItemsThatMatch(results);
   };
 
@@ -135,7 +136,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       }}
       aria-labelledby="tracking-dialog"
     >
-      {isSaving ? <LoadingOverlay /> : null}
+      {isSaving || isLoading ? <LoadingOverlay /> : null}
       <DialogTitle>Create New Training</DialogTitle>
       <DialogContent tw="min-height[220px]">
         <p tw="text-xs pb-4">
@@ -146,7 +147,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             <InputFieldContainer>
               <FormControl>
                 {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
-                  <DialogContentText tw="text-red-300 flex">* Title</DialogContentText>
+                  <DialogContentText tw="text-red-400 flex">* Title</DialogContentText>
                 ) : (
                   <DialogContentText>Title</DialogContentText>
                 )}
@@ -163,7 +164,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             </InputFieldContainer>
             <InputFieldContainer>
               {trackingItem.interval === 0 ? (
-                <DialogContentText tw="text-red-300">* Interval </DialogContentText>
+                <DialogContentText tw="text-red-400">* Interval </DialogContentText>
               ) : (
                 <DialogContentText>Interval</DialogContentText>
               )}
@@ -181,7 +182,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           </div>
           <InputFieldContainer>
             {trackingItem.description === '' ? (
-              <DialogContentText tw="text-red-300">* Description</DialogContentText>
+              <DialogContentText tw="text-red-400">* Description</DialogContentText>
             ) : (
               <DialogContentText>Description</DialogContentText>
             )}
@@ -196,7 +197,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             />
           </InputFieldContainer>
         </DialogContent>
-        <div tw="pt-2 text-sm text-red-300">{alertIfDuplicate(trackingItemsThatMatch)}</div>
+        <div tw="pt-2 text-sm text-red-400">{alertIfDuplicate(trackingItemsThatMatch)}</div>
       </DialogContent>
 
       {trackingItemsThatMatch?.length > 0 ? (
