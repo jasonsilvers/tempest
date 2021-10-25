@@ -1,11 +1,4 @@
-import {
-  fireEvent,
-  render,
-  waitForElementToBeRemoved,
-  userEvent,
-  screen,
-  waitForLoadingToFinish,
-} from '../../../testutils/TempestTestUtils';
+import { fireEvent, render, waitForElementToBeRemoved, userEvent } from '../../../testutils/TempestTestUtils';
 import React, { useState } from 'react';
 import { AddTrackingItemDialog } from '../../../../src/components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { server, rest } from '../../../testutils/mocks/msw';
