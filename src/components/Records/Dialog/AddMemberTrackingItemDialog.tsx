@@ -4,7 +4,7 @@ import {
   CircularProgress,
   Dialog,
   DialogActions,
-  DialogButton,
+  Button,
   DialogContent,
   DialogTitle,
   IconButton,
@@ -234,17 +234,18 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
         })}
       </DialogContent>
       <DialogActions>
-        <DialogButton
+        <Button
           disabled={Object.keys(memberTrackingItemsToAdd).length === 0 || memberTrackingItemsQuery.isLoading}
           onClick={addMemberTrackingItems}
           size="medium"
+          color="secondary"
           variant="contained"
         >
           Add
-        </DialogButton>
-        <DialogButton onClick={handleClose} size="medium" variant="contained">
+        </Button>
+        <Button onClick={handleClose} size="medium" color="secondary">
           Close
-        </DialogButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

@@ -11,6 +11,15 @@ jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/roleRepo.ts');
 jest.mock('../../../src/repositories/trackingItemRepo.ts');
 
+export class MockPrismaError extends Error {
+  readonly code: string;
+
+  constructor(code: string) {
+    super('MockPrismaError');
+    this.code = code;
+  }
+}
+
 const trackingItemFromDb = {
   id: 1,
   title: 'Fire Extinguisher',
@@ -91,6 +100,33 @@ test('should return 403 if incorrect permissions - POST', async () => {
 
   expect(status).toBe(403);
 });
+
+test('should return 500 if duplicate - POST', async () => {
+  const mockedCreateTrackingItem = createTrackingItem as jest.MockedFunction<typeof createTrackingItem>;
+
+  mockedCreateTrackingItem.mockImplementation(() => {
+    throw new MockPrismaError('P2002');
+  });
+
+  const { status, data } = await testNextApi.post(trackingItemHandler, { body: newTrackingItem });
+
+  expect(status).toBe(500);
+  expect(data).toStrictEqual({ message: 'Duplicates not allowed' });
+});
+
+test('should handle create tracking item error - POST', async () => {
+  const mockedCreateTrackingItem = createTrackingItem as jest.MockedFunction<typeof createTrackingItem>;
+
+  mockedCreateTrackingItem.mockImplementation(() => {
+    throw new MockPrismaError('P2001');
+  });
+
+  const { status, data } = await testNextApi.post(trackingItemHandler, { body: newTrackingItem });
+
+  expect(status).toBe(500);
+  expect(data).toStrictEqual({ message: 'An error occured. Please try again' });
+});
+
 test('should return 405 if method not allowed', async () => {
   const { status } = await testNextApi.put(trackingItemHandler, { body: newTrackingItem });
 

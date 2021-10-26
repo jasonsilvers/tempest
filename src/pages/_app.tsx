@@ -43,7 +43,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>Tempest</title>
+        <title>Cascade</title>
       </Head>
       <AppProviders pageProps={pageProps}>
         <GlobalStyles />

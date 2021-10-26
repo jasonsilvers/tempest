@@ -8,6 +8,7 @@ import { LoggedInUser } from '../../../repositories/userRepo';
 import { returnUser } from '../../../repositories/loginRepo';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import Joi from 'joi';
+import { TrackingItem } from '.prisma/client';
 
 const trackingItemPostSchema = {
   post: {
@@ -43,7 +44,16 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedIn
         throw new PermissionError();
       }
 
-      const newItem = await createTrackingItem(body);
+      let newItem: TrackingItem;
+
+      try {
+        newItem = await createTrackingItem(body);
+      } catch (error) {
+        if (error.code === 'P2002') {
+          return res.status(500).json({ message: 'Duplicates not allowed' });
+        }
+        return res.status(500).json({ message: 'An error occured. Please try again' });
+      }
 
       return res.status(200).json(newItem);
     }
