@@ -120,6 +120,7 @@ const DashboardPage: React.FC = () => {
   const [counts, setCounts] = useState(initialCounts);
 
   const permission = permissionCheck(loggedInUser?.role?.name, EFuncAction.READ_ANY, EResource.USER);
+
   useEffect(() => {
     const newCounts = { ...initialCounts };
     users?.data?.forEach((user) => {
@@ -183,7 +184,7 @@ const DashboardPage: React.FC = () => {
         </Card>
         <Card tw="h-24 flex-grow bg-[#6FD9A6] w-24">
           <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
-          <h1 tw="text-white text-3xl pl-1">Done</h1>
+          <h1 tw="text-white text-2xl pl-1">Done</h1>
 
           <div tw="flex items-end">
             <CheckCircleIcon fontSize="large" tw="text-white" />

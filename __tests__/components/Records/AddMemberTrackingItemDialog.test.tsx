@@ -87,6 +87,7 @@ const memberTrackingItems: MemberTrackingItemWithAll[] = [
     userId: '123',
     trackingItem: fireSafetyItem,
     user: testTrainee as User,
+    createdAt: dayjs().toDate(),
     memberTrackingRecords: [
       {
         id: 1,
@@ -95,6 +96,7 @@ const memberTrackingItems: MemberTrackingItemWithAll[] = [
         trackingItem: fireSafetyItem,
         traineeId: '423',
         authorityId: '321',
+        createdAt: dayjs().toDate(),
         authoritySignedDate: dayjs().toDate(),
         completedDate: dayjs().toDate(),
         traineeSignedDate: null,
