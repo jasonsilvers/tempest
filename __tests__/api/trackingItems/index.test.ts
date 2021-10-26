@@ -5,7 +5,6 @@ import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import trackingItemHandler from '../../../src/pages/api/trackingitems';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import { getTrackingItems, createTrackingItem } from '../../../src/repositories/trackingItemRepo';
-import { PrismaClientValidationError } from '@prisma/client/runtime';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
@@ -15,8 +14,8 @@ jest.mock('../../../src/repositories/trackingItemRepo.ts');
 export class MockPrismaError extends Error {
   readonly code: string;
 
-  constructor(code: string, message: string) {
-    super('TempestError');
+  constructor(code: string) {
+    super('MockPrismaError');
     this.code = code;
   }
 }
@@ -106,7 +105,7 @@ test('should return 500 if duplicate - POST', async () => {
   const mockedCreateTrackingItem = createTrackingItem as jest.MockedFunction<typeof createTrackingItem>;
 
   mockedCreateTrackingItem.mockImplementation(() => {
-    throw new MockPrismaError('P2002', 'error');
+    throw new MockPrismaError('P2002');
   });
 
   const { status, data } = await testNextApi.post(trackingItemHandler, { body: newTrackingItem });
@@ -119,7 +118,7 @@ test('should handle create tracking item error - POST', async () => {
   const mockedCreateTrackingItem = createTrackingItem as jest.MockedFunction<typeof createTrackingItem>;
 
   mockedCreateTrackingItem.mockImplementation(() => {
-    throw new MockPrismaError('P2001', 'error');
+    throw new MockPrismaError('P2001');
   });
 
   const { status, data } = await testNextApi.post(trackingItemHandler, { body: newTrackingItem });
