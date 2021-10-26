@@ -29,8 +29,7 @@
     "db:reset": "prisma db push --schema ./src/prisma/schema.prisma --force-reset && npm run db:seed",
     "db:generate": "prisma generate --schema ./src/prisma/schema.prisma",
     "dcheck": "mkdir -p .dependency-check && dependency-check --project .next --scan package-lock.json --format 'ALL' --out .dependency-check && open ./.dependency-check/dependency-check-report.html",
-    "prepare": "husky install",
-    "preinstall": "npx npm-force-resolutions"
+    "prepare": "husky install"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.14.9",
@@ -38,6 +37,7 @@
     "@date-io/dayjs": "^1.3.13",
     "@emotion/styled": "^11.3.0",
     "@material-ui/core": "^4.12.3",
+    "@material-ui/data-grid": "^4.0.0-alpha.37",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/pickers": "^3.3.10",
@@ -72,7 +72,6 @@
     "prisma": "^2.29.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-hook-form": "^7.17.5",
     "react-query": "^3.26.0",
     "styled-components": "^5.3.1",
     "superjson": "^1.7.5",

@@ -18,11 +18,16 @@ import Zoom from '@material-ui/core/Zoom';
 import Paper from '@material-ui/core/Paper';
 import SearchBar from '@snekcode/mui-search-bar';
 import Menu from '@material-ui/core/Menu';
+import Box from '@material-ui/core/Box';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import Typography from '@material-ui/core/Typography';
 import TempestMenuItem from '@material-ui/core/MenuItem';
 import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { KeyboardDatePicker } from '@material-ui/pickers';
+import { DataGrid, useGridSlotComponentProps } from '@material-ui/data-grid';
 import FormControl from '@material-ui/core/FormControl';
 import { DialogContentText, OutlinedInput, OutlinedInputProps } from '@material-ui/core';
 
@@ -187,6 +192,12 @@ export {
   TempestDeleteIcon,
   Zoom,
   SearchBar,
+  Box,
+  Tab,
+  Tabs,
+  Typography,
+  DataGrid,
+  useGridSlotComponentProps,
 };
 
 export type { TempestModalProps, OutlinedInputProps };

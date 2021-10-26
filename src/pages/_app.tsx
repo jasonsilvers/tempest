@@ -9,8 +9,9 @@ import { useNavLoading } from '../hooks/useNavLoading';
 import { ProgressLayout, LoadingSpinner } from '../lib/ui';
 
 const DynamicDevTools = dynamic(
-  function importDevTools() {
-    return import('../components/Devtools/index').then((module) => module.Devtools);
+  async function importDevTools() {
+    const module = await import('../components/Devtools/index');
+    return module.Devtools;
   },
   {
     ssr: false,

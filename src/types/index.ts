@@ -1,4 +1,4 @@
-import { Role, Organization, TrackingItem } from '@prisma/client';
+import { Role, Organization, TrackingItem, LogEvent } from '@prisma/client';
 import { Grants } from '../repositories/grantsRepo';
 import { UserWithAll } from '../repositories/userRepo';
 
@@ -22,4 +22,8 @@ export type GrantsDTO = {
 
 export type TrackingItemsDTO = {
   trackingItems: TrackingItem[];
+};
+
+export type LogEventDTO = {
+  logEvents: LogEvent[];
 };
