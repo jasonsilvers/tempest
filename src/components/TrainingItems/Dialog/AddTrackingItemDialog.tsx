@@ -16,6 +16,7 @@ import { useAddTrackingItem, useTrackingItems } from '../../../hooks/api/trackin
 import { TrackingItem } from '@prisma/client';
 import Fuse from 'fuse.js';
 import ConfirmDialog from '../../Dialog/ConfirmDialog';
+import { useSnackbar } from 'notistack';
 
 const fuseOptions: Fuse.IFuseOptions<TrackingItem> = {
   isCaseSensitive: false,
@@ -95,6 +96,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   const [formIsInvalid, setFormIsInvalid] = useState(true);
   const [confirmationIsOpen, setConfirmationIsOpen] = useState(false);
   const [trackingItem, setTrackingItem] = useState<TrackingItemToAdd>(initialTrackingItemToAdd);
+  const { enqueueSnackbar } = useSnackbar();
 
   const fuse = useMemo(() => new Fuse(trackingItems ? trackingItems : [], fuseOptions), [trackingItems]);
 
@@ -235,6 +237,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
               create(trackingItem as TrackingItem, {
                 onSuccess: () => {
                   handleClose();
+                  enqueueSnackbar('Tracking Item Added!', { variant: 'success' });
                 },
                 onSettled: () => {
                   setIsSaving(false);
@@ -263,6 +266,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           setIsSaving(true);
           create(trackingItem as TrackingItem, {
             onSuccess: () => {
+              enqueueSnackbar('Tracking Item Added!', { variant: 'success' });
               handleClose();
             },
             onSettled: () => {

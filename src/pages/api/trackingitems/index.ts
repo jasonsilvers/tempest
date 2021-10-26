@@ -49,12 +49,10 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedIn
       try {
         newItem = await createTrackingItem(body);
       } catch (error) {
-        console.log('It is in here');
-        console.log(error.code);
-
         if (error.code === 'P2002') {
           return res.status(500).json({ message: 'Duplicates not allowed' });
         }
+        return res.status(500).json({ message: 'An error occured. Please try again' });
       }
 
       return res.status(200).json(newItem);
