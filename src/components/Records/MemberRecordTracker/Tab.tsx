@@ -13,17 +13,12 @@ const ActiveTab = tw(InactiveTab)`text-purple-500 transition-transform after:(${
 
 // tab container
 const Container = tw.div`relative flex items-center w-min min-w-min whitespace-nowrap flex[0 0 auto]`;
-
-// counter styled component
-const Count = tw.div`text-black font-size[12px] background-color[#E2E2E2] border-radius[5px] px-1 ml-2 height[min-content] flex items-center justify-center`;
-
 export interface ITabProps {
   category: ECategories;
-  showCount?: boolean;
 }
 
-const Tab: React.FC<ITabProps> = ({ children, category, showCount }) => {
-  const { count, setActiveCategory, activeCategory } = useMemberItemTrackerContext();
+const Tab: React.FC<ITabProps> = ({ children, category }) => {
+  const { setActiveCategory, activeCategory } = useMemberItemTrackerContext();
   return (
     <Container>
       {activeCategory === category ? (
@@ -37,8 +32,6 @@ const Tab: React.FC<ITabProps> = ({ children, category, showCount }) => {
           {children}
         </InactiveTab>
       )}
-
-      {showCount ? <Count>{count[activeCategory]}</Count> : null}
     </Container>
   );
 };

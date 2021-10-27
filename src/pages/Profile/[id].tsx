@@ -35,8 +35,8 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
   const persmission =
     user.id !== id
-      ? permissionCheck(role, EFuncAction.READ_ANY, EResource.PROFILE)
-      : permissionCheck(role, EFuncAction.READ_OWN, EResource.PROFILE);
+      ? permissionCheck(role, EFuncAction.READ_ANY, EResource.PROFILE_PAGE)
+      : permissionCheck(role, EFuncAction.READ_OWN, EResource.PROFILE_PAGE);
 
   if (!persmission?.granted) {
     return <div>You do not have permission to view that profile</div>;

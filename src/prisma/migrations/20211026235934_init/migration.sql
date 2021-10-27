@@ -1,14 +1,23 @@
+-- CreateEnum
+CREATE TYPE "LogEventType" AS ENUM ('AUTHORIZED', 'UNAUTHORIZED', 'API_ACCESS', 'PAGE_ACCESS', 'LOGIN', 'METHOD_NOT_ALLOWED', 'BAD_REQUEST');
+
 -- CreateTable
 CREATE TABLE "user" (
     "id" UUID NOT NULL,
-    "dodId" TEXT,
-    "firstName" TEXT,
-    "lastName" TEXT,
+    "dod_id" TEXT,
+    "first_name" TEXT,
+    "last_name" TEXT,
+    "middle_name" TEXT,
     "email" TEXT,
     "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
-    "roleId" INTEGER,
-    "organizationId" UUID,
+    "last_login" TIMESTAMP(3),
+    "role_id" INTEGER,
+    "organization_id" TEXT,
+    "rank" TEXT,
+    "afsc" TEXT,
+    "duty_title" TEXT,
+    "address" TEXT,
 
     PRIMARY KEY ("id")
 );
@@ -27,19 +36,30 @@ CREATE TABLE "member_tracking_record" (
     "trainee_signed_date" TIMESTAMP(3),
     "authority_signed_date" TIMESTAMP(3),
     "authority_id" UUID,
-    "trainee_id" UUID,
+    "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "completed_date" TIMESTAMP(3),
-    "next_record_id" INTEGER,
+    "order" INTEGER NOT NULL,
+    "trainee_id" UUID NOT NULL,
     "tracking_item_id" INTEGER NOT NULL,
 
     PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "member_tracking_item" (
+    "isActive" BOOLEAN NOT NULL,
+    "userId" UUID NOT NULL,
+    "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "trackingItemId" INTEGER NOT NULL,
+
+    PRIMARY KEY ("userId","trackingItemId")
+);
+
+-- CreateTable
 CREATE TABLE "organization" (
-    "id" UUID NOT NULL,
-    "name" TEXT NOT NULL,
-    "parentId" UUID,
+    "id" TEXT NOT NULL,
+    "org_name" TEXT NOT NULL,
+    "parent_id" TEXT,
 
     PRIMARY KEY ("id")
 );
@@ -100,6 +120,17 @@ CREATE TABLE "grant" (
 );
 
 -- CreateTable
+CREATE TABLE "log_event" (
+    "id" SERIAL NOT NULL,
+    "userId" UUID,
+    "log_event_type" "LogEventType" NOT NULL,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "message" TEXT,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_TagToUser" (
     "A" INTEGER NOT NULL,
     "B" UUID NOT NULL
@@ -107,21 +138,15 @@ CREATE TABLE "_TagToUser" (
 
 -- CreateTable
 CREATE TABLE "_OrganizationToTemplate" (
-    "A" UUID NOT NULL,
+    "A" TEXT NOT NULL,
     "B" INTEGER NOT NULL
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user.dodId_unique" ON "user"("dodId");
+CREATE UNIQUE INDEX "user.dod_id_unique" ON "user"("dod_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user.email_unique" ON "user"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "member_tracking_record_next_record_id_unique" ON "member_tracking_record"("next_record_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "organization.name_unique" ON "organization"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "training_record.title_unique" ON "training_record"("title");
@@ -145,25 +170,31 @@ CREATE UNIQUE INDEX "_OrganizationToTemplate_AB_unique" ON "_OrganizationToTempl
 CREATE INDEX "_OrganizationToTemplate_B_index" ON "_OrganizationToTemplate"("B");
 
 -- AddForeignKey
-ALTER TABLE "user" ADD FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "user" ADD FOREIGN KEY ("role_id") REFERENCES "role"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "user" ADD FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "user" ADD FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "member_tracking_record" ADD FOREIGN KEY ("authority_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "member_tracking_record" ADD FOREIGN KEY ("trainee_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "member_tracking_record" ADD FOREIGN KEY ("next_record_id") REFERENCES "member_tracking_record"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "member_tracking_record" ADD FOREIGN KEY ("trainee_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "member_tracking_record" ADD FOREIGN KEY ("tracking_item_id") REFERENCES "training_record"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "organization" ADD FOREIGN KEY ("parentId") REFERENCES "organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "member_tracking_record" ADD FOREIGN KEY ("trainee_id", "tracking_item_id") REFERENCES "member_tracking_item"("userId", "trackingItemId") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "member_tracking_item" ADD FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "member_tracking_item" ADD FOREIGN KEY ("trackingItemId") REFERENCES "training_record"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "organization" ADD FOREIGN KEY ("parent_id") REFERENCES "organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "template_tracking_item" ADD FOREIGN KEY ("trackingItemId") REFERENCES "training_record"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -176,6 +207,9 @@ ALTER TABLE "grant" ADD FOREIGN KEY ("resource_name") REFERENCES "resource"("nam
 
 -- AddForeignKey
 ALTER TABLE "grant" ADD FOREIGN KEY ("role_name") REFERENCES "role"("name") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "log_event" ADD FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_TagToUser" ADD FOREIGN KEY ("A") REFERENCES "Tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;

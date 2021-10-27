@@ -25,7 +25,7 @@ const useUsers = () => {
   });
 };
 
-const useMember = (id, initialMemberData) => {
+const useMember = (id: string, initialMemberData: UserWithAll) => {
   return useQuery<User & { role: Role }>(
     usersQueryKeys.member(id),
     async () => axios.get<User & { role: Role }>(EUri.USERS + `${id}`).then((result) => result.data),
