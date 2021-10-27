@@ -25,6 +25,7 @@ import { useRouter } from 'next/router';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import FormControl from '@material-ui/core/FormControl';
 import { DialogContentText, OutlinedInput, OutlinedInputProps } from '@material-ui/core';
+import Close from '@material-ui/icons/Close';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -187,6 +188,7 @@ export {
   TempestDeleteIcon,
   Zoom,
   SearchBar,
+  Close,
 };
 
 export type { TempestModalProps, OutlinedInputProps };

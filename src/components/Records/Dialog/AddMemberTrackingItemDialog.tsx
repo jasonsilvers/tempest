@@ -11,6 +11,7 @@ import {
   LoadingOverlay,
   TempestDatePicker,
   TextField,
+  Close,
 } from '../../../lib/ui';
 import tw from 'twin.macro';
 import { useTrackingItems } from '../../../hooks/api/trackingItem';
@@ -131,6 +132,9 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
     <Dialog PaperProps={{ component: Paper }} onClose={handleClose} open aria-labelledby="ammembertracking-dialog">
       {isSaving ? <LoadingOverlay /> : null}
       <DialogTitle>Add New Training</DialogTitle>
+      <Button onClick={handleClose} size="medium" color="secondary">
+        <Close />
+      </Button>
       <DialogContent>
         <p tw="text-xs pb-4">
           Select one or more training from the below dropdown and insert completion date. If completion date is unknown,
@@ -242,9 +246,6 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           variant="contained"
         >
           Add
-        </Button>
-        <Button onClick={handleClose} size="medium" color="secondary">
-          Close
         </Button>
       </DialogActions>
     </Dialog>
