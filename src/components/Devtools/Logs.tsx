@@ -45,7 +45,7 @@ const Logs = () => {
   }
 
   return (
-    <div tw="flex h-72">
+    <div tw="flex h-96">
       <DataGrid columns={columns} rows={logEventQuery.data} />
     </div>
   );

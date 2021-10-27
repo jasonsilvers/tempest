@@ -2,12 +2,13 @@ import TrackingItemPage, { getStaticProps } from '../../src/pages/Trackingitems'
 import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
 import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';
-import { ERole, EUri, TrackingItemsDTO } from '../../src/const/enums';
+import { ERole, EUri } from '../../src/const/enums';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { bobJones } from '../testutils/mocks/fixtures';
 import { DefaultRequestBody } from 'msw';
 import prisma from '../setup/mockedPrisma';
 import { TrackingItem } from '@prisma/client';
+import { TrackingItemsDTO } from '../../src/types';
 
 beforeAll(() => {
   server.listen({

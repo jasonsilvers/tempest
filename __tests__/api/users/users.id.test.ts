@@ -1,5 +1,5 @@
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import { findUserByDodId, findUserById, updateUser } from '../../../src/repositories/userRepo';
+import { deleteUser, findUserByDodId, findUserById, updateUser } from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/users/[id]';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';
@@ -7,6 +7,7 @@ import { testNextApi } from '../../testutils/NextAPIUtils';
 import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';
 import { User } from '@prisma/client';
 import { getRoleByName } from '../../../src/repositories/roleRepo';
+import { EAction, EResource, ERole } from '../../../src/const/enums';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/roleRepo');
@@ -154,7 +155,7 @@ test('GET - should return 404 record not found', async () => {
   expect(status).toBe(404);
 });
 
-test('GET - should only allow get', async () => {
+test('GET - should return 405 if method not allowed', async () => {
   mockMethodAndReturn(findUserByDodId, {
     id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
     firstName: 'joe',
@@ -310,6 +311,71 @@ test('PUT - should return 403 - update any', async () => {
     urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
     body: { rank: 'bob' },
   });
+
+  expect(status).toBe(403);
+});
+
+test('DELETE - should return 404 if record not found', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+  });
+
+  mockMethodAndReturn(findGrants, [
+    ...grants,
+    {
+      action: EAction.DELETE_ANY,
+      attributes: '*',
+      resource: EResource.USER,
+      role: ERole.ADMIN,
+    },
+  ]);
+
+  mockMethodAndReturn(deleteUser, null);
+
+  const { status } = await testNextApi.delete(userQueryHandler, {
+    urlId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  });
+
+  expect(status).toBe(404);
+});
+test('DELETE - should delete user and cascade', async () => {
+  mockMethodAndReturn(findUserByDodId, {
+    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+  });
+
+  mockMethodAndReturn(findGrants, [
+    ...grants,
+    {
+      action: EAction.DELETE_ANY,
+      attributes: '*',
+      resource: EResource.USER,
+      role: ERole.ADMIN,
+    },
+  ]);
+
+  mockMethodAndReturn(findUserById, userFromDb);
+  const mockedDeleteUser = mockMethodAndReturn(deleteUser, userFromDb);
+
+  const { status } = await testNextApi.delete(userQueryHandler, {
+    urlId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  });
+
+  expect(mockedDeleteUser).toBeCalled();
+
+  expect(status).toBe(200);
+});
+test('DELETE - should return 403 if permission not allowed', async () => {
+  mockMethodAndReturn(findUserById, userFromDb);
+  const mockedDeleteUser = mockMethodAndReturn(deleteUser, null);
+
+  const { status } = await testNextApi.delete(userQueryHandler, {
+    urlId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  });
+  expect(mockedDeleteUser).not.toBeCalled();
 
   expect(status).toBe(403);
 });

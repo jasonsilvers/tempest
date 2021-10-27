@@ -2,6 +2,9 @@
   "name": "nextjsdev",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} src/prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,7 +17,6 @@
     "cypress:open": "cypress open --config-file cypress/config/development.json",
     "cypress:run": "npm run db:reset && cypress run --config-file cypress/config/development.json",
     "test:e2e-ci": "cypress run --config-file cypress/config/pipeline.json",
-    "ts-node": "ts-node --log-error --pretty --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\"",
     "build:seed:singleDir": "tsc ./src/prisma/seed.ts ./src/prisma/global.d.ts --outDir ./src/prisma/seedPipeline --allowSyntheticDefaultImports --lib 'es2019'",
     "build:seed": "tsc ./prisma/seed.ts ./prisma/global.d.ts --types --lib 'es2019'",
     "test:coverage": "jest --coverage && open ./coverage/lcov-report/index.html",
@@ -23,10 +25,9 @@
     "analyze-bundle": "ANALYZE=true next build",
     "db:studio": "prisma studio --schema ./src/prisma/schema.prisma",
     "db:migrate": "prisma migrate dev --schema ./src/prisma/schema.prisma",
-    "db:reseed": "prisma migrate reset --preview-feature --schema ./src/prisma/schema.prisma",
+    "db:reset": "prisma migrate reset --schema ./src/prisma/schema.prisma --force",
     "db:seed": "prisma db seed --preview-feature --schema ./src/prisma/schema.prisma",
     "jwt-proxy": "jwt-proxy 9000 3000 --silent --jwt user.jwt",
-    "db:reset": "prisma db push --schema ./src/prisma/schema.prisma --force-reset && npm run db:seed",
     "db:generate": "prisma generate --schema ./src/prisma/schema.prisma",
     "dcheck": "mkdir -p .dependency-check && dependency-check --project .next --scan package-lock.json --format 'ALL' --out .dependency-check && open ./.dependency-check/dependency-check-report.html",
     "prepare": "husky install"
@@ -42,7 +43,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/pickers": "^3.3.10",
     "@next/bundle-analyzer": "^11.1.2",
-    "@prisma/client": "^2.29.1",
+    "@prisma/client": "^3.3.0",
     "@snekcode/mui-search-bar": "1.1.0",
     "@tron/nextjs-auth-p1": "^1.3.0",
     "@types/crypto-js": "^4.0.2",
@@ -69,7 +70,7 @@
     "next": "11.1.2",
     "notistack": "^2.0.2",
     "postcss": "^8.3.9",
-    "prisma": "^2.29.1",
+    "prisma": "^3.3.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-query": "^3.26.0",

@@ -1,6 +1,6 @@
 import { getUsersWithMemberTrackingRecords } from '../repositories/userRepo';
 import tw from 'twin.macro';
-import { LoadingSpinner, TempestPopMenu } from '../lib/ui';
+import { LoadingSpinner, TempestPopMenu, Card } from '../lib/ui';
 import { CancelIcon, CheckCircleIcon, HighlightOffIcon, WarningIcon } from '../assets/Icons';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
@@ -14,7 +14,6 @@ import dayjs from 'dayjs';
 import { MemberTrackingRecord } from '.prisma/client';
 import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
 
-const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 const UserTable = tw.div``;
 const UserTableHeader = tw.div`flex text-sm text-gray-400 mb-4 pl-2 border-b border-gray-400`;
 const UserTableRow = ({ isOdd, children }: { isOdd: boolean; children: React.ReactNode }) => {

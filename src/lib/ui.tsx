@@ -30,6 +30,7 @@ import { KeyboardDatePicker } from '@material-ui/pickers';
 import { DataGrid, useGridSlotComponentProps } from '@material-ui/data-grid';
 import FormControl from '@material-ui/core/FormControl';
 import { DialogContentText, OutlinedInput, OutlinedInputProps } from '@material-ui/core';
+import { MenuItem, Select } from '@material-ui/core';
 
 const TPaper = styled(Paper)`
   background-color: #fff;
@@ -38,6 +39,8 @@ const TPaper = styled(Paper)`
   padding-top: 2.25rem;
   color: #2d2270;
 `;
+
+const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 
 const TempestDrawer = (props) => {
   return <Drawer variant="permanent" PaperProps={{ component: TPaper }} {...props} />;
@@ -171,6 +174,7 @@ export {
   IconButton,
   CircularProgress,
   Link,
+  Card,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -182,6 +186,8 @@ export {
   Autocomplete,
   LoadingOverlay,
   LoadingSpinner,
+  MenuItem,
+  Select,
   ProgressLayout,
   Fab,
   FormControl,

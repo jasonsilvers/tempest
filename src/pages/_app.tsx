@@ -24,7 +24,7 @@ const DynamicDevTools = dynamic(
 const MainContent = tw.div`ml-80 mt-9`;
 
 function MyApp({ Component, pageProps }) {
-  const [showDevTools, setShowDevTools] = useState(false);
+  const [showDevTools, setShowDevTools] = useState(true);
   const { navigating } = useNavLoading();
 
   useEffect(() => {
