@@ -11,20 +11,26 @@ const pageGrants: Grants[] = [
   {
     action: EAction.READ_ANY,
     attributes: '*',
-    resource: EResource.PROFILE,
+    resource: EResource.PROFILE_PAGE,
     role: ERole.MONITOR,
   },
   {
     action: EAction.READ_OWN,
     attributes: '*',
-    resource: EResource.PROFILE,
+    resource: EResource.PROFILE_PAGE,
     role: ERole.MEMBER,
   },
   {
     action: EAction.READ_ANY,
     attributes: '*',
-    resource: EResource.DASHBOARD,
+    resource: EResource.DASHBOARD_PAGE,
     role: ERole.MONITOR,
+  },
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.ADMIN_PAGE,
+    role: ERole.ADMIN,
   },
 ];
 

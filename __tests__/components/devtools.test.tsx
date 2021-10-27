@@ -11,6 +11,7 @@ import { server, rest } from '../testutils/mocks/msw';
 import { ERole, EUri } from '../../src/const/enums';
 
 import 'whatwg-fetch';
+import dayjs from 'dayjs';
 
 const users = [
   {
@@ -18,7 +19,15 @@ const users = [
     firstName: 'bob',
     lastName: 'jones',
     organizationId: '1',
+    lastLogin: dayjs().toDate(),
     role: { id: 22, name: ERole.ADMIN },
+  },
+  {
+    id: '321',
+    firstName: 'Joe',
+    lastName: 'Smith',
+    organizationId: '1',
+    role: { id: 22, name: ERole.MEMBER },
   },
 ];
 
@@ -229,6 +238,41 @@ test('should update a users role', async () => {
   const newRole = await findByText(/member/i);
 
   expect(newRole).toBeInTheDocument();
+});
+
+test('should delete user', async () => {
+  const { getByText, findByRole, getByRole, queryByText } = render(<Devtools />);
+
+  const button = await findByRole('button', { name: 'devtool-button' });
+  fireEvent.click(button);
+
+  await waitForElementToBeRemoved(() => getByText(/loading users/i));
+
+  const user = getByText(/bob jones/i).parentElement;
+
+  expect(user).toBeInTheDocument();
+
+  const deleteButton = getByRole('button', { name: /delete/i });
+
+  fireEvent.click(deleteButton);
+
+  expect(getByText(/warning/i)).toBeInTheDocument();
+
+  fireEvent.click(getByRole('button', { name: /no/i }));
+
+  expect(queryByText('warning')).not.toBeInTheDocument();
+
+  fireEvent.click(deleteButton);
+  fireEvent.click(getByRole('button', { name: /yes/i }));
+
+  server.use(
+    getUsers([users[0]]),
+    rest.delete(EUri.USERS + '*', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json({ message: 'ok' }));
+    })
+  );
+
+  await waitForElementToBeRemoved(() => getByText(/joe/i));
 });
 
 test('should show logs', async () => {

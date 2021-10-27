@@ -4,14 +4,15 @@ import { TempestDrawer } from '../../lib/ui';
 import { DashboardIcon, DescriptionIcon, PersonIcon } from '../../assets/Icons';
 import { useQueryClient } from 'react-query';
 import { usePermissions } from '../../hooks/usePermissions';
-import { EFuncAction, EResource } from '../../const/enums';
+import { EFuncAction, EResource, ERole } from '../../const/enums';
 
 const Navbar: React.FC = () => {
   const queryClient = useQueryClient();
   const { user, permissionCheck } = usePermissions();
-  const canViewDashboard = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.DASHBOARD);
-  const canViewMyProfile = permissionCheck(user?.role.name, EFuncAction.READ_OWN, EResource.PROFILE);
+  const canViewDashboard = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.DASHBOARD_PAGE);
+  const canViewMyProfile = permissionCheck(user?.role.name, EFuncAction.READ_OWN, EResource.PROFILE_PAGE);
   const canCreateGlobalTrackingItem = permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM);
+  const isAdmin = user?.role.name === ERole.ADMIN;
 
   useMemo(() => {
     if (user) {
@@ -45,6 +46,13 @@ const Navbar: React.FC = () => {
           <Link goToUrl="/Trackingitems" icon={<DescriptionIcon fontSize="large" />}>
             <div role="navigation" aria-label="global-training-catalog">
               Training List
+            </div>
+          </Link>
+        ) : null}
+        {isAdmin ? (
+          <Link goToUrl="/Admin" icon={<DescriptionIcon fontSize="large" />}>
+            <div role="navigation" aria-label="admin">
+              Admin
             </div>
           </Link>
         ) : null}

@@ -9,12 +9,8 @@ import { removeOldCompletedRecords } from '../../utils';
 
 const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
 
-type SortOrder = 'ASC' | 'DESC';
-const sortMemberTrackingItems = (memberTrackingItems: MemberTrackingItemWithAll[], order: SortOrder = 'ASC') => {
-  if (order === 'ASC') {
-    return memberTrackingItems.sort((mtiA, mtiB) => (mtiA.trackingItem.title >= mtiB.trackingItem.title ? 1 : -1));
-  }
-  return memberTrackingItems.sort((mtiA, mtiB) => (mtiA.trackingItem.title > mtiB.trackingItem.title ? -1 : 1));
+const sortMemberTrackingItems = (memberTrackingItems: MemberTrackingItemWithAll[]) => {
+  return memberTrackingItems.sort((mtiA, mtiB) => (mtiA.trackingItem.title >= mtiB.trackingItem.title ? 1 : -1));
 };
 
 export const mtiQueryKeys = {

@@ -80,20 +80,3 @@ it('should render the _app for next js', async () => {
   expect(document.contains(jssStyles)).toBeTruthy();
   document.head.removeChild(jssStyles);
 });
-
-it('should render the _app for next js with dev tools', async () => {
-  // set id of styles to jss-server-side and append to document.head
-  jssStyles.id = 'jss-server-side';
-  document.head.appendChild(jssStyles);
-
-  act(() => {
-    render(<App Component={simpleComponent} pageProps={null} />, container);
-  });
-
-  // wait for jssStyles to be removed by the use effect in _app
-  waitForElementToBeRemoved(() => jssStyles);
-
-  (window as any).toggleDevtools(); // eslint-disable-line
-  const devtool = waitFor(() => document.getElementById('devtoolfab'));
-  expect(devtool).toBeTruthy();
-});

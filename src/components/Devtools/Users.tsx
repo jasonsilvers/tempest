@@ -54,43 +54,39 @@ const Users = () => {
   const updateUsersOrg = (event: OrgFormEvent, user: UserWithAll) => {
     const selectedOrgId = event.target.value;
 
-    if (selectedOrgId !== user.organizationId) {
-      const updatedUser = {
-        id: user.id,
-        organizationId: selectedOrgId,
-      } as User;
-      mutateUser.mutate(updatedUser, {
-        onSuccess: () => {
-          queryClient.invalidateQueries('users');
-          enqueueSnackbar('Organization Changed', { variant: 'success' });
-        },
-        onSettled: () => {
-          queryClient.invalidateQueries('users');
-        },
-      });
-    }
+    const updatedUser = {
+      id: user.id,
+      organizationId: selectedOrgId,
+    } as User;
+    mutateUser.mutate(updatedUser, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('users');
+        enqueueSnackbar('Organization Changed', { variant: 'success' });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries('users');
+      },
+    });
   };
 
   const updateUsersRole = (event: RoleFormEvent, user: UserWithAll) => {
     const selectedRoleId = event.target.value;
 
-    if (selectedRoleId !== user.role?.id) {
-      const updatedUser = {
-        id: user.id,
-        roleId: selectedRoleId,
-      } as User;
+    const updatedUser = {
+      id: user.id,
+      roleId: selectedRoleId,
+    } as User;
 
-      mutateUser.mutate(updatedUser, {
-        onSuccess: () => {
-          queryClient.invalidateQueries('users');
+    mutateUser.mutate(updatedUser, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('users');
 
-          enqueueSnackbar('Role Changed', { variant: 'success' });
-        },
-        onSettled: () => {
-          queryClient.invalidateQueries('users');
-        },
-      });
-    }
+        enqueueSnackbar('Role Changed', { variant: 'success' });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries('users');
+      },
+    });
   };
 
   if (usersListQuery.isLoading) {
