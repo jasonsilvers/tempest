@@ -2,7 +2,7 @@ import { unmountComponentAtNode, render } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import App from '../../src/pages/_app';
 import { server } from '../testutils/mocks/msw';
-import { waitFor, waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
+import { waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
 
 jest.mock('next/router', () => ({
   useRouter() {
