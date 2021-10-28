@@ -1,4 +1,3 @@
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Organization, Role, User } from '@prisma/client';
 import React, { ChangeEventHandler, useContext, useEffect, useState } from 'react';
 import tw from 'twin.macro';
@@ -7,7 +6,7 @@ import { ranks } from '../../const/ranks';
 import { useOrg } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
-import { Button, IconButton, TextField, Autocomplete } from '../../lib/ui';
+import { Button, IconButton, TextField, Autocomplete, CSSProperties } from '../../lib/ui';
 import { ERole } from '../../const/enums';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 import { UpdateUsersOrg } from '../UpdateUsersOrg';

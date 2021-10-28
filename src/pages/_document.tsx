@@ -1,7 +1,7 @@
 import React from 'react';
 import Document, { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
-import { ServerStyleSheets } from '@material-ui/core/styles';
+import { ServerStyleSheets } from '@mui/styles';
 import crypto from 'crypto';
 
 const cspHashOf = (text: string) => {

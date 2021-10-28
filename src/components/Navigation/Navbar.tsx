@@ -1,10 +1,21 @@
 import React, { useMemo } from 'react';
 import { Header, Link } from './Navigation';
 import { TempestDrawer } from '../../lib/ui';
-import { DashboardIcon, DescriptionIcon, PersonIcon } from '../../assets/Icons';
+import { DashboardIcon, DescriptionIcon, PersonIcon, SecurityIcon } from '../../assets/Icons';
 import { useQueryClient } from 'react-query';
 import { usePermissions } from '../../hooks/usePermissions';
-import { EFuncAction, EResource, ERole } from '../../const/enums';
+import { EFuncAction, EResource } from '../../const/enums';
+import { styled } from 'twin.macro';
+
+const SideBarDrawer = styled(TempestDrawer)`
+  & .MuiDrawer-paper {
+    background-color: #fff;
+    width: 16rem;
+    padding-left: 1.5rem;
+    padding-top: 2.25rem;
+    color: #2d2270;
+  }
+`;
 
 const Navbar: React.FC = () => {
   const queryClient = useQueryClient();
@@ -12,7 +23,7 @@ const Navbar: React.FC = () => {
   const canViewDashboard = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.DASHBOARD_PAGE);
   const canViewMyProfile = permissionCheck(user?.role.name, EFuncAction.READ_OWN, EResource.PROFILE_PAGE);
   const canCreateGlobalTrackingItem = permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM);
-  const isAdmin = user?.role.name === ERole.ADMIN;
+  const canViewAdminPage = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.ADMIN_PAGE);
 
   useMemo(() => {
     if (user) {
@@ -25,9 +36,9 @@ const Navbar: React.FC = () => {
   }
 
   return (
-    <TempestDrawer>
+    <SideBarDrawer>
       <Header goToUrl="/">Cascade</Header>
-      <div tw="space-y-9">
+      <div tw="space-y-4">
         {canViewDashboard?.granted ? (
           <Link goToUrl="/Dashboard" icon={<DashboardIcon fontSize="large" />}>
             <div role="navigation" aria-label="dashboard">
@@ -49,15 +60,15 @@ const Navbar: React.FC = () => {
             </div>
           </Link>
         ) : null}
-        {isAdmin ? (
-          <Link goToUrl="/Admin" icon={<DescriptionIcon fontSize="large" />}>
+        {canViewAdminPage?.granted ? (
+          <Link goToUrl="/Admin" icon={<SecurityIcon fontSize="large" />}>
             <div role="navigation" aria-label="admin">
               Admin
             </div>
           </Link>
         ) : null}
       </div>
-    </TempestDrawer>
+    </SideBarDrawer>
   );
 };
 export default Navbar;

@@ -3,9 +3,8 @@ import React from 'react';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
 import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/MemberRecordTracker/RecordRow';
 import { ECategories, EUri } from '../../../src/const/enums';
-import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../testutils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForElementToBeRemoved, screen } from '../../testutils/TempestTestUtils';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
-// MSW test requirements
 import 'whatwg-fetch';
 import { server, rest } from '../../testutils/mocks/msw';
 import dayjs from 'dayjs';
@@ -260,10 +259,17 @@ test('should mutate and enqueue snackbar success with no signatures', async () =
   );
   await waitForElementToBeRemoved(() => queryByRole(/skeleton/i));
 
-  fireEvent.change(getByRole('textbox'), { target: { value: '10 Sep 2021' } });
+  const calendarButton = getByRole('textbox', { name: /choose date/i });
+  fireEvent.click(calendarButton);
 
-  await waitFor(() => getByText(/date updated/i));
-  expect(getByText(/date updated/i)).toBeInTheDocument();
+  const calendarDialog = getByRole('dialog');
+
+  screen.debug(calendarDialog);
+
+  // fireEvent.change(getByRole('textbox'), { target: { value: '10 Sep 2021' } });
+
+  // await waitFor(() => getByText(/date updated/i));
+  // expect(getByText(/date updated/i)).toBeInTheDocument();
 });
 
 test('should prompt user then mutate and enqueue snackbar success with signatures present', async () => {

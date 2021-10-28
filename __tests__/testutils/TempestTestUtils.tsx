@@ -8,8 +8,8 @@ import { Button } from '../../src/lib/ui';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import userEvent from '@testing-library/user-event';
 import { EUri } from '../../src/const/enums';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DayJsUtils from '@date-io/dayjs';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import AdapterDateFns from '@mui/lab/AdapterDayjs';
 
 export const waitForLoadingToFinish = () =>
   waitForElementToBeRemoved(() => [...screen.queryAllByLabelText(/loading/i), ...screen.queryAllByText(/loading/i)], {
@@ -43,7 +43,7 @@ const createWrapper = (queryClient?: QueryClient) => {
 
   return function Wrapper(props) {
     return (
-      <MuiPickersUtilsProvider utils={DayJsUtils}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         <SnackbarProvider
           maxSnack={3}
           ref={notistackRef}
@@ -53,7 +53,7 @@ const createWrapper = (queryClient?: QueryClient) => {
             <UserContextProvider loginUrl={EUri.LOGIN}>{props.children}</UserContextProvider>
           </QueryClientProvider>
         </SnackbarProvider>
-      </MuiPickersUtilsProvider>
+      </LocalizationProvider>
     );
   };
 };
@@ -61,7 +61,7 @@ const createWrapper = (queryClient?: QueryClient) => {
 const Wrapper: React.FC<IWrapperProps> = (props) => {
   const testQueryClient = createTestQueryClient();
   return (
-    <MuiPickersUtilsProvider utils={DayJsUtils}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <SnackbarProvider
         maxSnack={3}
         ref={notistackRef}
@@ -73,7 +73,7 @@ const Wrapper: React.FC<IWrapperProps> = (props) => {
           </UserContextProvider>
         </QueryClientProvider>
       </SnackbarProvider>
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 };
 

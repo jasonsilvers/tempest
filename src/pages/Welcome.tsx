@@ -1,7 +1,6 @@
-import Dialog from '@material-ui/core/Dialog';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../repositories/userRepo';
-import { Button } from '../lib/ui';
+import { Button, Dialog } from '../lib/ui';
 import { UpdateUsersOrg } from '../components/UpdateUsersOrg';
 import { useRouter } from 'next/router';
 
