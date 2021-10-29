@@ -138,7 +138,7 @@ const RecordRow: React.FC<{
         <TableData tw={'text-sm text-purple-500 w-16 ml-10 pt-1'}>{trackingItem?.interval} days</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
-            <span tw={'opacity-40 pr-1 pt-1'}>Completed: </span>
+            <span tw={'opacity-40 pt-1'}>Completed: </span>
             <ConditionalDateInput
               onChange={handleCompletionDateChange}
               condition={!!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate}
@@ -152,7 +152,7 @@ const RecordRow: React.FC<{
                 {trackingRecordQuery.data?.completedDate
                   ? dayjs(trackingRecordQuery.data?.completedDate)
                       .add(trackingItem?.interval, 'days')
-                      .format('DD MMM YY')
+                      .format('MMM DD, YYYY')
                   : 'No Date'}
               </span>
             </>

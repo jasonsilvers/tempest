@@ -1,4 +1,3 @@
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import { Organization, Role, User } from '@prisma/client';
 import React, { ChangeEventHandler, useContext, useEffect, useState } from 'react';
 import tw from 'twin.macro';
@@ -7,7 +6,7 @@ import { ranks } from '../../const/ranks';
 import { useOrg } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
-import { Button, IconButton, TextField, Autocomplete } from '../../lib/ui';
+import { Button, IconButton, TextField, Autocomplete, CSSProperties } from '../../lib/ui';
 import { ERole } from '../../const/enums';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 import { UpdateUsersOrg } from '../UpdateUsersOrg';
@@ -16,7 +15,7 @@ import { GroupedRank } from '../../types';
 const Name = tw.h4`text-3xl text-black`;
 const Table = tw.div`text-left mb-6`;
 const Column = tw.div`flex flex-col`;
-const Row = tw.div`flex flex-row`;
+const Row = tw.div`flex flex-row p-1`;
 const Base = tw.div`text-lg mb-1 text-hg pr-5 capitalize`;
 const Rank = tw(Base)`w-24`;
 const Address = tw(Base)``;
@@ -60,6 +59,8 @@ const EditItem: React.FC<{
     return (
       <TextField
         onChange={onChange}
+        variant="filled"
+        size="small"
         label={label}
         name={`${label}_textfield`}
         id={`${label}_textfield`}
@@ -113,6 +114,8 @@ const EditSelect: React.FC<{
         renderInput={(params) => (
           <TextField
             {...params}
+            variant="filled"
+            size="small"
             label={label}
             name={`${label}_textfield`}
             id={`${label}_textfield`}

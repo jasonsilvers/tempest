@@ -4,6 +4,11 @@ module.exports = {
     // Unset client-side javascript that only works server-side
     config.resolve.fallback = { fs: false, module: false };
 
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@mui/styled-engine': '@mui/styled-engine-sc',
+    };
+
     return config;
   },
   async headers() {

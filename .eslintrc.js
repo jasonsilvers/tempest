@@ -42,7 +42,7 @@ const lintReact = {
     'react/react-in-jsx-scope': 'off', // from react: Prevent missing React when using JSX -- turned off for next.js
     'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }], // from react: Restrict file extensions that may contain JSX
     'react/prop-types': 'off', // from react: Prevent missing props validation in a React component definition
-    'react/jsx-props-no-spreading': ['error', { custom: 'ignore' }], // from react: Prevent JSX prop spreading
+    'react/jsx-props-no-spreading': 'off',
     'react/no-unescaped-entities': 'warn', // Turning on to catch possible mistakes
   },
   settings: {

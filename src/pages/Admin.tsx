@@ -14,7 +14,7 @@ function AdminPage() {
     return <div>You do not have access to this page</div>;
   }
   return (
-    <main tw="pr-14 max-width[900px] min-width[720px]">
+    <main tw="pr-14 min-width[1024px]">
       <Card>
         <BasicTabs />
       </Card>
