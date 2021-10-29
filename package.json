@@ -30,7 +30,11 @@
     "jwt-proxy": "jwt-proxy 9000 3000 --silent --jwt user.jwt",
     "db:generate": "prisma generate --schema ./src/prisma/schema.prisma",
     "dcheck": "mkdir -p .dependency-check && dependency-check --project .next --scan package-lock.json --format 'ALL' --out .dependency-check && open ./.dependency-check/dependency-check-report.html",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "preinstall": "npx npm-force-resolutions"
+  },
+  "resolutions": {
+    "shell-quote": "1.7.3"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.14.9",
