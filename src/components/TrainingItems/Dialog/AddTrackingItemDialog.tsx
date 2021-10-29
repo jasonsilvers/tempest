@@ -47,9 +47,6 @@ const AdjustedOutlinedInput: React.FC<OutlinedInputProps> = (props) => (
 
 const Bold = tw.div`font-bold bg-yellow-100`;
 
-//Move the dialog to the left to account for the sidebar
-const Paper = tw.div`w-[900px] ml-80`;
-
 const initialTrackingItemToAdd: TrackingItemToAdd = { title: '', description: '', interval: 0 };
 
 const resolveAttribute = (obj, key) => key.split('.').reduce((prev, curr) => prev?.[curr], obj);
@@ -131,7 +128,6 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   return (
     <Dialog
-      PaperProps={{ component: Paper }}
       open={isOpen}
       onClose={() => {
         handleClose();

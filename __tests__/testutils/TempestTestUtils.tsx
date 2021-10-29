@@ -10,11 +10,23 @@ import userEvent from '@testing-library/user-event';
 import { EUri } from '../../src/const/enums';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import AdapterDateFns from '@mui/lab/AdapterDayjs';
+import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 
 export const waitForLoadingToFinish = () =>
   waitForElementToBeRemoved(() => [...screen.queryAllByLabelText(/loading/i), ...screen.queryAllByText(/loading/i)], {
     timeout: 4000,
   });
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#2D2270',
+    },
+    secondary: {
+      main: '#6A5CBE',
+    },
+  },
+});
 
 const createTestQueryClient = () => {
   const queryClientInit = new QueryClient({
@@ -43,17 +55,21 @@ const createWrapper = (queryClient?: QueryClient) => {
 
   return function Wrapper(props) {
     return (
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <SnackbarProvider
-          maxSnack={3}
-          ref={notistackRef}
-          action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
-        >
-          <QueryClientProvider client={queryClient ? queryClient : testQueryClient}>
-            <UserContextProvider loginUrl={EUri.LOGIN}>{props.children}</UserContextProvider>
-          </QueryClientProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>
+      <ThemeProvider theme={theme}>
+        <StyledEngineProvider injectFirst>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <SnackbarProvider
+              maxSnack={3}
+              ref={notistackRef}
+              action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
+            >
+              <QueryClientProvider client={queryClient ? queryClient : testQueryClient}>
+                <UserContextProvider loginUrl={EUri.LOGIN}>{props.children}</UserContextProvider>
+              </QueryClientProvider>
+            </SnackbarProvider>
+          </LocalizationProvider>
+        </StyledEngineProvider>
+      </ThemeProvider>
     );
   };
 };
@@ -61,19 +77,23 @@ const createWrapper = (queryClient?: QueryClient) => {
 const Wrapper: React.FC<IWrapperProps> = (props) => {
   const testQueryClient = createTestQueryClient();
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <SnackbarProvider
-        maxSnack={3}
-        ref={notistackRef}
-        action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
-      >
-        <QueryClientProvider client={testQueryClient}>
-          <UserContextProvider user={props.user} loginUrl={EUri.LOGIN}>
-            {props.children}
-          </UserContextProvider>
-        </QueryClientProvider>
-      </SnackbarProvider>
-    </LocalizationProvider>
+    <ThemeProvider theme={theme}>
+      <StyledEngineProvider injectFirst>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <SnackbarProvider
+            maxSnack={3}
+            ref={notistackRef}
+            action={(key: string) => <Button onClick={onClickDismiss(key)}>Dismiss</Button>}
+          >
+            <QueryClientProvider client={testQueryClient}>
+              <UserContextProvider user={props.user} loginUrl={EUri.LOGIN}>
+                {props.children}
+              </UserContextProvider>
+            </QueryClientProvider>
+          </SnackbarProvider>
+        </LocalizationProvider>
+      </StyledEngineProvider>
+    </ThemeProvider>
   );
 };
 

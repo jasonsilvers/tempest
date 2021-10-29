@@ -9,14 +9,14 @@ import { EUri } from '../../const/enums';
 import { useOrgs } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
-import { Button, DialogContent, DialogTitle, MenuItem, Select } from '../../lib/ui';
+import { Button, DialogContent, DialogTitle, MenuItem, Select, SelectChangeEvent } from '../../lib/ui';
 import { UserWithAll } from '../../repositories/userRepo';
 import { RolesDTO, UsersDTO } from '../../types';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 
 const Data = tw.div`font-light text-gray-400`;
-type RoleFormEvent = React.ChangeEvent<{ value: number }>;
-type OrgFormEvent = React.ChangeEvent<{ value: string }>;
+type RoleFormEvent = SelectChangeEvent<number>;
+type OrgFormEvent = SelectChangeEvent<string>;
 
 const Users = () => {
   const [modalState, setModalState] = useState({ userId: null, open: false });
@@ -112,6 +112,7 @@ const Users = () => {
                 <Select
                   onChange={(event: OrgFormEvent) => updateUsersOrg(event, user)}
                   tw="text-gray-400"
+                  size="small"
                   value={user.organizationId}
                 >
                   {orgsListQuery.data.map((org) => (
@@ -130,8 +131,9 @@ const Users = () => {
               ) : (
                 <div>
                   <Select
-                    onChange={(event: RoleFormEvent) => updateUsersRole(event, user)}
+                    onChange={(event) => updateUsersRole(event, user)}
                     tw="text-gray-400"
+                    size="small"
                     value={user.role?.id}
                   >
                     {rolesListQuery.data.map((role) => (

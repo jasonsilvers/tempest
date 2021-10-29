@@ -1,8 +1,7 @@
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
-import tw from 'twin.macro';
-import styled from 'styled-components';
+import tw, { styled } from 'twin.macro';
 import MuiDialog from '@mui/material/Dialog';
 import MuiDialogTitle from '@mui/material/DialogTitle';
 import MuiDialogContent from '@mui/material/DialogContent';
@@ -30,6 +29,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import FormControl from '@mui/material/FormControl';
 import { DialogContentText, OutlinedInput, OutlinedInputProps } from '@mui/material';
 import { MenuItem, Select } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { CSSProperties } from '@mui/styles/withStyles';
 import Drawer, { DrawerProps } from '@mui/material/Drawer';
 
@@ -123,8 +123,8 @@ const TempestDatePicker = styled((props) => (
     variant="inline"
     aria-label="tempest-date-picker"
     renderInput={({ inputRef, inputProps, InputProps }) => (
-      <div tw="flex items-center border border-gray-200 rounded px-1 h-8">
-        <input tw="w-24 bg-white text-gray-600" ref={inputRef} {...inputProps} disabled />
+      <div tw="flex items-center border border-gray-200 rounded px-2 h-8">
+        <input tw="w-20 bg-white text-gray-600" ref={inputRef} {...inputProps} disabled />
         {InputProps?.endAdornment}
       </div>
     )}
@@ -133,7 +133,12 @@ const TempestDatePicker = styled((props) => (
     }}
     {...props}
   />
-))``;
+))`
+  & .MuiIconButton-root {
+    height: 0.5em;
+    width: 0.75em;
+  }
+`;
 
 const TempestDeleteIcon = tw(DeleteIcon)`text-xl`;
 
@@ -176,4 +181,4 @@ export {
   DataGrid,
 };
 
-export type { TempestModalProps, OutlinedInputProps, CSSProperties };
+export type { TempestModalProps, OutlinedInputProps, CSSProperties, SelectChangeEvent };

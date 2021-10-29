@@ -11,12 +11,8 @@ export const usersQueryKeys = {
   member: (id: string) => ['member', id],
 };
 
-type SortOrder = 'ASC' | 'DESC';
-const sortUsers = (userList: UserWithAll[], order: SortOrder = 'ASC') => {
-  if (order === 'ASC') {
-    return userList.sort((userA, userB) => (userA.lastName >= userB.lastName ? 1 : -1));
-  }
-  return userList.sort((userA, userB) => (userA.lastName > userB.lastName ? -1 : 1));
+const sortUsers = (userList: UserWithAll[]) => {
+  return userList.sort((userA, userB) => (userA.lastName >= userB.lastName ? 1 : -1));
 };
 
 const useUsers = () => {

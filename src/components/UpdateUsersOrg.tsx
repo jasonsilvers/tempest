@@ -62,6 +62,8 @@ export const UpdateUsersOrg = ({
       renderInput={(params) => (
         <TextField
           {...params}
+          variant="filled"
+          size="small"
           label={label}
           name={`${label}_textfield`}
           id={`${label}_textfield`}
