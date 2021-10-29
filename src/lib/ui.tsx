@@ -14,7 +14,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Fab from '@mui/material/Fab';
 import ToolTip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
-import SearchBar from '@snekcode/mui-search-bar';
 import Menu from '@mui/material/Menu';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -173,7 +172,6 @@ export {
   TempestDatePicker,
   TempestDeleteIcon,
   Zoom,
-  SearchBar,
   Box,
   Tab,
   Tabs,
