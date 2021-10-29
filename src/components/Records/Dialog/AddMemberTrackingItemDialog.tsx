@@ -131,16 +131,6 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   return (
     <Dialog PaperProps={{ component: Paper }} onClose={handleClose} open aria-labelledby="ammembertracking-dialog">
       {isSaving ? <LoadingOverlay /> : null}
-      {/* <div tw="relative">
-        <Button onClick={handleClose} size="medium" color="secondary" tw="absolute right-2 top-3">
-          <Close/>
-        </Button>
-      </div> */}
-      {/* <div>
-        <Button onClick={handleClose} color="secondary" tw="float-right top-3">
-          <Close />
-        </Button>
-      </div> */}
       <DialogActions>
         <Button onClick={handleClose} color="secondary" tw="absolute float-right top-3">
           <Close />
