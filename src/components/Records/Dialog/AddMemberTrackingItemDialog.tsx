@@ -136,12 +136,17 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           <Close/>
         </Button>
       </div> */}
-      <div tw="relative">
-        <Button onClick={handleClose} size="medium" color="secondary" tw="absolute right-0 top-0">
+      {/* <div>
+        <Button onClick={handleClose} color="secondary" tw="float-right top-3">
           <Close />
         </Button>
-      </div>
-      <DialogTitle> Add New Training</DialogTitle>
+      </div> */}
+      <DialogActions>
+        <Button onClick={handleClose} color="secondary" tw="absolute float-right top-3">
+          <Close />
+        </Button>
+      </DialogActions>
+      <DialogTitle> Add New Training </DialogTitle>
       <DialogContent>
         <p tw="text-xs pb-4">
           Select one or more training from the below dropdown and insert completion date. If completion date is unknown,
