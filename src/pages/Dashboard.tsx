@@ -1,18 +1,22 @@
-import { getUsersWithMemberTrackingRecords } from '../repositories/userRepo';
+import { getUsersWithMemberTrackingRecords, UserWithAll } from '../repositories/userRepo';
 import tw from 'twin.macro';
-import { LoadingSpinner, TempestPopMenu, Card } from '../lib/ui';
-import { CancelIcon, CheckCircleIcon, HighlightOffIcon, WarningIcon } from '../assets/Icons';
+import { TempestPopMenu, Card, TextField, InputAdornment, Autocomplete } from '../lib/ui';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import { useUsers } from '../hooks/api/users';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useReducer, useState } from 'react';
 import { getStatus } from '../utils/status';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
 import { removeOldCompletedRecords } from '../utils';
 import dayjs from 'dayjs';
-import { MemberTrackingRecord } from '.prisma/client';
+import { MemberTrackingRecord, Organization } from '.prisma/client';
 import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
+import { Actions, AllCounts, StatusCounts, UserCounts } from '../components/Dashboard/Types';
+import { MemberCountCards } from '../components/Dashboard/MemberCountCards';
+import { SearchIcon } from '../assets/Icons';
+import { EStatus } from '../components/Dashboard/Enums';
+import { useOrgs } from '../hooks/api/organizations';
 
 const UserTable = tw.div``;
 const UserTableHeader = tw.div`flex text-sm text-gray-400 mb-4 pl-2 border-b border-gray-400`;
@@ -22,7 +26,6 @@ const UserTableRow = ({ isOdd, children }: { isOdd: boolean; children: React.Rea
 
 const UserTableColumn = tw.div``;
 
-type StatusPillVariantType = 'Done' | 'Overdue' | 'Upcoming' | 'None';
 const StatusPillVariant = {
   Done: {
     color: tw`bg-[#6FD9A6]`,
@@ -42,14 +45,14 @@ const StatusPillVariant = {
   },
 };
 
-const initialCounts = {
+const initialCounts: StatusCounts = {
   All: 0,
   Overdue: 0,
   Upcoming: 0,
   Done: 0,
 };
 
-const StatusPill = ({ variant, count }: { variant: StatusPillVariantType; count: number }) => {
+const StatusPill = ({ variant, count }: { variant: EStatus; count: number }) => {
   return (
     <div
       css={[
@@ -63,17 +66,6 @@ const StatusPill = ({ variant, count }: { variant: StatusPillVariantType; count:
   );
 };
 
-type StatusCounts = typeof initialCounts;
-
-type AllCounts = {
-  All: number;
-  Overdue: number;
-  Upcoming: number;
-  Done: number;
-  [key: string]: StatusCounts | number;
-};
-
-type UserCounts = Omit<StatusCounts, 'All'>;
 const determineMemberCounts = (
   mti: MemberTrackingItemWithAll,
   mtr: MemberTrackingRecord,
@@ -112,13 +104,176 @@ const determineOverallUserCounts = (userCounts: UserCounts, newCounts: StatusCou
   }
 };
 
+interface IDashboardState {
+  userList: UserWithAll[];
+  filteredUserList: UserWithAll[];
+  counts: StatusCounts;
+  nameFilter: string;
+  statusFilter: EStatus;
+  organizationIdFilter: string;
+}
+
+interface IFilters {
+  nameFilter: string;
+  statusFilter: EStatus;
+  OrganizationIdFilter: string;
+}
+
+const applyNameFilter = (userList: UserWithAll[], nameFilter: string) => {
+  if (nameFilter === '') {
+    return userList;
+  }
+
+  return userList.filter((user) => {
+    return user.firstName.toLowerCase().includes(nameFilter) || user.lastName.toLowerCase().includes(nameFilter);
+  });
+};
+
+const applyStatusFilter = (userList: UserWithAll[], statusFilter: EStatus, counts: StatusCounts) => {
+  if (statusFilter === EStatus.ALL) {
+    return userList;
+  }
+
+  return userList.filter((user) => {
+    const userCounts = counts[user.id];
+
+    switch (statusFilter) {
+      case EStatus.OVERDUE:
+        if (userCounts.Overdue > 0) {
+          return true;
+        }
+
+        return false;
+
+      case EStatus.UPCOMING:
+        if (userCounts.Upcoming > 0) {
+          return true;
+        }
+
+        return false;
+
+      case EStatus.DONE:
+        if (userCounts.Done > 0 && userCounts.OverDue === 0 && userCounts.Upcoming === 0) {
+          return true;
+        }
+
+        return false;
+      default:
+        return false;
+    }
+  });
+};
+
+const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: string) => {
+  if (!organizationIdFilter) {
+    return userList;
+  }
+
+  return userList.filter((user) => {
+    return user.organizationId === organizationIdFilter;
+  });
+};
+
+const applyFilters = (userList: UserWithAll[], filters: IFilters, counts: StatusCounts) => {
+  return applyNameFilter(
+    applyStatusFilter(applyOrganizationFilter(userList, filters.OrganizationIdFilter), filters.statusFilter, counts),
+    filters.nameFilter
+  );
+};
+
+const filterReducer = (state: IDashboardState, action: Actions): IDashboardState => {
+  switch (action.type) {
+    case 'filterByName': {
+      return {
+        ...state,
+        nameFilter: action.nameFilter,
+        filteredUserList: applyFilters(
+          state.userList,
+          {
+            nameFilter: action.nameFilter,
+            OrganizationIdFilter: state.organizationIdFilter,
+            statusFilter: state.statusFilter,
+          },
+          state.counts
+        ),
+      };
+    }
+    case 'filterByStatus': {
+      return {
+        ...state,
+        statusFilter: action.statusFilter,
+        filteredUserList: applyFilters(
+          state.userList,
+          {
+            nameFilter: state.nameFilter,
+            OrganizationIdFilter: state.organizationIdFilter,
+            statusFilter: action.statusFilter,
+          },
+          state.counts
+        ),
+      };
+    }
+    case 'filterByOrganization': {
+      return {
+        ...state,
+        organizationIdFilter: action.organizationIdFilter,
+        filteredUserList: applyFilters(
+          state.userList,
+          {
+            nameFilter: state.nameFilter,
+            OrganizationIdFilter: action.organizationIdFilter,
+            statusFilter: state.statusFilter,
+          },
+          state.counts
+        ),
+      };
+    }
+    case 'setUserList': {
+      return {
+        ...state,
+        userList: action.userList,
+        filteredUserList: applyFilters(
+          action.userList,
+          {
+            nameFilter: state.nameFilter,
+            OrganizationIdFilter: state.organizationIdFilter,
+            statusFilter: state.statusFilter,
+          },
+          state.counts
+        ),
+      };
+    }
+
+    case 'setCounts': {
+      return {
+        ...state,
+        counts: action.counts,
+      };
+    }
+
+    default:
+      return state;
+  }
+};
+
 const DashboardPage: React.FC = () => {
   const { user: loggedInUser, permissionCheck, isLoading } = usePermissions();
-
   const users = useUsers();
-  const [counts, setCounts] = useState(initialCounts);
+  const [dashboardState, dispatch] = useReducer(filterReducer, {
+    userList: [],
+    filteredUserList: [],
+    counts: initialCounts,
+    nameFilter: '',
+    organizationIdFilter: null,
+    statusFilter: EStatus.ALL,
+  });
+  const orgsQuery = useOrgs();
 
   const permission = permissionCheck(loggedInUser?.role?.name, EFuncAction.READ_ANY, EResource.USER);
+
+  useEffect(() => {
+    dispatch({ type: 'setUserList', userList: users.data });
+  }, [users.data]);
 
   useEffect(() => {
     const newCounts = { ...initialCounts };
@@ -140,7 +295,7 @@ const DashboardPage: React.FC = () => {
       determineOverallUserCounts(userCounts, newCounts);
     });
 
-    setCounts(newCounts);
+    dispatch({ type: 'setCounts', counts: newCounts });
   }, [users?.data]);
 
   if (isLoading) {
@@ -154,42 +309,52 @@ const DashboardPage: React.FC = () => {
   return (
     <main tw="pr-14 max-width[900px] min-width[720px]">
       <div tw="flex space-x-8 pb-5">
-        <Card tw="h-24 flex-grow border-2 border-primary w-24">
-          <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
-          <h1 tw="text-2xl pl-1 underline">All</h1>
-
-          <div tw="flex items-end">
-            <HighlightOffIcon fontSize="large" tw="text-primary invisible" />
-            <h2 tw="ml-auto text-5xl text-primary">{counts.All}</h2>
-          </div>
-        </Card>
-        <Card tw="h-24 flex-grow bg-[#FB7F7F] w-24">
-          <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
-          <h1 tw="text-2xl text-white pl-1">Overdue</h1>
-
-          <div tw="flex items-end">
-            <CancelIcon fontSize="large" tw="text-white" />
-            <h2 tw="ml-auto text-5xl text-white">{counts.Overdue}</h2>
-          </div>
-        </Card>
-        <Card tw="h-24 flex-grow bg-[#F6B83F] w-24">
-          <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
-          <h1 tw="text-white text-2xl pl-1">Upcoming</h1>
-
-          <div tw="flex items-end">
-            <WarningIcon fontSize="large" tw="text-white" />
-            <h2 tw="ml-auto text-5xl text-white">{counts.Upcoming}</h2>
-          </div>
-        </Card>
-        <Card tw="h-24 flex-grow bg-[#6FD9A6] w-24">
-          <div tw="flex fixed right-2">{users.isLoading ? <LoadingSpinner size={'10px'} /> : null}</div>
-          <h1 tw="text-white text-2xl pl-1">Done</h1>
-
-          <div tw="flex items-end">
-            <CheckCircleIcon fontSize="large" tw="text-white" />
-            <h2 tw="ml-auto text-5xl text-white">{counts.Done}</h2>
-          </div>
-        </Card>
+        <MemberCountCards
+          isLoading={users?.isLoading}
+          counts={dashboardState.counts}
+          variant={dashboardState.statusFilter}
+          dispatch={dispatch}
+        />
+      </div>
+      <div tw="flex space-x-2 pb-5">
+        <div tw="w-1/2">
+          <TextField
+            tw="bg-white rounded w-full"
+            id="SearchBar"
+            label="Search"
+            value={dashboardState.nameFilter}
+            onChange={(event) => dispatch({ type: 'filterByName', nameFilter: event.target.value })}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </div>
+        <div tw="w-1/2">
+          <Autocomplete
+            options={orgsQuery.data ?? []}
+            getOptionLabel={(option) => option.name}
+            onChange={(event, value: Organization) =>
+              dispatch({ type: 'filterByOrganization', organizationIdFilter: value?.id })
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                tw="w-full bg-white rounded"
+                variant="outlined"
+                label="Organizations"
+                name="organizations_textfield"
+                id="organizations_textfield"
+                InputProps={{
+                  ...params.InputProps,
+                }}
+              />
+            )}
+          />
+        </div>
       </div>
 
       <Card tw="p-5">
@@ -200,8 +365,8 @@ const DashboardPage: React.FC = () => {
             <UserTableColumn tw="w-1/6 flex text-lg justify-center">Status</UserTableColumn>
             <UserTableColumn tw="ml-auto mr-4 text-lg">Actions</UserTableColumn>
           </UserTableHeader>
-
-          {users.data?.map((user, index) => (
+          {dashboardState.filteredUserList.length === 0 ? 'No Members Found' : ''}
+          {dashboardState.filteredUserList?.map((user, index) => (
             <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-base mb-2 flex">
               <UserTableColumn tw="w-1/3">
                 {`${user.lastName}, ${user.firstName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
@@ -209,9 +374,9 @@ const DashboardPage: React.FC = () => {
               <UserTableColumn tw="w-1/6">{user.rank}</UserTableColumn>
               <UserTableColumn tw="w-1/6 flex justify-center">
                 <div tw="flex space-x-2">
-                  <StatusPill variant="Overdue" count={counts[user.id]?.Overdue} />
-                  <StatusPill variant="Upcoming" count={counts[user.id]?.Upcoming} />
-                  <StatusPill variant="Done" count={counts[user.id]?.Done} />
+                  <StatusPill variant={EStatus.OVERDUE} count={dashboardState.counts[user.id]?.Overdue} />
+                  <StatusPill variant={EStatus.UPCOMING} count={dashboardState.counts[user.id]?.Upcoming} />
+                  <StatusPill variant={EStatus.DONE} count={dashboardState.counts[user.id]?.Done} />
                 </div>
               </UserTableColumn>
               <UserTableColumn tw="ml-auto mr-6">
