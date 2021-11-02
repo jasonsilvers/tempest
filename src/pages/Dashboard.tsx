@@ -1,22 +1,22 @@
-import { getUsersWithMemberTrackingRecords, UserWithAll } from '../repositories/userRepo';
-import tw from 'twin.macro';
-import { TempestPopMenu, Card, TextField, InputAdornment, Autocomplete } from '../lib/ui';
+import { MemberTrackingRecord, Organization } from '.prisma/client';
+import dayjs from 'dayjs';
+import React, { useEffect, useReducer } from 'react';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
-import { useUsers } from '../hooks/api/users';
-import React, { useEffect, useMemo, useReducer, useState } from 'react';
-import { getStatus } from '../utils/status';
-import { usePermissions } from '../hooks/usePermissions';
-import { EFuncAction, EResource } from '../const/enums';
-import { removeOldCompletedRecords } from '../utils';
-import dayjs from 'dayjs';
-import { MemberTrackingRecord, Organization } from '.prisma/client';
-import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
-import { Actions, AllCounts, StatusCounts, UserCounts } from '../components/Dashboard/Types';
-import { MemberCountCards } from '../components/Dashboard/MemberCountCards';
+import tw from 'twin.macro';
 import { SearchIcon } from '../assets/Icons';
 import { EStatus } from '../components/Dashboard/Enums';
+import { MemberCountCards } from '../components/Dashboard/MemberCountCards';
+import { Actions, AllCounts, StatusCounts, UserCounts } from '../components/Dashboard/Types';
+import { EFuncAction, EResource } from '../const/enums';
 import { useOrgs } from '../hooks/api/organizations';
+import { useUsers } from '../hooks/api/users';
+import { usePermissions } from '../hooks/usePermissions';
+import { Autocomplete, Card, InputAdornment, TempestPopMenu, TextField } from '../lib/ui';
+import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
+import { getUsersWithMemberTrackingRecords, UserWithAll } from '../repositories/userRepo';
+import { removeOldCompletedRecords } from '../utils';
+import { getStatus } from '../utils/status';
 
 const UserTable = tw.div``;
 const UserTableHeader = tw.div`flex text-sm text-gray-400 mb-4 pl-2 border-b border-gray-400`;
@@ -99,7 +99,7 @@ const determineOverallUserCounts = (userCounts: UserCounts, newCounts: StatusCou
     newCounts.Upcoming = newCounts.Upcoming + 1;
   }
 
-  if (userCounts.Upcoming === 0 && userCounts.Overdue === 0 && userCounts.Done > 1) {
+  if (userCounts.Upcoming === 0 && userCounts.Overdue === 0 && userCounts.Done > 0) {
     newCounts.Done = newCounts.Done + 1;
   }
 };
@@ -365,7 +365,7 @@ const DashboardPage: React.FC = () => {
             <UserTableColumn tw="w-1/6 flex text-lg justify-center">Status</UserTableColumn>
             <UserTableColumn tw="ml-auto mr-4 text-lg">Actions</UserTableColumn>
           </UserTableHeader>
-          {dashboardState.filteredUserList.length === 0 ? 'No Members Found' : ''}
+          {dashboardState.filteredUserList?.length === 0 ? 'No Members Found' : ''}
           {dashboardState.filteredUserList?.map((user, index) => (
             <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-base mb-2 flex">
               <UserTableColumn tw="w-1/3">

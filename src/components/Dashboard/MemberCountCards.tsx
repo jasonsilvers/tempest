@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { CancelIcon, CheckCircleIcon, HighlightOffIcon, WarningIcon } from '../../assets/Icons';
 import { Card, LoadingSpinner } from '../../lib/ui';
 import { Actions, StatusCounts } from './Types';
