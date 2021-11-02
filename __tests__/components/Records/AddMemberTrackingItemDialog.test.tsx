@@ -189,6 +189,7 @@ test('should be able to add/delete items to list', async () => {
 });
 
 test('should be able find item by typing in input', async () => {
+  jest.setTimeout(10000);
   server.use(trackingItemsGet(trackingItemsList));
 
   const { getByRole, findAllByRole, getByText } = render(
