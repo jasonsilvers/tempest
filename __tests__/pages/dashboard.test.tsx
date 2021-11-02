@@ -1,4 +1,17 @@
+import { UserContextProvider } from '@tron/nextjs-auth-p1';
+import dayjs from 'dayjs';
+import { rest } from 'msw';
+import { SnackbarProvider } from 'notistack';
+import React from 'react';
+import 'whatwg-fetch';
+import { QueryProvider } from '../../src/components/QueryProvider';
+import { ERole, EUri } from '../../src/const/enums';
+import { Button } from '../../src/lib/ui';
 import Dashboard, { getStaticProps } from '../../src/pages/Dashboard';
+import { getUsersWithMemberTrackingRecords, LoggedInUser } from '../../src/repositories/userRepo';
+import { bobJones } from '../testutils/mocks/fixtures';
+import { server } from '../testutils/mocks/msw';
+import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import {
   render,
   rtlRender,
@@ -6,21 +19,9 @@ import {
   waitForElementToBeRemoved,
   waitForLoadingToFinish,
   within,
+  userEvent,
+  fireEvent,
 } from '../testutils/TempestTestUtils';
-import { QueryProvider } from '../../src/components/QueryProvider';
-import { getUsersWithMemberTrackingRecords, LoggedInUser } from '../../src/repositories/userRepo';
-import { mockMethodAndReturn } from '../testutils/mocks/repository';
-import { rest } from 'msw';
-import { EUri, ERole } from '../../src/const/enums';
-import { bobJones } from '../testutils/mocks/fixtures';
-import { server } from '../testutils/mocks/msw';
-
-import 'whatwg-fetch';
-import React from 'react';
-import { SnackbarProvider } from 'notistack';
-import { Button } from '../../src/lib/ui';
-import { UserContextProvider } from '@tron/nextjs-auth-p1';
-import dayjs from 'dayjs';
 
 jest.mock('../../src/repositories/userRepo');
 
@@ -165,6 +166,17 @@ beforeEach(() => {
     // set up tracking items to be returned
     rest.get(EUri.USERS, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(users));
+    }),
+    rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          organizations: [
+            { id: 'f50d7142-9150-4b6a-b87f-54e30be46972', name: '15th MDG', parentId: null },
+            { id: '2', name: 'org2', parentId: null },
+          ],
+        })
+      );
     })
   );
 });
@@ -218,6 +230,71 @@ it('should show correct counts', async () => {
   expect(within(allContainer.parentElement).getByText('2')).toBeInTheDocument();
   expect(within(upcomingContainer.parentElement).getByText('0')).toBeInTheDocument();
   expect(within(overdueContainer.parentElement).getByText('1')).toBeInTheDocument();
+});
+
+it('should filter by name', async () => {
+  const { getByText, queryByText, getByLabelText } = render(<Dashboard />);
+
+  await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+
+  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
+
+  expect(getByText(/clark, sandra/i)).toBeInTheDocument();
+  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+
+  const searchInput = getByLabelText(/search/i);
+
+  userEvent.type(searchInput, 'smith');
+  expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
+  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+});
+
+it('should filter by organization', async () => {
+  const { getByText, queryByText, getByLabelText } = render(<Dashboard />);
+
+  await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+
+  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
+
+  expect(getByText(/clark, sandra/i)).toBeInTheDocument();
+  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+
+  const searchInput = getByLabelText(/organizations/i);
+
+  userEvent.type(searchInput, '15');
+  fireEvent.click(getByText(/15th mdg/i));
+  expect(getByText(/clark, sandra/i)).toBeInTheDocument();
+  expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
+});
+
+it('should filter by Status', async () => {
+  const { getByText, queryByText } = render(<Dashboard />);
+
+  await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+
+  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
+
+  expect(getByText(/clark, sandra/i)).toBeInTheDocument();
+  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+
+  fireEvent.click(getByText(/overdue/i));
+  expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
+  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+
+  fireEvent.click(getByText(/upcoming/i));
+  expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
+  expect(queryByText(/smith, joe/i)).toBeInTheDocument();
+
+  fireEvent.click(getByText(/done/i));
+  expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
+  expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
+
+  fireEvent.click(getByText(/all/i));
+  expect(queryByText(/clark, sandra/i)).toBeInTheDocument();
+  expect(queryByText(/smith, joe/i)).toBeInTheDocument();
 });
 
 it('should show error on query failure', async () => {

@@ -152,7 +152,7 @@ const RecordRow: React.FC<{
                 {trackingRecordQuery.data?.completedDate
                   ? dayjs(trackingRecordQuery.data?.completedDate)
                       .add(trackingItem?.interval, 'days')
-                      .format('MMM DD, YYYY')
+                      .format('MMM D, YYYY')
                   : 'No Date'}
               </span>
             </>

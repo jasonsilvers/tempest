@@ -118,7 +118,7 @@ describe('Member role', () => {
     const trackingItemName = 'Fire Extinguisher';
 
     //This tracking record is used in (should complete record and replace the old one)
-    cy.addMemberTrackingRecord(trackingItemName, getToday(2));
+    cy.addMemberTrackingRecord(trackingItemName, getToday(1));
     cy.findByRole('button', { name: 'signature_button' }).click();
   });
   it('should not be able to delete record if signed by monitor - part 2', () => {
@@ -130,7 +130,7 @@ describe('Member role', () => {
     cy.loginAsMember();
     cy.findByRole('button', { name: 'signature_button' }).click();
 
-    const oldDate = getToday(2);
+    const oldDate = getToday(1);
     const date = getToday();
 
     cy.findByText(date).should('exist');

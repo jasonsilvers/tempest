@@ -12,7 +12,7 @@ const CompletedDate = tw.div`pt-1`;
 
 const ConditionalDateInput: React.FC<IConditionalDateInput> = ({ dateValue, condition, onChange }) => {
   if (condition) {
-    return <CompletedDate>{dayjs(dateValue).format('MMM DD, YYYY')}</CompletedDate>;
+    return <CompletedDate>{dayjs(dateValue).format('MMM D, YYYY')}</CompletedDate>;
   } else
     return (
       <TempestDatePicker
