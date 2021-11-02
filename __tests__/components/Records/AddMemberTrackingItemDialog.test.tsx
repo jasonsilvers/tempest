@@ -3,7 +3,6 @@ import {
   render,
   waitFor,
   waitForElementToBeRemoved,
-  userEvent,
   createWrapper,
   rtlRender,
 } from '../../testutils/TempestTestUtils';
