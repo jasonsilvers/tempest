@@ -211,12 +211,6 @@ test('should be able find item by typing in input', async () => {
   const selectedTrackingItem = getByText(/supervisor safety training/i);
 
   expect(selectedTrackingItem).toBeInTheDocument;
-
-  const selectedTrackingItemDeletButton = getByRole('button', { name: 'tracking-item-delete-button' });
-
-  fireEvent.click(selectedTrackingItemDeletButton);
-
-  expect(selectedTrackingItem).not.toBeInTheDocument();
 });
 
 test('should not allow duplicate memberTrackingRecords in progress', async () => {
