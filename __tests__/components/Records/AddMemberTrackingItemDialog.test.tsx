@@ -160,6 +160,30 @@ const trackingItemAndRecordPost = () =>
     );
   });
 
+test('should be able find item by typing in input', async () => {
+  server.use(trackingItemsGet(trackingItemsList));
+
+  const { getByRole, findAllByRole, getByText } = render(
+    <AddMemberTrackingItemDialog handleClose={() => {}} forMemberId={testTrainee.id} /> // eslint-disable-line
+  );
+
+  await waitForElementToBeRemoved(() => getByRole('progressbar'));
+
+  const trackingItemTrigger = getByRole('textbox');
+
+  userEvent.type(trackingItemTrigger, 'supervisor safety training');
+
+  const options = await findAllByRole('option');
+
+  expect(options.length).toBe(1);
+
+  fireEvent.click(options[0]);
+
+  const selectedTrackingItem = getByText(/supervisor safety training/i);
+
+  expect(selectedTrackingItem).toBeInTheDocument;
+});
+
 test('should be able to add/delete items to list', async () => {
   server.use(trackingItemsGet(trackingItemsList));
 
@@ -186,31 +210,6 @@ test('should be able to add/delete items to list', async () => {
   fireEvent.click(selectedTrackingItemDeletButton);
 
   expect(selectedTrackingItem).not.toBeInTheDocument();
-});
-
-test('should be able find item by typing in input', async () => {
-  jest.setTimeout(10000);
-  server.use(trackingItemsGet(trackingItemsList));
-
-  const { getByRole, findAllByRole, getByText } = render(
-    <AddMemberTrackingItemDialog handleClose={() => {}} forMemberId={testTrainee.id} /> // eslint-disable-line
-  );
-
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
-
-  const trackingItemTrigger = getByRole('textbox');
-
-  userEvent.type(trackingItemTrigger, 'supervisor safety training');
-
-  const options = await findAllByRole('option');
-
-  expect(options.length).toBe(1);
-
-  fireEvent.click(options[0]);
-
-  const selectedTrackingItem = getByText(/supervisor safety training/i);
-
-  expect(selectedTrackingItem).toBeInTheDocument;
 });
 
 test('should not allow duplicate memberTrackingRecords in progress', async () => {
