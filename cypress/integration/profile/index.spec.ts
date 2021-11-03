@@ -77,7 +77,7 @@ describe('Member role', () => {
     cy.findByText(/clark, sandra/i)
       .parent()
       .within((elem) => {
-        cy.findByRole('button', { name: 'member-popup-menu' }).click();
+        cy.findByRole('button', { name: /member-popup-menu/i }).click();
         cy.focused().click();
       });
     const trackingItemName = 'Fire Extinguisher';

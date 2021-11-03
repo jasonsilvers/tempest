@@ -62,7 +62,7 @@ test('should open and close dialog', async () => {
   const addButton = getByRole('button', { name: /create/i });
   expect(addButton).toBeDisabled();
 
-  const closeButton = getByRole('button', { name: /close/i });
+  const closeButton = getByRole('button', { name: /dialog-close-button/i });
   fireEvent.click(closeButton);
 
   await waitForElementToBeRemoved(() => getByText(/create new training/i));

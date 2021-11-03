@@ -2,12 +2,13 @@ import TrackingItemPage, { getStaticProps } from '../../src/pages/Trackingitems'
 import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
 import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';
-import { ERole, EUri, TrackingItemsDTO } from '../../src/const/enums';
+import { ERole, EUri } from '../../src/const/enums';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { bobJones } from '../testutils/mocks/fixtures';
 import { DefaultRequestBody } from 'msw';
 import prisma from '../setup/mockedPrisma';
 import { TrackingItem } from '@prisma/client';
+import { TrackingItemsDTO } from '../../src/types/index';
 
 beforeAll(() => {
   server.listen({
@@ -171,7 +172,7 @@ test('should open then close the dialog box', async () => {
   const button = getByRole('button', { name: '+ Create New Training' }) as HTMLButtonElement;
   fireEvent.click(button);
   expect(getByText(/Please create the training title/i)).toBeInTheDocument();
-  fireEvent.click(getByRole('button', { name: /Close/i }));
+  fireEvent.click(getByRole('button', { name: /dialog-close-button/i }));
   await waitForElementToBeRemoved(() => queryByText(/Please create the training title/i));
   expect(queryByText(/Please create the training title/i)).toBeFalsy();
 });

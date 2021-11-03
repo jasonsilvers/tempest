@@ -11,6 +11,7 @@ import {
   OutlinedInputProps,
   FormControl,
   Close,
+  IconButton,
 } from '../../../lib/ui';
 import tw from 'twin.macro';
 import { useAddTrackingItem, useTrackingItems } from '../../../hooks/api/trackingItem';
@@ -141,9 +142,14 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
     >
       {isSaving || isLoading ? <LoadingOverlay /> : null}
       <DialogActions>
-        <Button onClick={handleClose} color="secondary" tw="absolute float-right top-3">
+        <IconButton
+          onClick={handleClose}
+          aria-label={`dialog-close-button`}
+          color="secondary"
+          tw="absolute float-right top-2"
+        >
           <Close />
-        </Button>
+        </IconButton>
       </DialogActions>
       <DialogTitle>Create New Training</DialogTitle>
       <DialogContent tw="min-height[220px]">
