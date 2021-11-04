@@ -8,6 +8,6 @@ node timeout.js
 # npx prisma migrate deploy
 
 # For Staging ONLY will reset the database and apply seed. 
-prisma migrate reset --force
+npx prisma migrate reset --force
 
 node_modules/.bin/next start -p 8080
