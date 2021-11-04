@@ -1,3 +1,5 @@
+import { getToday } from '../../support/utils';
+
 describe('Member role', () => {
   it('should show No items', () => {
     cy.loginAsMember();
@@ -9,7 +11,7 @@ describe('Member role', () => {
     cy.loginAsMember();
 
     const trackingItemName = 'Fire Extinguisher';
-    cy.addMemberTrackingRecord(trackingItemName, 1, '1');
+    cy.addMemberTrackingRecord(trackingItemName, getToday());
 
     cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).should('exist');
@@ -82,7 +84,7 @@ describe('Member role', () => {
       });
     const trackingItemName = 'Fire Extinguisher';
 
-    cy.addMemberTrackingRecord(trackingItemName, 1, '1');
+    cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByRole('button', { name: 'signature_button' }).click();
 
     cy.findByRole('alert').should('be.visible');
@@ -98,7 +100,7 @@ describe('Member role', () => {
     cy.loginAsMember();
     const trackingItemName = 'Fire Extinguisher';
 
-    cy.addMemberTrackingRecord(trackingItemName, 1, '3');
+    cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByText(/fire extinguisher/i).should('be.visible');
     cy.findAllByRole('button', { name: /delete-tracking-record/i }).click({ multiple: true });
     cy.contains(/fire extinguisher/i).should('not.exist');
@@ -115,7 +117,8 @@ describe('Member role', () => {
       });
     const trackingItemName = 'Fire Extinguisher';
 
-    cy.addMemberTrackingRecord(trackingItemName, 1, '1');
+    //This tracking record is used in (should complete record and replace the old one)
+    cy.addMemberTrackingRecord(trackingItemName, getToday(1));
     cy.findByRole('button', { name: 'signature_button' }).click();
   });
   it('should not be able to delete record if signed by monitor - part 2', () => {
@@ -127,14 +130,11 @@ describe('Member role', () => {
     cy.loginAsMember();
     cy.findByRole('button', { name: 'signature_button' }).click();
 
-    const date = new Date();
+    const oldDate = getToday(1);
+    const date = getToday();
 
-    const monthShort = date.toLocaleString('default', { month: 'short' });
-    date.setMonth(date.getMonth() - 1);
-    const lastMonthShort = date.toLocaleString('default', { month: 'short' });
-
-    cy.findByText(`01 ${lastMonthShort} 21`).should('exist');
-    cy.findByText(`01 ${monthShort} 21`).should('not.exist');
+    cy.findByText(date).should('exist');
+    cy.findByText(oldDate).should('not.exist');
   });
 });
 
@@ -150,7 +150,7 @@ describe('Monitor role', () => {
 
     const trackingItemName = 'Fire Extinguisher';
 
-    cy.addMemberTrackingRecord(trackingItemName, 1, '1');
+    cy.addMemberTrackingRecord(trackingItemName, getToday());
 
     cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).should('exist');
@@ -172,8 +172,8 @@ describe('Monitor role', () => {
 
     const trackingItemName = 'Fire Extinguisher';
 
-    cy.addMemberTrackingRecord(trackingItemName, 1, '1');
+    cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByRole('button', { name: 'signature_button' }).click();
-    cy.findAllByRole('button', { name: /delete-tracking-record/i }).should('not.be.disabled');
+    cy.findAllByRole('button', { name: /delete-tracking-record-/i }).should('not.be.disabled');
   });
 });

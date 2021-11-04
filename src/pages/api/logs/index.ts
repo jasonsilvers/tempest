@@ -6,6 +6,7 @@ import { logFactory } from '../../../lib/logger';
 import { ELogEventType } from '../../../const/enums';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import Joi from 'joi';
+import { getLogs } from '../../../repositories/logRepo';
 
 const logSchema = {
   post: {
@@ -26,12 +27,22 @@ const logHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser, Log
 
   const log = logFactory(req.user);
 
-  if (method !== 'POST') {
-    throw new MethodNotAllowedError(method);
-  }
+  switch (method) {
+    case 'GET': {
+      const logEvents = await getLogs();
+      res.status(200).json({ logEvents });
+      break;
+    }
 
-  log.persist(body.logEventType, body.message);
-  res.status(200).json({ message: 'ok' });
+    case 'POST': {
+      log.persist(body.logEventType, body.message);
+      res.status(200).json({ message: 'ok' });
+      break;
+    }
+
+    default:
+      throw new MethodNotAllowedError(method);
+  }
 };
 
 export default withTempestHandlers(logHandler, findUserByDodId, logSchema, false);

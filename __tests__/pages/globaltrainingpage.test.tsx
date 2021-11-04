@@ -8,7 +8,7 @@ import { bobJones } from '../testutils/mocks/fixtures';
 import { DefaultRequestBody } from 'msw';
 import prisma from '../setup/mockedPrisma';
 import { TrackingItem } from '@prisma/client';
-import { TrackingItemsDTO } from '../../src/types/index';
+import { TrackingItemsDTO } from '../../src/types';
 
 beforeAll(() => {
   server.listen({

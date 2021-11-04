@@ -11,12 +11,8 @@ export const usersQueryKeys = {
   member: (id: string) => ['member', id],
 };
 
-type SortOrder = 'ASC' | 'DESC';
-const sortUsers = (userList: UserWithAll[], order: SortOrder = 'ASC') => {
-  if (order === 'ASC') {
-    return userList.sort((userA, userB) => (userA.lastName >= userB.lastName ? 1 : -1));
-  }
-  return userList.sort((userA, userB) => (userA.lastName > userB.lastName ? -1 : 1));
+const sortUsers = (userList: UserWithAll[]) => {
+  return userList.sort((userA, userB) => (userA.lastName >= userB.lastName ? 1 : -1));
 };
 
 const useUsers = () => {
@@ -25,7 +21,7 @@ const useUsers = () => {
   });
 };
 
-const useMember = (id, initialMemberData) => {
+const useMember = (id: string, initialMemberData: UserWithAll) => {
   return useQuery<User & { role: Role }>(
     usersQueryKeys.member(id),
     async () => axios.get<User & { role: Role }>(EUri.USERS + `${id}`).then((result) => result.data),

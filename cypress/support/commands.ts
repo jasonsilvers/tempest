@@ -52,7 +52,7 @@ Cypress.Commands.add('loginAsMember', () => {
   cy.visit(baseUrl);
 });
 
-Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, timesBack: number, day: string) => {
+Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, date: string) => {
   cy.findByRole('button', { name: /add new/i, timeout: 10000 }).click();
 
   cy.wait(10000);
@@ -61,17 +61,9 @@ Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, times
 
   cy.findByRole('option', { name: trackingItemName }).click();
 
-  cy.findByRole('date-picker').within(() => {
-    cy.findByRole('button').click();
-  });
+  cy.findByLabelText(/choose date/i).click();
 
-  for (let index = 0; index < timesBack; index++) {
-    cy.get('[d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"]').click();
-  }
-
-  cy.findAllByRole('button', { name: day, hidden: false }).then((elements) => {
-    elements[0].click();
-  });
+  cy.findByLabelText(date).click();
 
   cy.findByRole('button', { name: /add/i }).click();
 });

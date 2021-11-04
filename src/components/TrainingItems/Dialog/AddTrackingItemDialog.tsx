@@ -10,9 +10,9 @@ import {
   OutlinedInput,
   OutlinedInputProps,
   FormControl,
-  Close,
   IconButton,
 } from '../../../lib/ui';
+import { Close } from '../../../assets/Icons';
 import tw from 'twin.macro';
 import { useAddTrackingItem, useTrackingItems } from '../../../hooks/api/trackingItem';
 import { TrackingItem } from '@prisma/client';
@@ -48,9 +48,6 @@ const AdjustedOutlinedInput: React.FC<OutlinedInputProps> = (props) => (
 );
 
 const Bold = tw.div`font-bold bg-yellow-100`;
-
-//Move the dialog to the left to account for the sidebar
-const Paper = tw.div`w-[900px] ml-80`;
 
 const initialTrackingItemToAdd: TrackingItemToAdd = { title: '', description: '', interval: 0 };
 
@@ -133,7 +130,6 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   return (
     <Dialog
-      PaperProps={{ component: Paper }}
       open={isOpen}
       onClose={() => {
         handleClose();
@@ -144,7 +140,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       <DialogActions>
         <IconButton
           onClick={handleClose}
-          aria-label={`dialog-close-button`}
+          aria-label="dialog-close-button"
           color="secondary"
           tw="absolute float-right top-2"
         >

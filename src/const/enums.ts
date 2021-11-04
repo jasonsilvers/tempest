@@ -23,8 +23,9 @@ export enum ERole {
 
 export enum EResource {
   AUHTORITY_RECORDS = 'authorityrecords',
-  DASHBOARD = 'dashboard',
-  PROFILE = 'profile',
+  ADMIN_PAGE = 'admin',
+  DASHBOARD_PAGE = 'dashboard',
+  PROFILE_PAGE = 'profile',
   MATTERMOST = 'mattermost',
   MEMBER_TRACKING_RECORD = 'membertrackingrecord',
   MEMBER_TRACKING_ITEM = 'membertrackingitem',

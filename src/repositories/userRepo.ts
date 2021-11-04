@@ -164,6 +164,14 @@ export const createUser = async (user: User, role?: Role) => {
   });
 };
 
+export const deleteUser = async (userId: string) => {
+  return prisma.user.delete({
+    where: {
+      id: userId,
+    },
+  });
+};
+
 /**
  * Put User method to update the PSQL db though the prisma client
  *

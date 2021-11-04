@@ -11,13 +11,12 @@ import {
   LoadingOverlay,
   TempestDatePicker,
   TextField,
-  Close,
 } from '../../../lib/ui';
 import tw from 'twin.macro';
 import { useTrackingItems } from '../../../hooks/api/trackingItem';
-import { MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '.prisma/client';
+import { MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '@prisma/client';
 const dayjs = require('dayjs');
-import { DeleteIcon } from '../../../assets/Icons';
+import { DeleteIcon, Close } from '../../../assets/Icons';
 import { useCreateMemberTrackingItemAndRecord, useMemberTrackingItems } from '../../../hooks/api/memberTrackingItem';
 import { mtrQueryKeys, useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { useSnackbar } from 'notistack';
@@ -42,9 +41,6 @@ const TableRowHeader = tw.div`text-gray-400 text-sm flex items-center flex-wrap 
 const TableRow = tw.div`py-2 text-sm flex items-center flex-wrap min-width[350px]border-solid border-b border-gray-200`;
 const TableData = tw.div`pr-3 font-size[12px] flex[0 0 auto] pb-0`;
 const StyledDeleteIcon = tw(DeleteIcon)`text-xl`;
-
-//Move the dialog to the left to account for the sidebar
-const Paper = tw.div`ml-80`;
 
 const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = ({ handleClose, forMemberId }) => {
   const trackingItemsQuery = useTrackingItems();
@@ -129,7 +125,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   };
 
   return (
-    <Dialog PaperProps={{ component: Paper }} onClose={handleClose} open aria-labelledby="ammembertracking-dialog">
+    <Dialog onClose={handleClose} open aria-labelledby="ammembertracking-dialog">
       {isSaving ? <LoadingOverlay /> : null}
       <DialogActions>
         <IconButton
@@ -206,7 +202,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
               <TableData tw="text-sm w-1/5 text-center">{memberTrackingItemToAdd.trackingItem.interval}</TableData>
               <TableData>
                 <TempestDatePicker
-                  onChange={(date) =>
+                  onChange={(date: Date) =>
                     setMemberTrackingItemsToAdd((currentValues) => {
                       return {
                         ...currentValues,

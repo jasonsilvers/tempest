@@ -1,42 +1,41 @@
-import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Link from '@material-ui/core/Link';
-import tw from 'twin.macro';
-import styled from 'styled-components';
-import MuiDialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Fab from '@material-ui/core/Fab';
-import ToolTip from '@material-ui/core/Tooltip';
-import Zoom from '@material-ui/core/Zoom';
-import Paper from '@material-ui/core/Paper';
-import SearchBar from '@snekcode/mui-search-bar';
-import Menu from '@material-ui/core/Menu';
-import TempestMenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
+import Link from '@mui/material/Link';
+import tw, { styled } from 'twin.macro';
+import MuiDialog from '@mui/material/Dialog';
+import MuiDialogTitle from '@mui/material/DialogTitle';
+import MuiDialogContent from '@mui/material/DialogContent';
+import MuiDialogActions from '@mui/material/DialogActions';
+import LinearProgress from '@mui/material/LinearProgress';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import Autocomplete from '@mui/material/Autocomplete';
+import Fab from '@mui/material/Fab';
+import ToolTip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
+import Menu from '@mui/material/Menu';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Typography from '@mui/material/Typography';
+import TempestMenuItem from '@mui/material/MenuItem';
 import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
 import React from 'react';
 import { useRouter } from 'next/router';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import FormControl from '@material-ui/core/FormControl';
-import { DialogContentText, OutlinedInput, OutlinedInputProps } from '@material-ui/core';
-import Close from '@material-ui/icons/Close';
+import DatePicker from '@mui/lab/DatePicker';
+import { DataGrid } from '@mui/x-data-grid';
+import FormControl from '@mui/material/FormControl';
+import { DialogContentText, OutlinedInput, OutlinedInputProps } from '@mui/material';
+import { MenuItem, Select } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
+import { CSSProperties } from '@mui/styles/withStyles';
+import Drawer, { DrawerProps } from '@mui/material/Drawer';
 
-const TPaper = styled(Paper)`
-  background-color: #fff;
-  width: 16rem;
-  padding-left: 1.5rem;
-  padding-top: 2.25rem;
-  color: #2d2270;
-`;
+const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 
-const TempestDrawer = (props) => {
-  return <Drawer variant="permanent" PaperProps={{ component: TPaper }} {...props} />;
+const TempestDrawer = (props: DrawerProps) => {
+  return <Drawer variant="permanent" {...props} />;
 };
 
 type TempestModalProps = {
@@ -98,7 +97,6 @@ export default function TempestPopMenu({ userId }: { userId: string }) {
       <Menu
         id="simple-menu"
         anchorEl={anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',
@@ -120,12 +118,14 @@ export default function TempestPopMenu({ userId }: { userId: string }) {
 }
 
 const TempestDatePicker = styled((props) => (
-  <KeyboardDatePicker
-    disableToolbar
+  <DatePicker
     variant="inline"
     aria-label="tempest-date-picker"
-    TextFieldComponent={(keyboardDatePickerProps) => (
-      <TextField {...keyboardDatePickerProps} disabled aria-label="tempest-date-picker" />
+    renderInput={({ inputRef, inputProps, InputProps }) => (
+      <div tw="flex items-center border border-gray-200 rounded px-2 h-8">
+        <input tw="w-20 bg-white text-gray-600" ref={inputRef} {...inputProps} disabled />
+        {InputProps?.endAdornment}
+      </div>
     )}
     InputProps={{
       role: 'date-picker',
@@ -133,27 +133,8 @@ const TempestDatePicker = styled((props) => (
     {...props}
   />
 ))`
-  & .MuiInputBase-input {
-    padding: 6px;
-    font-size: 12px;
-    opacity: 60%;
-    width: 70px;
-    font-weight: 400;
-    color: black;
-  }
-  & .MuiInputBase-adornedEnd {
-    padding-right: 6px;
-  }
-  & .MuiInputBase-input::-webkit-calendar-picker-indicator {
-    margin: 0;
-  }
-
-  & .MuiButtonBase-root {
-    padding: 1px;
-  }
-
-  & .MuiSvgIcon-root {
-    height: 0.75em;
+  & .MuiIconButton-root {
+    height: 0.5em;
     width: 0.75em;
   }
 `;
@@ -167,10 +148,12 @@ export {
   IconButton,
   CircularProgress,
   Link,
+  Card,
   DialogTitle,
   DialogContent,
   DialogActions,
   DialogContentText,
+  InputAdornment,
   OutlinedInput,
   Button,
   Dialog,
@@ -178,6 +161,8 @@ export {
   Autocomplete,
   LoadingOverlay,
   LoadingSpinner,
+  MenuItem,
+  Select,
   ProgressLayout,
   Fab,
   FormControl,
@@ -187,8 +172,11 @@ export {
   TempestDatePicker,
   TempestDeleteIcon,
   Zoom,
-  SearchBar,
-  Close,
+  Box,
+  Tab,
+  Tabs,
+  Typography,
+  DataGrid,
 };
 
-export type { TempestModalProps, OutlinedInputProps };
+export type { TempestModalProps, OutlinedInputProps, CSSProperties, SelectChangeEvent };

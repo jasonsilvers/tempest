@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import tw from 'twin.macro';
 import { tiQueryKeys, useTrackingItems } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import { TrainingItemRow, TrainingItemHeader } from '../components/TrainingItems/TrainingItemRow';
-import { Button, SearchBar } from '../lib/ui';
+import { Button, TextField, InputAdornment } from '../lib/ui';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
+
+import tw from 'twin.macro';
+import { SearchIcon } from '../assets/Icons';
 
 const H1 = tw.h1`text-2xl mb-2`;
 
@@ -27,15 +29,24 @@ const TrackingItems = () => {
     <div tw="flex flex-col max-width[1440px] min-width[800px] pr-5">
       <div tw="flex items-center mb-5">
         <H1>Global Training Catalog</H1>
-        <SearchBar
-          tw="ml-auto w-56"
-          value={search}
-          onChange={(searchValue) => setSearch(searchValue)}
-          onCancelSearch={() => setSearch('')}
-        />
-        <Button tw="h-12 ml-10 bg-secondary" variant="contained" color="primary" onClick={() => setOpenDialog(true)}>
-          + Create New Training
-        </Button>
+        <div tw="flex ml-auto space-x-2">
+          <TextField
+            tw="bg-white rounded"
+            id="SearchBar"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Button variant="contained" color="secondary" onClick={() => setOpenDialog(true)}>
+            + Create New Training
+          </Button>
+        </div>
       </div>
       <div tw="border-radius[10px] border overflow-hidden bg-white">
         <TrainingItemHeader />

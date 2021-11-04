@@ -1,19 +1,21 @@
-import DoneAllIcon from '@material-ui/icons/DoneAll';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DoneIcon from '@material-ui/icons/Done';
-import SecurityIcon from '@material-ui/icons/Security';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import PersonIcon from '@material-ui/icons/Person';
-import SettingsIcon from '@material-ui/icons/Settings';
-import DescriptionIcon from '@material-ui/icons/Description';
-import EditIcon from '@material-ui/icons/Edit';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import WarningIcon from '@material-ui/icons/Warning';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import CancelIcon from '@material-ui/icons/Cancel';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DoneIcon from '@mui/icons-material/Done';
+import SecurityIcon from '@mui/icons-material/Security';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DescriptionIcon from '@mui/icons-material/Description';
+import EditIcon from '@mui/icons-material/Edit';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import WarningIcon from '@mui/icons-material/Warning';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import SearchIcon from '@mui/icons-material/Search';
+import Close from '@mui/icons-material/Close';
 
 export {
   CalendarTodayIcon,
@@ -32,4 +34,6 @@ export {
   PersonIcon,
   SettingsIcon,
   DescriptionIcon,
+  SearchIcon,
+  Close,
 };

@@ -1,7 +1,7 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import { Dayjs } from 'dayjs';
 const dayjs = require('dayjs');
-import React, { useLayoutEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { getCategory } from '../../../utils/status';
 import { ECategories, EMtrVerb } from '../../../const/enums';
 import { Token, TableData, TokenObj, TableRow } from '../TwinMacro/Twin';
@@ -63,7 +63,7 @@ const RecordRow: React.FC<{
   memberTrackingRecordId: number;
   trackingItem: TrackingItem;
 }> = ({ memberTrackingRecordId, trackingItem }) => {
-  const { activeCategory, increaseCategoryCount, categories } = useMemberItemTrackerContext();
+  const { activeCategory, categories } = useMemberItemTrackerContext();
   const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
   const completionDate = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
   const { user } = useUser<LoggedInUser>();
@@ -98,13 +98,6 @@ const RecordRow: React.FC<{
   const handleNo = () => {
     setModalState({ open: false, date: null });
   };
-
-  // increase count
-  useLayoutEffect(() => {
-    if (trackingRecordQuery.data) {
-      increaseCategoryCount(getCategory(trackingRecordQuery.data, trackingItem?.interval));
-    }
-  }, [trackingRecordQuery.data]);
 
   const status = useMemo(() => {
     if (trackingRecordQuery.data) {
@@ -145,7 +138,7 @@ const RecordRow: React.FC<{
         <TableData tw={'text-sm text-purple-500 w-16 ml-10 pt-1'}>{trackingItem?.interval} days</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
-            <span tw={'opacity-40 pr-1 pt-1'}>Completed: </span>
+            <span tw={'opacity-40 pt-1'}>Completed: </span>
             <ConditionalDateInput
               onChange={handleCompletionDateChange}
               condition={!!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate}
@@ -159,7 +152,7 @@ const RecordRow: React.FC<{
                 {trackingRecordQuery.data?.completedDate
                   ? dayjs(trackingRecordQuery.data?.completedDate)
                       .add(trackingItem?.interval, 'days')
-                      .format('DD MMM YY')
+                      .format('MMM D, YYYY')
                   : 'No Date'}
               </span>
             </>

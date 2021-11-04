@@ -1,11 +1,10 @@
 import React from 'react';
 import { UserContextProvider } from '@tron/nextjs-auth-p1'; // auth lib
-import { StylesProvider, ThemeProvider } from '@material-ui/styles';
+import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import { Button } from '../lib/ui';
-import { createTheme } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DayJsUtils from '@date-io/dayjs';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import AdapterDateFns from '@mui/lab/AdapterDayjs';
 
 import { QueryProvider } from './QueryProvider';
 
@@ -28,8 +27,8 @@ const theme = createTheme({
 function AppProviders({ children, pageProps = null }) {
   return (
     <ThemeProvider theme={theme}>
-      <StylesProvider injectFirst>
-        <MuiPickersUtilsProvider utils={DayJsUtils}>
+      <StyledEngineProvider injectFirst>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
           <SnackbarProvider
             maxSnack={3}
             ref={notistackRef}
@@ -44,8 +43,8 @@ function AppProviders({ children, pageProps = null }) {
               <UserContextProvider user={pageProps?.user}>{children}</UserContextProvider>
             </QueryProvider>
           </SnackbarProvider>
-        </MuiPickersUtilsProvider>
-      </StylesProvider>
+        </LocalizationProvider>
+      </StyledEngineProvider>
     </ThemeProvider>
   );
 }

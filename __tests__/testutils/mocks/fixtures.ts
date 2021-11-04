@@ -8,7 +8,7 @@ const grants = [
   {
     action: EAction.READ_ANY,
     attributes: '*',
-    resource: EResource.PROFILE,
+    resource: EResource.PROFILE_PAGE,
     role: 'norole',
   },
 ];

@@ -1,9 +1,17 @@
-import { fireEvent, render, waitForElementToBeRemoved, within, waitFor } from '../testutils/TempestTestUtils';
+import {
+  fireEvent,
+  render,
+  waitForElementToBeRemoved,
+  within,
+  waitFor,
+  waitForLoadingToFinish,
+} from '../testutils/TempestTestUtils';
 import { Devtools } from '../../src/components/Devtools';
 import { server, rest } from '../testutils/mocks/msw';
 import { ERole, EUri } from '../../src/const/enums';
 
 import 'whatwg-fetch';
+import dayjs from 'dayjs';
 
 const users = [
   {
@@ -11,7 +19,15 @@ const users = [
     firstName: 'bob',
     lastName: 'jones',
     organizationId: '1',
+    lastLogin: dayjs().toDate(),
     role: { id: 22, name: ERole.ADMIN },
+  },
+  {
+    id: '321',
+    firstName: 'Joe',
+    lastName: 'Smith',
+    organizationId: '1',
+    role: { id: 22, name: ERole.MEMBER },
   },
 ];
 
@@ -80,6 +96,38 @@ beforeEach(() => {
           organizations: [
             { id: '1', name: '15th MDG', parentId: null },
             { id: '2', name: 'org2', parentId: null },
+          ],
+        })
+      );
+    }),
+
+    rest.get(EUri.LOGS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          logEvents: [
+            {
+              id: 1,
+              userId: '51c59467-516d-48f6-92ea-0623137378c0',
+              logEventType: 'API_ACCESS',
+              createdAt: '2021-10-20T17:19:34.634Z',
+              message: 'URI: /api/login Method: GET',
+              user: {
+                firstName: 'Joe',
+                lastName: 'Smith',
+              },
+            },
+            {
+              id: 2,
+              userId: '51c59467-516d-48f6-92ea-0623137378c0',
+              logEventType: 'LOGIN',
+              createdAt: '2021-10-20T17:19:35.361Z',
+              message: 'Successful Login',
+              user: {
+                firstName: 'Joe',
+                lastName: 'Smith',
+              },
+            },
           ],
         })
       );
@@ -190,4 +238,53 @@ test('should update a users role', async () => {
   const newRole = await findByText(/member/i);
 
   expect(newRole).toBeInTheDocument();
+});
+
+test('should delete user', async () => {
+  const { getByText, findByRole, getByRole, queryByText } = render(<Devtools />);
+
+  const button = await findByRole('button', { name: 'devtool-button' });
+  fireEvent.click(button);
+
+  await waitForElementToBeRemoved(() => getByText(/loading users/i));
+
+  const user = getByText(/bob jones/i).parentElement;
+
+  expect(user).toBeInTheDocument();
+
+  const deleteButton = getByRole('button', { name: /delete/i });
+
+  fireEvent.click(deleteButton);
+
+  expect(getByText(/warning/i)).toBeInTheDocument();
+
+  fireEvent.click(getByRole('button', { name: /no/i }));
+
+  expect(queryByText('warning')).not.toBeInTheDocument();
+
+  fireEvent.click(deleteButton);
+  fireEvent.click(getByRole('button', { name: /yes/i }));
+
+  server.use(
+    getUsers([users[0]]),
+    rest.delete(EUri.USERS + '*', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json({ message: 'ok' }));
+    })
+  );
+
+  await waitForElementToBeRemoved(() => getByText(/joe/i));
+});
+
+test('should show logs', async () => {
+  const { findByRole, getByText } = render(<Devtools />);
+
+  const button = await findByRole('button', { name: 'devtool-button' });
+  fireEvent.click(button);
+
+  const logTab = await findByRole('tab', { name: 'Log Data' });
+  fireEvent.click(logTab);
+
+  await waitForLoadingToFinish();
+
+  expect(getByText(/Successful Login/)).toBeInTheDocument();
 });
