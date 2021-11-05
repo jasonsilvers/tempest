@@ -29,7 +29,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Commit Checklist
 
-1. npm run t - 100% passing
+1. npm run t - 100% passing/No Failing Tests
 2. npm run lint - No errors or warning
 3. npm run cypress:run - 100% passing
 4. npm run build - clean build
