@@ -104,3 +104,13 @@ React Query is a library for fetching, caching and updating server data on the c
   ```
   npm run prepare
   ```
+
+## Test Docker Image Locally
+
+1. docker build .
+2. docker run _image_name_
+3. Check file directory
+
+```
+docker run -it image_name sh
+```
