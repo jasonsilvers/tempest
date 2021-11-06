@@ -107,12 +107,7 @@ React Query is a library for fetching, caching and updating server data on the c
 
 ## Test Docker Image Locally
 
-1. Change .env.production database URL
-
-```
-DATABASE_URL="postgresql://admin:password@host.docker.internal:5432/postgres??connection_limit=1?schema=public"
-```
-
+1. Change .env.production database URL and replace localhost with host.docker.internal
 2. docker build .
 3. docker run _image_name_
 4. Check file directory
