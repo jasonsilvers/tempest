@@ -41,8 +41,9 @@ USER appuser
 WORKDIR /app
 
 COPY ./public ./public
+COPY ./src/const ./src/const/
 COPY ./src/prisma/migrations ./src/prisma/migrations
-COPY ./src/prisma/prisma.ts ./src/prisma/schema.prisma ./src/prisma/
+COPY ./src/prisma/prisma.ts ./src/prisma/schema.prisma ./src/prisma/seed.js ./src/prisma/
 COPY twin.d.ts ./
 COPY tsconfig.json ./
 COPY package.json ./
