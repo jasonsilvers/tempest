@@ -29,7 +29,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Commit Checklist
 
-1. npm run t - 100% passing
+1. npm run t - 100% passing/No Failing Tests
 2. npm run lint - No errors or warning
 3. npm run cypress:run - 100% passing
 4. npm run build - clean build
@@ -104,3 +104,26 @@ React Query is a library for fetching, caching and updating server data on the c
   ```
   npm run prepare
   ```
+
+## Test Docker Image Locally
+
+1. Change .env.production database URL and replace localhost with host.docker.internal
+2. docker build .
+3. docker run _image_name_
+4. Check file directory
+
+```
+docker run -it image_name sh
+```
+
+## Seed staging database
+
+```
+"seed": "node ./src/prisma/seed.js"
+```
+
+## Seed dev
+
+```
+"seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} src/prisma/seed.ts"
+```
