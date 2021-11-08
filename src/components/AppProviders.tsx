@@ -7,10 +7,11 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import AdapterDateFns from '@mui/lab/AdapterDayjs';
 
 import { QueryProvider } from './QueryProvider';
+import { AppProps } from 'next/dist/shared/lib/router/router';
 
 const notistackRef = React.createRef<SnackbarProvider>();
 const onClickDismiss = (key: string) => () => {
-  notistackRef.current.closeSnackbar(key);
+  notistackRef?.current?.closeSnackbar(key);
 };
 
 const theme = createTheme({
@@ -24,7 +25,7 @@ const theme = createTheme({
   },
 });
 
-function AppProviders({ children, pageProps = null }) {
+function AppProviders({ children, pageProps }: { children: React.ReactNode; pageProps: AppProps }) {
   return (
     <ThemeProvider theme={theme}>
       <StyledEngineProvider injectFirst>

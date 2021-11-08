@@ -115,3 +115,15 @@ React Query is a library for fetching, caching and updating server data on the c
 ```
 docker run -it image_name sh
 ```
+
+## Seed staging database
+
+```
+"seed": "node ./src/prisma/seed.js"
+```
+
+## Seed dev
+
+```
+"seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} src/prisma/seed.ts"
+```
