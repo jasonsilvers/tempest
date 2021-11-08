@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 const DOD_ID = '2223332221';
 
-function createUser(dodId = null, firstName = null, lastName = null) {
+function createUser(dodId?: string, firstName?: string, lastName?: string) {
   const gender = faker.datatype.number(1);
 
   return {
@@ -111,7 +111,7 @@ async function seedDev() {
     data: {
       ...user1,
       organizationId: organization1.id,
-      roleId: adminRole.id,
+      roleId: adminRole ? adminRole.id : 2,
     },
   });
 
@@ -127,7 +127,7 @@ async function seedDev() {
       },
       role: {
         connect: {
-          id: memberRole.id,
+          id: memberRole ? memberRole.id : 2,
         },
       },
     },
@@ -140,7 +140,7 @@ async function seedDev() {
       ...user3,
       role: {
         connect: {
-          id: memberRole.id,
+          id: memberRole ? memberRole.id : 2,
         },
       },
     },

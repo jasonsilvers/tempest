@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "prisma": {
-    "seed": "node ./src/prisma/seed.js"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} src/prisma/seed.ts"
   },
   "scripts": {
     "dev": "next dev",
@@ -17,8 +17,8 @@
     "cypress:open": "cypress open --config-file cypress/config/development.json",
     "cypress:run": "npm run db:reset && cypress run --config-file cypress/config/development.json",
     "test:e2e-ci": "cypress run --config-file cypress/config/pipeline.json",
-    "build:seed:singleDir": "tsc ./src/prisma/seed.ts ./src/prisma/global.d.ts --outDir ./src/prisma/seedPipeline --allowSyntheticDefaultImports --lib 'es2019'",
-    "build:seed": "tsc ./src/prisma/seed.ts ./src/prisma/global.d.ts --types --lib 'es2019'",
+    "build:seed:singleDir": "tsc ./src/prisma/seed.ts --outDir ./src/prisma/seedPipeline --allowSyntheticDefaultImports --lib 'es2019'",
+    "build:seed": "tsc ./prisma/seed.ts ./prisma/global.d.ts --types --lib 'es2019'",
     "test:coverage": "jest --coverage && open ./coverage/lcov-report/index.html",
     "createDevDatabase": "docker-compose -f docker-compose-devdb.yml up -d ",
     "fullApp": "docker-compose -f docker-compose-fullapp.yml up -d ",
@@ -27,7 +27,6 @@
     "db:migrate": "prisma migrate dev --schema ./src/prisma/schema.prisma",
     "db:reset": "prisma migrate reset --schema ./src/prisma/schema.prisma --force",
     "db:seed": "prisma db seed --preview-feature --schema ./src/prisma/schema.prisma",
-    "jwt-proxy": "jwt-proxy 9000 3000 --silent --jwt user.jwt",
     "db:generate": "prisma generate --schema ./src/prisma/schema.prisma",
     "dcheck": "mkdir -p .dependency-check && dependency-check --project .next --scan package-lock.json --format 'ALL' --out .dependency-check && open ./.dependency-check/dependency-check-report.html",
     "prepare": "husky install",
