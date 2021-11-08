@@ -15,6 +15,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import SearchIcon from '@mui/icons-material/Search';
+import Close from '@mui/icons-material/Close';
 
 export {
   CalendarTodayIcon,
@@ -34,4 +35,5 @@ export {
   SettingsIcon,
   DescriptionIcon,
   SearchIcon,
+  Close,
 };

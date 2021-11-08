@@ -77,7 +77,7 @@ it('renders opens the dialog modal', async () => {
   );
 
   mockUseRouter({ query: { id: '123' } });
-  const { getByText, queryByText } = render(<Profile initialMemberData={bobJones} />);
+  const { getByText, queryByText, getByRole } = render(<Profile initialMemberData={bobJones} />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
   await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
@@ -85,7 +85,7 @@ it('renders opens the dialog modal', async () => {
   await waitFor(() => expect(getByText(/add new training/i)).toBeInTheDocument());
 
   // handle close modal by clicking off the modal
-  fireEvent.click(getByText(/close/i));
+  fireEvent.click(getByRole('button', { name: /dialog-close-button/i }));
   expect(queryByText(/add new training/i)).not.toBeInTheDocument();
 });
 

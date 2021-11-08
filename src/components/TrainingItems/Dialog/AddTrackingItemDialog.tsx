@@ -10,7 +10,9 @@ import {
   OutlinedInput,
   OutlinedInputProps,
   FormControl,
+  IconButton,
 } from '../../../lib/ui';
+import { Close } from '../../../assets/Icons';
 import tw from 'twin.macro';
 import { useAddTrackingItem, useTrackingItems } from '../../../hooks/api/trackingItem';
 import { TrackingItem } from '@prisma/client';
@@ -135,6 +137,16 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       aria-labelledby="tracking-dialog"
     >
       {isSaving || isLoading ? <LoadingOverlay /> : null}
+      <DialogActions>
+        <IconButton
+          onClick={handleClose}
+          aria-label="dialog-close-button"
+          color="secondary"
+          tw="absolute float-right top-2"
+        >
+          <Close />
+        </IconButton>
+      </DialogActions>
       <DialogTitle>Create New Training</DialogTitle>
       <DialogContent tw="min-height[220px]">
         <p tw="text-xs pb-4">
@@ -247,9 +259,6 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           variant="contained"
         >
           Create
-        </Button>
-        <Button onClick={handleClose} size="medium" color="secondary">
-          Close
         </Button>
       </DialogActions>
       <ConfirmDialog

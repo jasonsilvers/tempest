@@ -172,7 +172,7 @@ test('should open then close the dialog box', async () => {
   const button = getByRole('button', { name: '+ Create New Training' }) as HTMLButtonElement;
   fireEvent.click(button);
   expect(getByText(/Please create the training title/i)).toBeInTheDocument();
-  fireEvent.click(getByRole('button', { name: /Close/i }));
+  fireEvent.click(getByRole('button', { name: /dialog-close-button/i }));
   await waitForElementToBeRemoved(() => queryByText(/Please create the training title/i));
   expect(queryByText(/Please create the training title/i)).toBeFalsy();
 });

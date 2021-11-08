@@ -79,7 +79,7 @@ describe('Member role', () => {
     cy.findByText(/clark, sandra/i)
       .parent()
       .within((elem) => {
-        cy.findByRole('button', { name: 'member-popup-menu' }).click();
+        cy.findByRole('button', { name: /member-popup-menu/i }).click();
         cy.focused().click();
       });
     const trackingItemName = 'Fire Extinguisher';
@@ -174,6 +174,6 @@ describe('Monitor role', () => {
 
     cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByRole('button', { name: 'signature_button' }).click();
-    cy.findAllByRole('button', { name: /delete-tracking-record/i }).should('not.be.disabled');
+    cy.findAllByRole('button', { name: /delete-tracking-record-/i }).should('not.be.disabled');
   });
 });

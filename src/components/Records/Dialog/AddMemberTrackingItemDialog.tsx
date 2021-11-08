@@ -16,7 +16,7 @@ import tw from 'twin.macro';
 import { useTrackingItems } from '../../../hooks/api/trackingItem';
 import { MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '@prisma/client';
 const dayjs = require('dayjs');
-import { DeleteIcon } from '../../../assets/Icons';
+import { DeleteIcon, Close } from '../../../assets/Icons';
 import { useCreateMemberTrackingItemAndRecord, useMemberTrackingItems } from '../../../hooks/api/memberTrackingItem';
 import { mtrQueryKeys, useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { useSnackbar } from 'notistack';
@@ -127,7 +127,17 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   return (
     <Dialog onClose={handleClose} open aria-labelledby="ammembertracking-dialog">
       {isSaving ? <LoadingOverlay /> : null}
-      <DialogTitle>Add New Training</DialogTitle>
+      <DialogActions>
+        <IconButton
+          onClick={handleClose}
+          color="secondary"
+          aria-label={`dialog-close-button`}
+          tw="absolute float-right top-2"
+        >
+          <Close />
+        </IconButton>
+      </DialogActions>
+      <DialogTitle> Add New Training </DialogTitle>
       <DialogContent>
         <p tw="text-xs pb-4">
           Select one or more training from the below dropdown and insert completion date. If completion date is unknown,
@@ -239,9 +249,6 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           variant="contained"
         >
           Add
-        </Button>
-        <Button onClick={handleClose} size="medium" color="secondary">
-          Close
         </Button>
       </DialogActions>
     </Dialog>
