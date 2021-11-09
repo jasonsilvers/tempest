@@ -13,9 +13,16 @@ import AdapterDateFns from '@mui/lab/AdapterDayjs';
 import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 
 export const waitForLoadingToFinish = () =>
-  waitForElementToBeRemoved(() => [...screen.queryAllByLabelText(/loading/i), ...screen.queryAllByText(/loading/i)], {
-    timeout: 4000,
-  });
+  waitForElementToBeRemoved(
+    () => [
+      ...screen.queryAllByLabelText(/loading/i),
+      ...screen.queryAllByText(/loading/i),
+      ...screen.queryAllByRole('progressbar'),
+    ],
+    {
+      timeout: 4000,
+    }
+  );
 
 const theme = createTheme({
   palette: {

@@ -22,7 +22,7 @@ const useAddTrackingItem = () => {
     (newTrackingItem: TrackingItem) => axios.post<TrackingItem>(EUri.TRACKING_ITEMS, newTrackingItem),
     {
       onError: () => {
-        snackbar.enqueueSnackbar('Error adding TrackingItem. Pelase try again!', { variant: 'error' });
+        snackbar.enqueueSnackbar('Error adding TrackingItem. Please try again!', { variant: 'error' });
       },
       onSettled: () => {
         queryClient.invalidateQueries(tiQueryKeys.trackingItems());

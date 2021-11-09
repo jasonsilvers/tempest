@@ -4,11 +4,11 @@ import { Wrapper } from '../testutils/TempestTestUtils';
 import { usePageLogging } from '../../src/hooks/usePageLogging';
 import { useTestRouter } from '../testutils/mocks/NextMocks';
 import { ELogEventType } from '../../src/const/enums';
-import { createLog } from '../../src/utils/fetch';
+import { createLog } from '../../src/utils/clientFetch';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import React from 'react';
 
-jest.mock('../../src/utils/fetch.ts');
+jest.mock('../../src/utils/clientFetch.ts');
 
 useTestRouter.mockImplementation(() => ({
   route: '/',

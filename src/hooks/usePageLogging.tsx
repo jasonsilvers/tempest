@@ -2,7 +2,7 @@ import { ELogEventType } from '../const/enums';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import { useUser } from '@tron/nextjs-auth-p1';
-import { createLog } from '../utils/fetch';
+import { createLog } from '../utils/clientFetch';
 
 const usePageLogging = () => {
   const { route, asPath } = useRouter();

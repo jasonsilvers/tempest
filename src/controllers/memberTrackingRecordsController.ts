@@ -4,7 +4,7 @@ import Joi from 'joi';
 const dayjs = require('dayjs');
 import { NextApiResponse } from 'next';
 import { getAc } from '../middleware/utils';
-import { NotFoundError, PermissionError, TempestError } from '../middleware/withErrorHandling';
+import { NotFoundError, PermissionError, AppError } from '../middleware/withErrorHandling';
 import {
   findMemberTrackingRecordById,
   MemberTrackingRecordWithUsers,
@@ -15,7 +15,7 @@ import { EMtrVerb, EResource, ITempestApiError } from '../const/enums';
 
 const signTrainee = (userId: string, recordFromDb: MemberTrackingRecordWithUsers) => {
   if (userId === recordFromDb.authorityId) {
-    throw new TempestError(409, 'Cannot sign as both authority and trainee');
+    throw new AppError(409, 'Cannot sign as both authority and trainee');
   }
   // in the future throw error here if userId is not traineeId
 
@@ -27,7 +27,7 @@ const signTrainee = (userId: string, recordFromDb: MemberTrackingRecordWithUsers
 
 const signAuthority = (userId: string, recordFromDb: MemberTrackingRecordWithUsers) => {
   if (userId === recordFromDb.traineeId) {
-    throw new TempestError(409, 'Cannot sign as both authority and trainee');
+    throw new AppError(409, 'Cannot sign as both authority and trainee');
   }
 
   return {
@@ -78,7 +78,7 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
   const verb = slug[1];
 
   if (!Object.values(EMtrVerb).includes(verb as EMtrVerb)) {
-    throw new TempestError(400, 'Bad Request');
+    throw new AppError(400, 'Bad Request');
   }
 
   const recordFromDb = await findMemberTrackingRecordById(memberTrackingRecordId);
@@ -108,7 +108,7 @@ export const postMemberTrackingRecordsAction: MemberTrackingRecordsAction = asyn
     const date = body.completedDate ? dayjs(body.completedDate) : null;
 
     if (date && date.isAfter(dayjs())) {
-      throw new TempestError(409, 'Cannot update completion date in the future');
+      throw new AppError(409, 'Cannot update completion date in the future');
     }
     updatedRecord = {
       ...recordFromDb,

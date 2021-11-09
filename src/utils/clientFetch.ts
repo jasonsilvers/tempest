@@ -1,8 +1,8 @@
 import { ELogEventType, EUri } from '../const/enums';
 import axios from 'axios';
 
-const createLog = (logEventType: ELogEventType, message: string) => {
-  axios.post(EUri.LOGS, {
+const createLog = async (logEventType: ELogEventType, message: string) => {
+  return axios.post(EUri.LOGS, {
     logEventType,
     message,
   });

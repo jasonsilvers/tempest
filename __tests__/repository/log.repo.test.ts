@@ -1,5 +1,5 @@
 import prisma from '../setup/mockedPrisma';
-import { createLog } from '../../src/repositories/logRepo';
+import { createLog, getLogs } from '../../src/repositories/logRepo';
 import { User } from '.prisma/client';
 import { ELogEventType } from '../../src/const/enums';
 
@@ -24,4 +24,11 @@ test('should set user to null if empty', async () => {
   await createLog(null, ELogEventType.AUTHORIZED, 'test');
   expect(spy).toBeCalledWith({ data: { logEventType: 'AUTHORIZED', message: 'test', userId: null } });
   expect(spy).toBeCalledTimes(1);
+});
+
+test('should return all logs', async () => {
+  prisma.logEvent.findMany.mockImplementationOnce(() => [logEvent]);
+  const logEvents = await getLogs();
+
+  expect(logEvents).toStrictEqual([logEvent]);
 });

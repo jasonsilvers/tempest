@@ -176,7 +176,7 @@ test('should not be able to sign trainee if does not own record', async () => {
   expect(updateMemberTrackingRecord).not.toBeCalled();
   expect(status).toBe(403);
   expect(data).toStrictEqual({
-    message: 'You do not have the appropriate permissions',
+    message: 'You do not have permission to perform this action',
   });
 });
 test('should not be able to sign authority without correct role', async () => {
@@ -205,7 +205,7 @@ test('should not be able to sign authority without correct role', async () => {
   expect(updateMemberTrackingRecord).not.toBeCalled();
   expect(status).toBe(403);
   expect(data).toStrictEqual({
-    message: 'You do not have the appropriate permissions',
+    message: 'You do not have permission to perform this action',
   });
 });
 test('should return 400 if url is incorrect', async () => {
