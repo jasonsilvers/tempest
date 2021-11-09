@@ -5,7 +5,7 @@ set -x
 node timeout.js
 
 # The normal production work flow
-npx prisma migrate deploy
+npx prisma migrate deploy --schema ./src/prisma/schema.prisma
 
 # For Staging ONLY will reset the database and apply seed. 
 # npx prisma migrate reset --force --schema ./src/prisma/schema.prisma
