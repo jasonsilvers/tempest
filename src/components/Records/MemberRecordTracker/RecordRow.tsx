@@ -1,20 +1,20 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
-import { Dayjs } from 'dayjs';
-const dayjs = require('dayjs');
-import React, { useMemo, useState } from 'react';
-import { getCategory } from '../../../utils/status';
-import { ECategories, EMtrVerb } from '../../../const/enums';
-import { Token, TableData, TokenObj, TableRow } from '../TwinMacro/Twin';
-import 'twin.macro';
-import ConditionalDateInput from '../../../lib/ConditionalDateInput';
 import { useUser } from '@tron/nextjs-auth-p1';
-import { LoggedInUser } from '../../../repositories/userRepo';
+import { Dayjs } from 'dayjs';
 import { useSnackbar } from 'notistack';
-import ConfirmDialog from '../../Dialog/ConfirmDialog';
-import { DialogContent, DialogTitle } from '../../../lib/ui';
+import React, { useMemo, useState } from 'react';
+import 'twin.macro';
+import { ECategories, EMtrVerb } from '../../../const/enums';
 import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
+import ConditionalDateInput from '../../../lib/ConditionalDateInput';
+import { DialogContent, DialogTitle } from '../../../lib/ui';
+import { LoggedInUser } from '../../../repositories/userRepo';
+import { getCategory } from '../../../utils/status';
+import ConfirmDialog from '../../Dialog/ConfirmDialog';
 import { RecordRowActions } from '../Actions/RecordSignature';
+import { TableData, TableRow, Token, TokenObj } from '../TwinMacro/Twin';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
+import dayjs from 'dayjs';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -44,7 +44,7 @@ const isFiltered = (categories: ECategories[], activeCategory: ECategories, stat
 
 const RecordRowSkeleton = () => {
   return (
-    <div role="skeleton" tw="border border-gray-300 ">
+    <div role="progressbar" tw="border border-gray-300 ">
       <div tw="animate-pulse flex h-12 justify-items-center items-center px-2">
         <Token tw="bg-gray-400 pr-2" />
         <div tw="h-4 w-40 bg-gray-400 rounded-sm"></div>

@@ -73,7 +73,7 @@ const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} c
   }
 `;
 
-export default function TempestPopMenu({ userId }: { userId: string }) {
+export default function DashboardPopMenu({ userId }: { userId: string }) {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -123,7 +123,7 @@ const TempestDatePicker = styled((props) => (
     aria-label="tempest-date-picker"
     renderInput={({ inputRef, inputProps, InputProps }) => (
       <div tw="flex items-center border border-gray-200 rounded px-2 h-8">
-        <input tw="w-20 bg-white text-gray-600" ref={inputRef} {...inputProps} disabled />
+        <input title="date-picker-input" tw="w-20 bg-white text-gray-600" ref={inputRef} {...inputProps} disabled />
         {InputProps?.endAdornment}
       </div>
     )}
@@ -142,7 +142,7 @@ const TempestDatePicker = styled((props) => (
 const TempestDeleteIcon = tw(DeleteIcon)`text-xl`;
 
 export {
-  TempestPopMenu,
+  DashboardPopMenu,
   TempestMenuItem,
   TempestDrawer,
   IconButton,

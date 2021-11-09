@@ -551,7 +551,7 @@ test('POST - should return 403 if user role is not allowed to create member trac
 
   expect(status).toBe(403);
   expect(data).toStrictEqual({
-    message: 'You do not have the appropriate permissions',
+    message: 'You do not have permission to perform this action',
   });
 });
 

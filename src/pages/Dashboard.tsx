@@ -12,7 +12,7 @@ import { EFuncAction, EResource } from '../const/enums';
 import { useOrgs } from '../hooks/api/organizations';
 import { useUsers } from '../hooks/api/users';
 import { usePermissions } from '../hooks/usePermissions';
-import { Autocomplete, Card, InputAdornment, TempestPopMenu, TextField } from '../lib/ui';
+import { Autocomplete, Card, InputAdornment, DashboardPopMenu, TextField } from '../lib/ui';
 import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
 import { getUsersWithMemberTrackingRecords, UserWithAll } from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
@@ -380,7 +380,7 @@ const DashboardPage: React.FC = () => {
                 </div>
               </UserTableColumn>
               <UserTableColumn tw="ml-auto mr-6">
-                <TempestPopMenu userId={user.id} />
+                <DashboardPopMenu userId={user.id} />
               </UserTableColumn>
             </UserTableRow>
           ))}
