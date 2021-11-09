@@ -31,9 +31,8 @@ ENV NODE_ENV=production
 
 COPY --from=dependencies /home/node/deps/node_modules ./node_modules
 COPY ./src package.json twin.d.ts tsconfig.json tailwind.config.js .babelrc.js next-env.d.ts ./
-
-RUN npm run build:seed 
-RUN npx prisma generate && npm run build
+ 
+RUN npx prisma generate && npm run build:seed && npm run build
 USER appuser
 
 # Nextjs server
