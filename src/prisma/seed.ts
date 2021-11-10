@@ -253,6 +253,23 @@ async function seedDev() {
       },
     },
   });
+
+  await prisma.logEvent.createMany({
+    data: [
+      {
+        logEventType: 'AUTHORIZED',
+        createdAt: faker.datatype.datetime(),
+        message: faker.lorem.sentence(),
+        userId: user1.id,
+      },
+      {
+        logEventType: 'PAGE_ACCESS',
+        createdAt: faker.datatype.datetime(),
+        message: '/profile',
+        userId: user1.id,
+      },
+    ],
+  });
 }
 
 async function seedResources() {
