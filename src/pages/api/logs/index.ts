@@ -29,7 +29,12 @@ const logHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser, Log
 
   switch (method) {
     case 'GET': {
-      const logEvents = await getLogs();
+      let logEvents;
+      try {
+        logEvents = await getLogs();
+      } catch (e) {
+        console.log(e);
+      }
       res.status(200).json({ logEvents });
       break;
     }
