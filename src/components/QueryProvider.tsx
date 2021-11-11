@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack';
 import React, { useRef } from 'react';
-import { QueryClient, QueryCache, QueryClientProvider } from 'react-query';
+import { QueryCache, QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { Hydrate } from 'react-query/hydration';
 
@@ -14,7 +14,16 @@ function QueryProvider({ children, pageProps = null, queryClientOptions = {} }) 
     queryClientRef.current = new QueryClient({
       ...queryClientOptions,
       queryCache: new QueryCache({
-        onError: (_, query) => enqueueSnackbar(`Error retrieving ${query.queryKey[0]}`, { variant: 'error' }),
+        onError: (error: { response: { status: number } }, query) => {
+          if (error.response.status === 401) {
+            enqueueSnackbar('You are not authorized, your session may have expired.', {
+              variant: 'warning',
+              persist: true,
+            });
+          } else {
+            enqueueSnackbar(`Error retrieving ${query.queryKey[0]}`, { variant: 'error' });
+          }
+        },
       }),
     });
   }
