@@ -6,10 +6,7 @@ import { GrantsDTO } from '../../../types';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 
-const grantsHandler = async (
-  req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<GrantsDTO | { message: string }>
-) => {
+const grantsHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse<GrantsDTO>) => {
   if (req.method !== 'GET') {
     throw new MethodNotAllowedError(req.method);
   }
