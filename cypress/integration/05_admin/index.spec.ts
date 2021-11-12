@@ -21,17 +21,18 @@ describe('Can use admin features', () => {
     cy.findByText(/sandra clark/i).should('be.visible');
     cy.findByText(/joe smith/i).should('be.visible');
 
-    cy.findByRole('button', { name: /dental/i }).click();
+    cy.findByRole('button', { name: /vaccination/i }).click();
     cy.findByRole('option', { name: /15th mdg/i }).click();
     cy.findByRole('alert').should('be.visible');
     cy.findByText(/sandra clark/i)
       .parent()
       .within(() => {
         cy.findByText(/15th mdg/i).should('be.visible');
+        cy.findByRole('button', { name: /member/i }).click();
       });
 
-    cy.findByRole('button', { name: /member/i }).click();
     cy.findByRole('option', { name: /monitor/i }).click();
+
     cy.findByRole('alert').should('be.visible');
     cy.findByText(/sandra clark/i)
       .parent()
