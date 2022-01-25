@@ -20,6 +20,8 @@
     "build:seed:singleDir": "tsc ./src/prisma/seed.ts --outDir ./src/prisma/seedPipeline --allowSyntheticDefaultImports --lib 'es2019'",
     "build:seed": "tsc ./prisma/seed.ts --types --lib 'es2019'",
     "test:coverage": "jest --coverage && open ./coverage/lcov-report/index.html",
+    "check-types": "tsc --pretty --noEmit",
+    "check-format": "prettier --check .",
     "createDevDatabase": "docker-compose -f docker-compose-devdb.yml up -d ",
     "fullApp": "docker-compose -f docker-compose-fullapp.yml up -d ",
     "analyze-bundle": "ANALYZE=true next build",
@@ -34,7 +36,7 @@
   },
   "resolutions": {
     "shell-quote": "1.7.3",
-    "node-fetch": "3.2.0"
+    "node-fetch": "2.6.7"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.16.7",
@@ -71,7 +73,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "loglevel": "^1.8.0",
-    "next": "12.0.5",
+    "next": "12.0.6",
     "notistack": "^2.0.3",
     "postcss": "^8.4.5",
     "prisma": "^3.8.1",
