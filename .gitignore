@@ -25,6 +25,7 @@ postgres-data
 .DS_Store
 *.pem
 .tern-project
+tsconfig.tsbuildinfo
 
 # debug
 npm-debug.log*
