@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 const DOD_ID = '2223332221';
 
-function getDate(dayOffSet: number = 0): Date {
+function getDate(dayOffSet = 0): Date {
   const date = new Date();
   date.setDate(date.getDate() - dayOffSet);
 
