@@ -1,28 +1,33 @@
 import { Grant, PrismaClient } from '@prisma/client';
 import { EAction, EResource, ERole } from '../const/enums';
 import { grants } from '../const/grants';
-const faker = require('faker');
+const casual = require('casual');
 
 const prisma = new PrismaClient();
 
 const DOD_ID = '2223332221';
 
-function createUser(dodId?: string, firstName?: string, lastName?: string) {
-  const gender = faker.datatype.number(1);
+function getDate(dayOffSet: number = 0): Date {
+  const date = new Date();
+  date.setDate(date.getDate() - dayOffSet);
 
+  return date;
+}
+
+function createUser(dodId?: string, firstName?: string, lastName?: string) {
   return {
-    id: faker.datatype.uuid(),
-    firstName: firstName ? firstName : faker.name.firstName(gender),
-    lastName: lastName ? lastName : faker.name.lastName(gender),
-    dodId: dodId ? dodId : faker.datatype.number({ min: 1000000000, max: 1999999999 }).toString(),
-    email: faker.internet.email(),
-    dutyTitle: faker.company.bsAdjective() + ' ' + faker.company.bsNoun() + ' ' + faker.company.bsBuzz(),
+    id: casual.uuid,
+    firstName: firstName ? firstName : casual.first_name,
+    lastName: lastName ? lastName : casual.last_name,
+    dodId: dodId ? dodId : casual.integeer(1000000000, 999999999).toString(),
+    email: casual.email,
+    dutyTitle: casual.title,
     afsc:
-      faker.datatype.number({ min: 1, max: 7 }).toString() +
-      faker.random.alpha().toLocaleUpperCase() +
-      faker.datatype.number({ min: 1, max: 7 }).toString() +
+      casual.integer(1, 7).toString() +
+      casual.letter.toLocaleUpperCase() +
+      casual.integer(1, 7).toString() +
       'X' +
-      faker.datatype.number({ min: 1, max: 7 }).toString(),
+      casual.integer(1, 7).toString(),
     rank: 'SSgt/E5',
     address: '15 WG/WSA Tron, Bldg 1102',
   };
@@ -179,9 +184,9 @@ async function seedDev() {
   await prisma.memberTrackingRecord.create({
     data: {
       order: 2,
-      completedDate: faker.date.recent(20).toISOString(),
-      authoritySignedDate: faker.date.recent(15).toISOString(),
-      traineeSignedDate: faker.date.recent(18).toISOString(),
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
       authority: { connect: { id: user2.id } },
       memberTrackingItem: {
         connect: {
@@ -197,9 +202,9 @@ async function seedDev() {
   await prisma.memberTrackingRecord.create({
     data: {
       order: 1,
-      completedDate: faker.date.recent(20).toISOString(),
-      authoritySignedDate: faker.date.recent(15).toISOString(),
-      traineeSignedDate: faker.date.recent(18).toISOString(),
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
       authority: { connect: { id: user2.id } },
       memberTrackingItem: {
         connect: {
@@ -258,13 +263,13 @@ async function seedDev() {
     data: [
       {
         logEventType: 'AUTHORIZED',
-        createdAt: faker.datatype.datetime(),
-        message: faker.lorem.sentence(),
+        createdAt: getDate(),
+        message: casual.sentence,
         userId: user1.id,
       },
       {
         logEventType: 'PAGE_ACCESS',
-        createdAt: faker.datatype.datetime(),
+        createdAt: getDate(),
         message: '/profile',
         userId: user1.id,
       },
