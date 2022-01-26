@@ -24,7 +24,7 @@ test('should return new prisma client if first time being called in dev', () => 
 
   require('../../src/prisma/prisma');
 
-  const globalPrisma = ((global as unknown) as ICustomNodeJsGlobal).prisma;
+  const globalPrisma = (global as unknown as ICustomNodeJsGlobal).prisma;
 
   expect(globalPrisma).not.toBeNull();
   process.env.NODE_ENV = 'test';
@@ -33,9 +33,9 @@ test('should return new prisma client if first time being called in dev', () => 
 test('should return global prisma client if in dev and already created', () => {
   process.env.NODE_ENV = 'development';
 
-  ((global as unknown) as ICustomNodeJsGlobal).prisma = new PrismaClient();
+  (global as unknown as ICustomNodeJsGlobal).prisma = new PrismaClient();
 
-  const globalPrisma = ((global as unknown) as ICustomNodeJsGlobal).prisma;
+  const globalPrisma = (global as unknown as ICustomNodeJsGlobal).prisma;
 
   expect(globalPrisma).not.toBeNull();
   process.env.NODE_ENV = 'test';

@@ -1,3 +1,7 @@
 # Ignore artifacts:
 build
 coverage
+.next
+cypress
+package-lock.json
+tailwind.default.config.js
