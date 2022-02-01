@@ -11,8 +11,7 @@ generator client {
 }
 
 model User {
-  id                       String                 @id @db.Uuid
-  dodId                    String?                @unique @map("dod_id")
+  id                       Int                    @id @default(autoincrement())
   firstName                String?                @map("first_name")
   lastName                 String?                @map("last_name")
   middleName               String?                @map("middle_name")
@@ -31,7 +30,6 @@ model User {
   rank                     String?
   afsc                     String?
   dutyTitle                String?                @map("duty_title")
-  address                  String?
   logEvent                 LogEvent[]
 
   @@map(name: "user")
@@ -48,14 +46,14 @@ model MemberTrackingRecord {
   traineeSignedDate   DateTime?          @map("trainee_signed_date")
   authoritySignedDate DateTime?          @map("authority_signed_date")
   authority           User?              @relation(name: "AuthorityRecords", fields: [authorityId], references: [id])
-  authorityId         String?            @map("authority_id") @db.Uuid
+  authorityId         Int?            @map("authority_id")
   trainee             User?              @relation(name: "TraineeRecords", fields: [traineeId], references: [id])
   createdAt           DateTime?          @default(now()) @map("created_at")
   completedDate       DateTime?          @map("completed_date")
   order               Int
   trackingItem        TrackingItem?      @relation(fields: [trackingItemId], references: [id])
   memberTrackingItem  MemberTrackingItem @relation(fields: [traineeId, trackingItemId], references: [userId, trackingItemId])
-  traineeId           String             @map("trainee_id") @db.Uuid
+  traineeId           Int             @map("trainee_id")
   trackingItemId      Int                @map("tracking_item_id")
 
   @@map("member_tracking_record")
@@ -65,7 +63,7 @@ model MemberTrackingItem {
   //Compound key of userId and trackingItemId
   isActive              Boolean
   user                  User                   @relation(fields: [userId], references: [id])
-  userId                String                 @db.Uuid
+  userId                Int                 
   createdAt             DateTime?              @default(now()) @map("created_at")
   trackingItem          TrackingItem           @relation(fields: [trackingItemId], references: [id])
   trackingItemId        Int
@@ -164,7 +162,7 @@ enum LogEventType {
 model LogEvent {
   id           Int          @id @default(autoincrement())
   user         User?        @relation(fields: [userId], references: [id])
-  userId       String?      @db.Uuid
+  userId       Int?      
   logEventType LogEventType @map("log_event_type")
   createdAt    DateTime?    @default(now())
   message      String?

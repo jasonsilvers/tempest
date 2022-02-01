@@ -5,8 +5,6 @@ const casual = require('casual');
 
 const prisma = new PrismaClient();
 
-const DOD_ID = '2223332221';
-
 function getDate(dayOffSet = 0): Date {
   const date = new Date();
   date.setDate(date.getDate() - dayOffSet);
@@ -14,12 +12,10 @@ function getDate(dayOffSet = 0): Date {
   return date;
 }
 
-function createUser(dodId?: string, firstName?: string, lastName?: string) {
+function createUser(firstName?: string, lastName?: string) {
   return {
-    id: casual.uuid,
     firstName: firstName ? firstName : casual.first_name,
     lastName: lastName ? lastName : casual.last_name,
-    dodId: dodId ? dodId : casual.integeer(1000000000, 999999999).toString(),
     email: casual.email,
     dutyTitle: casual.title,
     afsc:
@@ -29,7 +25,6 @@ function createUser(dodId?: string, firstName?: string, lastName?: string) {
       'X' +
       casual.integer(1, 7).toString(),
     rank: 'SSgt/E5',
-    address: '15 WG/WSA Tron, Bldg 1102',
   };
 }
 
@@ -98,7 +93,7 @@ async function seedDev() {
     },
   });
 
-  const user1 = createUser(DOD_ID, 'Joe', 'Smith');
+  const user1 = createUser('Joe', 'Smith');
 
   const memberRole = await prisma.role.findFirst({
     where: {
@@ -112,7 +107,7 @@ async function seedDev() {
     },
   });
 
-  await prisma.user.create({
+  const createdUser1 = await prisma.user.create({
     data: {
       ...user1,
       organizationId: organization1.id,
@@ -120,9 +115,9 @@ async function seedDev() {
     },
   });
 
-  const user2 = createUser('1143209890', 'Sandra', 'Clark');
+  const user2 = createUser('Sandra', 'Clark');
 
-  await prisma.user.create({
+  const createdUser2 = await prisma.user.create({
     data: {
       ...user2,
       organization: {
@@ -138,9 +133,9 @@ async function seedDev() {
     },
   });
 
-  const user3 = createUser('2143209891', 'Frank', 'Clark');
+  const user3 = createUser('Frank', 'Clark');
 
-  await prisma.user.create({
+  const createduser3 = await prisma.user.create({
     data: {
       ...user3,
       role: {
@@ -152,19 +147,19 @@ async function seedDev() {
   });
 
   const newMemberTrackingItem1 = {
-    userId: user1.id,
+    userId: createdUser1.id,
     isActive: true,
     trackingItemId: trackingItem1.id,
   };
 
   const newMemberTrackingItem2 = {
-    userId: user1.id,
+    userId: createdUser1.id,
     isActive: true,
     trackingItemId: trackingItem2.id,
   };
 
   const newMemberTrackingItem3 = {
-    userId: user1.id,
+    userId: createdUser1.id,
     isActive: true,
     trackingItemId: trackingItem3.id,
   };
@@ -187,11 +182,11 @@ async function seedDev() {
       completedDate: getDate(5),
       authoritySignedDate: getDate(2),
       traineeSignedDate: getDate(2),
-      authority: { connect: { id: user2.id } },
+      authority: { connect: { id: createdUser2.id } },
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
-            userId: user1.id,
+            userId: createdUser1.id,
             trackingItemId: memberTrackingItem1.trackingItemId,
           },
         },
@@ -205,11 +200,11 @@ async function seedDev() {
       completedDate: getDate(5),
       authoritySignedDate: getDate(2),
       traineeSignedDate: getDate(2),
-      authority: { connect: { id: user2.id } },
+      authority: { connect: { id: createdUser2.id } },
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
-            userId: user1.id,
+            userId: createdUser1.id,
             trackingItemId: memberTrackingItem1.trackingItemId,
           },
         },
@@ -223,7 +218,7 @@ async function seedDev() {
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
-            userId: user1.id,
+            userId: createdUser1.id,
             trackingItemId: memberTrackingItem2.trackingItemId,
           },
         },
@@ -237,7 +232,7 @@ async function seedDev() {
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
-            userId: user1.id,
+            userId: createdUser1.id,
             trackingItemId: memberTrackingItem3.trackingItemId,
           },
         },
@@ -251,7 +246,7 @@ async function seedDev() {
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
-            userId: user1.id,
+            userId: createdUser1.id,
             trackingItemId: memberTrackingItem1.trackingItemId,
           },
         },
@@ -265,13 +260,13 @@ async function seedDev() {
         logEventType: 'AUTHORIZED',
         createdAt: getDate(),
         message: casual.sentence,
-        userId: user1.id,
+        userId: createdUser1.id,
       },
       {
         logEventType: 'PAGE_ACCESS',
         createdAt: getDate(),
         message: '/profile',
-        userId: user1.id,
+        userId: createdUser1.id,
       },
     ],
   });
