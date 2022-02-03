@@ -1,5 +1,5 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import roleHandler from '../../../src/pages/api/roles';
@@ -13,8 +13,8 @@ jest.mock('../../../src/repositories/roleRepo.ts');
 const roles = [{ id: '22', name: 'monitor' }];
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
     organizationId: '2',
@@ -39,8 +39,8 @@ test('should return 401 if not authorized', async () => {
   expect(status).toBe(401);
 });
 test('should return 403 if incorrect permission - GET', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
     organizationId: '2',

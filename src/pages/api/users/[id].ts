@@ -5,7 +5,7 @@ import { ITempestApiError } from '../../../const/enums';
 import { deleteUserAction, getUserAction, putUserAction, userSchema } from '../../../controllers/userController';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 
 async function userQueryHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,
@@ -29,4 +29,4 @@ async function userQueryHandler(
   }
 }
 
-export default withTempestHandlers(userQueryHandler, findUserByDodId, userSchema);
+export default withTempestHandlers(userQueryHandler, findUserByEmail, userSchema);

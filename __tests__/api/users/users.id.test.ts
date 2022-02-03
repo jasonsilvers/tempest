@@ -1,5 +1,5 @@
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import { deleteUser, findUserByDodId, findUserById, updateUser } from '../../../src/repositories/userRepo';
+import { deleteUser, findUserByEmail, findUserById, updateUser } from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/users/[id]';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';
@@ -15,15 +15,15 @@ jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/utils/isOrgChildOf.ts');
 
 const userFromDb = {
-  id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  id: 2,
   firstName: 'joe',
   lastName: 'anderson',
   role: { id: '22', name: 'monitor' },
 };
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
@@ -37,21 +37,21 @@ afterEach(() => {
 
 test('GET - should return user - read any', async () => {
   mockMethodAndReturn(findUserById, userFromDb);
-  const { data, status } = await testNextApi.get(userQueryHandler, { urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2' });
+  const { data, status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
 
   expect(status).toBe(200);
   expect(data).toStrictEqual(userFromDb);
 });
 
 test('GET - should return user - read any', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
     organizationId: '123',
   });
   const userFromDbRead = {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    id: 2,
     firstName: 'joe',
     lastName: 'anderson',
     role: { id: '22', name: 'monitor' },
@@ -59,35 +59,35 @@ test('GET - should return user - read any', async () => {
   };
 
   mockMethodAndReturn(findUserById, userFromDbRead);
-  const { data, status } = await testNextApi.get(userQueryHandler, { urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2' });
+  const { data, status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
 
   expect(status).toBe(200);
   expect(data).toStrictEqual(userFromDbRead);
 });
 
 test('GET - should return user - read own', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
   mockMethodAndReturn(findUserById, userFromDb);
-  const { data, status } = await testNextApi.get(userQueryHandler, { urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2' });
+  const { data, status } = await testNextApi.get(userQueryHandler, { urlId: '1' });
 
   expect(status).toBe(200);
   expect(data).toStrictEqual(userFromDb);
 });
 
 test('GET - should return 403 - read any', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
     organizationId: '124',
   });
 
   const userFromDbReadAny = {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    id: 2,
     firstName: 'joe',
     lastName: 'anderson',
     role: { id: '22', name: 'monitor' },
@@ -97,42 +97,42 @@ test('GET - should return 403 - read any', async () => {
   mockMethodAndReturn(findUserById, userFromDbReadAny);
   mockMethodAndReturn(isOrgChildOf, false);
 
-  const { status } = await testNextApi.get(userQueryHandler, { urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2' });
+  const { status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
 
   expect(status).toBe(403);
 });
 
 test('GET - should return 403 - No role', async () => {
   mockMethodAndReturn(findUserById, userFromDb);
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });
   mockMethodAndReturn(isOrgChildOf, false);
-  const { status } = await testNextApi.get(userQueryHandler, { urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2' });
+  const { status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
 
   expect(status).toBe(403);
 });
 
 test('GET - should return 403 - read own', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
-  mockMethodAndReturn(findUserById, { id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2', firstName: 'Not Joe' });
+  mockMethodAndReturn(findUserById, { id: 1, firstName: 'Not Joe' });
 
   const { status } = await testNextApi.get(userQueryHandler, {
-    urlId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 1,
   });
 
   expect(status).toBe(403);
 });
 
 test('GET - should return 401 if not authorized', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });
@@ -144,8 +144,8 @@ test('GET - should return 401 if not authorized', async () => {
 });
 
 test('GET - should return 404 record not found', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -156,8 +156,8 @@ test('GET - should return 404 record not found', async () => {
 });
 
 test('GET - should return 405 if method not allowed', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -168,8 +168,8 @@ test('GET - should return 405 if method not allowed', async () => {
 });
 
 test('PUT - should return user - update own', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
     organizationId: 'abc123',
@@ -177,11 +177,11 @@ test('PUT - should return user - update own', async () => {
   mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
-    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 2,
     body: { organizationId: 'abc123', dutyTitle: 'test Title', roleId: 1 } as User,
   });
 
-  expect(spy).toHaveBeenCalledWith('b100e2fa-50d0-49a6-b10f-00adde24d0c2', {
+  expect(spy).toHaveBeenCalledWith(2, {
     organizationId: 'abc123',
     dutyTitle: 'test Title',
   } as User);
@@ -204,8 +204,8 @@ test('PUT - should return user - update own', async () => {
  * 
  */
 test('PUT - should filter data for member', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
     organizationId: 'abc123',
@@ -213,7 +213,7 @@ test('PUT - should filter data for member', async () => {
   mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
-    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 2,
     body: {
       organizationId: 'abc123',
       email: 'email@email.com',
@@ -226,7 +226,7 @@ test('PUT - should filter data for member', async () => {
     },
   });
 
-  expect(spy).toHaveBeenCalledWith('b100e2fa-50d0-49a6-b10f-00adde24d0c2', {
+  expect(spy).toHaveBeenCalledWith(2, {
     organizationId: 'abc123',
     tags: ['tags'],
     rank: 'rank',
@@ -240,8 +240,8 @@ test('PUT - should filter data for member', async () => {
 });
 
 test('PUT - should set role to member when org changes', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
     organizationId: 'abc123',
@@ -250,7 +250,7 @@ test('PUT - should set role to member when org changes', async () => {
   mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
-    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 2,
     body: {
       organizationId: 'zyx987',
       email: 'email@email.com',
@@ -263,7 +263,7 @@ test('PUT - should set role to member when org changes', async () => {
     },
   });
 
-  expect(spy).toHaveBeenCalledWith('b100e2fa-50d0-49a6-b10f-00adde24d0c2', {
+  expect(spy).toHaveBeenCalledWith(2, {
     organizationId: 'zyx987',
     tags: ['tags'],
     rank: 'rank',
@@ -281,7 +281,7 @@ test('PUT - should return user - update any', async () => {
   mockMethodAndReturn(findUserById, userFromDb);
   mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
-    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 2,
     body: { rank: 'bob' },
   });
 
@@ -293,7 +293,7 @@ test('PUT - should return 400 if data is incorrect - update any', async () => {
   mockMethodAndReturn(findUserById, userFromDb);
   mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { status } = await testNextApi.put(userQueryHandler, {
-    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 2,
     body: { name: 'bob', email: 30322, rank: 32343 },
   });
 
@@ -301,14 +301,14 @@ test('PUT - should return 400 if data is incorrect - update any', async () => {
 });
 
 test('PUT - should return 403 - update any', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
   mockMethodAndReturn(findUserById, userFromDb);
   const { status } = await testNextApi.put(userQueryHandler, {
-    urlId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 2,
     body: { rank: 'bob' },
   });
 
@@ -316,8 +316,8 @@ test('PUT - should return 403 - update any', async () => {
 });
 
 test('DELETE - should return 404 if record not found', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
   });
@@ -335,14 +335,14 @@ test('DELETE - should return 404 if record not found', async () => {
   mockMethodAndReturn(deleteUser, null);
 
   const { status } = await testNextApi.delete(userQueryHandler, {
-    urlId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 1,
   });
 
   expect(status).toBe(404);
 });
 test('DELETE - should delete user and cascade', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
   });
@@ -361,7 +361,7 @@ test('DELETE - should delete user and cascade', async () => {
   const mockedDeleteUser = mockMethodAndReturn(deleteUser, userFromDb);
 
   const { status } = await testNextApi.delete(userQueryHandler, {
-    urlId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 1,
   });
 
   expect(mockedDeleteUser).toBeCalled();
@@ -373,7 +373,7 @@ test('DELETE - should return 403 if permission not allowed', async () => {
   const mockedDeleteUser = mockMethodAndReturn(deleteUser, null);
 
   const { status } = await testNextApi.delete(userQueryHandler, {
-    urlId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    urlId: 1,
   });
   expect(mockedDeleteUser).not.toBeCalled();
 

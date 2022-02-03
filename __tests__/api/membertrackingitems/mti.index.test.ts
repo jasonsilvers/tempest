@@ -1,7 +1,7 @@
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import {
   createMemberTrackingItem,
   createMemberTrackingRecord,
@@ -20,7 +20,7 @@ jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/memberTrackingRepo.ts');
 jest.mock('../../../src/utils/userHasPermissionWithinOrg.ts');
 
-const globalUserId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+const globalUserId = 1;
 
 const memberTrackingItemBody = {
   userId: globalUserId,
@@ -29,9 +29,9 @@ const memberTrackingItemBody = {
 };
 
 const memberTrackingItemFromDb = {
-  userId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  userId: 2,
   user: {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    id: 2,
     organizationId: '123',
   },
   trackingItemId: 2,
@@ -47,7 +47,7 @@ const trackingItemFromDb = {
 
 const memberTrackingRecordFromDb = {
   trackingItemId: 2,
-  traineeId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  traineeId: 2,
   authorityId: null,
   authoritySignedDate: null,
   traineeSignedDate: null,
@@ -55,7 +55,7 @@ const memberTrackingRecordFromDb = {
 };
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
@@ -69,7 +69,7 @@ afterEach(() => {
 });
 
 test('GET - should return membertrackingitem - (read-any)', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
   mockMethodAndReturn(findMemberTrackingItemById, memberTrackingItemFromDb);
 
@@ -87,20 +87,20 @@ test('GET - should return membertrackingitem - (read-any)', async () => {
 });
 
 test('GET - should return membertrackingitem (read - own)', async () => {
-  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 2;
   const trackingItemId = 2;
 
   const memberTrackingItem = {
-    userId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    userId: 2,
     user: {
-      id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+      id: 2,
       organizationId: '123',
     },
     trackingItemId: 2,
     isActive: true,
   };
 
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
@@ -116,7 +116,7 @@ test('GET - should return membertrackingitem (read - own)', async () => {
 });
 
 test('GET - should return membertrackingitem with membertrackingrecords', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
 
   const expectedResult = {
@@ -139,7 +139,7 @@ test('GET - should return membertrackingitem with membertrackingrecords', async 
 });
 
 test('GET - should return membertrackingitem with membertrackingrecords and tracking items', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
 
   const expectedResult = {
@@ -162,7 +162,7 @@ test('GET - should return membertrackingitem with membertrackingrecords and trac
 });
 
 test('GET - should return 404 if record not found', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
 
   mockMethodAndReturn(findMemberTrackingItemById, null);
@@ -180,9 +180,9 @@ test('GET - should return 404 if record not found', async () => {
 });
 
 test('GET - should return 403 if incorrect permission (read - any)', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
@@ -198,10 +198,10 @@ test('GET - should return 403 if incorrect permission (read - any)', async () =>
 });
 
 test('GET - should return 403 if incorrect permission (read - own)', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
 
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
@@ -217,7 +217,7 @@ test('GET - should return 403 if incorrect permission (read - own)', async () =>
 });
 
 test('DELETE - it should delete the member tracking item (delete any)', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
   mockMethodAndReturn(findMemberTrackingItemById, memberTrackingItemFromDb);
   mockMethodAndReturn(deleteMemberTrackingItem, {});
@@ -231,11 +231,11 @@ test('DELETE - it should delete the member tracking item (delete any)', async ()
 });
 
 test('DELETE - it should delete the member tracking item (delete own)', async () => {
-  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 2;
   const trackingItemId = 2;
 
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -251,15 +251,15 @@ test('DELETE - it should delete the member tracking item (delete own)', async ()
   expect(status).toBe(204);
 });
 test('DELETE - it should not delete the member tracking item if it has any tracking records', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
 
   const completeRecord = {
     id: 2,
     authoritySignedDate: dayjs('04-20-2021').toISOString(),
-    authorityId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    authorityId: 1,
     traineeSignedDate: dayjs('04-20-2021').toISOString(),
-    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 1,
     completedDate: dayjs('04-19-2021').toISOString(),
     successorId: null,
     trackingItemId: 2,
@@ -277,7 +277,7 @@ test('DELETE - it should not delete the member tracking item if it has any track
 });
 
 test('DELETE - should not allow delete if user not authorized', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
   const { status } = await testNextApi.delete(memberTrackingItemHandler, {
     urlId: `?userId=${userId}&trackingItemId=${trackingItemId}`,
@@ -287,11 +287,11 @@ test('DELETE - should not allow delete if user not authorized', async () => {
   expect(status).toBe(401);
 });
 test('DELETE - should not allow delete if user does not have correct permission', async () => {
-  const userId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 1;
   const trackingItemId = 2;
 
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });
@@ -305,11 +305,11 @@ test('DELETE - should not allow delete if user does not have correct permission'
   expect(status).toBe(403);
 });
 test('DELETE - should not allow delete if user is a member and does not own the record', async () => {
-  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 2;
   const trackingItemId = 2;
 
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -327,10 +327,10 @@ test('DELETE - should not allow delete if user is a member and does not own the 
 });
 
 test('DELETE - should return 404 if record is not found', async () => {
-  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 2;
   const trackingItemId = 2;
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -345,10 +345,10 @@ test('DELETE - should return 404 if record is not found', async () => {
 });
 
 test('PUT - Should allow monitor to update isActive', async () => {
-  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 2;
   const trackingItemId = 2;
 
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
@@ -380,10 +380,10 @@ test('PUT - Should allow monitor to update isActive', async () => {
 });
 
 test('PUT - Should not allow update if role does not have permission', async () => {
-  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 2;
   const trackingItemId = 2;
 
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
@@ -406,10 +406,10 @@ test('PUT - Should not allow update if role does not have permission', async () 
 });
 
 test('PUT - Should return 404 is record not found', async () => {
-  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
+  const userId = 2;
   const trackingItemId = 2;
 
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
@@ -432,8 +432,8 @@ test('PUT - Should return 404 is record not found', async () => {
 });
 
 test('POST - should create member tracking item - (create any)', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
@@ -459,8 +459,8 @@ test('POST - should create member tracking item - (create own)', async () => {
     trackingItemId: 1,
   };
 
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -511,7 +511,7 @@ test('POST - should create member tracking item and member tracking record when 
   expect(data).toStrictEqual(expectedReturnData);
 });
 test('POST - should return 401 if user is not authorized', async () => {
-  mockMethodAndReturn(findUserByDodId, null);
+  mockMethodAndReturn(findUserByEmail, null);
 
   const body = {
     userId: globalUserId,
@@ -532,8 +532,8 @@ test('POST - should return 401 if user is not authorized', async () => {
 });
 
 test('POST - should return 403 if user role is not allowed to create member tracking item', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });

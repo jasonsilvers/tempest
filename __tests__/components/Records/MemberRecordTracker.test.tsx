@@ -26,14 +26,14 @@ afterEach(() => {
 afterAll(() => server.close());
 
 const testTrainee: Partial<User> = {
-  id: '123',
+  id: 123,
   firstName: 'bob',
   lastName: 'jones',
   rank: 'SSgt/E-5',
 };
 
 const testAuthority: Partial<User> = {
-  id: '321',
+  id: 321,
   firstName: 'mark',
   lastName: 'twain',
   rank: 'TSgt/E-6',
@@ -340,8 +340,8 @@ test('should sign record as trainee and mark as done', async () => {
           order: 0,
           trackingItemId: 1,
           trackingItem: fireSafetyItem,
-          traineeId: '123',
-          authorityId: '321',
+          traineeId: 123,
+          authorityId: 321,
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs().toDate(),
           traineeSignedDate: null,
@@ -393,8 +393,8 @@ test('should sign record as trainee and mark as done', async () => {
           id: 3,
           order: 0,
           trackingItemId: 1,
-          traineeId: '123',
-          authorityId: '321',
+          traineeId: 123,
+          authorityId: 321,
           authoritySignedDate: dayjs().toDate(),
           completedDate: dayjs().toDate(),
           traineeSignedDate: dayjs().toDate(),

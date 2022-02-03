@@ -73,7 +73,7 @@ const TempestToolTip = styled(({ className, ...props }) => <ToolTip {...props} c
   }
 `;
 
-export default function DashboardPopMenu({ userId }: { userId: string }) {
+export default function DashboardPopMenu({ userId }: { userId: number }) {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 

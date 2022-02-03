@@ -18,7 +18,6 @@ const Column = tw.div`flex flex-col`;
 const Row = tw.div`flex flex-row p-1`;
 const Base = tw.div`text-lg mb-1 text-hg pr-5 capitalize`;
 const Rank = tw(Base)`w-24`;
-const Address = tw(Base)``;
 const AFSC = tw(Base)`w-24`;
 const OrganizationField = tw(Base)``;
 
@@ -154,7 +153,6 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
               afsc: formState.afsc,
               organizationId: formState.organizationId,
               rank: formState.rank,
-              address: formState.address,
             } as User);
             setIsActiveEdit(false);
           }}
@@ -181,9 +179,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
               label="Office Symbol"
               editStyle={{ width: '20rem' }}
               onChange={(e) => setFormState((state) => ({ ...state, address: e.target.value }))}
-            >
-              <Address>{formState.address}</Address>
-            </EditItem>
+            ></EditItem>
           </Row>
         </Column>
         <Column>

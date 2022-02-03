@@ -2,7 +2,7 @@ import trackingItemQueryHandler from '../../../src/pages/api/trackingitems/[id]'
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import { grants } from '../../testutils/mocks/fixtures';
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { deleteTrackingItem } from '../../../src/repositories/trackingItemRepo';
 
@@ -10,10 +10,10 @@ jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo');
 jest.mock('../../../src/repositories/trackingItemRepo.ts');
 
-const globalUserId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+const globalUserId = 1;
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
@@ -59,7 +59,7 @@ test('should return 401 if not authorized', async () => {
   expect(status).toBe(401);
 });
 test('should return 403 if incorrect permission - DELETE', async () => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },

@@ -26,7 +26,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   const { permissionCheck, role, isLoading, user } = usePermissions();
   const [openAddNewModal, setAddNewModal] = useState(false);
 
-  const userId = id?.toString();
+  const userId = parseInt(id?.toString());
   const { data: member } = useMember(userId, initialMemberData);
 
   if (isLoading || !id) {
@@ -34,7 +34,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   }
 
   const persmission =
-    user.id !== id
+    user.id !== userId
       ? permissionCheck(role, EFuncAction.READ_ANY, EResource.PROFILE_PAGE)
       : permissionCheck(role, EFuncAction.READ_OWN, EResource.PROFILE_PAGE);
 
@@ -88,7 +88,7 @@ export default withPageAuth(Profile);
 export async function getStaticProps(context: GetStaticPropsContext) {
   const { params } = context;
 
-  const userId = params?.id as string;
+  const userId = parseInt(params?.id as string);
 
   const queryClient = new QueryClient();
 

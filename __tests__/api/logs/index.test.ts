@@ -3,7 +3,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { getLogs } from '../../../src/repositories/logRepo';
 
 jest.mock('../../../src/repositories/userRepo');
@@ -12,13 +12,13 @@ jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/logRepo');
 
 const user = {
-  id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  id: 1,
   firstName: 'joe',
   role: { id: '22', name: 'monitor' },
 };
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, user);
+  mockMethodAndReturn(findUserByEmail, user);
   mockMethodAndReturn(findGrants, grants);
 });
 

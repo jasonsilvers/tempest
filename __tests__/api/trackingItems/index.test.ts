@@ -1,5 +1,5 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import trackingItemHandler from '../../../src/pages/api/trackingitems';
@@ -36,8 +36,8 @@ const newTrackingItem = {
 };
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
     organizationId: '2',
@@ -58,8 +58,8 @@ test('should return tracking items - GET', async () => {
   expect(data).toStrictEqual({ trackingItems: [trackingItemFromDb] });
 });
 test('should return 403 if incorrect permissions - GET', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
     organizationId: '2',
@@ -90,8 +90,8 @@ test('should return 400 if request body is not valid', async () => {
 });
 
 test('should return 403 if incorrect permissions - POST', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
     organizationId: '2',

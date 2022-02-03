@@ -16,7 +16,7 @@ const TabAndTableContainer = tw.div`flex flex-col `;
  * Training Record Functional Component
  */
 const MemberItemTracker: React.FC<{
-  userId: string;
+  userId: number;
   title: string;
 }> = ({ userId, title, children }) => {
   const TabAndTableRef: LegacyRef<HTMLDivElement> = useRef();

@@ -13,7 +13,7 @@ import {
 import { LoggedInUser } from '../repositories/userRepo';
 import { EMtrVerb, EResource, ITempestApiError } from '../const/enums';
 
-const signTrainee = (userId: string, recordFromDb: MemberTrackingRecordWithUsers) => {
+const signTrainee = (userId: number, recordFromDb: MemberTrackingRecordWithUsers) => {
   if (userId === recordFromDb.authorityId) {
     throw new AppError(409, 'Cannot sign as both authority and trainee');
   }
@@ -25,7 +25,7 @@ const signTrainee = (userId: string, recordFromDb: MemberTrackingRecordWithUsers
   } as MemberTrackingRecordWithUsers;
 };
 
-const signAuthority = (userId: string, recordFromDb: MemberTrackingRecordWithUsers) => {
+const signAuthority = (userId: number, recordFromDb: MemberTrackingRecordWithUsers) => {
   if (userId === recordFromDb.traineeId) {
     throw new AppError(409, 'Cannot sign as both authority and trainee');
   }
@@ -37,7 +37,7 @@ const signAuthority = (userId: string, recordFromDb: MemberTrackingRecordWithUse
   } as MemberTrackingRecordWithUsers;
 };
 
-const checkPermission = async (user: LoggedInUser, traineeId: string) => {
+const checkPermission = async (user: LoggedInUser, traineeId: number) => {
   const ac = await getAc();
 
   return user.id !== traineeId
@@ -55,11 +55,11 @@ export const memberTrackingRecordPostSchema = {
     id: Joi.number().optional(),
     traineeSignedDate: Joi.date().optional().allow(null),
     authoritySignedDate: Joi.date().optional().allow(null),
-    authorityId: Joi.string().optional().allow(null),
+    authorityId: Joi.number().optional().allow(null),
     createdAt: Joi.date().optional(),
     completedDate: Joi.date().optional().allow(null),
     order: Joi.number().optional(),
-    traineeId: Joi.string().optional(),
+    traineeId: Joi.number().optional(),
     trackingItemId: Joi.number().required(),
   }),
   query: Joi.object({

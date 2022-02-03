@@ -34,7 +34,7 @@ type IMemberTrackingItemToAdd = {
 
 type AddMemberTrackingItemDialogProps = {
   handleClose: () => void;
-  forMemberId: string;
+  forMemberId: number;
 };
 
 const TableRowHeader = tw.div`text-gray-400 text-sm flex items-center flex-wrap min-width[350px]border-solid border-b border-gray-200`;

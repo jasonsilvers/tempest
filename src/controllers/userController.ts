@@ -13,7 +13,7 @@ import { userWithinOrgOrChildOrg } from '../utils/userWithinOrgorChildOrg';
 const userSchema = {
   put: {
     body: Joi.object({
-      id: Joi.string().optional().allow(null, ''),
+      id: Joi.number().optional().allow(null, ''),
       email: Joi.string().email().optional().allow(null, ''),
       roleId: Joi.number().optional().allow(null, ''),
       organizationId: Joi.string().optional().allow(null, ''),
@@ -29,23 +29,24 @@ const userSchema = {
 const setup = async (req: NextApiRequestWithAuthorization<LoggedInUser>) => {
   const { query, body } = req;
   const userId = query.id as string;
-  const user = await findUserById(userId);
+  const userIdParam = parseInt(userId);
+  const user = await findUserById(userIdParam);
   if (!user) {
     throw new NotFoundError();
   }
   const ac = await getAc();
 
-  return { body, userId, user, ac };
+  return { body, userIdParam, user, ac };
 };
 
 const getUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiError>
 ) => {
-  const { userId, ac, user } = await setup(req);
+  const { userIdParam, ac, user } = await setup(req);
   let permission: Permission;
 
-  if (req.user.id !== userId) {
+  if (req.user.id !== userIdParam) {
     if (await userWithinOrgOrChildOrg(req.user.organizationId, user.organizationId)) {
       permission = ac.can(req.user.role.name).readAny(EResource.USER);
     } else {
@@ -66,10 +67,10 @@ const putUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiError>
 ) => {
-  const { userId, ac, user, body } = await setup(req);
+  const { userIdParam, ac, user, body } = await setup(req);
 
   let permission: Permission;
-  if (req.user.id !== userId) {
+  if (req.user.id !== userIdParam) {
     if (await userWithinOrgOrChildOrg(req.user.organizationId, user.organizationId)) {
       permission = ac.can(req.user.role.name).updateAny(EResource.USER);
     } else {
@@ -91,7 +92,7 @@ const putUserAction = async (
     filteredData = { ...filteredData, roleId: memberRole.id };
   }
 
-  const updatedUser = await updateUser(userId, filteredData);
+  const updatedUser = await updateUser(userIdParam, filteredData);
 
   res.status(200).json(updatedUser);
 };
@@ -102,6 +103,7 @@ const deleteUserAction = async (
 ) => {
   const { query, user } = req;
   const userId = query.id as string;
+  const userIdParam = parseInt(userId);
   const ac = await getAc();
 
   const permission = ac.can(user.role.name).deleteAny(EResource.USER);
@@ -110,7 +112,7 @@ const deleteUserAction = async (
     throw new PermissionError();
   }
 
-  const deletedUser = await deleteUser(userId);
+  const deletedUser = await deleteUser(userIdParam);
 
   if (deletedUser) {
     res.status(200).json({ message: 'ok' });

@@ -1,6 +1,6 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../../../src/repositories/memberTrackingRepo';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import memberTrackingRecordSlugHandler from '../../../src/pages/api/membertrackingrecords/[...slug]';
@@ -14,8 +14,8 @@ jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/memberTrackingRepo.ts');
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
@@ -38,7 +38,7 @@ test('should sign trainee', async () => {
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
-    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 1,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: null,
@@ -71,7 +71,7 @@ test('should sign authority', async () => {
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
-    traineeId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 2,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: null,
@@ -79,13 +79,13 @@ test('should sign authority', async () => {
   };
 
   const updatedMemberTrackingRecordFromDb = {
-    authorityId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    authorityId: 1,
     authoritySignedDate: dayjs().toDate(),
     completedDate: dayjs('2020-5-14'),
   };
 
   const expectedMTRParms = {
-    authorityId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    authorityId: 1,
     authoritySignedDate: dayjs().toDate(),
     completedDate: dayjs('2020-5-14'),
   };
@@ -106,8 +106,8 @@ test('should not sign trainee if already signed as authority', async () => {
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
-    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
-    authorityId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 1,
+    authorityId: 1,
     authoritySignedDate: dayjs('2020-5-14').toDate(),
     traineeSignedDate: null,
     completedDate: dayjs('2020-5-14').toDate(),
@@ -130,7 +130,7 @@ test('should not sign authority if already signed as trainee', async () => {
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
-    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 1,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: dayjs('2020-5-14').toDate(),
@@ -151,8 +151,8 @@ test('should not sign authority if already signed as trainee', async () => {
   });
 });
 test('should not be able to sign trainee if does not own record', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -160,7 +160,7 @@ test('should not be able to sign trainee if does not own record', async () => {
     order: 0,
     trackingItemId: 1,
     traineeId: 'c100e2fa-50d0-49a6-b10f-00adde24d0c2',
-    authorityId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    authorityId: 2,
     authoritySignedDate: dayjs('2020-5-14').toDate(),
     traineeSignedDate: null,
     completedDate: dayjs('2020-5-14').toDate(),
@@ -180,16 +180,16 @@ test('should not be able to sign trainee if does not own record', async () => {
   });
 });
 test('should not be able to sign authority without correct role', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
-    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
-    authorityId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 1,
+    authorityId: 2,
     authoritySignedDate: dayjs('2020-5-14').toDate(),
     traineeSignedDate: null,
     completedDate: dayjs('2020-5-14').toDate(),
@@ -229,8 +229,8 @@ test('should return 404 if record is not found', async () => {
 });
 
 test('Should not accept GET', async () => {
-  const userId = 'b100e2fa-50d0-49a6-b10f-00adde24d0c2';
-  mockMethodAndReturn(findUserByDodId, {
+  const userId = 2;
+  mockMethodAndReturn(findUserByEmail, {
     id: userId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
@@ -247,7 +247,7 @@ test('should handle null value for updating completed date ', async () => {
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
-    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 1,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: null,
@@ -281,7 +281,7 @@ test('should handle update of completion date', async () => {
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
-    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 1,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: null,
@@ -315,7 +315,7 @@ test('should return 400 if complete date not correct type', async () => {
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
-    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 1,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: null,
@@ -342,7 +342,7 @@ test('should return error if completed date is in future', async () => {
   const returnedMemberTrackingRecordDB = {
     order: 0,
     trackingItemId: 1,
-    traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 1,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: null,

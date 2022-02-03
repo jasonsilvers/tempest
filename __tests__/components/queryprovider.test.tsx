@@ -40,7 +40,6 @@ const onClickDismiss = (key: string) => () => {
 test('should show snackbar if 401', async () => {
   server.use(
     rest.get(EUri.USERS, (req, res, ctx) => {
-      console.log('test');
       return res(ctx.status(401), ctx.json({ message: 'you are not authorized' }));
     })
   );

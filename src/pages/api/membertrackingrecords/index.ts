@@ -6,7 +6,7 @@ import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { createMemberTrackingRecord } from '../../../repositories/memberTrackingRepo';
-import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import { EResource } from '../../../const/enums';
 
 const memberTrackingRecordSchema = {
@@ -38,4 +38,4 @@ async function memberTrackingRecordIndexHandler(
   return res.status(200).json(newMemberTrackingRecord);
 }
 
-export default withTempestHandlers(memberTrackingRecordIndexHandler, findUserByDodId, memberTrackingRecordSchema);
+export default withTempestHandlers(memberTrackingRecordIndexHandler, findUserByEmail, memberTrackingRecordSchema);

@@ -1,6 +1,6 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import {
-  findUserByDodId,
+  findUserByEmail,
   findUsers,
   getUsersWithMemberTrackingRecordsByOrgId,
 } from '../../../src/repositories/userRepo';
@@ -16,7 +16,7 @@ jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/organizationRepo.ts');
 
 const userFromDb = {
-  id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  id: 1,
   firstName: 'joe',
   lastName: 'anderson',
   role: { id: '22', name: 'monitor' },
@@ -30,8 +30,8 @@ const testOrganizations = [
 ];
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
@@ -73,8 +73,8 @@ test('should return permission denied with bad grants', async () => {
   }
 });
 test('should return permission denied with bad grants', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: ERole.NOROLE },
   });

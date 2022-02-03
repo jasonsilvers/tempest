@@ -124,10 +124,8 @@ it('renders the edit view in the profile header and persists data', async () => 
   await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
   // change data
   const afsctextfield = getByLabelText(/afsc/i, { selector: 'input' }) as HTMLInputElement;
-  const addresstextfield = getByLabelText(/office/i, { selector: 'input' }) as HTMLInputElement;
   fireEvent.change(afsctextfield, { target: { value: 'AFSC123' } });
-  fireEvent.change(addresstextfield, { target: { value: 'OFFICESYMBOL123' } });
+
   fireEvent.click(getByText(/save/i));
   await waitFor(() => expect(queryByText('AFSC123')).toBeInTheDocument());
-  await waitFor(() => expect(queryByText('OFFICESYMBOL123')).toBeInTheDocument());
 });

@@ -5,7 +5,7 @@ import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { MattermostWebhookResponse, sendMessage } from '../../../repositories/mattermost/mattermostRepo';
-import { LoggedInUser, findUserByDodId } from '../../../repositories/userRepo';
+import { LoggedInUser, findUserByEmail } from '../../../repositories/userRepo';
 import { EResource } from '../../../const/enums';
 
 const mattermostHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
@@ -41,4 +41,4 @@ const mattermostHandler = async (req: NextApiRequestWithAuthorization<LoggedInUs
   res.status(200).json({ message: call.data });
 };
 
-export default withTempestHandlers(mattermostHandler, findUserByDodId);
+export default withTempestHandlers(mattermostHandler, findUserByEmail);

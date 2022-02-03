@@ -9,7 +9,7 @@ const Container = tw.div`text-black pt-6 text-left flex space-y-5 flex-col h-64 
 const MemberTrackingItemTableSkeleton = tw.div`border animate-pulse bg-gray-400 h-full px-2 border-gray-300`;
 
 const MemberTrackingItemTable: React.FC<{
-  userId: string;
+  userId: number;
 }> = ({ userId }) => {
   const memberTrackingItemsQuery = useMemberTrackingItems(userId);
 

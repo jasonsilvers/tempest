@@ -4,7 +4,7 @@ import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import {
-  findUserByDodId,
+  findUserByEmail,
   getUsersWithMemberTrackingRecordsByOrgId,
   LoggedInUser,
   UsersWithMemberTrackingRecords,
@@ -43,4 +43,4 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
   res.json({ users });
 };
 
-export default withTempestHandlers(usersApiHandler, findUserByDodId);
+export default withTempestHandlers(usersApiHandler, findUserByEmail);

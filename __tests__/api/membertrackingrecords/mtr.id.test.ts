@@ -1,5 +1,5 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import memberTrackingRecordIdHandler from '../../../src/pages/api/membertrackingrecords/[id]';
@@ -21,15 +21,15 @@ const memberTrackingRecordFromDb = {
   id: 1,
   order: 0,
   trackingItemId: 1,
-  traineeId: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  traineeId: 1,
   trainee: {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    id: 1,
     organizationId: '123',
   },
-  authorityId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  authorityId: 2,
   memberTrackingItem: {
     user: {
-      id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+      id: 2,
       organizationId: '123',
     },
   },
@@ -46,8 +46,8 @@ const trackingItemFromDb = {
 };
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
@@ -95,8 +95,8 @@ test('GET - should return 403 if member not in monitors organization - read any'
 });
 
 test('GET - should return membertrackingrecord - read own', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -109,8 +109,8 @@ test('GET - should return membertrackingrecord - read own', async () => {
 });
 
 test('GET - should return 403 if not correct permissions', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });
@@ -122,8 +122,8 @@ test('GET - should return 403 if not correct permissions', async () => {
 });
 
 test('DELETE - should return 403 if not allowed', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });
@@ -139,8 +139,8 @@ test('DELETE - should return 403 if not allowed', async () => {
 });
 
 test('DELETE - should return 403 if not allowed - read own', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -156,8 +156,8 @@ test('DELETE - should return 403 if not allowed - read own', async () => {
 });
 
 test('DELETE - should delete record and tracking item- read own', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
@@ -178,8 +178,8 @@ test('DELETE - should delete record and tracking item- read own', async () => {
 });
 
 test('DELETE - should delete record only - read own', async () => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
