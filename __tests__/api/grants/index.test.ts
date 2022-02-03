@@ -1,17 +1,17 @@
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import grantsHandler from '../../../src/pages/api/grants';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
 
-const globalUserId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+const globalUserId = 1;
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },

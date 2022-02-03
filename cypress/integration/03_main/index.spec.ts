@@ -48,7 +48,7 @@ describe('Member Role', () => {
     cy.url().should('include', '/Welcome');
 
     cy.get('.MuiAutocomplete-popupIndicator').click();
-    cy.findByRole('option', { name: /mdg/i }).click();
+    cy.findByRole('option', { name: /dental squadron/i }).click();
 
     cy.findByRole('button', { name: /get started/i }).click();
 

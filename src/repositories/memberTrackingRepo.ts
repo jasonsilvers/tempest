@@ -18,7 +18,7 @@ export const deleteMemberTrackingRecord = async (id: number) => {
   });
 };
 
-export const findMemberTrackingRecords = async (trackingItemId: number, userId: string) => {
+export const findMemberTrackingRecords = async (trackingItemId: number, userId: number) => {
   return prisma.memberTrackingRecord.findMany({
     where: {
       memberTrackingItem: {
@@ -88,7 +88,7 @@ export const createMemberTrackingRecord = async (
 
 export const findMemberTrackingItemById = async (
   trackingItemId: number,
-  userId: string,
+  userId: number,
   { withMemberTrackingRecords = false, withTrackingItems = false } = {}
 ) => {
   return prisma.memberTrackingItem.findUnique({
@@ -116,7 +116,7 @@ export const findMemberTrackingItemById = async (
   });
 };
 
-export const updateMemberTrackingItem = async (trackingItemId: number, userId: string, data: MemberTrackingItem) => {
+export const updateMemberTrackingItem = async (trackingItemId: number, userId: number, data: MemberTrackingItem) => {
   return prisma.memberTrackingItem.update({
     data,
     where: {
@@ -128,7 +128,7 @@ export const updateMemberTrackingItem = async (trackingItemId: number, userId: s
   });
 };
 
-export const deleteMemberTrackingItem = async (trackingItemId: number, userId: string) => {
+export const deleteMemberTrackingItem = async (trackingItemId: number, userId: number) => {
   return prisma.memberTrackingItem.delete({
     where: {
       userId_trackingItemId: {
@@ -153,7 +153,7 @@ export const createMemberTrackingItem = async (newMti: MemberTrackingItem) => {
  */
 export type MemberTrackingItemWithAll = Prisma.PromiseReturnType<typeof findMemberTrackingItemByIdAll>;
 
-export const findMemberTrackingItemByIdAll = async (userId: string, trackingItemId: number) => {
+export const findMemberTrackingItemByIdAll = async (userId: number, trackingItemId: number) => {
   return prisma.memberTrackingItem.findUnique({
     where: {
       userId_trackingItemId: { trackingItemId, userId },
@@ -172,7 +172,7 @@ export const findMemberTrackingItemByIdAll = async (userId: string, trackingItem
   });
 };
 
-export const countMemberTrackingRecordsForMemberTrackingItem = (trackingItemId: number, userId: string) => {
+export const countMemberTrackingRecordsForMemberTrackingItem = (trackingItemId: number, userId: number) => {
   return prisma.memberTrackingRecord.aggregate({
     _count: {
       trackingItemId: true,

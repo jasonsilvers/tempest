@@ -7,7 +7,7 @@ const MemberTrackingRecordSkeleton = () => {
 };
 
 const MemberTrackingItemRow: React.FC<{
-  memberTrackingItemId: { userId: string; trackingItemId: number };
+  memberTrackingItemId: { userId: number; trackingItemId: number };
 }> = ({ memberTrackingItemId }) => {
   const { data: memberTrackingItem, isLoading } = useMemberTrackingItem(
     memberTrackingItemId.userId,

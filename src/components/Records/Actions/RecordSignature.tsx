@@ -67,7 +67,7 @@ const getAllowedActions = (
   signRecordFor: UseMutateFunction<
     MemberTrackingRecord,
     unknown,
-    { memberTrackingRecord: MemberTrackingRecord; userId: string }
+    { memberTrackingRecord: MemberTrackingRecord; userId: number }
   >,
   enqueueSnackbar: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
 ) => {

@@ -55,14 +55,13 @@ export const explodedJwt_admin: P1_JWT = {
 };
 
 export const bobJones = {
-  id: '123',
+  id: 123,
   firstName: 'bob',
   lastName: 'jones',
   role: {
     id: 22,
     name: ERole.MEMBER,
   },
-  address: '123 Main St',
   afsc: '12345',
   email: 'bob.jones@email.com',
   rank: 'E-6',

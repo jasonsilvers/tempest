@@ -15,7 +15,7 @@ export const UpdateUsersOrg = ({
   label = '',
   editStyle,
 }: {
-  userId: string;
+  userId: number;
   userOrganizationId: string;
   onChange?: (org: Organization) => void;
   label?: string;

@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import { findOrganizationById } from '../../../repositories/organizationRepo';
 import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../const/enums';
@@ -69,4 +69,4 @@ export const organizationIdApiHandler = async (
   res.json(organization);
 };
 
-export default withTempestHandlers(organizationIdApiHandler, findUserByDodId);
+export default withTempestHandlers(organizationIdApiHandler, findUserByEmail);

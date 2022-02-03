@@ -9,6 +9,7 @@ import { withTempestHandlers } from '../../middleware/withTempestHandlers';
 
 const loginHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;
+
   await updateLastLogin(req.user.id);
   const log = logFactory(req.user);
 

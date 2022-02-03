@@ -5,7 +5,7 @@ import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import {
-  findUserByDodId,
+  findUserByEmail,
   findUserByIdWithMemberTrackingItems,
   UserWithMemberTrackingItems,
   LoggedInUser,
@@ -29,12 +29,14 @@ async function userSlugHandler(
   const userId = slug[0];
   const resource = slug[1];
 
+  const userIdParam = parseInt(userId);
+
   const includesQuery = getIncludesQueryArray(include);
 
   const ac = await getAc();
 
   const permission =
-    userId !== req.user.id
+    userIdParam !== req.user.id
       ? ac.can(req.user.role.name).readAny(EResource.USER)
       : ac.can(req.user.role.name).readOwn(EResource.USER);
 
@@ -46,7 +48,7 @@ async function userSlugHandler(
 
   if (resource === EUserResources.MEMBER_TRACKING_ITEMS) {
     user = await findUserByIdWithMemberTrackingItems(
-      userId,
+      userIdParam,
       includesQuery.includes(EUserIncludes.TRACKING_ITEM) ? EUserIncludes.TRACKING_ITEM : null
     );
   }
@@ -58,4 +60,4 @@ async function userSlugHandler(
   res.status(200).json(user);
 }
 
-export default withTempestHandlers(userSlugHandler, findUserByDodId);
+export default withTempestHandlers(userSlugHandler, findUserByEmail);

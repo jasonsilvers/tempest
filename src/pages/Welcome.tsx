@@ -58,7 +58,7 @@ const WelcomePage = () => {
           </div>
         </div>
         <div tw="w-1/3 relative">
-          <img tw="h-full w-full" src="/img/cascadewelcome.png" />
+          <img alt="Cascade Welcome Image" tw="h-full w-full" src="/img/cascadewelcome.png" />
         </div>
       </div>
     </Dialog>

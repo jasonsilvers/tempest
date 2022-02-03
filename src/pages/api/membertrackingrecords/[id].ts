@@ -1,6 +1,6 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import {
   countMemberTrackingRecordsForMemberTrackingItem,
   deleteMemberTrackingItem,
@@ -94,4 +94,4 @@ async function memberTrackingRecordIdHandler(
   }
 }
 
-export default withTempestHandlers(memberTrackingRecordIdHandler, findUserByDodId);
+export default withTempestHandlers(memberTrackingRecordIdHandler, findUserByEmail);

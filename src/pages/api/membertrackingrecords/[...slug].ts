@@ -4,7 +4,7 @@ import { NextApiResponse } from 'next';
 import { postMemberTrackingRecordsAction } from '../../../controllers/memberTrackingRecordsController';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 
 const memberTrackingRecordSlugPostSchema = {
   body: Joi.object({
@@ -33,4 +33,4 @@ async function memberTrackingRecordSlugHandler(
   return postMemberTrackingRecordsAction(req, res);
 }
 
-export default withTempestHandlers(memberTrackingRecordSlugHandler, findUserByDodId, memberTrackingRecordSlugSchema);
+export default withTempestHandlers(memberTrackingRecordSlugHandler, findUserByEmail, memberTrackingRecordSlugSchema);

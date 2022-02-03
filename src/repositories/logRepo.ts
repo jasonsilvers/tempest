@@ -17,13 +17,12 @@ const createLog = async (user: User, logEventType: ELogEventType, message: strin
 const getLogs = async () => {
   // select * from logEvent
   return prisma.logEvent.findMany({
-    include: {
-      user: {
-        select: {
-          firstName: true,
-          lastName: true,
-        },
-      },
+    select: {
+      id: true,
+      message: true,
+      logEventType: true,
+      createdAt: true,
+      user: true,
     },
   });
 };

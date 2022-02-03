@@ -45,11 +45,12 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
   } = req;
 
   const includesQuery = getIncludesQueryArray(include);
+  const userIdParam = parseInt(userId);
   const trackingItemIdParam = parseInt(trackingItemId);
 
   const ac = await getAc();
 
-  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userId, {
+  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userIdParam, {
     withMemberTrackingRecords: includesQuery.includes(EMemberTrackingItemIncludes.MEMBER_TRACKING_RECORDS),
     withTrackingItems: includesQuery.includes(EMemberTrackingItemIncludes.TRACKING_ITEMS),
   });
@@ -102,9 +103,10 @@ export const putMemberTrackingItemAction: IMemberTrackingItemController = async 
   } = req;
 
   const trackingItemIdParam = parseInt(trackingItemId);
+  const userIdParam = parseInt(userId);
   const ac = await getAc();
 
-  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userId);
+  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userIdParam);
 
   if (!memberTrackingItem) {
     throw new NotFoundError();
@@ -130,14 +132,14 @@ export const putMemberTrackingItemAction: IMemberTrackingItemController = async 
 
   const filteredBody = permission.filter(body);
 
-  const updatedMemberTrackingItem = await updateMemberTrackingItem(trackingItemIdParam, userId, filteredBody);
+  const updatedMemberTrackingItem = await updateMemberTrackingItem(trackingItemIdParam, userIdParam, filteredBody);
   res.status(200).json(updatedMemberTrackingItem);
 };
 
 export const memberTrackingItemPostSchema = {
   body: Joi.object({
     isActive: Joi.boolean().required(),
-    userId: Joi.string().required(),
+    userId: Joi.number().required(),
     trackingItemId: Joi.number().required(),
   }),
   query: Joi.object({
@@ -204,9 +206,10 @@ export const deleteMemberTrackingItemAction: IMemberTrackingItemController = asy
   } = req;
 
   const trackingItemIdParam = parseInt(trackingItemId);
+  const userIdParam = parseInt(userId);
 
   const ac = await getAc();
-  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userId);
+  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userIdParam);
 
   if (!memberTrackingItem) {
     throw new NotFoundError();
@@ -232,7 +235,7 @@ export const deleteMemberTrackingItemAction: IMemberTrackingItemController = asy
     throw new PermissionError();
   }
 
-  const memberTrackingRecords = await findMemberTrackingRecords(trackingItemIdParam, userId);
+  const memberTrackingRecords = await findMemberTrackingRecords(trackingItemIdParam, userIdParam);
 
   if (memberTrackingRecords.length > 0) {
     return res.status(409).json({
@@ -240,7 +243,7 @@ export const deleteMemberTrackingItemAction: IMemberTrackingItemController = asy
     });
   }
 
-  await deleteMemberTrackingItem(trackingItemIdParam, userId);
+  await deleteMemberTrackingItem(trackingItemIdParam, userIdParam);
 
   res.status(204).json({ message: 'Record deleted' });
 };

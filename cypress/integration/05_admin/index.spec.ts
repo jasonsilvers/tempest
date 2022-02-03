@@ -18,27 +18,17 @@ describe('Can use admin features', () => {
     //then route to admin page
     cy.findByRole('navigation', { name: /admin/i }).click();
 
-    cy.findByText(/sandra clark/i).should('be.visible');
-    cy.findByText(/joe smith/i).should('be.visible');
+    cy.findByText(/scarlet member/i).should('be.visible');
+    cy.findByText(/sam member/i).should('be.visible');
 
-    cy.findByRole('button', { name: /vaccination/i }).click();
-    cy.findByRole('option', { name: /15th mdg/i }).click();
+    cy.findByRole('button', { name: /dental squadron/i }).click();
+    cy.findByRole('option', { name: /vaccinations squadron/i }).click();
     cy.findByRole('alert').should('be.visible');
-    cy.findByText(/sandra clark/i)
-      .parent()
-      .within(() => {
-        cy.findByText(/15th mdg/i).should('be.visible');
-        cy.findByRole('button', { name: /member/i }).click();
-      });
-
-    cy.findByRole('option', { name: /monitor/i }).click();
+ 
+    cy.findByRole('button', { name: /monitor/i }).click();
+    cy.findByRole('option', { name: /member/i }).click();
 
     cy.findByRole('alert').should('be.visible');
-    cy.findByText(/sandra clark/i)
-      .parent()
-      .within(() => {
-        cy.findByText(/monitor/i).should('be.visible');
-      });
   });
 
   it('should be able to view logs', () => {
@@ -49,6 +39,6 @@ describe('Can use admin features', () => {
     cy.findByRole('navigation', { name: /admin/i }).click();
     cy.findByRole('tab', { name: /log data/i }).click();
 
-    cy.findByText(/authorized/i).should('be.visible');
+    cy.findByText(/page_access/i).should('be.visible');
   });
 });

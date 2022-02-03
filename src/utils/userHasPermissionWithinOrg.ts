@@ -2,7 +2,7 @@ import { findUserById } from '../repositories/userRepo';
 import { userWithinOrgOrChildOrg } from './userWithinOrgorChildOrg';
 
 type UserHasPermissionWithinOrgParam = {
-  id: string;
+  id: number;
   orgId: string;
 };
 

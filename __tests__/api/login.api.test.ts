@@ -12,7 +12,7 @@ jest.mock('../../src/repositories/loginRepo');
 jest.mock('../../src/repositories/grantsRepo.ts');
 
 const returnedUser = {
-  id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  id: 1,
   firstName: 'joe',
   role: { id: '22', name: 'monitor' },
 };

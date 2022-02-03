@@ -1,7 +1,7 @@
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findOrganizations, createOrganizations } from '../../../src/repositories/organizationRepo';
 import organizationApiHandler from '../../../src/pages/api/organizations/index';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { testNextApi } from '../../testutils/NextAPIUtils';
@@ -10,7 +10,7 @@ jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/organizationRepo');
 jest.mock('../../../src/repositories/grantsRepo');
 
-const globalUserId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+const globalUserId = 1;
 
 const testOrganizations = [
   {
@@ -31,7 +31,7 @@ const newOrg = {
 };
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
@@ -63,7 +63,7 @@ test('should return method not allowed', async () => {
 });
 
 test('should create organization', async () => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
@@ -76,7 +76,7 @@ test('should create organization', async () => {
   expect(data).toStrictEqual({ ...newOrg, id: newOrgId });
 });
 test('should return 400 if id is not null', async () => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
@@ -86,7 +86,7 @@ test('should return 400 if id is not null', async () => {
   expect(status).toBe(400);
 });
 test('should return 403 if incorrect permission - POST', async () => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'member' },

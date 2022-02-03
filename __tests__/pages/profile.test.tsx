@@ -52,7 +52,7 @@ it('renders the profile page with bad permissions', async () => {
 
 // MSW broke stuff
 it('renders the profile page', async () => {
-  mockUseRouter({ query: { id: '123' } });
+  mockUseRouter({ query: { id: 123 } });
   const { getByText } = render(<Profile initialMemberData={bobJones} />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
@@ -76,7 +76,7 @@ it('renders opens the dialog modal', async () => {
     })
   );
 
-  mockUseRouter({ query: { id: '123' } });
+  mockUseRouter({ query: { id: 123 } });
   const { getByText, queryByText, getByRole } = render(<Profile initialMemberData={bobJones} />);
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 

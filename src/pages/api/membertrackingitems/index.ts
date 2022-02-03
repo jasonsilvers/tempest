@@ -1,7 +1,7 @@
 import { MemberTrackingItem } from '.prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import {
   getMemberTrackingItemAction,
   putMemberTrackingItemAction,
@@ -58,4 +58,4 @@ async function memberTrackingItemHandler(
   }
 }
 
-export default withTempestHandlers(memberTrackingItemHandler, findUserByDodId, memberTrackingItemSchema);
+export default withTempestHandlers(memberTrackingItemHandler, findUserByEmail, memberTrackingItemSchema);

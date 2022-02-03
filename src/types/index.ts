@@ -1,5 +1,6 @@
-import { Role, Organization, TrackingItem, LogEvent } from '@prisma/client';
+import { Role, Organization, TrackingItem } from '@prisma/client';
 import { Grants } from '../repositories/grantsRepo';
+import { LogEventWithUser } from '../repositories/logRepo';
 import { UserWithAll } from '../repositories/userRepo';
 
 export type GroupedRank = { value: string; group: string };
@@ -25,5 +26,5 @@ export type TrackingItemsDTO = {
 };
 
 export type LogEventDTO = {
-  logEvents: LogEvent[];
+  logEvents: LogEventWithUser[];
 };

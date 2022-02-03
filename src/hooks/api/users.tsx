@@ -8,7 +8,7 @@ import { UsersDTO } from '../../types';
 
 export const usersQueryKeys = {
   users: () => ['users'],
-  member: (id: string) => ['member', id],
+  member: (id: number) => ['member', id],
 };
 
 const sortUsers = (userList: UserWithAll[]) => {
@@ -21,7 +21,7 @@ const useUsers = () => {
   });
 };
 
-const useMember = (id: string, initialMemberData: UserWithAll) => {
+const useMember = (id: number, initialMemberData: UserWithAll) => {
   return useQuery<User & { role: Role }>(
     usersQueryKeys.member(id),
     async () => axios.get<User & { role: Role }>(EUri.USERS + `${id}`).then((result) => result.data),

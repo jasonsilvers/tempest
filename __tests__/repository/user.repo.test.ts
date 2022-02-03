@@ -1,7 +1,7 @@
 import prisma from '../setup/mockedPrisma';
 import {
   createUser,
-  findUserByDodId,
+  findUserByEmail,
   findUserById,
   updateUser,
   findTrackingRecordsByAuthorityId,
@@ -10,8 +10,6 @@ import {
   findUserByIdWithMemberTrackingItems,
   findUsers,
   getUsers,
-  updateTempestUserFromCommonApi,
-  createUserFromCommonApi,
   updateLastLogin,
   updateUserRole,
 } from '../../src/repositories/userRepo';
@@ -27,7 +25,7 @@ const commonApiPerson = {
   dutyTitle: 'duty title',
   email: 'email@test.jest',
   firstName: 'Bob',
-  id: '1234',
+  id: 1234,
   lastName: 'Jones',
   middleName: 'Cory',
   phone: '568-897-6548',
@@ -37,9 +35,7 @@ const commonApiPerson = {
 
 const mockUser: User = {
   firstName: commonApiPerson.firstName,
-  dodId: commonApiPerson.dodid,
   id: commonApiPerson.id,
-  address: commonApiPerson.address,
   afsc: '3D',
   createdAt: new Date(),
   dutyTitle: commonApiPerson.dutyTitle,
@@ -63,7 +59,7 @@ test('Repository User Prisma Mock Test for Create', async () => {
   prisma.user.create.mockImplementationOnce(() => mockUser);
   const returnPostUser = await createUser(user as User);
 
-  expect(returnPostUser).toStrictEqual({ ...user, id: '1234' });
+  expect(returnPostUser).toStrictEqual({ ...user, id: 1234 });
 });
 
 test('Repository User Prisma Mock Test for Update', async () => {
@@ -72,30 +68,30 @@ test('Repository User Prisma Mock Test for Update', async () => {
 
   expect(prisma.user.update).toHaveBeenCalledWith({
     data: mockUser,
-    where: { id: '1234' },
+    where: { id: 1234 },
   });
   expect(returnPutUser).toStrictEqual(mockUser);
 });
 
 test('Repository User Prisma Mock Test for Get By Id', async () => {
   prisma.user.findUnique.mockImplementationOnce(() => mockUser);
-  const returnIdUser = await findUserById('1234');
+  const returnIdUser = await findUserById(1234);
 
   expect(returnIdUser).toStrictEqual(mockUser);
 });
 
 test('Repository User Prisma Mock Test for Get By DoD Id', async () => {
   prisma.user.findUnique.mockImplementationOnce(() => mockUser);
-  const returnDoDIdUser = await findUserByDodId('1234');
+  const returnDoDIdUser = await findUserByEmail('1234');
   expect(returnDoDIdUser).toStrictEqual(mockUser);
 });
 
 test('should findUserByIdReturnAllIncludes', async () => {
   const spy = prisma.user.findUnique;
-  await findUserByIdReturnAllIncludes('1234');
+  await findUserByIdReturnAllIncludes(1);
   expect(spy).toHaveBeenCalledWith({
     where: {
-      id: '1234',
+      id: 1,
     },
     include: {
       role: true,
@@ -125,10 +121,10 @@ test('should findUserByIdReturnAllIncludes', async () => {
 
 test('should findUserByIdWithMemberTrackingItems', async () => {
   const spy = prisma.user.findUnique.mockImplementationOnce(() => mockUser);
-  const result = await findUserByIdWithMemberTrackingItems('1234', EUserIncludes.TRACKING_ITEM);
+  const result = await findUserByIdWithMemberTrackingItems(1, EUserIncludes.TRACKING_ITEM);
   expect(spy).toHaveBeenCalledWith({
     where: {
-      id: '1234',
+      id: 1,
     },
     include: {
       memberTrackingItems: {
@@ -166,59 +162,18 @@ test('should createUser with role', async () => {
   });
 });
 
-test('should createUserFromCommonApi', async () => {
-  const spy = prisma.user.create;
-  prisma.role.findUnique.mockImplementationOnce(() => ({ id: 1, name: 'admin' } as Role));
-  await createUserFromCommonApi(commonApiPerson);
-  expect(spy).toHaveBeenCalledWith({
-    data: {
-      id: commonApiPerson.id,
-      firstName: commonApiPerson.firstName,
-      lastName: commonApiPerson.lastName,
-      dodId: commonApiPerson.dodid,
-      email: commonApiPerson.email,
-      roleId: 1,
-    },
-  });
-});
-
-test('should updateTempestUserFromCommonApi', async () => {
-  const spy = prisma.user.update;
-  await updateTempestUserFromCommonApi(commonApiPerson, mockUser);
-
-  const expectedData: User = {
-    firstName: 'Bob',
-    dodId: undefined,
-    id: '1234',
-    address: '123 Fake St',
-    afsc: undefined,
-    createdAt: undefined,
-    dutyTitle: 'duty title',
-    email: 'email@test.jest',
-    lastLogin: undefined,
-    lastName: 'Jones',
-    middleName: 'Cory',
-    organizationId: undefined,
-    rank: 'SSgt/E-6',
-    roleId: undefined,
-    updatedAt: undefined,
-  };
-
-  expect(spy).toHaveBeenCalledWith({ where: { id: commonApiPerson.id }, data: expectedData });
-});
-
 test('should updateLastLogin', async () => {
   const spy = prisma.user.update;
-  await updateLastLogin('1234');
+  await updateLastLogin(1234);
   expect(spy).toHaveBeenCalled();
 });
 test('should updateUserRole', async () => {
-  prisma.role.findUnique.mockImplementationOnce(() => ({ id: 5, name: 'admin' } as Role));
+  prisma.role.findUnique.mockImplementationOnce(() => ({ id: 1, name: 'admin' } as Role));
   const spy = prisma.user.update;
-  await updateUserRole('1234', 'admin');
+  await updateUserRole(1, 'admin');
   expect(spy).toHaveBeenCalledWith({
-    where: { id: '1234' },
-    data: { roleId: 5 },
+    where: { id: 1 },
+    data: { roleId: 1 },
     include: {
       role: true,
       organization: true,
@@ -229,24 +184,25 @@ test('should updateUserRole', async () => {
 // Member Tracking Record Stuff
 
 const dummyMemberTrackingRecord = {
-  authorityId: '1',
-  traineeId: '1',
+  authorityId: 1,
+  traineeId: 1,
   id: 1,
   authoritySignedDate: new Date('2019-01-01'),
   traineeSignedDate: new Date('2019-01-01'),
   completedDate: new Date('2019-01-01'),
+  createdAt: new Date('2019-01-1'),
   order: 1,
   trackingItemId: 1,
 } as MemberTrackingRecord;
 
 test('should findTrackingRecordsByAuthorityId', async () => {
   prisma.memberTrackingRecord.findMany.mockImplementationOnce(() => [dummyMemberTrackingRecord]);
-  const result = await findTrackingRecordsByAuthorityId('1');
+  const result = await findTrackingRecordsByAuthorityId(1);
   expect(result).toStrictEqual([dummyMemberTrackingRecord]);
 });
 
 test('should findTrackingRecordsByTraineeId', async () => {
   prisma.memberTrackingRecord.findMany.mockImplementationOnce(() => [dummyMemberTrackingRecord]);
-  const result = await findTrackingRecordsByTraineeId('1');
+  const result = await findTrackingRecordsByTraineeId(1);
   expect(result).toStrictEqual([dummyMemberTrackingRecord]);
 });

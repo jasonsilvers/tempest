@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { logFactory } from '../../../lib/logger';
 import { ELogEventType } from '../../../const/enums';
@@ -50,4 +50,4 @@ const logHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser, Log
   }
 };
 
-export default withTempestHandlers(logHandler, findUserByDodId, logSchema, false);
+export default withTempestHandlers(logHandler, findUserByEmail, logSchema, false);

@@ -1,5 +1,5 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import mattermostHandler from '../../../src/pages/api/mattermost/[id]';
@@ -10,10 +10,10 @@ jest.mock('../../../src/repositories/mattermost/mattermostRepo.ts');
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
 
-const globalUserId = 'a100e2fa-50d0-49a6-b10f-00adde24d0c2';
+const globalUserId = 1;
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
@@ -72,7 +72,7 @@ test('Post - should return 401 if not authorized', async () => {
 });
 
 test('Post - should return 403 if incorrect permissions', async () => {
-  mockMethodAndReturn(findUserByDodId, {
+  mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },

@@ -30,7 +30,7 @@ describe('Can view Global Tracking Items', () => {
     cy.findByText(/keyboard warrior training/i).should('not.exist');
   });
 
-  it('should show create new training dialog', () => {
+  it('should create new training item', () => {
     cy.findByRole('button', { name: /create new training/i }).click();
 
     const newTrainingItemTitle = 'New training item title';

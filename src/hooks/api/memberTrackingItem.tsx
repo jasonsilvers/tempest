@@ -14,15 +14,15 @@ const sortMemberTrackingItems = (memberTrackingItems: MemberTrackingItemWithAll[
 };
 
 export const mtiQueryKeys = {
-  memberTrackingItems: (userId: string) => [MEMBER_TRACKING_ITEM_RESOURCE, userId],
-  memberTrackingItem: (userId: string, trackingItemId: number) => [
+  memberTrackingItems: (userId: number) => [MEMBER_TRACKING_ITEM_RESOURCE, userId],
+  memberTrackingItem: (userId: number, trackingItemId: number) => [
     MEMBER_TRACKING_ITEM_RESOURCE,
     userId,
     trackingItemId,
   ],
 };
 
-export const fetchMemberTrackingItems = async (userId: string): Promise<MemberTrackingItemWithAll[]> => {
+export const fetchMemberTrackingItems = async (userId: number): Promise<MemberTrackingItemWithAll[]> => {
   const { data } = await axios.get<UserWithAll>(
     EUri.USERS + `${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}?include=trackingitem`
   );
@@ -35,7 +35,7 @@ export const fetchMemberTrackingItems = async (userId: string): Promise<MemberTr
  * @param userId
  * @returns
  */
-const useMemberTrackingItems = (userId: string) => {
+const useMemberTrackingItems = (userId: number) => {
   return useQuery<MemberTrackingItemWithAll[], unknown, MemberTrackingItem[]>(
     mtiQueryKeys.memberTrackingItems(userId),
     () => fetchMemberTrackingItems(userId),
@@ -55,7 +55,7 @@ type MemberTrackingItemData = MemberTrackingItem & {
  * @param trackingItemId
  * @returns
  */
-export const useMemberTrackingItem = (userId: string, trackingItemId: number) => {
+export const useMemberTrackingItem = (userId: number, trackingItemId: number) => {
   return useQuery<MemberTrackingItemWithAll, unknown, MemberTrackingItemData>(
     mtiQueryKeys.memberTrackingItem(userId, trackingItemId),
     () =>

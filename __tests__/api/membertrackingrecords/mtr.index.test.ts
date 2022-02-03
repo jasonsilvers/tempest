@@ -1,5 +1,5 @@
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByDodId } from '../../../src/repositories/userRepo';
+import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import memberTrackingRecordIndexHandler from '../../../src/pages/api/membertrackingrecords/index';
@@ -12,8 +12,8 @@ jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/memberTrackingRepo.ts');
 
 beforeEach(() => {
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
   });
@@ -35,7 +35,7 @@ test('should return 401 if not Authorized', async () => {
 test('POST - should create member tracking record', async () => {
   const returnedMemberTrackingRecordDB = {
     trackingItemId: 1,
-    traineeId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 2,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: null,
@@ -55,14 +55,14 @@ test('POST - should create member tracking record', async () => {
 test('POST - should return 403 if incorrect permissions', async () => {
   const returnedMemberTrackingRecordDB = {
     trackingItemId: 1,
-    traineeId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 2,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: null,
     completedDate: dayjs('2020-5-14').toISOString(),
   };
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });
@@ -77,14 +77,14 @@ test('POST - should return 403 if incorrect permissions', async () => {
 test('POST - should return 403 if member does not own record', async () => {
   const returnedMemberTrackingRecordDB = {
     trackingItemId: 1,
-    traineeId: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2',
+    traineeId: 2,
     authorityId: null,
     authoritySignedDate: null,
     traineeSignedDate: null,
     completedDate: dayjs('2020-5-14').toISOString(),
   };
-  mockMethodAndReturn(findUserByDodId, {
-    id: 'a100e2fa-50d0-49a6-b10f-00adde24d0c2',
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });

@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import { findGrants } from '../../../repositories/grantsRepo';
 import { GrantsDTO } from '../../../types';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
@@ -16,4 +16,4 @@ const grantsHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>,
   res.status(200).json({ grants });
 };
 
-export default withTempestHandlers(grantsHandler, findUserByDodId);
+export default withTempestHandlers(grantsHandler, findUserByEmail);

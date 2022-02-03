@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { findUserByDodId, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../const/enums';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
@@ -28,4 +28,4 @@ const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, 
   res.status(200).json({ roles });
 };
 
-export default withTempestHandlers(rolesHandler, findUserByDodId);
+export default withTempestHandlers(rolesHandler, findUserByEmail);

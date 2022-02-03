@@ -10,8 +10,9 @@ describe('Can view Global Tracking Items', () => {
     cy.visit(baseUrl);
   });
 
-  it('should show list of users', () => {
-    cy.findByText(/clark, sandra/i, { timeout: 10000 }).should('exist');
-    cy.findByText(/smith/i, { timeout: 10000 }).should('exist');
+  it('should show list of users in organization', () => {
+    cy.findByText(/member, sam/i, { timeout: 10000 }).should('exist');
+    cy.findByText(/member, scarlet/i, { timeout: 10000 }).should('exist');
+    cy.findByText(/monitor, frank/i, { timeout: 10000 }).should('exist');
   });
 });

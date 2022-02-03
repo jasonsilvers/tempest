@@ -39,7 +39,7 @@ export const useMemberTrackingRecord = (memberTrackingRecordId: number) => {
 export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
   const queryClient = useQueryClient();
 
-  return useMutation<MemberTrackingRecord, unknown, { memberTrackingRecord: RecordWithTrackingItem; userId: string }>(
+  return useMutation<MemberTrackingRecord, unknown, { memberTrackingRecord: RecordWithTrackingItem; userId: number }>(
     ({ memberTrackingRecord }) =>
       axios
         .post(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}/${memberTrackingRecord.id}/${verb}`, {
