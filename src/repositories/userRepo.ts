@@ -1,7 +1,6 @@
 import { User, Role, Prisma } from '@prisma/client';
 import prisma from '../prisma/prisma';
 import { ERole, EUserIncludes } from '../const/enums';
-import { IPerson } from './common/types';
 import { getRoleByName } from './roleRepo';
 import { P1_JWT } from '@tron/nextjs-auth-p1';
 const dayjs = require('dayjs');
