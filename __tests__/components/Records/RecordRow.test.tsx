@@ -16,13 +16,6 @@ const trackingItemWithAnnualInterval: TrackingItem = {
   title: 'Item Title',
 };
 
-const trackingItemWithFourDayInterval: TrackingItem = {
-  description: 'description',
-  id: 1,
-  interval: 4,
-  title: 'Item Title',
-};
-
 // Establish API mocking before tests.
 beforeEach(() => {
   server.listen({

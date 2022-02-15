@@ -1,4 +1,4 @@
-import { render, waitFor, fireEvent, rtlRender, Wrapper } from '../testutils/TempestTestUtils';
+import { waitFor, fireEvent, rtlRender, Wrapper } from '../testutils/TempestTestUtils';
 import Profile, { getStaticPaths, getStaticProps } from '../../src/pages/Profile/[id]';
 import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';

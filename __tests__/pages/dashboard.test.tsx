@@ -18,7 +18,6 @@ import {
   waitFor,
   waitForElementToBeRemoved,
   waitForLoadingToFinish,
-  within,
   userEvent,
   fireEvent,
 } from '../testutils/TempestTestUtils';
@@ -28,7 +27,7 @@ jest.mock('../../src/repositories/userRepo');
 const users = {
   users: [
     {
-      id: 'daf12fc8-65a2-416a-bbf1-662b3e52be85',
+      id: 'daf12fnpmc8-65a2-416a-bbf1-662b3e52be85',
       dodId: '1143209890',
       firstName: 'Sandra',
       lastName: 'Clark',
