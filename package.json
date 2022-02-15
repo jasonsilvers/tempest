@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "prisma": {
-    "seed": "node ./src/prisma/seed.js"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} src/prisma/seed.ts"
   },
   "scripts": {
     "dev": "next dev",
@@ -37,7 +37,9 @@
   },
   "resolutions": {
     "shell-quote": "1.7.3",
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "follow-redirects": "1.14.8",
+    "superjson": "1.8.1"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.16.7",
