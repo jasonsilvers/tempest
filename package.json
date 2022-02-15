@@ -37,7 +37,9 @@
   },
   "resolutions": {
     "shell-quote": "1.7.3",
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "follow-redirects": "1.14.8",
+    "superjson": "1.8.1"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.16.7",
@@ -118,6 +120,7 @@
     "jest": "^27.4.7",
     "mockdate": "^3.0.5",
     "msw": "^0.27.0",
+    "next-router-mock": "^0.6.5",
     "node-mocks-http": "^1.11.0",
     "prettier": "2.5.1",
     "pretty-quick": "^3.1.3",

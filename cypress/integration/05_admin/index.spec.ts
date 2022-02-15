@@ -14,7 +14,6 @@ describe('Can use admin features', () => {
   it('should navigate to admin page', () => {
     cy.findByRole('navigation', { name: /admin/i }).should('be.visible');
     //wait for dashboard to load
-    cy.findByText(/overdue/i);
     //then route to admin page
     cy.findByRole('navigation', { name: /admin/i }).click();
 

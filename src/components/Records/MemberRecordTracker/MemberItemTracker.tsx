@@ -5,11 +5,13 @@ import { ITabProps } from './Tab';
 import { MemberItemTrackerContextProvider } from './providers/MemberItemTrackerContext';
 
 // Twin macro styles for table and headers
-const Header = tw.h1`text-2xl font-bold text-black mb-6`;
+const Header = tw.h1`text-xl font-bold text-black mb-2`;
 
-const TabContainer = tw.div`flex space-x-10 border-b border-color[#AEAEAE]`;
+const TabContainer = tw.div`flex space-x-4`;
 
 const TabAndTableContainer = tw.div`flex flex-col `;
+
+export type Variant = 'In Progress' | 'Completed';
 
 /**
  *
@@ -18,7 +20,9 @@ const TabAndTableContainer = tw.div`flex flex-col `;
 const MemberItemTracker: React.FC<{
   userId: number;
   title: string;
-}> = ({ userId, title, children }) => {
+  description: string;
+  variant: Variant;
+}> = ({ userId, title, description, variant, children }) => {
   const TabAndTableRef: LegacyRef<HTMLDivElement> = useRef();
 
   const categories = React.Children.map(children, (child: React.ReactElement<ITabProps>) => child.props.category);
@@ -27,10 +31,11 @@ const MemberItemTracker: React.FC<{
     <MemberItemTrackerContextProvider categories={categories}>
       <div tw="mr-5 pr-10 w-full">
         <Header>{title}</Header>
-        <TabAndTableContainer tw="bg-white p-2 rounded-md" ref={TabAndTableRef}>
+        <h2 tw="mb-4 text-gray-400 text-sm">{description}</h2>
+        <TabAndTableContainer tw="p-2 rounded-md" ref={TabAndTableRef}>
           <TabContainer id="Filter Tabs">{children}</TabContainer>
 
-          <MemberTrackingItemTable userId={userId} />
+          <MemberTrackingItemTable userId={userId} variant={variant} />
         </TabAndTableContainer>
       </div>
     </MemberItemTrackerContextProvider>

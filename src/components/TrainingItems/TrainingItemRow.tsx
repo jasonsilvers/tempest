@@ -2,10 +2,10 @@ import { TrackingItem } from '@prisma/client';
 import React from 'react';
 import tw from 'twin.macro';
 import { TempestDeleteIcon, IconButton } from '../../lib/ui';
-import { getInterval } from '../../utils/daysToString';
+import { TrackingItemInterval } from '../../utils/daysToString';
 import { useDeleteTrackingItem } from '../../hooks/api/trackingItem';
 
-const Container = tw.div`flex h-10 items-center border-b-2`;
+const Container = tw.div`flex h-10 items-center border-b`;
 const RowTitle = tw.div`mx-3 w-72`;
 const RowInterval = tw.div`mx-3 w-28`;
 const DescriptionTable = tw.div`w-7/12 ml-10`;
@@ -14,8 +14,8 @@ const RowDescription = tw.div`min-height[20px] max-height[40px] line-clamp[2] ov
 
 export const TrainingItemHeader = () => (
   <Container>
-    <RowTitle tw="text-lg">Title</RowTitle>
-    <RowInterval tw="text-lg">Interval</RowInterval>
+    <RowTitle tw="text-lg">Training Title</RowTitle>
+    <RowInterval tw="text-lg">Recurrence</RowInterval>
     <DescriptionTable>
       <DescriptionContainer>
         <RowDescription tw="text-lg">Description</RowDescription>
@@ -33,7 +33,7 @@ export const TrainingItemRow: React.FC<{ trackingItem: TrackingItem; canDelete: 
   return (
     <Container className="group" tw="hover:bg-gray-100">
       <RowTitle>{trackingItem.title}</RowTitle>
-      <RowInterval>{getInterval(trackingItem.interval)}</RowInterval>
+      <RowInterval>{TrackingItemInterval[trackingItem.interval]}</RowInterval>
       <DescriptionTable tw="w-7/12">
         <DescriptionContainer>
           <RowDescription>{trackingItem.description}</RowDescription>

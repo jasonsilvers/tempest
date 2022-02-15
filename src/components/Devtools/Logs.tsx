@@ -11,8 +11,6 @@ const Logs = () => {
     return axios.get<LogEventDTO>(EUri.LOGS).then((response) => response.data.logEvents);
   });
 
-  console.log(logEventQuery.data);
-
   const columns = useMemo(
     () => [
       {

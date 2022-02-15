@@ -7,7 +7,7 @@ import Head from 'next/head';
 import { useNavLoading } from '../hooks/useNavLoading';
 import { ProgressLayout, LoadingSpinner } from '../lib/ui';
 
-const MainContent = tw.div`ml-80 mt-9`;
+const MainContent = tw.div`ml-[23rem] mt-9`;
 
 function MyApp({ Component, pageProps }) {
   const { navigating } = useNavLoading();

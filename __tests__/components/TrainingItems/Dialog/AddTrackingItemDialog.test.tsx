@@ -80,21 +80,24 @@ test('should add new training to list waiting to be added', async () => {
     })
   );
 
-  const { getByRole, getByText } = render(<Container />);
+  const { getByRole, getByText, getAllByRole, findByRole } = render(<Container />);
 
   const openDialogButton = getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
-  const trainingIntervalInput = getByRole('spinbutton', { name: 'training-interval-input' });
+  const trainingIntervalSelect = await findByRole('button', { name: 'Annual' });
 
   const newTrainingItemTitle = 'New training item title';
   const newTrainingItemDescription = 'New training item description';
 
   fireEvent.change(trainingTitleInput, { target: { value: newTrainingItemTitle } });
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
-  userEvent.type(trainingIntervalInput, '2');
+  fireEvent.mouseDown(trainingIntervalSelect);
+
+  const options = getAllByRole('option');
+  fireEvent.click(options[1]);
 
   const createButton = getByRole('button', { name: /create/i });
   fireEvent.click(createButton);
@@ -120,14 +123,12 @@ test('should show duplicates', async () => {
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
-  const trainingIntervalInput = getByRole('spinbutton', { name: 'training-interval-input' });
 
   const newTrainingItemTitle = 'Big';
   const newTrainingItemDescription = 'New training item description';
 
   userEvent.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
-  userEvent.type(trainingIntervalInput, '2');
 
   expect(queryByText(/Bug Safety/i)).toBeInTheDocument();
 
@@ -157,14 +158,12 @@ test('should tell user they cannot add a duplicate', async () => {
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
-  const trainingIntervalInput = getByRole('spinbutton', { name: 'training-interval-input' });
 
   const newTrainingItemTitle = 'Big Bug Safety';
   const newTrainingItemDescription = 'New training item description';
 
   userEvent.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
-  userEvent.type(trainingIntervalInput, '2');
 
   expect(queryByText(/unable to add/i)).toBeInTheDocument();
 });
@@ -187,14 +186,12 @@ test('should tell user they cannot add a duplicate', async () => {
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
-  const trainingIntervalInput = getByRole('spinbutton', { name: 'training-interval-input' });
 
   const newTrainingItemTitle = 'Big Bug';
   const newTrainingItemDescription = 'New training item description';
 
   userEvent.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
-  userEvent.type(trainingIntervalInput, '2');
 
   const createButton = getByRole('button', { name: /create/i });
   fireEvent.click(createButton);

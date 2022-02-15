@@ -14,6 +14,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Fab from '@mui/material/Fab';
 import ToolTip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
+import Chip from '@mui/material/Chip';
 import Menu from '@mui/material/Menu';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -26,8 +27,7 @@ import { useRouter } from 'next/router';
 import DatePicker from '@mui/lab/DatePicker';
 import { DataGrid } from '@mui/x-data-grid';
 import FormControl from '@mui/material/FormControl';
-import { DialogContentText, OutlinedInput, OutlinedInputProps } from '@mui/material';
-import { MenuItem, Select } from '@mui/material';
+import { DialogContentText, OutlinedInput, OutlinedInputProps, Select, MenuItem, Divider } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { CSSProperties } from '@mui/styles/withStyles';
 import Drawer, { DrawerProps } from '@mui/material/Drawer';
@@ -149,10 +149,12 @@ export {
   CircularProgress,
   Link,
   Card,
+  Chip,
   DialogTitle,
   DialogContent,
   DialogActions,
   DialogContentText,
+  Divider,
   InputAdornment,
   OutlinedInput,
   Button,

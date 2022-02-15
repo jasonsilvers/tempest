@@ -15,6 +15,7 @@ import MemberItemTracker from '../../components/Records/MemberRecordTracker/Memb
 import Tab from '../../components/Records/MemberRecordTracker/Tab';
 import { ProfileHeader } from '../../components/Profile/ProfileHeader';
 import { useMember } from '../../hooks/api/users';
+import { BreadCrumbs } from '../../components/Breadcrumbs';
 
 const ButtonContainer = tw.div`fixed right-10 top-5 border`;
 
@@ -44,16 +45,28 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
   return (
     <div tw="relative min-w-min max-width[1440px]">
-      {/* should refactor to use a react query in future */}
+      <div tw="pb-20">
+        <BreadCrumbs />
+      </div>
       <ProfileHeader member={member} />
-      <MemberItemTracker title="Training in Progress" userId={userId}>
-        <Tab category={ECategories.ALL}>All</Tab>
+      <MemberItemTracker
+        variant="In Progress"
+        title="Training in Progress"
+        description="This shows you training that has yet to be completed and signed off."
+        userId={userId}
+      >
+        <Tab category={ECategories.ALL}>Show All</Tab>
         <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
         <Tab category={ECategories.TODO}>To Do</Tab>
       </MemberItemTracker>
       <br />
-      <MemberItemTracker title="Official Training Record" userId={userId}>
-        <Tab category={ECategories.ALL}>All</Tab>
+      <MemberItemTracker
+        variant="Completed"
+        title="Official Training Record"
+        description="This shows you your training that has been completed and signed off by the appropriate authority."
+        userId={userId}
+      >
+        <Tab category={ECategories.ALL}>Show All</Tab>
         <Tab category={ECategories.DONE}>Current</Tab>
         <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
         <Tab category={ECategories.OVERDUE}>Overdue</Tab>

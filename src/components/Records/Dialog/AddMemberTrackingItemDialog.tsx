@@ -22,6 +22,7 @@ import { mtrQueryKeys, useCreateMemberTrackingRecord } from '../../../hooks/api/
 import { useSnackbar } from 'notistack';
 import { useQueryClient } from 'react-query';
 import { memberTrackingRecordIsComplete } from '../../../utils/status';
+import { TrackingItemInterval } from '../../../utils/daysToString';
 
 type IMemberTrackingItemsToAdd = {
   [key: number]: IMemberTrackingItemToAdd;
@@ -188,7 +189,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
       <DialogContent>
         <TableRowHeader>
           <TableData tw="w-1/3">Training Title</TableData>
-          <TableData tw="w-1/5 text-center">Interval (days)</TableData>
+          <TableData tw="w-1/5 text-center">Recurrence</TableData>
           <TableData>Date Completed</TableData>
           <div></div>
         </TableRowHeader>
@@ -199,7 +200,9 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           return (
             <TableRow key={memberTrackingItemToAdd.trackingItem.id}>
               <TableData tw="text-sm w-1/3">{memberTrackingItemToAdd.trackingItem.title}</TableData>
-              <TableData tw="text-sm w-1/5 text-center">{memberTrackingItemToAdd.trackingItem.interval}</TableData>
+              <TableData tw="text-sm w-1/5 text-center">
+                {TrackingItemInterval[memberTrackingItemToAdd.trackingItem.interval]}
+              </TableData>
               <TableData>
                 <TempestDatePicker
                   onChange={(date: Date) =>

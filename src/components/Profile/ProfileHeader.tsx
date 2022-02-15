@@ -12,9 +12,8 @@ import ConfirmDialog from '../Dialog/ConfirmDialog';
 import { UpdateUsersOrg } from '../UpdateUsersOrg';
 import { GroupedRank } from '../../types';
 
-const Name = tw.h4`text-3xl text-black`;
+const Name = tw.h4`text-3xl text-black pb-2`;
 const Table = tw.div`text-left mb-6`;
-const Column = tw.div`flex flex-col`;
 const Row = tw.div`flex flex-row p-1`;
 const Base = tw.div`text-lg mb-1 text-hg pr-5 capitalize`;
 const Rank = tw(Base)`w-24`;
@@ -40,7 +39,7 @@ const EditButtonGroup: React.FC<{ onSave: () => void; onCancel: () => void; onEd
     );
   }
   return (
-    <IconButton onClick={onEdit} aria-label={`edit-user`} size="small" tw="ml-2 mr-3 hover:bg-transparent">
+    <IconButton onClick={onEdit} aria-label={`edit-user`} size="small" tw="hover:bg-transparent">
       <EditIcon />
     </IconButton>
   );
@@ -143,7 +142,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
 
   return formState ? (
     <ProfileHeaderContext.Provider value={{ userId: member?.id, isEdit: isActiveEdit }}>
-      <div tw="flex items-center">
+      <div tw="flex space-x-6 items-start">
         <Name>{`${member.lastName}, ${member.firstName}`}</Name>
         <EditButtonGroup
           onEdit={() => setIsActiveEdit(true)}
@@ -164,50 +163,40 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
       </div>
 
       <Table>
-        <Column>
-          <Row>
-            <EditSelect
-              onChange={({ value }) => {
-                setFormState((state) => ({ ...state, rank: value }));
-              }}
-              label="Rank"
-              editStyle={{ width: '10rem' }}
-            >
-              <Rank>{formState.rank}</Rank>
-            </EditSelect>
-            <EditItem
-              label="Office Symbol"
-              editStyle={{ width: '20rem' }}
-              onChange={(e) => setFormState((state) => ({ ...state, address: e.target.value }))}
-            ></EditItem>
-          </Row>
-        </Column>
-        <Column>
-          <Row>
-            <EditItem
-              label="AFSC"
-              editStyle={{ width: '10rem' }}
-              onChange={(e) => setFormState((state) => ({ ...state, afsc: e.target.value }))}
-            >
-              <AFSC>{formState.afsc}</AFSC>
-            </EditItem>
+        <Row>
+          <EditSelect
+            onChange={({ value }) => {
+              setFormState((state) => ({ ...state, rank: value }));
+            }}
+            label="Rank"
+            editStyle={{ width: '10rem' }}
+          >
+            <Rank>{formState.rank}</Rank>
+          </EditSelect>
 
-            <EditOrg
-              label="Organization"
-              editStyle={{ width: '20rem' }}
-              onChange={(org: Organization) => {
-                if (member.role.name === ERole.MEMBER) {
-                  setFormState((state) => ({ ...state, organizationId: org.id }));
-                } else {
-                  setOrgModal({ open: true, transientId: org.id });
-                }
-              }}
-              orgId={formState.organizationId}
-            >
-              <OrganizationField>{userOrg?.name ?? ''}</OrganizationField>
-            </EditOrg>
-          </Row>
-        </Column>
+          <EditItem
+            label="AFSC"
+            editStyle={{ width: '10rem' }}
+            onChange={(e) => setFormState((state) => ({ ...state, afsc: e.target.value }))}
+          >
+            <AFSC>{formState.afsc}</AFSC>
+          </EditItem>
+
+          <EditOrg
+            label="Organization"
+            editStyle={{ width: '20rem' }}
+            onChange={(org: Organization) => {
+              if (member.role.name === ERole.MEMBER) {
+                setFormState((state) => ({ ...state, organizationId: org.id }));
+              } else {
+                setOrgModal({ open: true, transientId: org.id });
+              }
+            }}
+            orgId={formState.organizationId}
+          >
+            <OrganizationField>{userOrg?.name ?? ''}</OrganizationField>
+          </EditOrg>
+        </Row>
       </Table>
       <ConfirmDialog
         open={orgModal.open}

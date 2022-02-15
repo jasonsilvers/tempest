@@ -73,7 +73,7 @@ async function seedDev() {
     data: {
       title: 'Fire Safety',
       description: 'How to be SAFE when using Fire',
-      interval: 60,
+      interval: 90,
     },
   });
 
