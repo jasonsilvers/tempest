@@ -27,12 +27,13 @@ const TrackingItems = () => {
 
   return (
     <div tw="flex flex-col max-width[1440px] min-width[800px] pr-5">
-      <div tw="flex items-center mb-5">
+      <div tw="flex items-center pb-10">
         <H1>Global Training Catalog</H1>
-        <div tw="flex ml-auto space-x-2">
+        <div tw="flex ml-auto space-x-6">
           <TextField
             tw="bg-white rounded"
             id="SearchBar"
+            size="small"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             InputProps={{
@@ -43,8 +44,8 @@ const TrackingItems = () => {
               ),
             }}
           />
-          <Button variant="contained" color="secondary" onClick={() => setOpenDialog(true)}>
-            + Create New Training
+          <Button variant="contained" size="small" color="primary" onClick={() => setOpenDialog(true)}>
+            + Add New
           </Button>
         </div>
       </div>

@@ -8,7 +8,7 @@ interface IConditionalDateInput {
   onChange: (inputDate: Date) => void;
 }
 
-const CompletedDate = tw.div`pt-1`;
+const CompletedDate = tw.div`pt-1 w-32 text-gray-400`;
 
 const ConditionalDateInput: React.FC<IConditionalDateInput> = ({ dateValue, condition, onChange }) => {
   if (condition) {

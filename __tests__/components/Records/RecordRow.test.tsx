@@ -39,9 +39,10 @@ beforeEach(() => {
           id: 1,
           authoritySignedDate: null,
           completedDate: null,
+          createdAt: null,
           order: 0,
           trackingItemId: 1,
-          traineeId: '1',
+          traineeId: 1,
           traineeSignedDate: null,
           trackingItem: trackingItemWithAnnualInterval,
         } as RecordWithTrackingItem)
@@ -55,9 +56,10 @@ beforeEach(() => {
           id: 2,
           authoritySignedDate: dayjs('2021-01-02').toDate(),
           completedDate: null,
+          createdAt: null,
           order: 0,
           trackingItemId: 1,
-          traineeId: '1',
+          traineeId: 1,
           traineeSignedDate: null,
           trackingItem: trackingItemWithAnnualInterval,
         } as RecordWithTrackingItem)
@@ -133,21 +135,4 @@ test('should not render if the item status does not match active category', asyn
   await waitForLoadingToFinish();
   await waitFor(() => queryByText(/item title/i));
   expect(queryByText(/item title/i)).toBeFalsy();
-});
-
-test('should render the interval in number form for weird amount', async () => {
-  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.ALL,
-    categories: [ECategories.ALL, ECategories.TODO],
-    setActiveCategory: jest.fn(),
-  }));
-
-  const { queryByText, getByText } = render(
-    <RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithFourDayInterval} />
-  );
-  // give everything time to settle
-  await waitForLoadingToFinish();
-  await waitFor(() => getByText(/item title/i));
-  expect(queryByText(/item title/i)).toBeTruthy();
-  expect(queryByText(/4 days/i)).toBeTruthy();
 });

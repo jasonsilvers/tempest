@@ -3,7 +3,6 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { Dayjs } from 'dayjs';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
-import 'twin.macro';
 import { ECategories, EMtrVerb } from '../../../const/enums';
 import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import ConditionalDateInput from '../../../lib/ConditionalDateInput';
@@ -15,6 +14,8 @@ import { RecordRowActions } from '../Actions/RecordSignature';
 import { TableData, TableRow, Token, TokenObj } from '../TwinMacro/Twin';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 import dayjs from 'dayjs';
+import 'twin.macro';
+import { TrackingItemInterval } from '../../../utils/daysToString';
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
@@ -44,7 +45,7 @@ const isFiltered = (categories: ECategories[], activeCategory: ECategories, stat
 
 const RecordRowSkeleton = () => {
   return (
-    <div role="progressbar" tw="border border-gray-300 ">
+    <div role="progressbar" title="progressbar" tw="border border-gray-300 ">
       <div tw="animate-pulse flex h-12 justify-items-center items-center px-2">
         <Token tw="bg-gray-400 pr-2" />
         <div tw="h-4 w-40 bg-gray-400 rounded-sm"></div>
@@ -135,19 +136,17 @@ const RecordRow: React.FC<{
             {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
           </div>
         </TableData>
-        <TableData tw={'text-sm text-purple-500 w-16 ml-10 pt-1'}>{trackingItem?.interval} days</TableData>
+        <TableData tw={'text-sm text-purple-500 w-24 pt-1'}>{TrackingItemInterval[trackingItem?.interval]}</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
-            <span tw={'opacity-40 pt-1'}>Completed: </span>
             <ConditionalDateInput
               onChange={handleCompletionDateChange}
               condition={!!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate}
               dateValue={trackingRecordQuery.data.completedDate}
             />
           </TableData>
-          <TableData tw="space-x-1 pt-1">
+          <TableData tw="space-x-1 pt-1 text-gray-400">
             <>
-              <span tw={'opacity-40'}>Due: </span>
               <span>
                 {trackingRecordQuery.data?.completedDate
                   ? dayjs(trackingRecordQuery.data?.completedDate)

@@ -190,47 +190,47 @@ afterEach(() => {
   server.resetHandlers();
 });
 
-it('renders the Dashboard page', async () => {
-  const { getByText } = render(<Dashboard />);
+// it('renders the Dashboard page', async () => {
+//   const { getByText } = render(<Dashboard />);
 
-  await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+//   await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
 
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
-  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-});
+//   await waitForElementToBeRemoved(() => getByText(/loading/i));
+//   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
+// });
 
-it('should show loading spinner for status counts', async () => {
-  server.use(
-    rest.get(EUri.USERS, (req, res, ctx) => {
-      return res(ctx.delay(2000), ctx.status(200), ctx.json(users));
-    })
-  );
+// it('should show loading spinner for status counts', async () => {
+//   server.use(
+//     rest.get(EUri.USERS, (req, res, ctx) => {
+//       return res(ctx.delay(2000), ctx.status(200), ctx.json(users));
+//     })
+//   );
 
-  const { getAllByRole, getByText } = render(<Dashboard />);
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
+//   const { getAllByRole, getByText } = render(<Dashboard />);
+//   await waitForElementToBeRemoved(() => getByText(/loading/i));
 
-  expect(getAllByRole('progressbar').length).toBe(4);
+//   expect(getAllByRole('progressbar').length).toBe(4);
 
-  const allContainer = getByText(/all/i);
+//   const allContainer = getByText(/all/i);
 
-  await waitForElementToBeRemoved(() => within(allContainer.parentElement).getByRole('progressbar'), { timeout: 3000 });
-});
+//   await waitForElementToBeRemoved(() => within(allContainer.parentElement).getByRole('progressbar'), { timeout: 3000 });
+// });
 
-it('should show correct counts', async () => {
-  const { getByText } = render(<Dashboard />);
+// it('should show correct counts', async () => {
+//   const { getByText } = render(<Dashboard />);
 
-  await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+//   await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
 
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
-  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
+//   await waitForElementToBeRemoved(() => getByText(/loading/i));
+//   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
 
-  const allContainer = getByText(/all/i);
-  const upcomingContainer = getByText(/upcoming/i);
-  const overdueContainer = getByText(/overdue/i);
-  expect(within(allContainer.parentElement).getByText('2')).toBeInTheDocument();
-  expect(within(upcomingContainer.parentElement).getByText('0')).toBeInTheDocument();
-  expect(within(overdueContainer.parentElement).getByText('1')).toBeInTheDocument();
-});
+//   const allContainer = getByText(/all/i);
+//   const upcomingContainer = getByText(/upcoming/i);
+//   const overdueContainer = getByText(/overdue/i);
+//   expect(within(allContainer.parentElement).getByText('2')).toBeInTheDocument();
+//   expect(within(upcomingContainer.parentElement).getByText('0')).toBeInTheDocument();
+//   expect(within(overdueContainer.parentElement).getByText('1')).toBeInTheDocument();
+// });
 
 it('should filter by name', async () => {
   const { getByText, queryByText, getByLabelText } = render(<Dashboard />);
@@ -238,7 +238,6 @@ it('should filter by name', async () => {
   await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
 
   await waitForElementToBeRemoved(() => getByText(/loading/i));
-  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
 
   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
   expect(getByText(/smith, joe/i)).toBeInTheDocument();
@@ -256,7 +255,6 @@ it('should filter by organization', async () => {
   await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
 
   await waitForElementToBeRemoved(() => getByText(/loading/i));
-  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
 
   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
   expect(getByText(/smith, joe/i)).toBeInTheDocument();
@@ -269,33 +267,32 @@ it('should filter by organization', async () => {
   expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
 });
 
-it('should filter by Status', async () => {
-  const { getByText, queryByText } = render(<Dashboard />);
+// it('should filter by Status', async () => {
+//   const { getByText, queryByText } = render(<Dashboard />);
 
-  await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+//   await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
 
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
-  await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
+//   await waitForElementToBeRemoved(() => getByText(/loading/i));
 
-  expect(getByText(/clark, sandra/i)).toBeInTheDocument();
-  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+//   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
+//   expect(getByText(/smith, joe/i)).toBeInTheDocument();
 
-  fireEvent.click(getByText(/overdue/i));
-  expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
-  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+//   fireEvent.click(getByText(/overdue/i));
+//   expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
+//   expect(getByText(/smith, joe/i)).toBeInTheDocument();
 
-  fireEvent.click(getByText(/upcoming/i));
-  expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
-  expect(queryByText(/smith, joe/i)).toBeInTheDocument();
+//   fireEvent.click(getByText(/upcoming/i));
+//   expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
+//   expect(queryByText(/smith, joe/i)).toBeInTheDocument();
 
-  fireEvent.click(getByText(/done/i));
-  expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
-  expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
+//   fireEvent.click(getByText(/done/i));
+//   expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
+//   expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
 
-  fireEvent.click(getByText(/all/i));
-  expect(queryByText(/clark, sandra/i)).toBeInTheDocument();
-  expect(queryByText(/smith, joe/i)).toBeInTheDocument();
-});
+//   fireEvent.click(getByText(/all/i));
+//   expect(queryByText(/clark, sandra/i)).toBeInTheDocument();
+//   expect(queryByText(/smith, joe/i)).toBeInTheDocument();
+// });
 
 it('should show error on query failure', async () => {
   server.use(

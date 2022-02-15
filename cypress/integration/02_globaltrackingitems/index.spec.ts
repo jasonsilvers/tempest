@@ -31,19 +31,22 @@ describe('Can view Global Tracking Items', () => {
   });
 
   it('should create new training item', () => {
-    cy.findByRole('button', { name: /create new training/i }).click();
+    cy.findByRole('button', { name: /add new/i }).click();
 
     const newTrainingItemTitle = 'New training item title';
     const newTrainingItemDescription = 'New training item description';
 
     cy.findByRole('textbox', { name: 'training-title-input' }).type(newTrainingItemTitle);
     cy.findByRole('textbox', { name: 'training-description-input' }).type(newTrainingItemDescription);
-    cy.findByRole('spinbutton', { name: 'training-interval-input' }).type('2');
 
     cy.findByRole('button', { name: /create/i }).click();
 
     cy.findByText(newTrainingItemTitle).should('exist');
-    cy.findByText(/2 days/i).should('exist');
+    cy.findByText(newTrainingItemTitle)
+      .parent()
+      .within((elem) => {
+        cy.findByText(/Annually/i).should('exist');
+      });
     cy.findByText(newTrainingItemDescription).should('exist');
   });
 });

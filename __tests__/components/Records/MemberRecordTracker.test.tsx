@@ -1,4 +1,10 @@
-import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../../testutils/TempestTestUtils';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+  waitForLoadingToFinish,
+} from '../../testutils/TempestTestUtils';
 import React from 'react';
 import MemberItemTracker from '../../../src/components/Records/MemberRecordTracker/MemberItemTracker';
 import { rest } from 'msw';
@@ -96,7 +102,7 @@ test('should render a record requiring signature - authority signed', async () =
   );
 
   const { getByText, getByRole } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="In Progress">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -147,7 +153,7 @@ test('should render a record requiring signature - trainee signed', async () => 
   );
 
   const { getByText, getByRole } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="In Progress">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -197,7 +203,7 @@ test('should render a record that is done', async () => {
   );
 
   const { getByText } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="Completed">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -209,7 +215,7 @@ test('should render a record that is done', async () => {
 
   const fire = await waitFor(() => getByText(/fire/i));
   const doneTab = getByText(/done/i);
-  const overdue = getByText(/over/i);
+  const overdue = getByText(/overdue/i);
 
   expect(fire).toBeInTheDocument();
   fireEvent.click(doneTab);
@@ -253,7 +259,7 @@ test('should render a record that is coming due', async () => {
   );
 
   const { getByText } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="Completed">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -264,7 +270,7 @@ test('should render a record that is coming due', async () => {
 
   const fire = await waitFor(() => getByText(/fire/i));
   const upcomingTab = getByText(/upcoming/i);
-  const overdue = getByText(/over/i);
+  const overdue = getByText(/overdue/i);
 
   expect(fire).toBeInTheDocument();
   fireEvent.click(upcomingTab);
@@ -306,7 +312,7 @@ test('should render a record that is overdue', async () => {
   );
 
   const { getByText } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="Completed">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -368,7 +374,7 @@ test('should sign record as trainee and mark as done', async () => {
   );
 
   const { getByText, getByRole, queryByText } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records">
+    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="In Progress">
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -378,7 +384,8 @@ test('should sign record as trainee and mark as done', async () => {
   );
 
   await waitFor(() => getByText(/fire/i));
-  await waitFor(() => getByText(/completed/i));
+  await waitForLoadingToFinish();
+
   expect(getByText(/signed on/i)).toBeInTheDocument();
   const signatureButton = getByRole('button', { name: 'signature_button' });
 

@@ -11,6 +11,7 @@ import {
   OutlinedInputProps,
   FormControl,
   IconButton,
+  SelectChangeEvent,
 } from '../../../lib/ui';
 import { Close } from '../../../assets/Icons';
 import tw from 'twin.macro';
@@ -19,6 +20,7 @@ import { TrackingItem } from '@prisma/client';
 import Fuse from 'fuse.js';
 import ConfirmDialog from '../../Dialog/ConfirmDialog';
 import { useSnackbar } from 'notistack';
+import { RecurrenceSelect } from '../../RecurrenceSelect';
 
 const fuseOptions: Fuse.IFuseOptions<TrackingItem> = {
   isCaseSensitive: false,
@@ -105,7 +107,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       setTrackingItem({
         title: '',
         description: '',
-        interval: 0,
+        interval: 365,
       } as TrackingItemToAdd);
     };
   }, [isOpen]);
@@ -178,15 +180,11 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
               ) : (
                 <DialogContentText>Interval</DialogContentText>
               )}
-              <AdjustedOutlinedInput
-                required
-                name="interval"
-                inputProps={{ 'aria-label': 'training-interval-input' }}
-                type="number"
-                value={trackingItem.interval}
-                onChange={(e: ChangeEvent<{ name: string; value: string }>) =>
-                  handleTrackingItemInput(e.target.name, parseInt(e.target.value))
-                }
+              <RecurrenceSelect
+                value={trackingItem.interval.toString()}
+                handleChange={(event: SelectChangeEvent) => {
+                  handleTrackingItemInput('interval', parseInt(event.target.value));
+                }}
               />
             </InputFieldContainer>
           </div>

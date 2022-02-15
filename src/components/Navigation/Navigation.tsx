@@ -19,10 +19,10 @@ const Header: React.FC<ILinkProps> = ({ children, goToUrl = '/', className = '' 
   );
 };
 
-const StyledLink = tw.a`text-lg text-secondary flex flex-row items-center space-x-6 cursor-pointer h-14 w-52`;
+const StyledLink = tw.a`text-base text-secondary flex flex-row items-center space-x-6 cursor-pointer h-14 w-auto`;
 const StyledActiveLInk = tw(StyledLink)`bg-secondary text-white rounded-lg`;
-const StyledIcon = tw.div`bg-accent rounded-l-lg h-full flex items-center w-14 justify-center`;
-const StyledChildren = tw.div`w-32`;
+const StyledIcon = tw.div`bg-accent rounded-l-lg h-full flex items-center w-16 justify-center`;
+const StyledChildren = tw.div`w-60`;
 const StyledNonActiveIcon = tw(StyledIcon)`bg-white`;
 
 const Link: React.FC<ILinkProps> = ({ children, goToUrl, icon }) => {

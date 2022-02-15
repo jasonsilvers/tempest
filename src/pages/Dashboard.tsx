@@ -6,7 +6,6 @@ import { dehydrate } from 'react-query/hydration';
 import tw from 'twin.macro';
 import { SearchIcon } from '../assets/Icons';
 import { EStatus } from '../components/Dashboard/Enums';
-import { MemberCountCards } from '../components/Dashboard/MemberCountCards';
 import { Actions, AllCounts, StatusCounts, UserCounts } from '../components/Dashboard/Types';
 import { EFuncAction, EResource } from '../const/enums';
 import { useOrgs } from '../hooks/api/organizations';
@@ -308,14 +307,14 @@ const DashboardPage: React.FC = () => {
 
   return (
     <main tw="pr-14 max-width[900px] min-width[720px]">
-      <div tw="flex space-x-8 pb-5">
+      {/* <div tw="flex space-x-8 pb-5">
         <MemberCountCards
           isLoading={users?.isLoading}
           counts={dashboardState.counts}
           variant={dashboardState.statusFilter}
           dispatch={dispatch}
         />
-      </div>
+      </div> */}
       <div tw="flex space-x-2 pb-5">
         <div tw="w-1/2">
           <TextField

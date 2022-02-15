@@ -29,9 +29,6 @@ describe('Member role', () => {
     cy.findByRole('textbox', { name: /rank/i }).click();
     cy.findByRole('option', { name: /SSgt/i }).click();
     cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
-    cy.findByRole('textbox', { name: /office symbol/i })
-      .clear()
-      .type('TRON');
     cy.findByRole('textbox', { name: /organization/i }).click();
     cy.findByRole('option', { name: /vacc/i }).click();
     cy.findByRole('button', { name: /cancel/i }).click();
@@ -45,9 +42,6 @@ describe('Member role', () => {
     cy.findByRole('textbox', { name: /rank/i }).click();
     cy.findByRole('option', { name: /SSgt/i }).click();
     cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
-    cy.findByRole('textbox', { name: /office symbol/i })
-      .clear()
-      .type('TRON');
     cy.findByRole('textbox', { name: /organization/i }).click();
     cy.findByRole('option', { name: /vacc/i }).click();
     cy.findByRole('button', { name: /save/i }).click();
@@ -169,9 +163,6 @@ describe('Monitor role', () => {
     cy.findByRole('textbox', { name: /rank/i }).click();
     cy.findByRole('option', { name: /SSgt/i }).click();
     cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
-    cy.findByRole('textbox', { name: /office symbol/i })
-      .clear()
-      .type('TRON');
     cy.findByRole('textbox', { name: /organization/i }).click();
     cy.findByRole('option', { name: /vacc/i }).click();
     cy.findByRole('button', { name: /no/i }).click();

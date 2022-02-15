@@ -15,7 +15,7 @@ import { EFuncAction, EMtrVerb, EResource } from '../../../const/enums';
 import setDomRole from '../../../utils/setDomRole';
 import { TableData, DisabledButton, ActionButton } from '../TwinMacro/Twin';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
-import { IconButton, TempestDeleteIcon, TempestToolTip, Zoom } from '../../../lib/ui';
+import { IconButton, LoadingSpinner, TempestDeleteIcon, TempestToolTip, Zoom } from '../../../lib/ui';
 
 type DeterminedActionOnRecord = 'traineeCanSign' | 'authorityCanSign' | 'completed';
 
@@ -187,23 +187,31 @@ const RecordRowActions: React.FC<{
   }
 
   if (isLoading) {
-    return <></>;
+    return (
+      <>
+        <LoadingSpinner />
+      </>
+    );
   }
 
   if (authoritySignedDate && traineeSignedDate) {
     return (
-      <TableData tw="ml-auto color['#7B7B7B'] opacity-60">
-        <RecordSignatureToolTip
-          traineeSignature={{ signee: trainee, date: memberTrackingRecord.authoritySignedDate }}
-          authoritySignature={{ signee: authority, date: memberTrackingRecord.traineeSignedDate }}
-        >
-          <div>
-            Signatures Present <DoneAllIcon tw="ml-3 color['#DADADA']" />
-          </div>
-        </RecordSignatureToolTip>
-      </TableData>
+      <>
+        <TableData tw="ml-auto color['#7B7B7B'] opacity-60 pr-10 w-72">
+          <RecordSignatureToolTip
+            traineeSignature={{ signee: trainee, date: memberTrackingRecord.authoritySignedDate }}
+            authoritySignature={{ signee: authority, date: memberTrackingRecord.traineeSignedDate }}
+          >
+            <div>
+              Signatures Present <DoneAllIcon tw="ml-3 color['#DADADA']" />
+            </div>
+          </RecordSignatureToolTip>
+        </TableData>
+        <TableData tw="w-4"></TableData>
+      </>
     );
   }
+
   return (
     <div tw="flex ml-auto">
       {getAllowedActions(
