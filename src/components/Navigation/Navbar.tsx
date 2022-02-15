@@ -17,14 +17,51 @@ const SideBarDrawer = styled(TempestDrawer)`
   }
 `;
 
+type AdminNavigationProps = {
+  canViewDashboard: boolean;
+  canCreateGlobalTrackingItem: boolean;
+  canViewAdminPage: boolean;
+};
+
+const AdminNavigation = ({ canViewDashboard, canCreateGlobalTrackingItem, canViewAdminPage }: AdminNavigationProps) => {
+  return (
+    <div tw="px-6 space-y-4">
+      <h3 tw="text-[#7B7B7B]">Admin tools</h3>
+      {canViewDashboard ? (
+        <Link goToUrl="/Dashboard" icon={<DashboardIcon fontSize="large" />}>
+          <div role="navigation" aria-label="dashboard">
+            Dashboard
+          </div>
+        </Link>
+      ) : null}
+
+      {canCreateGlobalTrackingItem ? (
+        <Link goToUrl="/Trackingitems" icon={<DescriptionIcon fontSize="large" />}>
+          <div role="navigation" aria-label="global-training-catalog">
+            Global Training Catalog
+          </div>
+        </Link>
+      ) : null}
+      {canViewAdminPage ? (
+        <Link goToUrl="/Admin" icon={<SecurityIcon fontSize="large" />}>
+          <div role="navigation" aria-label="admin">
+            Admin
+          </div>
+        </Link>
+      ) : null}
+    </div>
+  );
+};
+
 const Navbar: React.FC = () => {
   const queryClient = useQueryClient();
   const { user, permissionCheck } = usePermissions();
-  const canViewDashboard = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.DASHBOARD_PAGE);
+
   const canViewMyProfile = permissionCheck(user?.role.name, EFuncAction.READ_OWN, EResource.PROFILE_PAGE);
   const canCreateGlobalTrackingItem = permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM);
   const canViewAdminPage = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.ADMIN_PAGE);
-  const isMonitor = canViewDashboard?.granted || canCreateGlobalTrackingItem?.granted || canViewAdminPage?.granted;
+  const canViewDashboard = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.DASHBOARD_PAGE);
+  const isAdmin = canCreateGlobalTrackingItem?.granted || canViewAdminPage?.granted || canViewDashboard?.granted;
 
   useMemo(() => {
     if (user) {
@@ -52,34 +89,14 @@ const Navbar: React.FC = () => {
           </div>
         ) : null}
 
-        {isMonitor ? (
+        {isAdmin ? (
           <>
             <Divider />
-            <div tw="px-6 space-y-4">
-              <h3 tw="text-[#7B7B7B]">Admin tools</h3>
-              {canViewDashboard?.granted ? (
-                <Link goToUrl="/Dashboard" icon={<DashboardIcon fontSize="large" />}>
-                  <div role="navigation" aria-label="dashboard">
-                    Dashboard
-                  </div>
-                </Link>
-              ) : null}
-
-              {canCreateGlobalTrackingItem?.granted ? (
-                <Link goToUrl="/Trackingitems" icon={<DescriptionIcon fontSize="large" />}>
-                  <div role="navigation" aria-label="global-training-catalog">
-                    Global Training Catalog
-                  </div>
-                </Link>
-              ) : null}
-              {canViewAdminPage?.granted ? (
-                <Link goToUrl="/Admin" icon={<SecurityIcon fontSize="large" />}>
-                  <div role="navigation" aria-label="admin">
-                    Admin
-                  </div>
-                </Link>
-              ) : null}
-            </div>
+            <AdminNavigation
+              canCreateGlobalTrackingItem={canCreateGlobalTrackingItem.granted}
+              canViewAdminPage={canViewAdminPage.granted}
+              canViewDashboard={canViewDashboard.granted}
+            />
           </>
         ) : null}
       </div>

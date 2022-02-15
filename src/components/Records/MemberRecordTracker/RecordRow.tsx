@@ -1,6 +1,6 @@
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
 import { ECategories, EMtrVerb } from '../../../const/enums';
@@ -13,7 +13,6 @@ import ConfirmDialog from '../../Dialog/ConfirmDialog';
 import { RecordRowActions } from '../Actions/RecordSignature';
 import { TableData, TableRow, Token, TokenObj } from '../TwinMacro/Twin';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
-import dayjs from 'dayjs';
 import 'twin.macro';
 import { TrackingItemInterval } from '../../../utils/daysToString';
 
