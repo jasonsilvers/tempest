@@ -6,7 +6,7 @@ import singletonRouter from 'next/router';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import { findUserByIdWithMemberTrackingItems, UserWithAll } from '../../src/repositories/userRepo';
 import mockRouter from 'next-router-mock';
-import { bobJones } from '../testutils/mocks/fixtures';
+import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
 import { EUri } from '../../src/const/enums';
 
 jest.mock('../../src/repositories/userRepo');
@@ -75,6 +75,45 @@ it('renders the profile page', async () => {
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
   await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
+});
+
+it('should not show breadcrumbs if member', async () => {
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+  const { getByText, queryByText } = rtlRender(<Profile initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+  await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
+
+  await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
+  expect(queryByText(/dashboard/i)).not.toBeInTheDocument();
+});
+
+it('should show breadcrumbs if monitor and not on own profile', async () => {
+  server.use(
+    rest.get('/api/users/123', (req, res, ctx) => {
+      console.log('It is in here');
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    }),
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    })
+  );
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+  const { getByText, queryByText } = rtlRender(<Profile initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+  await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
+
+  await waitFor(() => expect(getByText(/monitor/i)).toBeInTheDocument());
+  expect(queryByText(/dashboard/i)).toBeInTheDocument();
 });
 
 it('renders opens the dialog modal', async () => {
