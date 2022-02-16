@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import { Header, Link } from './Navigation';
-import { Divider, TempestDrawer } from '../../lib/ui';
+import { TempestDrawer } from '../../lib/ui';
 import { DashboardIcon, DescriptionIcon, PersonIcon, SecurityIcon } from '../../assets/Icons';
 import { useQueryClient } from 'react-query';
 import { usePermissions } from '../../hooks/usePermissions';
 import { EFuncAction, EResource } from '../../const/enums';
 import { styled } from 'twin.macro';
+import { Divider } from '@mui/material';
 
 const SideBarDrawer = styled(TempestDrawer)`
   & .MuiDrawer-paper {

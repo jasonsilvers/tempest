@@ -127,3 +127,13 @@ docker run -it image_name sh
 ```
 "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} src/prisma/seed.ts"
 ```
+
+# Run Analyze Tools
+
+## Webpack analyzer
+
+## Duplicate Library
+
+```
+ANALYZE=true npm run build
+```

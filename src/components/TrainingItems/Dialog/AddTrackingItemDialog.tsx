@@ -2,15 +2,10 @@ import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import {
   Dialog,
   DialogActions,
-  Button,
   DialogContent,
   DialogTitle,
   LoadingOverlay,
-  DialogContentText,
-  OutlinedInput,
   OutlinedInputProps,
-  FormControl,
-  IconButton,
   SelectChangeEvent,
 } from '../../../lib/ui';
 import { Close } from '../../../assets/Icons';
@@ -21,6 +16,7 @@ import Fuse from 'fuse.js';
 import ConfirmDialog from '../../Dialog/ConfirmDialog';
 import { useSnackbar } from 'notistack';
 import { RecurrenceSelect } from '../../RecurrenceSelect';
+import { OutlinedInput, IconButton, FormControl, DialogContentText, Button } from '@mui/material';
 
 const fuseOptions: Fuse.IFuseOptions<TrackingItem> = {
   isCaseSensitive: false,

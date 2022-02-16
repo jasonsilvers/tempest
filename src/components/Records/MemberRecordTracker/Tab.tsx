@@ -1,6 +1,6 @@
 import tw from 'twin.macro';
 import { ECategories } from '../../../const/enums';
-import { Chip } from '../../../lib/ui';
+import { Chip } from '@mui/material';
 import setDomRole from '../../../utils/setDomRole';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 

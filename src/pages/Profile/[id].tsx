@@ -5,11 +5,11 @@ import { useRouter } from 'next/router';
 import { ECategories, EFuncAction, EResource, EUserIncludes } from '../../const/enums';
 import { QueryClient } from 'react-query';
 import { mtiQueryKeys } from '../../hooks/api/memberTrackingItem';
-import { GetStaticPropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { dehydrate } from 'react-query/hydration';
 import { findUserById, findUserByIdWithMemberTrackingItems, UserWithAll } from '../../repositories/userRepo';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
-import { Button } from '../../lib/ui';
+import { Button } from '@mui/material';
 import tw from 'twin.macro';
 import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberItemTracker';
 import Tab from '../../components/Records/MemberRecordTracker/Tab';
@@ -103,7 +103,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
 export default withPageAuth(Profile);
 
-export async function getStaticProps(context: GetStaticPropsContext) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { params } = context;
 
   const userId = parseInt(params?.id as string);
@@ -122,15 +122,5 @@ export async function getStaticProps(context: GetStaticPropsContext) {
       initialMemberData,
       userId,
     },
-    revalidate: 30,
-  };
-}
-
-export async function getStaticPaths() {
-  return {
-    // Return an empty paths so pages aren't generated at build but will
-    // generate the static page at request based on the revalidate time above
-    paths: [],
-    fallback: true,
   };
 }

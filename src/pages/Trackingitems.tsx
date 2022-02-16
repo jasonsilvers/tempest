@@ -3,7 +3,7 @@ import { tiQueryKeys, useTrackingItems } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import { TrainingItemRow, TrainingItemHeader } from '../components/TrainingItems/TrainingItemRow';
-import { Button, TextField, InputAdornment } from '../lib/ui';
+import { Button, TextField, InputAdornment } from '@mui/material';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
@@ -67,7 +67,7 @@ const TrackingItems = () => {
 };
 export default TrackingItems;
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const prisma = require('../prisma/prisma');
   const queryClient = new QueryClient();
 
@@ -77,6 +77,5 @@ export async function getStaticProps() {
     props: {
       dehydratedState: dehydrate(queryClient),
     },
-    revalidate: 30,
   };
 }

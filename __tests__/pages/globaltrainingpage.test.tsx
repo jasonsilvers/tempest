@@ -1,4 +1,4 @@
-import TrackingItemPage, { getStaticProps } from '../../src/pages/Trackingitems';
+import TrackingItemPage from '../../src/pages/Trackingitems';
 import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
 import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';
@@ -6,8 +6,7 @@ import { ERole, EUri } from '../../src/const/enums';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { bobJones } from '../testutils/mocks/fixtures';
 import { DefaultRequestBody } from 'msw';
-import prisma from '../setup/mockedPrisma';
-import { TrackingItem } from '@prisma/client';
+
 import { TrackingItemsDTO } from '../../src/types';
 
 beforeAll(() => {
@@ -125,43 +124,6 @@ it('test the dashboard searches for the items by description', async () => {
   fireEvent.change(input, { target: { value: 'description' } });
   expect(getByText(/test title/i)).toBeInTheDocument();
 });
-
-// it('test the dashboard cancels the search', async () => {
-//   const { getByText, getByRole } = render(<TrackingItemPage />);
-//   await waitForElementToBeRemoved(() => getByText(/loading/i));
-//   expect(getByText(/global training/i)).toBeInTheDocument();
-//   await waitFor(() => getByText(/test title/i));
-//   const input = getByRole('textbox') as HTMLInputElement;
-//   fireEvent.change(input, { target: { value: 'description' } });
-//   const clearButton = getByRole('clearButton') as HTMLButtonElement;
-//   fireEvent.click(clearButton);
-//   expect(input.value).toBe('');
-//   expect(getByText(/test title/i)).toBeInTheDocument();
-// });
-
-/**
- * getStaticProps Test
- */
-
-test('should return props for static props with no prisma', async () => {
-  const { props } = await getStaticProps();
-
-  expect(props.dehydratedState.queries[0].state.data).toEqual([]);
-  expect(props.dehydratedState.queries[0].queryKey).toEqual(['trackingitems']);
-});
-
-test('should return props for static props with prisma', async () => {
-  const trackingItem = { id: 1, title: 'test title', description: 'test description', interval: 365 } as TrackingItem;
-  prisma.trackingItem.findMany.mockImplementation(() => [trackingItem]);
-  const { props } = await getStaticProps();
-
-  expect(props.dehydratedState.queries[0].state.data).toEqual([trackingItem]);
-  expect(props.dehydratedState.queries[0].queryKey).toEqual(['trackingitems']);
-});
-
-/**
- * Dialog tests
- */
 
 test('should open then close the dialog box', async () => {
   const { getByText, getByRole, queryByText } = render(<TrackingItemPage />);

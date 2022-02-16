@@ -1,11 +1,12 @@
 import { useUser } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../repositories/userRepo';
-import { Button, Dialog } from '../lib/ui';
+import { Dialog } from '../lib/ui';
 import { UpdateUsersOrg } from '../components/UpdateUsersOrg';
 import { useRouter } from 'next/router';
 
 import 'twin.macro';
 import { usePageLogging } from '../hooks/usePageLogging';
+import { Button } from '@mui/material';
 
 const WelcomePage = () => {
   const { user, isLoading } = useUser<LoggedInUser>();

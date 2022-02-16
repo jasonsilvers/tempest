@@ -1,4 +1,5 @@
 import { Role, User } from '.prisma/client';
+import { Button, MenuItem, Select } from '@mui/material';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
@@ -9,7 +10,7 @@ import { EUri } from '../../const/enums';
 import { useOrgs } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
-import { Button, DialogContent, DialogTitle, MenuItem, Select, SelectChangeEvent } from '../../lib/ui';
+import { DialogContent, DialogTitle, SelectChangeEvent } from '../../lib/ui';
 import { UserWithAll } from '../../repositories/userRepo';
 import { RolesDTO, UsersDTO } from '../../types';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
