@@ -3,9 +3,7 @@ import tw from 'twin.macro';
 import MemberTrackingItemTable from './MemberTrackingItemTable';
 import { ITabProps } from './Tab';
 import { MemberItemTrackerContextProvider } from './providers/MemberItemTrackerContext';
-
-// Twin macro styles for table and headers
-const Header = tw.h1`text-xl font-bold text-black mb-2`;
+import { Typography } from '../../../lib/ui';
 
 const TabContainer = tw.div`flex space-x-4`;
 
@@ -30,8 +28,12 @@ const MemberItemTracker: React.FC<{
   return (
     <MemberItemTrackerContextProvider categories={categories}>
       <div tw="mr-5 pr-10 w-full">
-        <Header>{title}</Header>
-        <h2 tw="mb-4 text-gray-400 text-sm">{description}</h2>
+        <Typography tw="pb-2" variant="h5">
+          {title}
+        </Typography>
+        <Typography tw="pb-2" color="#7B7B7B">
+          {description}
+        </Typography>
         <TabAndTableContainer tw="p-2 rounded-md" ref={TabAndTableRef}>
           <TabContainer id="Filter Tabs">{children}</TabContainer>
 

@@ -6,13 +6,12 @@ import { ranks } from '../../const/ranks';
 import { useOrg } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
-import { Button, IconButton, TextField, Autocomplete, CSSProperties } from '../../lib/ui';
+import { Button, IconButton, TextField, Autocomplete, CSSProperties, Typography } from '../../lib/ui';
 import { ERole } from '../../const/enums';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 import { UpdateUsersOrg } from '../UpdateUsersOrg';
 import { GroupedRank } from '../../types';
 
-const Name = tw.h4`text-3xl text-black pb-2`;
 const Table = tw.div`text-left mb-6`;
 const Row = tw.div`flex flex-row p-1`;
 const Base = tw.div`text-lg mb-1 text-hg pr-5 capitalize`;
@@ -143,7 +142,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
   return formState ? (
     <ProfileHeaderContext.Provider value={{ userId: member?.id, isEdit: isActiveEdit }}>
       <div tw="flex space-x-6 items-start">
-        <Name>{`${member.lastName}, ${member.firstName}`}</Name>
+        <Typography variant="h4">{`${member.lastName}, ${member.firstName}`}</Typography>
         <EditButtonGroup
           onEdit={() => setIsActiveEdit(true)}
           onSave={() => {
@@ -171,7 +170,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             label="Rank"
             editStyle={{ width: '10rem' }}
           >
-            <Rank>{formState.rank}</Rank>
+            <Rank>{formState.rank ?? 'Rank'}</Rank>
           </EditSelect>
 
           <EditItem
@@ -179,7 +178,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             editStyle={{ width: '10rem' }}
             onChange={(e) => setFormState((state) => ({ ...state, afsc: e.target.value }))}
           >
-            <AFSC>{formState.afsc}</AFSC>
+            <AFSC>{formState.afsc ?? 'AFSC'}</AFSC>
           </EditItem>
 
           <EditOrg
@@ -194,7 +193,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             }}
             orgId={formState.organizationId}
           >
-            <OrganizationField>{userOrg?.name ?? ''}</OrganizationField>
+            <OrganizationField>{userOrg?.name ?? 'Organization'}</OrganizationField>
           </EditOrg>
         </Row>
       </Table>

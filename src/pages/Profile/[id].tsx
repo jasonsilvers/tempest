@@ -39,15 +39,20 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
       ? permissionCheck(role, EFuncAction.READ_ANY, EResource.PROFILE_PAGE)
       : permissionCheck(role, EFuncAction.READ_OWN, EResource.PROFILE_PAGE);
 
+  const canViewDashboard = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.DASHBOARD_PAGE);
+  const isOnOwnProfile = user.id === userId;
+
   if (!persmission?.granted) {
     return <div>You do not have permission to view that profile</div>;
   }
 
   return (
     <div tw="relative min-w-min max-width[1440px]">
-      <div tw="pb-20">
-        <BreadCrumbs />
-      </div>
+      {canViewDashboard.granted && !isOnOwnProfile ? (
+        <div tw="pb-20">
+          <BreadCrumbs />
+        </div>
+      ) : null}
       <ProfileHeader member={member} />
       <MemberItemTracker
         variant="In Progress"
