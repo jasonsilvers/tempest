@@ -1,4 +1,5 @@
 import { MemberTrackingRecord, Organization } from '.prisma/client';
+import { TextField, InputAdornment, Autocomplete } from '@mui/material';
 import dayjs from 'dayjs';
 import React, { useEffect, useReducer } from 'react';
 import { QueryClient } from 'react-query';
@@ -11,7 +12,7 @@ import { EFuncAction, EResource } from '../const/enums';
 import { useOrgs } from '../hooks/api/organizations';
 import { useUsers } from '../hooks/api/users';
 import { usePermissions } from '../hooks/usePermissions';
-import { Autocomplete, Card, InputAdornment, DashboardPopMenu, TextField } from '../lib/ui';
+import DashboardPopMenu, { Card } from '../lib/ui';
 import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
 import { getUsersWithMemberTrackingRecords, UserWithAll } from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
@@ -391,7 +392,7 @@ const DashboardPage: React.FC = () => {
 
 export default DashboardPage;
 
-export const getStaticProps = async () => {
+export const getServerSideProps = async () => {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery(['users'], () => getUsersWithMemberTrackingRecords());
@@ -400,6 +401,5 @@ export const getStaticProps = async () => {
     props: {
       dehydratedState: dehydrate(queryClient),
     },
-    revalidate: 60,
   };
 };

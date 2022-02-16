@@ -1,4 +1,10 @@
-module.exports = {
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin');
+
+module.exports = withBundleAnalyzer({
   reactStrictMode: true,
   webpack: (config) => {
     // Unset client-side javascript that only works server-side
@@ -8,6 +14,10 @@ module.exports = {
       ...config.resolve.alias,
       '@mui/styled-engine': '@mui/styled-engine-sc',
     };
+
+    if (process.env.ANALYZE === 'true') {
+      config.plugins.push(new DuplicatePackageCheckerPlugin());
+    }
 
     return config;
   },
@@ -37,7 +47,7 @@ module.exports = {
       },
     ];
   },
-};
+});
 
 //Comment above and uncomment below to run bundle analyzer on build
 // module.exports = withBundleAnalyzer({});

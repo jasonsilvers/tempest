@@ -1,6 +1,6 @@
 import { useOrgs } from '../hooks/api/organizations';
 import { useUpdateUser } from '../hooks/api/users';
-import { Autocomplete, TextField } from '../lib/ui';
+import { Autocomplete, TextField } from '@mui/material';
 import { Organization, User } from '@prisma/client';
 import { useSnackbar } from 'notistack';
 import { useUser } from '@tron/nextjs-auth-p1';

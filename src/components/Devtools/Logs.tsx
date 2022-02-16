@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { DataGrid } from '../../lib/ui';
+import { DataGrid } from '@mui/x-data-grid';
 import 'twin.macro';
 import { useQuery } from 'react-query';
 import axios from 'axios';

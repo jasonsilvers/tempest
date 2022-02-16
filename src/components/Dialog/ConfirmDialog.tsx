@@ -1,5 +1,6 @@
-import { Dialog, Button, DialogActions } from '../../lib/ui';
+import { Dialog, DialogActions } from '../../lib/ui';
 import 'twin.macro';
+import { Button } from '@mui/material';
 
 interface IConfirmDialogProps {
   handleNo: () => void;

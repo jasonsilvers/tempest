@@ -1,21 +1,21 @@
+import { IconButton, Zoom } from '@mui/material';
 import { MemberTrackingRecord, User } from '@prisma/client';
-const dayjs = require('dayjs');
-import { SnackbarMessage, OptionsObject, SnackbarKey, useSnackbar } from 'notistack';
+import { useUser } from '@tron/nextjs-auth-p1';
+import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
 import React from 'react';
 import { UseMutateFunction } from 'react-query';
 import 'twin.macro';
-import { useUser } from '@tron/nextjs-auth-p1';
-
-import { RecordSignatureToolTip } from './RecordSignatureToolTip';
 import { DoneAllIcon } from '../../../assets/Icons';
+import { EFuncAction, EMtrVerb, EResource } from '../../../const/enums';
 import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
+import { LoadingSpinner, TempestDeleteIcon, TempestToolTip } from '../../../lib/ui';
 import { MemberTrackingRecordWithUsers } from '../../../repositories/memberTrackingRepo';
-import { EFuncAction, EMtrVerb, EResource } from '../../../const/enums';
-import setDomRole from '../../../utils/setDomRole';
-import { TableData, DisabledButton, ActionButton } from '../TwinMacro/Twin';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
-import { IconButton, LoadingSpinner, TempestDeleteIcon, TempestToolTip, Zoom } from '../../../lib/ui';
+import setDomRole from '../../../utils/setDomRole';
+import { ActionButton, DisabledButton, TableData } from '../TwinMacro/Twin';
+import { RecordSignatureToolTip } from './RecordSignatureToolTip';
+const dayjs = require('dayjs');
 
 type DeterminedActionOnRecord = 'traineeCanSign' | 'authorityCanSign' | 'completed';
 

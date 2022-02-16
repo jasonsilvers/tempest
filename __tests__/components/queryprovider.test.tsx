@@ -3,10 +3,10 @@ import React from 'react';
 import 'whatwg-fetch';
 import { QueryProvider } from '../../src/components/QueryProvider';
 import { EUri } from '../../src/const/enums';
-import { Button } from '../../src/lib/ui';
 import { rest, server } from '../testutils/mocks/msw';
 import { render, waitForLoadingToFinish } from '../testutils/TempestTestUtils';
 import { useUsers } from '../../src/hooks/api/users';
+import { Button } from '@mui/material';
 
 // Establish API mocking before tests.
 beforeAll(() => {

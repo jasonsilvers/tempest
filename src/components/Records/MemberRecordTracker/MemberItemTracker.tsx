@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 import MemberTrackingItemTable from './MemberTrackingItemTable';
 import { ITabProps } from './Tab';
 import { MemberItemTrackerContextProvider } from './providers/MemberItemTrackerContext';
-import { Typography } from '../../../lib/ui';
+import { Typography } from '@mui/material';
 
 const TabContainer = tw.div`flex space-x-4`;
 

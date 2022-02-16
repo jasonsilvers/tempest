@@ -2,7 +2,7 @@ import React from 'react';
 import { UserContextProvider } from '@tron/nextjs-auth-p1'; // auth lib
 import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import { Button } from '../lib/ui';
+import { Button } from '@mui/material';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import AdapterDateFns from '@mui/lab/AdapterDayjs';
 
@@ -40,7 +40,7 @@ function AppProviders({ children, pageProps }: { children: React.ReactNode; page
             }}
             autoHideDuration={3000}
           >
-            <QueryProvider>
+            <QueryProvider pageProps={pageProps}>
               <UserContextProvider user={pageProps?.user}>{children}</UserContextProvider>
             </QueryProvider>
           </SnackbarProvider>

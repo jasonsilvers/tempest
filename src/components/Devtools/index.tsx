@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 import { SecurityIcon } from '../../assets/Icons';
 import { ERole } from '../../const/enums';
 import { usePermissions } from '../../hooks/usePermissions';
-import { Button, Drawer, Fab, Tab, Tabs } from '../../lib/ui';
+import { Button, Drawer, Fab, Tab, Tabs } from '@mui/material';
 import { Users } from './Users';
 import { Logs } from './Logs';
 

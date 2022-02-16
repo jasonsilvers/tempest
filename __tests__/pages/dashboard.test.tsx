@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import { UserContextProvider } from '@tron/nextjs-auth-p1';
 import dayjs from 'dayjs';
 import { rest } from 'msw';
@@ -6,12 +7,12 @@ import React from 'react';
 import 'whatwg-fetch';
 import { QueryProvider } from '../../src/components/QueryProvider';
 import { ERole, EUri } from '../../src/const/enums';
-import { Button } from '../../src/lib/ui';
-import Dashboard, { getStaticProps } from '../../src/pages/Dashboard';
-import { getUsersWithMemberTrackingRecords, LoggedInUser } from '../../src/repositories/userRepo';
+import Dashboard from '../../src/pages/Dashboard';
+
+import { LoggedInUser } from '../../src/repositories/userRepo';
 import { bobJones } from '../testutils/mocks/fixtures';
 import { server } from '../testutils/mocks/msw';
-import { mockMethodAndReturn } from '../testutils/mocks/repository';
+
 import {
   render,
   rtlRender,
@@ -345,13 +346,4 @@ it('should not allow access with incorrect permissions', async () => {
   await waitForElementToBeRemoved(() => getByText(/loading/i));
 
   expect(getByText(/you are not allowed to view this page/i)).toBeInTheDocument();
-});
-
-test('should return props for static props with no prisma', async () => {
-  mockMethodAndReturn(getUsersWithMemberTrackingRecords, []);
-
-  const { props } = await getStaticProps();
-
-  expect(props.dehydratedState.queries[0].state.data).toEqual([]);
-  expect(props.dehydratedState.queries[0].queryKey).toEqual(['users']);
 });

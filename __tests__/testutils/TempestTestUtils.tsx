@@ -4,13 +4,13 @@ import * as React from 'react';
 import { render as rtlRender, waitForElementToBeRemoved, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SnackbarProvider } from 'notistack';
-import { Button } from '../../src/lib/ui';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import userEvent from '@testing-library/user-event';
 import { EUri } from '../../src/const/enums';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import AdapterDateFns from '@mui/lab/AdapterDayjs';
 import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
+import { Button } from '@mui/material';
 
 export const waitForLoadingToFinish = () =>
   waitForElementToBeRemoved(

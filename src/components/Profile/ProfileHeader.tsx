@@ -6,11 +6,12 @@ import { ranks } from '../../const/ranks';
 import { useOrg } from '../../hooks/api/organizations';
 import { useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
-import { Button, IconButton, TextField, Autocomplete, CSSProperties, Typography } from '../../lib/ui';
+import { CSSProperties } from '../../lib/ui';
 import { ERole } from '../../const/enums';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 import { UpdateUsersOrg } from '../UpdateUsersOrg';
 import { GroupedRank } from '../../types';
+import { Button, IconButton, TextField, Autocomplete, Typography } from '@mui/material';
 
 const Table = tw.div`text-left mb-6`;
 const Row = tw.div`flex flex-row p-1`;

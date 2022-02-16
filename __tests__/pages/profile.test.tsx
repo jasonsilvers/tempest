@@ -1,10 +1,9 @@
 import { waitFor, fireEvent, rtlRender, Wrapper } from '../testutils/TempestTestUtils';
-import Profile, { getStaticPaths, getStaticProps } from '../../src/pages/Profile/[id]';
+import Profile from '../../src/pages/Profile/[id]';
 import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';
 import singletonRouter from 'next/router';
-import { mockMethodAndReturn } from '../testutils/mocks/repository';
-import { findUserByIdWithMemberTrackingItems, UserWithAll } from '../../src/repositories/userRepo';
+
 import mockRouter from 'next-router-mock';
 import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
 import { EUri } from '../../src/const/enums';
@@ -151,18 +150,4 @@ it('renders opens the dialog modal', async () => {
   // handle close modal by clicking off the modal
   fireEvent.click(getByRole('button', { name: /dialog-close-button/i }));
   expect(queryByText(/add new training/i)).not.toBeInTheDocument();
-});
-
-// next functions
-
-it('test get static paths', async () => {
-  const result = await getStaticPaths();
-  expect(result).toStrictEqual({ paths: [], fallback: true });
-});
-
-it('test get static props', async () => {
-  mockMethodAndReturn(findUserByIdWithMemberTrackingItems, {} as Partial<UserWithAll>);
-  const result = await getStaticProps({ params: { id: '123' } });
-  expect(result.revalidate).toEqual(30);
-  expect(result.props.dehydrateState.mutations).toStrictEqual([]);
 });
