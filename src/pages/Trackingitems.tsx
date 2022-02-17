@@ -7,6 +7,7 @@ import { Button, TextField, InputAdornment } from '@mui/material';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
+import { getTrackingItems } from '../repositories/trackingItemRepo';
 
 import tw from 'twin.macro';
 import { SearchIcon } from '../assets/Icons';
@@ -68,10 +69,9 @@ const TrackingItems = () => {
 export default TrackingItems;
 
 export async function getServerSideProps() {
-  const prisma = require('../prisma/prisma');
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(tiQueryKeys.trackingItems(), () => prisma?.trackingItem?.findMany() ?? []);
+  await queryClient.prefetchQuery(tiQueryKeys.trackingItems(), () => getTrackingItems());
 
   return {
     props: {

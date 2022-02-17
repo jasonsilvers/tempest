@@ -128,16 +128,15 @@ export const getUsersWithMemberTrackingRecordsByOrgId = async (organizationId: s
 
 export const getUsersWithMemberTrackingRecords = async () => {
   return prisma.user.findMany({
+    orderBy: {
+      lastName: 'asc',
+    },
     include: {
       role: true,
       memberTrackingItems: {
         include: {
           trackingItem: true,
-          memberTrackingRecords: {
-            orderBy: {
-              order: 'desc',
-            },
-          },
+          memberTrackingRecords: true,
         },
       },
     },

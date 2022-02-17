@@ -108,17 +108,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const userId = parseInt(params?.id as string);
 
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(userId), () =>
-    findUserByIdWithMemberTrackingItems(userId, EUserIncludes.TRACKING_ITEM)
-  );
-
   const initialMemberData = await findUserById(userId);
 
   return {
     props: {
-      dehydrateState: dehydrate(queryClient),
       initialMemberData,
       userId,
     },
