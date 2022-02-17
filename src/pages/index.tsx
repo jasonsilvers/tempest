@@ -112,7 +112,7 @@ function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main tw="flex items-center justify-center">
+      <main tw="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
         <LoginLoader />
       </main>
     </div>

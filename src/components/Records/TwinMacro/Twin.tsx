@@ -2,8 +2,8 @@ import tw from 'twin.macro';
 import { ECategories } from '../../../const/enums';
 
 export const TableData = tw.div`mx-3`;
-export const TableRow = tw.div`text-black border-b text-sm flex max-width[1440px] min-width[1040px] min-height[40px] py-3 items-center`;
-export const TableHeaderRow = tw.div`text-black border-b text-sm flex max-width[1440px] min-width[1040px] min-height[40px]`;
+export const TableRow = tw.div`text-black border-b text-sm flex max-width[1440px] min-width[1040px] height[40px] py-3 items-center`;
+export const TableHeaderRow = tw.div`text-black border-b text-sm flex max-width[1440px] min-width[1040px] height[40px]`;
 
 // Tokens
 export const Token = tw.div`rounded-md h-4 w-4 mr-3 mt-[2px]`;
