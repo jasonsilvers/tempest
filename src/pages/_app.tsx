@@ -5,7 +5,7 @@ import AppProviders from '../components/AppProviders';
 import tw from 'twin.macro';
 import Head from 'next/head';
 import { useNavLoading } from '../hooks/useNavLoading';
-import { ProgressLayout, LoadingSpinner } from '../lib/ui';
+import { LoadingOverlay } from '../lib/ui';
 
 const MainContent = tw.div`ml-[23rem] mt-9`;
 
@@ -28,12 +28,8 @@ function MyApp({ Component, pageProps }) {
         <GlobalStyles />
         <NavBar />
         <MainContent>
+          {navigating ? <LoadingOverlay /> : null}
           <Component {...pageProps} />
-          {navigating ? (
-            <ProgressLayout>
-              <LoadingSpinner />
-            </ProgressLayout>
-          ) : null}
         </MainContent>
       </AppProviders>
     </>

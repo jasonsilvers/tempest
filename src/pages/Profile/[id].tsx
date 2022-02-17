@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useRouter } from 'next/router';
-import { ECategories, EFuncAction, EResource, EUserIncludes } from '../../const/enums';
-import { QueryClient } from 'react-query';
-import { mtiQueryKeys } from '../../hooks/api/memberTrackingItem';
+import { ECategories, EFuncAction, EResource } from '../../const/enums';
 import { GetServerSidePropsContext } from 'next';
-import { dehydrate } from 'react-query/hydration';
-import { findUserById, findUserByIdWithMemberTrackingItems, UserWithAll } from '../../repositories/userRepo';
+import { findUserById, UserWithAll } from '../../repositories/userRepo';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
 import { Button } from '@mui/material';
 import tw from 'twin.macro';
@@ -108,17 +105,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const userId = parseInt(params?.id as string);
 
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(userId), () =>
-    findUserByIdWithMemberTrackingItems(userId, EUserIncludes.TRACKING_ITEM)
-  );
-
   const initialMemberData = await findUserById(userId);
 
   return {
     props: {
-      dehydrateState: dehydrate(queryClient),
       initialMemberData,
       userId,
     },
