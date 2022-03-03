@@ -172,9 +172,9 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             </InputFieldContainer>
             <InputFieldContainer>
               {trackingItem.interval === 0 ? (
-                <DialogContentText tw="text-red-400">* Interval </DialogContentText>
+                <DialogContentText tw="text-red-400">* Recurrance </DialogContentText>
               ) : (
-                <DialogContentText>Interval</DialogContentText>
+                <DialogContentText>Recurrance</DialogContentText>
               )}
               <RecurrenceSelect
                 value={trackingItem.interval.toString()}

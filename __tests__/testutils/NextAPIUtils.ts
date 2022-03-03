@@ -2,7 +2,7 @@ import http from 'http';
 import queryString from 'query-string';
 import listen from 'test-listen';
 import fetch from 'isomorphic-unfetch';
-import { apiResolver } from 'next/dist/server/api-utils';
+import { apiResolver } from 'next/dist/server/api-utils/node';
 import { userJWT } from './mocks/mockJwt';
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
