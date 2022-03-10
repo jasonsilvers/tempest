@@ -23,7 +23,7 @@ export type Actions =
   | { type: 'clearName' }
   | { type: 'filterByStatus'; statusFilter: EStatus }
   | { type: 'clearStatus' }
-  | { type: 'filterByOrganization'; organizationIdFilter: string }
+  | { type: 'filterByOrganization'; organizationIdFilter: number }
   | { type: 'clearOrganization' }
   | { type: 'setUserList'; userList: UserWithAll[] }
   | { type: 'setCounts'; counts: StatusCounts };

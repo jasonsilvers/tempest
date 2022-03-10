@@ -22,7 +22,7 @@ model User {
   role                     Role?                  @relation(fields: [roleId], references: [id])
   roleId                   Int?                   @map("role_id")
   organization             Organization?          @relation(fields: [organizationId], references: [id])
-  organizationId           String?                @map("organization_id")
+  organizationId           Int?                @map("organization_id")
   tags                     Tag[]
   memberTrackingItems      MemberTrackingItem[]
   traineeTrackingRecords   MemberTrackingRecord[] @relation(name: "TraineeRecords")
@@ -75,11 +75,12 @@ model MemberTrackingItem {
 }
 
 model Organization {
-  id        String         @id @default(uuid())
+  id        Int         @id @default(autoincrement())
   name      String         @map("org_name")
+  shortName String         @map("org_short_name")
   //Self reference
   parent    Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
-  parentId  String?        @map("parent_id")
+  parentId  Int?        @map("parent_id")
   children  Organization[] @relation(name: "ParentChildren")
   users     User[]
   templates Template[]

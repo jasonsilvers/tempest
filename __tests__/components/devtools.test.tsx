@@ -94,8 +94,8 @@ beforeEach(() => {
         ctx.status(200),
         ctx.json({
           organizations: [
-            { id: '1', name: '15th MDG', parentId: null },
-            { id: '2', name: 'org2', parentId: null },
+            { id: '1', name: '15th Medical group', shortName: '15th mdg', parentId: null },
+            { id: '2', name: 'organization 2', shortName: 'org 2', parentId: null },
           ],
         })
       );
@@ -196,7 +196,7 @@ test('should update a users organization', async () => {
 
   const user = getByText(/bob jones/i).parentElement;
 
-  const orgSelect = await within(user).findByRole('button', { name: '15th MDG' });
+  const orgSelect = await within(user).findByRole('button', { name: /15th mdg/i });
 
   fireEvent.mouseDown(orgSelect);
 
@@ -209,7 +209,7 @@ test('should update a users organization', async () => {
   // expect the snackbar to be visible
   await waitFor(() => queryByText(/organization changed/i));
 
-  const newOrg = await findByText(/org2/i);
+  const newOrg = await findByText(/org 2/i);
 
   expect(newOrg).toBeInTheDocument();
 });

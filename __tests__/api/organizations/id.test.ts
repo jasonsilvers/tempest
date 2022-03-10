@@ -14,14 +14,14 @@ jest.mock('../../../src/repositories/organizationRepo.ts');
 jest.mock('../../../src/utils/isOrgChildOf.ts');
 
 const organizationWithNoChildren: OrganizationWithChildren = {
-  id: '2',
+  id: 2,
   name: '15th wing',
-  parentId: '1',
+  parentId: 1,
   children: null,
   users: null,
 };
 const organizationWithChildren: OrganizationWithChildren = {
-  id: '1',
+  id: 1,
   name: 'dental',
   parentId: null,
   children: [organizationWithNoChildren],
@@ -33,7 +33,7 @@ beforeEach(() => {
     id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'monitor' },
-    organizationId: '2',
+    organizationId: 2,
   });
   mockMethodAndReturn(findGrants, grants);
 });
@@ -98,16 +98,16 @@ test('should not allow user to get any organization - read any', async () => {
   });
 
   const organization2: OrganizationWithChildren = {
-    id: '4',
+    id: 4,
     name: 'dental',
     parentId: null,
     children: null,
     users: [],
   };
   const organization1: OrganizationWithChildren = {
-    id: 'uiaewniwefnu',
+    id: 2,
     name: '15th wing',
-    parentId: '1',
+    parentId: 1,
     children: [organization2],
     users: null,
   };
@@ -122,7 +122,7 @@ test('should not allow user to get any organization - read any', async () => {
 });
 test('should return organization and its members - read own', async () => {
   const testUser: Partial<User> = {
-    id: '123',
+    id: 123,
     firstName: 'bob',
     lastName: 'jones',
   };
@@ -136,7 +136,7 @@ test('should return organization and its members - read own', async () => {
     urlId: '2?include=users',
   });
 
-  expect(findOrganizationById).toBeCalledWith('2', { withChildren: false, withUsers: true });
+  expect(findOrganizationById).toBeCalledWith(2, { withChildren: false, withUsers: true });
   expect(status).toBe(200);
   expect(data).toStrictEqual(organizationWithUsers);
 });
@@ -148,7 +148,7 @@ test('should return organization and its children - read own', async () => {
     urlId: '2?include=children',
   });
 
-  expect(findOrganizationById).toBeCalledWith('2', { withChildren: true, withUsers: false });
+  expect(findOrganizationById).toBeCalledWith(2, { withChildren: true, withUsers: false });
   expect(status).toBe(200);
   expect(data).toStrictEqual(organizationWithChildren);
 });

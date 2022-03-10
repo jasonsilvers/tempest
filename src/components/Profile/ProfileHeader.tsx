@@ -47,11 +47,11 @@ const EditButtonGroup: React.FC<{ onSave: () => void; onCancel: () => void; onEd
 
 const EditItem: React.FC<{
   label: string;
+  value: string;
   editStyle?: CSSProperties;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-}> = ({ children, label, editStyle, onChange }) => {
+}> = ({ children, label, value, editStyle, onChange }) => {
   const { isEdit } = useProfileHeaderContext();
-  const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
     return (
@@ -74,7 +74,7 @@ const EditOrg: React.FC<{
   label: string;
   editStyle?: CSSProperties;
   onChange?: (org: Organization) => void;
-  orgId: string;
+  orgId: number;
 }> = ({ children, label, onChange, orgId, editStyle }) => {
   const { userId, isEdit } = useProfileHeaderContext();
   const { role, user, isLoading } = usePermissions();
@@ -95,16 +95,16 @@ const EditOrg: React.FC<{
 
 const EditSelect: React.FC<{
   label: string;
+  value: string;
   editStyle?: CSSProperties;
   onChange?: (value: GroupedRank) => void;
-}> = ({ children, label, editStyle, onChange }) => {
+}> = ({ children, label, value, editStyle, onChange }) => {
   const { isEdit } = useProfileHeaderContext();
-  const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
     return (
       <Autocomplete
-        defaultValue={ranks.find((rank) => rank.value === value[0])}
+        defaultValue={ranks.find((rank) => rank.value === value)}
         options={ranks}
         getOptionLabel={(option) => option.value}
         groupBy={(option) => option.group}
@@ -135,6 +135,10 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
   const updateUserMutation = useUpdateUser();
   const { data: userOrg } = useOrg(formState?.organizationId);
   const [orgModal, setOrgModal] = useState({ open: false, transientId: member?.organizationId });
+
+  const rankDisplay = !formState?.rank || formState.rank === '' ? 'RANK' : formState.rank;
+  const afscDisplay = !formState?.afsc || formState.afsc === '' ? 'AFSC' : formState.afsc;
+  const orgDisplay = userOrg?.id ? userOrg.shortName : 'Organization';
 
   useEffect(() => {
     setFormState(member);
@@ -169,17 +173,19 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
               setFormState((state) => ({ ...state, rank: value }));
             }}
             label="Rank"
+            value={formState.rank}
             editStyle={{ width: '10rem' }}
           >
-            <Rank>{formState.rank ?? 'Rank'}</Rank>
+            <Rank>{rankDisplay}</Rank>
           </EditSelect>
 
           <EditItem
             label="AFSC"
+            value={formState.afsc}
             editStyle={{ width: '10rem' }}
             onChange={(e) => setFormState((state) => ({ ...state, afsc: e.target.value }))}
           >
-            <AFSC>{formState.afsc ?? 'AFSC'}</AFSC>
+            <AFSC>{afscDisplay}</AFSC>
           </EditItem>
 
           <EditOrg
@@ -194,7 +200,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             }}
             orgId={formState.organizationId}
           >
-            <OrganizationField>{userOrg?.name ?? 'Organization'}</OrganizationField>
+            <OrganizationField>{orgDisplay}</OrganizationField>
           </EditOrg>
         </Row>
       </Table>

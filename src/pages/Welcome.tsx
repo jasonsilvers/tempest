@@ -35,7 +35,7 @@ const WelcomePage = () => {
                 <div>
                   <UpdateUsersOrg
                     userId={user?.id}
-                    userOrganizationId={user?.organizationId ? user.organizationId : ''}
+                    userOrganizationId={user?.organizationId ? user.organizationId : null}
                     editStyle={{ width: '20rem' }}
                   />
                 </div>

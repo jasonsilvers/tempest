@@ -30,7 +30,7 @@ describe('Member role', () => {
     cy.findByRole('option', { name: /SSgt/i }).click();
     cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
     cy.findByRole('textbox', { name: /organization/i }).click();
-    cy.findByRole('option', { name: /vacc/i }).click();
+    cy.findByRole('option', { name: /dental/i }).click();
     cy.findByRole('button', { name: /cancel/i }).click();
   });
 
@@ -43,9 +43,9 @@ describe('Member role', () => {
     cy.findByRole('option', { name: /SSgt/i }).click();
     cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
     cy.findByRole('textbox', { name: /organization/i }).click();
-    cy.findByRole('option', { name: /vacc/i }).click();
+    cy.findByRole('option', { name: /dental/i }).click();
     cy.findByRole('button', { name: /save/i }).click();
-    cy.findByText(/vacc/i).should('exist');
+    cy.findByText(/dental/i).should('exist');
   });
   
 
@@ -164,9 +164,9 @@ describe('Monitor role', () => {
     cy.findByRole('option', { name: /SSgt/i }).click();
     cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
     cy.findByRole('textbox', { name: /organization/i }).click();
-    cy.findByRole('option', { name: /vacc/i }).click();
+    cy.findByRole('option', { name: /dental/i }).click();
     cy.findByRole('button', { name: /no/i }).click();
     cy.findByRole('button', { name: /cancel/i }).click();
-    cy.findByText(/vacc/).should('not.exist');
+    cy.findByText(/dental/).should('not.exist');
   });
 });

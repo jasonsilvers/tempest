@@ -11,7 +11,7 @@ interface IConfirmDialogProps {
 const ConfirmDialog: React.FC<IConfirmDialogProps> = ({ children, open, handleNo, handleYes }) => {
   return (
     <Dialog open={open}>
-      {children}
+      <div tw="p-5">{children}</div>
       <DialogActions>
         <Button onClick={handleYes} color="primary">
           Yes

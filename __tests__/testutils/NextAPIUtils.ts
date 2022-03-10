@@ -110,11 +110,13 @@ const testNextApi = {
       withJwt = true,
       urlId,
       urlSlug,
+      customHeaders,
     }: {
       //refactor to type
       withJwt?: boolean;
       urlId?: string | number;
       urlSlug?: string;
+      customHeaders?: { [key: string]: unknown };
     } = {}
   ) => {
     return baseTestNextApi(handler, {
@@ -122,6 +124,7 @@ const testNextApi = {
       urlId,
       urlSlug,
       method: 'GET',
+      customHeaders,
     });
   },
 

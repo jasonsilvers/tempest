@@ -16,7 +16,7 @@ const userSchema = {
       id: Joi.number().optional().allow(null, ''),
       email: Joi.string().email().optional().allow(null, ''),
       roleId: Joi.number().optional().allow(null, ''),
-      organizationId: Joi.string().optional().allow(null, ''),
+      organizationId: Joi.number().optional().allow(null, ''),
       tags: Joi.array().items(Joi.string()).optional().allow(null, ''),
       rank: Joi.string().optional().allow(null, ''),
       afsc: Joi.string().optional().allow(null, ''),

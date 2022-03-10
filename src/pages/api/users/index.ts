@@ -28,7 +28,13 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
 
   const userPromises: Promise<UsersWithMemberTrackingRecords>[] = [];
 
-  const organizations = await getOrganizationTree(req.user.organizationId);
+  let organizations;
+
+  try {
+    organizations = await getOrganizationTree(req.user.organizationId);
+  } catch (e) {
+    console.log(e);
+  }
 
   organizations.forEach(async (organization) => {
     userPromises.push(getUsersWithMemberTrackingRecordsByOrgId(organization.id));

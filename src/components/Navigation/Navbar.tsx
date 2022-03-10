@@ -58,10 +58,14 @@ const Navbar: React.FC = () => {
   const queryClient = useQueryClient();
   const { user, permissionCheck } = usePermissions();
 
-  const canViewMyProfile = permissionCheck(user?.role.name, EFuncAction.READ_OWN, EResource.PROFILE_PAGE);
-  const canCreateGlobalTrackingItem = permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM);
-  const canViewAdminPage = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.ADMIN_PAGE);
-  const canViewDashboard = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.DASHBOARD_PAGE);
+  const canViewMyProfile = permissionCheck(user?.role?.name, EFuncAction.READ_OWN, EResource.PROFILE_PAGE);
+  const canCreateGlobalTrackingItem = permissionCheck(
+    user?.role?.name,
+    EFuncAction.CREATE_ANY,
+    EResource.TRACKING_ITEM
+  );
+  const canViewAdminPage = permissionCheck(user?.role?.name, EFuncAction.READ_ANY, EResource.ADMIN_PAGE);
+  const canViewDashboard = permissionCheck(user?.role?.name, EFuncAction.READ_ANY, EResource.DASHBOARD_PAGE);
   const isAdmin = canCreateGlobalTrackingItem?.granted || canViewAdminPage?.granted || canViewDashboard?.granted;
 
   useMemo(() => {
