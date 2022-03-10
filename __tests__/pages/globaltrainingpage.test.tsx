@@ -1,4 +1,4 @@
-import TrackingItemPage from '../../src/pages/Trackingitems';
+import TrackingItemPage, { getServerSideProps } from '../../src/pages/Trackingitems';
 import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
 import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';
@@ -6,8 +6,19 @@ import { ERole, EUri } from '../../src/const/enums';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { bobJones } from '../testutils/mocks/fixtures';
 import { DefaultRequestBody } from 'msw';
+import { getTrackingItems } from '../../src/repositories/trackingItemRepo';
 
 import { TrackingItemsDTO } from '../../src/types';
+import { mockMethodAndReturn } from '../testutils/mocks/repository';
+
+jest.mock('../../src/repositories/trackingItemRepo.ts');
+
+const trackingItemFromDb = {
+  id: 1,
+  title: 'Fire Extinguisher',
+  description: 'This is a test item',
+  interval: 365,
+};
 
 beforeAll(() => {
   server.listen({
@@ -56,7 +67,7 @@ afterEach(() => {
 /**
  * Render tests
  */
-it('renders the Dashboard page', async () => {
+it('renders the Tracking Item page', async () => {
   const { getByText } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
@@ -137,4 +148,11 @@ test('should open then close the dialog box', async () => {
   fireEvent.click(getByRole('button', { name: /dialog-close-button/i }));
   await waitForElementToBeRemoved(() => queryByText(/Please create the training title/i));
   expect(queryByText(/Please create the training title/i)).toBeFalsy();
+});
+
+test('should do serverside rending and return list of tracking items', async () => {
+  mockMethodAndReturn(getTrackingItems, [trackingItemFromDb]);
+  const value = await getServerSideProps();
+
+  expect(value.props.dehydratedState.queries[0].state.data).toStrictEqual([trackingItemFromDb]);
 });

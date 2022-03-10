@@ -31,17 +31,17 @@ beforeEach(() => {
       return res(
         ctx.json({
           organizations: [
-            { id: 1, name: 'test org 1' },
-            { id: 2, name: 'test org 2' },
+            { id: 1, name: 'test org 1', shortName: 'org 1' },
+            { id: 2, name: 'test org 2', shortName: 'org 2' },
           ],
         })
       );
     }),
     rest.get('/api/organizations/1', (req, res, ctx) => {
-      return res(ctx.json({ id: 1, name: 'test org 1' }));
+      return res(ctx.json({ id: 1, name: 'test org 1', shortName: 'org 1' }));
     }),
     rest.get('/api/organizations/2', (req, res, ctx) => {
-      return res(ctx.json({ id: 2, name: 'test org 2' }));
+      return res(ctx.json({ id: 2, name: 'test org 2', shortName: 'org 2' }));
     })
   );
 });
@@ -96,7 +96,7 @@ it('renders the edit view in the profile header and edits the org drop down', as
   fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
   await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
   // change data
-  await waitForElementToBeRemoved(() => getByText(/test org 1/i));
+  await waitForElementToBeRemoved(() => getByText(/org 1/i));
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   const textfield = getByLabelText(/organization/i, { selector: 'input' }) as HTMLInputElement;
   // get value of textfield before change event
@@ -104,10 +104,10 @@ it('renders the edit view in the profile header and edits the org drop down', as
   const options = await findAllByRole('option');
   fireEvent.click(options[1]);
 
-  await waitFor(() => expect(textfield.value).toBe('test org 2'));
+  await waitFor(() => expect(textfield.value).toBe('org 2'));
   // exits the edit mode with out persisting data
   fireEvent.click(getByText(/save/i));
-  await waitFor(() => expect(queryByText('test org 2')).not.toBeInTheDocument());
+  await waitFor(() => expect(queryByText('org 2')).not.toBeInTheDocument());
 });
 
 it('renders the edit view in the profile header and persists data', async () => {

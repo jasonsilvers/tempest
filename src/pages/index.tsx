@@ -97,11 +97,11 @@ function Home() {
     router.push('/Welcome');
   }
 
-  if (user && user.role.name === ERole.MEMBER && user.organizationId) {
+  if (user && user.role?.name === ERole.MEMBER && user.organizationId) {
     router.push(`/Profile/${user.id}`);
   }
 
-  if (user && user.role.name !== ERole.MEMBER && user.organizationId) {
+  if (user && user.role?.name !== ERole.MEMBER && user.organizationId) {
     router.push('/Dashboard');
   }
 

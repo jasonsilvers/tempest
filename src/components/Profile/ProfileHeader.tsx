@@ -47,11 +47,12 @@ const EditButtonGroup: React.FC<{ onSave: () => void; onCancel: () => void; onEd
 
 const EditItem: React.FC<{
   label: string;
+  value: string;
   editStyle?: CSSProperties;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-}> = ({ children, label, editStyle, onChange }) => {
+}> = ({ children, label, value, editStyle, onChange }) => {
   const { isEdit } = useProfileHeaderContext();
-  const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
+  // const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
     return (
@@ -74,7 +75,7 @@ const EditOrg: React.FC<{
   label: string;
   editStyle?: CSSProperties;
   onChange?: (org: Organization) => void;
-  orgId: string;
+  orgId: number;
 }> = ({ children, label, onChange, orgId, editStyle }) => {
   const { userId, isEdit } = useProfileHeaderContext();
   const { role, user, isLoading } = usePermissions();
@@ -95,16 +96,17 @@ const EditOrg: React.FC<{
 
 const EditSelect: React.FC<{
   label: string;
+  value: string;
   editStyle?: CSSProperties;
   onChange?: (value: GroupedRank) => void;
-}> = ({ children, label, editStyle, onChange }) => {
+}> = ({ children, label, value, editStyle, onChange }) => {
   const { isEdit } = useProfileHeaderContext();
-  const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
+  // const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
     return (
       <Autocomplete
-        defaultValue={ranks.find((rank) => rank.value === value[0])}
+        defaultValue={ranks.find((rank) => rank.value === value)}
         options={ranks}
         getOptionLabel={(option) => option.value}
         groupBy={(option) => option.group}
@@ -169,17 +171,19 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
               setFormState((state) => ({ ...state, rank: value }));
             }}
             label="Rank"
+            value={formState.rank}
             editStyle={{ width: '10rem' }}
           >
-            <Rank>{formState.rank ?? 'Rank'}</Rank>
+            <Rank>{!formState.rank || formState.rank === '' ? 'RANK' : formState.rank}</Rank>
           </EditSelect>
 
           <EditItem
             label="AFSC"
+            value={formState.afsc}
             editStyle={{ width: '10rem' }}
             onChange={(e) => setFormState((state) => ({ ...state, afsc: e.target.value }))}
           >
-            <AFSC>{formState.afsc ?? 'AFSC'}</AFSC>
+            <AFSC>{!formState.afsc || formState.afsc === '' ? 'AFSC' : formState.afsc}</AFSC>
           </EditItem>
 
           <EditOrg
@@ -194,7 +198,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             }}
             orgId={formState.organizationId}
           >
-            <OrganizationField>{userOrg?.name ?? 'Organization'}</OrganizationField>
+            <OrganizationField>{userOrg?.id ? userOrg.shortName : 'Organization'}</OrganizationField>
           </EditOrg>
         </Row>
       </Table>

@@ -38,8 +38,9 @@ export const organizationIdApiHandler = async (
   const includesQuery = getIncludesQueryArray(include);
 
   const ac = await getAc();
+  const bodyOrgId = parseInt(id);
 
-  const organization = await findOrganizationById(id, {
+  const organization = await findOrganizationById(bodyOrgId, {
     withChildren: includesQuery.includes(EOrganizationIdIncludes.CHILDREN),
     withUsers: includesQuery.includes(EOrganizationIdIncludes.USERS),
   });
@@ -50,8 +51,8 @@ export const organizationIdApiHandler = async (
 
   let permission: Permission;
 
-  if (id !== req.user.organizationId) {
-    const isChild = isOrgChildOf(id, req.user.organizationId);
+  if (bodyOrgId !== req.user.organizationId) {
+    const isChild = isOrgChildOf(bodyOrgId, req.user.organizationId);
     if (isChild) {
       permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
     } else {

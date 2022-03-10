@@ -25,6 +25,8 @@ module.exports = {
     '/src/const/',
     '/src/assets/',
     '/src/prisma/seed.ts',
+    '/src/prisma/setupSeed.ts',
+    '/src/prisma/global.d.ts',
   ],
   coverageReporters: ['json', 'lcov', 'text', 'text-summary'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}'],

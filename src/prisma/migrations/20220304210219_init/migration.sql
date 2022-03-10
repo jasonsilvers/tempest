@@ -12,7 +12,7 @@ CREATE TABLE "user" (
     "updated_at" TIMESTAMP(3),
     "last_login" TIMESTAMP(3),
     "role_id" INTEGER,
-    "organization_id" TEXT,
+    "organization_id" INTEGER,
     "rank" TEXT,
     "afsc" TEXT,
     "duty_title" TEXT,
@@ -55,9 +55,10 @@ CREATE TABLE "member_tracking_item" (
 
 -- CreateTable
 CREATE TABLE "organization" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "org_name" TEXT NOT NULL,
-    "parent_id" TEXT,
+    "org_short_name" TEXT NOT NULL,
+    "parent_id" INTEGER,
 
     CONSTRAINT "organization_pkey" PRIMARY KEY ("id")
 );
@@ -136,7 +137,7 @@ CREATE TABLE "_TagToUser" (
 
 -- CreateTable
 CREATE TABLE "_OrganizationToTemplate" (
-    "A" TEXT NOT NULL,
+    "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
 );
 
@@ -165,10 +166,10 @@ CREATE UNIQUE INDEX "_OrganizationToTemplate_AB_unique" ON "_OrganizationToTempl
 CREATE INDEX "_OrganizationToTemplate_B_index" ON "_OrganizationToTemplate"("B");
 
 -- AddForeignKey
-ALTER TABLE "user" ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "role"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "user" ADD CONSTRAINT "user_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "user" ADD CONSTRAINT "user_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "user" ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "role"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "member_tracking_record" ADD CONSTRAINT "member_tracking_record_authority_id_fkey" FOREIGN KEY ("authority_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -177,10 +178,10 @@ ALTER TABLE "member_tracking_record" ADD CONSTRAINT "member_tracking_record_auth
 ALTER TABLE "member_tracking_record" ADD CONSTRAINT "member_tracking_record_trainee_id_fkey" FOREIGN KEY ("trainee_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "member_tracking_record" ADD CONSTRAINT "member_tracking_record_tracking_item_id_fkey" FOREIGN KEY ("tracking_item_id") REFERENCES "training_record"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "member_tracking_record" ADD CONSTRAINT "member_tracking_record_trainee_id_tracking_item_id_fkey" FOREIGN KEY ("trainee_id", "tracking_item_id") REFERENCES "member_tracking_item"("userId", "trackingItemId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "member_tracking_record" ADD CONSTRAINT "member_tracking_record_trainee_id_tracking_item_id_fkey" FOREIGN KEY ("trainee_id", "tracking_item_id") REFERENCES "member_tracking_item"("userId", "trackingItemId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "member_tracking_record" ADD CONSTRAINT "member_tracking_record_tracking_item_id_fkey" FOREIGN KEY ("tracking_item_id") REFERENCES "training_record"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "member_tracking_item" ADD CONSTRAINT "member_tracking_item_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -198,10 +199,10 @@ ALTER TABLE "template_tracking_item" ADD CONSTRAINT "template_tracking_item_trac
 ALTER TABLE "template_tracking_item" ADD CONSTRAINT "template_tracking_item_templateId_fkey" FOREIGN KEY ("templateId") REFERENCES "template"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "grant" ADD CONSTRAINT "grant_resource_name_fkey" FOREIGN KEY ("resource_name") REFERENCES "resource"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "grant" ADD CONSTRAINT "grant_role_name_fkey" FOREIGN KEY ("role_name") REFERENCES "role"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "grant" ADD CONSTRAINT "grant_role_name_fkey" FOREIGN KEY ("role_name") REFERENCES "role"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "grant" ADD CONSTRAINT "grant_resource_name_fkey" FOREIGN KEY ("resource_name") REFERENCES "resource"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "log_event" ADD CONSTRAINT "log_event_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;

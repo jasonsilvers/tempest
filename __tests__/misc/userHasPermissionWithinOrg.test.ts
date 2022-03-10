@@ -8,13 +8,13 @@ jest.mock('../../src/repositories/userRepo.ts');
 
 test('should return true if user has permission to access records for member in org', async () => {
   const monitor = {
-    id: '123',
-    orgId: '1',
+    id: 123,
+    orgId: 1,
   };
 
   const member = {
-    id: '123',
-    orgId: '1',
+    id: 123,
+    orgId: 1,
   };
 
   const result = await userHasPermissionWithinOrg(monitor, member);
@@ -24,13 +24,13 @@ test('should return true if user has permission to access records for member in 
 
 test('should return false if user does not have permission to access records for member in org', async () => {
   const monitor = {
-    id: '321',
-    orgId: '1',
+    id: 321,
+    orgId: 1,
   };
 
   const member = {
-    id: '123',
-    orgId: '1',
+    id: 123,
+    orgId: 1,
   };
 
   mockMethodAndReturn(userWithinOrgOrChildOrg, false);
@@ -42,13 +42,13 @@ test('should return false if user does not have permission to access records for
 
 test('should return true if user does have permission to access records for member in org', async () => {
   const monitor = {
-    id: '321',
-    orgId: '1',
+    id: 321,
+    orgId: 1,
   };
 
   const member = {
-    id: '123',
-    orgId: '1',
+    id: 123,
+    orgId: 1,
   };
 
   mockMethodAndReturn(userWithinOrgOrChildOrg, true);
@@ -60,12 +60,12 @@ test('should return true if user does have permission to access records for memb
 
 test('should get users org from DB if organization is null and return', async () => {
   const monitor = {
-    id: '321',
-    orgId: '1',
+    id: 321,
+    orgId: 1,
   };
 
   const member = {
-    id: '123',
+    id: 123,
     orgId: null,
   };
 

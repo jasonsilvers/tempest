@@ -7,7 +7,7 @@ export async function findOrganizations() {
 }
 
 export async function findOrganizationById(
-  id: string,
+  id: number,
   { withChildren, withUsers }: { withChildren?: boolean; withUsers?: boolean } = {
     withChildren: false,
     withUsers: false,
@@ -24,13 +24,14 @@ export async function createOrganizations(organization: Organization) {
   });
 }
 
-export async function getOrganizationTree(organizationId: string) {
+export async function getOrganizationTree(organizationId: number) {
   return prisma.$queryRaw<Organization[]>(
     Prisma.sql`
     WITH RECURSIVE orgs AS (
       SELECT 
         id,
-        org_name
+        org_name,
+        org_short_name
       FROM 
         organization
       where 
@@ -38,7 +39,8 @@ export async function getOrganizationTree(organizationId: string) {
       UNION
         SELECT
           o.id,
-          o.org_name
+          o.org_name,
+          o.org_short_name
         FROM
           organization o
         JOIN orgs ON orgs.id = o.parent_id

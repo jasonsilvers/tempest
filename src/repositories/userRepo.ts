@@ -105,7 +105,7 @@ export const findUsers = async () => {
  */
 export const getUsers = async () => prisma.user.findMany();
 
-export const getUsersWithMemberTrackingRecordsByOrgId = async (organizationId: string) => {
+export const getUsersWithMemberTrackingRecordsByOrgId = async (organizationId: number) => {
   return prisma.user.findMany({
     where: {
       organizationId,

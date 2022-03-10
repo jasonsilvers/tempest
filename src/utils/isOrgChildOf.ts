@@ -1,6 +1,6 @@
 import { findOrganizationById } from '../repositories/organizationRepo';
 
-export async function isOrgChildOf(childOrganizationId: string, organizationId: string): Promise<boolean> {
+export async function isOrgChildOf(childOrganizationId: number, organizationId: number): Promise<boolean> {
   if (childOrganizationId === null) {
     return false;
   }

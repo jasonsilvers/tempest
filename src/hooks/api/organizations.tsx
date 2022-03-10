@@ -6,7 +6,7 @@ import { OrgsDTO } from '../../types';
 
 export const organizationQueryKeys = {
   organizations: () => ['organizations'],
-  organization: (id: string) => ['organization', id],
+  organization: (id: number) => ['organization', id],
 };
 
 export const useOrgs = () => {
@@ -15,7 +15,7 @@ export const useOrgs = () => {
   );
 };
 
-export const useOrg = (organizationId: string) => {
+export const useOrg = (organizationId: number) => {
   return useQuery<Organization>(
     organizationQueryKeys.organization(organizationId),
     () => axios.get<Organization>(EUri.ORGANIZATIONS + organizationId).then((res) => res.data),

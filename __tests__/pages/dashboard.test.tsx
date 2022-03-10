@@ -21,6 +21,7 @@ import {
   waitForLoadingToFinish,
   userEvent,
   fireEvent,
+  screen,
 } from '../testutils/TempestTestUtils';
 
 jest.mock('../../src/repositories/userRepo');
@@ -28,8 +29,7 @@ jest.mock('../../src/repositories/userRepo');
 const users = {
   users: [
     {
-      id: 'daf12fnpmc8-65a2-416a-bbf1-662b3e52be85',
-      dodId: '1143209890',
+      id: 1,
       firstName: 'Sandra',
       lastName: 'Clark',
       middleName: null,
@@ -38,7 +38,7 @@ const users = {
       updatedAt: '2021-08-28T00:42:55.528Z',
       lastLogin: '2021-08-27T19:58:29.894Z',
       roleId: 3,
-      organizationId: 'f50d7142-9150-4b6a-b87f-54e30be46972',
+      organizationId: 1,
       rank: 'SSgt/E5',
       afsc: '1A1X4',
       dutyTitle: '24/7 solutions maximize',
@@ -47,8 +47,7 @@ const users = {
       memberTrackingItems: [],
     },
     {
-      id: '4e3de847-e79a-465d-af8f-81cf5b900c38',
-      dodId: '123',
+      id: 2,
       firstName: 'Joe',
       lastName: 'Smith',
       middleName: null,
@@ -57,7 +56,7 @@ const users = {
       updatedAt: '2021-08-30T18:00:03.660Z',
       lastLogin: '2021-08-28T00:43:56.579Z',
       roleId: 1,
-      organizationId: 'd3f67c13-e88a-434a-8d20-a4973f681ccc',
+      organizationId: 2,
       rank: 'SSgt/E5',
       afsc: '3P3X3',
       dutyTitle: 'strategic networks benchmark',
@@ -66,7 +65,7 @@ const users = {
       memberTrackingItems: [
         {
           isActive: true,
-          userId: '4e3de847-e79a-465d-af8f-81cf5b900c38',
+          userId: 2,
           createdAt: '2021-08-27T19:28:10.525Z',
           trackingItemId: 3,
           trackingItem: { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 365 },
@@ -79,7 +78,7 @@ const users = {
               createdAt: dayjs().toDate(),
               completedDate: null,
               order: 3,
-              traineeId: '4e3de847-e79a-465d-af8f-81cf5b900c38',
+              traineeId: 2,
               trackingItemId: 3,
             },
             {
@@ -90,14 +89,14 @@ const users = {
               createdAt: '2021-08-27T19:28:10.568Z',
               completedDate: '2021-08-10T13:37:20.770Z',
               order: 2,
-              traineeId: '4e3de847-e79a-465d-af8f-81cf5b900c38',
+              traineeId: 2,
               trackingItemId: 3,
             },
           ],
         },
         {
           isActive: true,
-          userId: '4e3de847-e79a-465d-af8f-81cf5b900c38',
+          userId: 2,
           createdAt: '2021-08-27T19:28:10.548Z',
           trackingItemId: 4,
           trackingItem: {
@@ -115,14 +114,14 @@ const users = {
               createdAt: '2021-08-27T19:28:10.618Z',
               completedDate: null,
               order: 1,
-              traineeId: '4e3de847-e79a-465d-af8f-81cf5b900c38',
+              traineeId: 2,
               trackingItemId: 4,
             },
           ],
         },
         {
           isActive: true,
-          userId: '4e3de847-e79a-465d-af8f-81cf5b900c38',
+          userId: 2,
           createdAt: '2021-08-27T19:28:10.558Z',
           trackingItemId: 5,
           trackingItem: {
@@ -140,7 +139,7 @@ const users = {
               createdAt: '2021-08-27T19:28:10.630Z',
               completedDate: null,
               order: 1,
-              traineeId: '4e3de847-e79a-465d-af8f-81cf5b900c38',
+              traineeId: 2,
               trackingItemId: 5,
             },
           ],
@@ -152,7 +151,7 @@ const users = {
 
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'error',
+    onUnhandledRequest: 'warn',
   });
 });
 
@@ -172,8 +171,10 @@ beforeEach(() => {
         ctx.status(200),
         ctx.json({
           organizations: [
-            { id: 'f50d7142-9150-4b6a-b87f-54e30be46972', name: '15th MDG', parentId: null },
-            { id: '2', name: 'org2', parentId: null },
+            { id: 1, name: '15th Medical Group', shortNme: '15th MDG', parentId: null },
+            { id: 2, name: 'organization 2', shortName: 'org 2', parentId: null },
+            { id: 3, name: 'organization 3', shortName: 'org 3', parentId: 1 },
+            { id: 4, name: 'organization 4', shortName: 'org 4', parentId: 1 },
           ],
         })
       );
@@ -252,9 +253,7 @@ it('should filter by name', async () => {
 it('should filter by organization', async () => {
   const { getByText, queryByText, getByLabelText } = render(<Dashboard />);
 
-  await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
-
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  await waitForLoadingToFinish();
 
   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
   expect(getByText(/smith, joe/i)).toBeInTheDocument();
@@ -262,7 +261,9 @@ it('should filter by organization', async () => {
   const searchInput = getByLabelText(/organizations/i);
 
   userEvent.type(searchInput, '15');
-  fireEvent.click(getByText(/15th mdg/i));
+  await waitForLoadingToFinish();
+  fireEvent.click(getByText('15th Medical Group'));
+  screen.debug();
   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
   expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
 });

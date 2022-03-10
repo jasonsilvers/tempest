@@ -172,17 +172,17 @@ test('PUT - should return user - update own', async () => {
     id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
-    organizationId: 'abc123',
+    organizationId: 123,
   });
-  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 123 });
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 2,
-    body: { organizationId: 'abc123', dutyTitle: 'test Title', roleId: 1 } as User,
+    body: { organizationId: 123, dutyTitle: 'test Title', roleId: 1 } as User,
   });
 
   expect(spy).toHaveBeenCalledWith(2, {
-    organizationId: 'abc123',
+    organizationId: 123,
     dutyTitle: 'test Title',
   } as User);
 
@@ -208,14 +208,14 @@ test('PUT - should filter data for member', async () => {
     id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
-    organizationId: 'abc123',
+    organizationId: 123,
   });
-  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 123 });
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 2,
     body: {
-      organizationId: 'abc123',
+      organizationId: 123,
       email: 'email@email.com',
       roleId: 1,
       rank: 'rank',
@@ -227,7 +227,7 @@ test('PUT - should filter data for member', async () => {
   });
 
   expect(spy).toHaveBeenCalledWith(2, {
-    organizationId: 'abc123',
+    organizationId: 123,
     tags: ['tags'],
     rank: 'rank',
     afsc: 'afsc',
@@ -244,15 +244,15 @@ test('PUT - should set role to member when org changes', async () => {
     id: 2,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
-    organizationId: 'abc123',
+    organizationId: 123,
   });
   mockMethodAndReturn(getRoleByName, { id: 2, name: 'member' });
-  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 'abc123' });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 123 });
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 2,
     body: {
-      organizationId: 'zyx987',
+      organizationId: 987,
       email: 'email@email.com',
       roleId: 1,
       rank: 'rank',
@@ -264,7 +264,7 @@ test('PUT - should set role to member when org changes', async () => {
   });
 
   expect(spy).toHaveBeenCalledWith(2, {
-    organizationId: 'zyx987',
+    organizationId: 987,
     tags: ['tags'],
     rank: 'rank',
     afsc: 'afsc',

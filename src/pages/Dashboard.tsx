@@ -1,5 +1,5 @@
 import { MemberTrackingRecord, Organization } from '.prisma/client';
-import { TextField, InputAdornment, Autocomplete } from '@mui/material';
+import { InputAdornment, TextField } from '@mui/material';
 import dayjs from 'dayjs';
 import React, { useEffect, useReducer } from 'react';
 import { QueryClient } from 'react-query';
@@ -8,8 +8,8 @@ import tw from 'twin.macro';
 import { SearchIcon } from '../assets/Icons';
 import { EStatus } from '../components/Dashboard/Enums';
 import { Actions, AllCounts, StatusCounts, UserCounts } from '../components/Dashboard/Types';
+import { OrganizationSelect } from '../components/OrganizationSelect';
 import { EFuncAction, EResource } from '../const/enums';
-import { useOrgs } from '../hooks/api/organizations';
 import { useUsers } from '../hooks/api/users';
 import { usePermissions } from '../hooks/usePermissions';
 import DashboardPopMenu, { Card } from '../lib/ui';
@@ -110,13 +110,13 @@ interface IDashboardState {
   counts: StatusCounts;
   nameFilter: string;
   statusFilter: EStatus;
-  organizationIdFilter: string;
+  organizationIdFilter: number;
 }
 
 interface IFilters {
   nameFilter: string;
   statusFilter: EStatus;
-  OrganizationIdFilter: string;
+  OrganizationIdFilter: number;
 }
 
 const applyNameFilter = (userList: UserWithAll[], nameFilter: string) => {
@@ -164,7 +164,7 @@ const applyStatusFilter = (userList: UserWithAll[], statusFilter: EStatus, count
   });
 };
 
-const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: string) => {
+const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: number) => {
   if (!organizationIdFilter) {
     return userList;
   }
@@ -267,7 +267,6 @@ const DashboardPage: React.FC = () => {
     organizationIdFilter: null,
     statusFilter: EStatus.ALL,
   });
-  const orgsQuery = useOrgs();
 
   const permission = permissionCheck(loggedInUser?.role?.name, EFuncAction.READ_ANY, EResource.USER);
 
@@ -334,25 +333,10 @@ const DashboardPage: React.FC = () => {
           />
         </div>
         <div tw="w-1/2">
-          <Autocomplete
-            options={orgsQuery.data ?? []}
-            getOptionLabel={(option) => option.name}
+          <OrganizationSelect
             onChange={(event, value: Organization) =>
               dispatch({ type: 'filterByOrganization', organizationIdFilter: value?.id })
             }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                tw="w-full bg-white rounded"
-                variant="outlined"
-                label="Organizations"
-                name="organizations_textfield"
-                id="organizations_textfield"
-                InputProps={{
-                  ...params.InputProps,
-                }}
-              />
-            )}
           />
         </div>
       </div>

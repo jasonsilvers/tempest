@@ -10,13 +10,13 @@ import React, { CSSProperties } from 'react';
 
 export const UpdateUsersOrg = ({
   userId,
-  userOrganizationId = '',
+  userOrganizationId,
   onChange = null,
   label = '',
   editStyle,
 }: {
   userId: number;
-  userOrganizationId: string;
+  userOrganizationId?: number;
   onChange?: (org: Organization) => void;
   label?: string;
   editStyle?: CSSProperties;
@@ -57,7 +57,7 @@ export const UpdateUsersOrg = ({
     <Autocomplete
       defaultValue={orgsQuery.data?.find((org) => org.id === userOrganizationId)}
       options={orgsQuery.data ?? []}
-      getOptionLabel={(option) => option.name}
+      getOptionLabel={(option) => option.shortName}
       onChange={updateOrg}
       renderInput={(params) => (
         <TextField

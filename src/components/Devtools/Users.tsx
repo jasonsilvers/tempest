@@ -53,7 +53,7 @@ const Users = () => {
   };
 
   const updateUsersOrg = (event: OrgFormEvent, user: UserWithAll) => {
-    const selectedOrgId = event.target.value;
+    const selectedOrgId = parseInt(event.target.value);
 
     const updatedUser = {
       id: user.id,
@@ -114,11 +114,11 @@ const Users = () => {
                   onChange={(event: OrgFormEvent) => updateUsersOrg(event, user)}
                   tw="text-gray-400"
                   size="small"
-                  value={user.organizationId}
+                  value={user.organizationId.toString()}
                 >
                   {orgsListQuery.data.map((org) => (
                     <MenuItem key={org.id} value={org.id}>
-                      {org.name}
+                      {org.shortName}
                     </MenuItem>
                   ))}
                 </Select>

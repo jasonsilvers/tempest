@@ -3,7 +3,7 @@ import { userWithinOrgOrChildOrg } from './userWithinOrgorChildOrg';
 
 type UserHasPermissionWithinOrgParam = {
   id: number;
-  orgId: string;
+  orgId: number;
 };
 
 export async function userHasPermissionWithinOrg(
