@@ -52,7 +52,6 @@ const EditItem: React.FC<{
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 }> = ({ children, label, value, editStyle, onChange }) => {
   const { isEdit } = useProfileHeaderContext();
-  // const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
     return (
@@ -101,7 +100,6 @@ const EditSelect: React.FC<{
   onChange?: (value: GroupedRank) => void;
 }> = ({ children, label, value, editStyle, onChange }) => {
   const { isEdit } = useProfileHeaderContext();
-  // const value = React.Children.map(children, (child: React.ReactElement) => child.props.children);
 
   if (isEdit) {
     return (
@@ -137,6 +135,10 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
   const updateUserMutation = useUpdateUser();
   const { data: userOrg } = useOrg(formState?.organizationId);
   const [orgModal, setOrgModal] = useState({ open: false, transientId: member?.organizationId });
+
+  const rankDisplay = !formState?.rank || formState.rank === '' ? 'RANK' : formState.rank;
+  const afscDisplay = !formState?.afsc || formState.afsc === '' ? 'AFSC' : formState.afsc;
+  const orgDisplay = userOrg?.id ? userOrg.shortName : 'Organization';
 
   useEffect(() => {
     setFormState(member);
@@ -174,7 +176,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             value={formState.rank}
             editStyle={{ width: '10rem' }}
           >
-            <Rank>{!formState.rank || formState.rank === '' ? 'RANK' : formState.rank}</Rank>
+            <Rank>{rankDisplay}</Rank>
           </EditSelect>
 
           <EditItem
@@ -183,7 +185,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             editStyle={{ width: '10rem' }}
             onChange={(e) => setFormState((state) => ({ ...state, afsc: e.target.value }))}
           >
-            <AFSC>{!formState.afsc || formState.afsc === '' ? 'AFSC' : formState.afsc}</AFSC>
+            <AFSC>{afscDisplay}</AFSC>
           </EditItem>
 
           <EditOrg
@@ -198,7 +200,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             }}
             orgId={formState.organizationId}
           >
-            <OrganizationField>{userOrg?.id ? userOrg.shortName : 'Organization'}</OrganizationField>
+            <OrganizationField>{orgDisplay}</OrganizationField>
           </EditOrg>
         </Row>
       </Table>
