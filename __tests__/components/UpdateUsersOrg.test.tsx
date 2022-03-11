@@ -21,16 +21,16 @@ beforeEach(() => {
         ctx.status(200),
         ctx.json({
           organizations: [
-            { id: 'a2147994-d964-40a9-985b-0f4381828de8', name: '15th MDG', parentId: null },
+            { id: 1, name: '15th MDG', parentId: null },
             {
-              id: 'f41f92d8-3920-4c33-9470-e2c1c6623abb',
+              id: 2,
               name: 'Dental Squadron',
-              parentId: 'a2147994-d964-40a9-985b-0f4381828de8',
+              parentId: 1,
             },
             {
-              id: '67c6657f-0022-48b0-89b3-866dd89831ef',
+              id: 3,
               name: 'Vaccinations Squadron',
-              parentId: 'a2147994-d964-40a9-985b-0f4381828de8',
+              parentId: 1,
             },
           ],
         })
@@ -43,7 +43,7 @@ beforeEach(() => {
           id: '123',
           firstName: 'bob',
           lastName: 'jones',
-          organizationId: 'f41f92d8-3920-4c33-9470-e2c1c6623abb',
+          organizationId: 2,
           role: { id: 22, name: ERole.MEMBER },
         })
       );
@@ -59,11 +59,9 @@ afterEach(() => {
 afterAll(() => server.close());
 
 test('should update users organization', async () => {
-  const { findAllByRole, findByRole, queryByText } = render(
-    <UpdateUsersOrg userId={'123'} userOrganizationId={'a2147994-d964-40a9-985b-0f4381828de8'} />
-  );
+  const { findAllByRole, findByRole, queryByText } = render(<UpdateUsersOrg userId={123} userOrganizationId={1} />);
 
-  const orgSelect = await findByRole('textbox');
+  const orgSelect = await findByRole('combobox');
 
   fireEvent.mouseDown(orgSelect);
 

@@ -47,7 +47,7 @@ const Container = () => {
       </button>
       {openAddNewModal ? (
         <AddMemberTrackingItemDialog
-          forMemberId={'423'}
+          forMemberId={423}
           handleClose={() => setAddNewModal(false)}
         ></AddMemberTrackingItemDialog>
       ) : null}
@@ -65,7 +65,7 @@ const trackingItemsList = {
 };
 
 const testTrainee: Partial<UserWithAll> = {
-  id: '123',
+  id: 123,
   firstName: 'bob',
   lastName: 'jones',
   rank: 'SSgt/E-5',
@@ -83,7 +83,7 @@ const memberTrackingItems: MemberTrackingItemWithAll[] = [
   {
     isActive: true,
     trackingItemId: 1,
-    userId: '123',
+    userId: 123,
     trackingItem: fireSafetyItem,
     user: testTrainee as User,
     createdAt: dayjs().toDate(),
@@ -93,8 +93,8 @@ const memberTrackingItems: MemberTrackingItemWithAll[] = [
         order: 0,
         trackingItemId: 3,
         trackingItem: fireSafetyItem,
-        traineeId: '423',
-        authorityId: '321',
+        traineeId: 423,
+        authorityId: 321,
         createdAt: dayjs().toDate(),
         authoritySignedDate: dayjs().toDate(),
         completedDate: dayjs().toDate(),
@@ -168,7 +168,7 @@ test('should be able to add/delete items to list', async () => {
 
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
 
-  const trackingItemTrigger = getByRole('textbox');
+  const trackingItemTrigger = getByRole('combobox');
 
   fireEvent.mouseDown(trackingItemTrigger);
 
@@ -211,7 +211,7 @@ test('should not allow duplicate memberTrackingRecords in progress', async () =>
   fireEvent.click(openDialogTrigger);
 
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
-  const trackingItemTrigger = getByRole('textbox');
+  const trackingItemTrigger = getByRole('combobox');
 
   fireEvent.mouseDown(trackingItemTrigger);
 
@@ -235,7 +235,7 @@ test('should create membertrackingrecord if already have membertracking item', a
 
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
 
-  const trackingItemTrigger = getByRole('textbox');
+  const trackingItemTrigger = getByRole('combobox');
 
   fireEvent.mouseDown(trackingItemTrigger);
 
@@ -266,7 +266,7 @@ test('should add membertrackingitem and membertrackingrecord', async () => {
 
   await waitForElementToBeRemoved(() => getByRole('progressbar'));
 
-  const trackingItemTrigger = getByRole('textbox');
+  const trackingItemTrigger = getByRole('combobox');
 
   fireEvent.mouseDown(trackingItemTrigger);
 

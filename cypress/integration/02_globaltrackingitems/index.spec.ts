@@ -8,7 +8,9 @@ describe('Can view Global Tracking Items', () => {
     });
 
     cy.visit(baseUrl);
+    cy.url().should('include', '/Dashboard') 
     cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
+    cy.url().should('include', '/Trackingitems') 
   });
 
   it('should navigate to Global Training Catalog and show a list', () => {

@@ -26,23 +26,23 @@ describe('Member role', () => {
     cy.findByRole('button', { name: 'edit-user' }).click();
     cy.intercept('/api/organizations');
     cy.findByText(/loading/).should('not.exist');
-    cy.findByRole('textbox', { name: /rank/i }).click();
+    cy.findByRole('combobox', { name: /rank/i }).click();
     cy.findByRole('option', { name: /SSgt/i }).click();
     cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
-    cy.findByRole('textbox', { name: /organization/i }).click();
+    cy.findByRole('combobox', { name: /organization/i }).click();
     cy.findByRole('option', { name: /dental/i }).click();
     cy.findByRole('button', { name: /cancel/i }).click();
   });
 
-  it('should change profile data in the header then save', () => {
+  it.only('should change profile data in the header then save', () => {
     cy.loginAsMember();
     cy.findByRole('button', { name: 'edit-user' }).click();
     cy.intercept('/api/organizations');
     cy.findByText(/loading/).should('not.exist');
-    cy.findByRole('textbox', { name: /rank/i }).click();
+    cy.findByRole('combobox', { name: /rank/i }).click();
     cy.findByRole('option', { name: /SSgt/i }).click();
     cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
-    cy.findByRole('textbox', { name: /organization/i }).click();
+    cy.findByRole('combobox', { name: /organization/i }).click();
     cy.findByRole('option', { name: /dental/i }).click();
     cy.findByRole('button', { name: /save/i }).click();
     cy.findByText(/dental/i).should('exist');
@@ -160,10 +160,10 @@ describe('Monitor role', () => {
     cy.findByRole('button', { name: 'edit-user' }).click();
     cy.intercept('/api/organizations');
     cy.findByText(/loading/).should('not.exist');
-    cy.findByRole('textbox', { name: /rank/i }).click();
+    cy.findByRole('combobox', { name: /rank/i }).click();
     cy.findByRole('option', { name: /SSgt/i }).click();
     cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
-    cy.findByRole('textbox', { name: /organization/i }).click();
+    cy.findByRole('combobox', { name: /organization/i }).click();
     cy.findByRole('option', { name: /dental/i }).click();
     cy.findByRole('button', { name: /no/i }).click();
     cy.findByRole('button', { name: /cancel/i }).click();

@@ -57,7 +57,7 @@ Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, date:
 
   cy.wait(10000);
 
-  cy.findByRole('textbox').type(trackingItemName);
+  cy.findByRole('combobox').type(trackingItemName);
 
   cy.findByRole('option', { name: trackingItemName }).click();
 
