@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "prisma": {
-    "seed": "node ./src/prisma/seed.js"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} src/prisma/seed.ts"
   },
   "scripts": {
     "dev": "next dev",
@@ -46,7 +46,7 @@
     "@babel/preset-react": "^7.16.7",
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.3.1",
-    "@mui/lab": "@mui/lab@5.0.0-alpha.69",
+    "@mui/lab": "*",
     "@mui/material": "^5.3.1",
     "@mui/styled-engine": "^5.3.0",
     "@mui/styled-engine-sc": "^5.3.0",
