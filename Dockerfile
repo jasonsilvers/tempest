@@ -49,9 +49,6 @@ COPY package.json ./
 COPY .env.production .env
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/node_modules ./node_modules
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/.next ./.next
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/prisma/seed.js ./src/prisma/
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/const/grants.js ./src/const/
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/const/enums.js ./src/const/
 COPY --chown=appuser:appuser  startup.sh timeout.js ./
 
 ENV NODE_ENV=production

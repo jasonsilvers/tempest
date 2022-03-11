@@ -1,11 +1,7 @@
 import { useOrgs } from '../hooks/api/organizations';
-import Collapse from '@mui/material/Collapse';
-import ListItemButton from '@mui/material/ListItemButton';
-import List from '@mui/material/List';
-import ListItemText from '@mui/material/ListItemText';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, TextField, Collapse, ListItemButton, List, ListItemText } from '@mui/material';
 import { SyntheticEvent, useState } from 'react';
 import { Organization } from '@prisma/client';
 import 'twin.macro';
