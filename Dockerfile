@@ -32,7 +32,7 @@ ENV NODE_ENV=production
 COPY --from=dependencies /home/node/deps/node_modules ./node_modules
 COPY ./src package.json twin.d.ts tsconfig.json tailwind.config.js .babelrc.js next-env.d.ts ./
  
-RUN npx prisma generate && npm run build
+RUN npx prisma generate && npm run build:seed && npm run build
 USER appuser
 
 # Nextjs server
@@ -49,6 +49,9 @@ COPY package.json ./
 COPY .env.production .env
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/node_modules ./node_modules
 COPY --chown=appuser:appuser --from=builder ${HOME}/build/.next ./.next
+COPY --chown=appuser:appuser --from=builder ${HOME}/build/prisma/seed.js ./src/prisma/
+COPY --chown=appuser:appuser --from=builder ${HOME}/build/const/grants.js ./src/const/
+COPY --chown=appuser:appuser --from=builder ${HOME}/build/const/enums.js ./src/const/
 COPY --chown=appuser:appuser  startup.sh timeout.js ./
 
 ENV NODE_ENV=production
