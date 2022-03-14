@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import loginHandler from '../../src/pages/api/login';
 import { updateLastLogin } from '../../src/repositories/userRepo';

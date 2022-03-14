@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';

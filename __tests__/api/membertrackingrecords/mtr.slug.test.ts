@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../../../src/repositories/memberTrackingRepo';
 import { findUserByEmail } from '../../../src/repositories/userRepo';

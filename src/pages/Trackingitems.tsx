@@ -52,6 +52,7 @@ const TrackingItems = () => {
       </div>
       <div tw="border-radius[10px] border overflow-hidden bg-white">
         <TrainingItemHeader />
+        {trackingItems.length === 0 ? <div tw="p-5">No Records</div> : null}
         {trackingItems
           ?.filter(
             (item) =>

@@ -21,7 +21,6 @@ import {
   waitForLoadingToFinish,
   userEvent,
   fireEvent,
-  screen,
 } from '../testutils/TempestTestUtils';
 
 jest.mock('../../src/repositories/userRepo');
@@ -263,7 +262,7 @@ it('should filter by organization', async () => {
   userEvent.type(searchInput, '15');
   await waitForLoadingToFinish();
   fireEvent.click(getByText('15th Medical Group'));
-  screen.debug();
+
   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
   expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
 });

@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
@@ -16,6 +20,7 @@ jest.mock('../../../src/utils/isOrgChildOf.ts');
 const organizationWithNoChildren: OrganizationWithChildren = {
   id: 2,
   name: '15th wing',
+  shortName: '15wg',
   parentId: 1,
   children: null,
   users: null,
@@ -23,6 +28,7 @@ const organizationWithNoChildren: OrganizationWithChildren = {
 const organizationWithChildren: OrganizationWithChildren = {
   id: 1,
   name: 'dental',
+  shortName: '15wg',
   parentId: null,
   children: [organizationWithNoChildren],
   users: [],
@@ -100,6 +106,7 @@ test('should not allow user to get any organization - read any', async () => {
   const organization2: OrganizationWithChildren = {
     id: 4,
     name: 'dental',
+    shortName: 'dental',
     parentId: null,
     children: null,
     users: [],
@@ -107,6 +114,7 @@ test('should not allow user to get any organization - read any', async () => {
   const organization1: OrganizationWithChildren = {
     id: 2,
     name: '15th wing',
+    shortName: '15th wg',
     parentId: 1,
     children: [organization2],
     users: null,

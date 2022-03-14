@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import trackingItemQueryHandler from '../../../src/pages/api/trackingitems/[id]';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import { grants } from '../../testutils/mocks/fixtures';

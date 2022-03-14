@@ -1,7 +1,11 @@
+/*
+ * @jest-environment node
+ */
+
 import Joi from 'joi';
 import { NextApiRequest, NextApiResponse } from 'next';
 import withValidation from '../../src/middleware/withValidation';
-import { testNextApi } from '../testutils/NextAPIUtils';
+import { ApiHandler, testNextApi } from '../testutils/NextAPIUtils';
 
 test('should validate api', async () => {
   async function testHandler(req: NextApiRequest, res: NextApiResponse) {
@@ -21,7 +25,7 @@ test('should validate api', async () => {
 
   const handlerWithValidation = validate(testSchema, testHandler);
 
-  const { status } = await testNextApi.post(handlerWithValidation, {
+  const { status } = await testNextApi.post(handlerWithValidation as ApiHandler, {
     body: {
       name: 'joe',
       message: 'frank',
@@ -49,7 +53,7 @@ test('should validate api and return 400 if invalid', async () => {
 
   const handlerWithValidation = validate(testSchema, testHandler);
 
-  const { status } = await testNextApi.post(handlerWithValidation, {
+  const { status } = await testNextApi.post(handlerWithValidation as ApiHandler, {
     body: {
       name: 2,
       message: 'frank',
@@ -77,7 +81,7 @@ test('should not validate if incorrect method', async () => {
 
   const handlerWithValidation = validate(testSchema, testHandler);
 
-  const { status } = await testNextApi.post(handlerWithValidation, {
+  const { status } = await testNextApi.post(handlerWithValidation as ApiHandler, {
     body: {
       name: 2,
       message: 'frank',
@@ -109,7 +113,7 @@ test('should override default message', async () => {
 
   const handlerWithValidation = validate(testSchema, testHandler);
 
-  const { status, data } = await testNextApi.post(handlerWithValidation, {
+  const { status, data } = await testNextApi.post(handlerWithValidation as ApiHandler, {
     body: {
       name: 2,
       message: 'frank',
@@ -142,7 +146,7 @@ test('should override default message', async () => {
 
   const handlerWithValidation = validate(testSchema, testHandler);
 
-  const { status, data } = await testNextApi.post(handlerWithValidation, {
+  const { status, data } = await testNextApi.post(handlerWithValidation as ApiHandler, {
     body: {
       name: 2,
       message: 'frank',
@@ -171,7 +175,7 @@ test('should return 404 if no handler found', async () => {
 
   const handlerWithValidation = validate(testSchema, undefined);
 
-  const { status, data } = await testNextApi.post(handlerWithValidation, {
+  const { status, data } = await testNextApi.post(handlerWithValidation as ApiHandler, {
     body: {
       name: 'joe',
       message: 'frank',

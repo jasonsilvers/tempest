@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import logHandler from '../../../src/pages/api/logs';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { testNextApi } from '../../testutils/NextAPIUtils';
