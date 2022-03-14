@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import grantsHandler from '../../../src/pages/api/grants';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';

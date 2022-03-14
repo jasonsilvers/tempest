@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import seedHandler from '../../../src/pages/api/seed/';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import { adminJWT, userJWT } from '../../testutils/mocks/mockJwt';

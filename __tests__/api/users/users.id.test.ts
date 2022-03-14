@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { deleteUser, findUserByEmail, findUserById, updateUser } from '../../../src/repositories/userRepo';
 import userQueryHandler from '../../../src/pages/api/users/[id]';
@@ -13,6 +17,7 @@ jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/roleRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/utils/isOrgChildOf.ts');
+jest.mock('../../../src/repositories/memberTrackingRepo');
 
 const userFromDb = {
   id: 2,
@@ -340,7 +345,7 @@ test('DELETE - should return 404 if record not found', async () => {
 
   expect(status).toBe(404);
 });
-test('DELETE - should delete user and cascade', async () => {
+test('DELETE - should delete user and all records', async () => {
   mockMethodAndReturn(findUserByEmail, {
     id: 1,
     firstName: 'joe',

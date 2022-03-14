@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findGrants } from '../../../src/repositories/grantsRepo';

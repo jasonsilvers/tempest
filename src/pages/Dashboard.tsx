@@ -1,6 +1,8 @@
 import { MemberTrackingRecord, Organization } from '.prisma/client';
 import { InputAdornment, TextField } from '@mui/material';
+import { P1_JWT } from '@tron/nextjs-auth-p1';
 import dayjs from 'dayjs';
+import { GetServerSidePropsContext, NextApiRequest } from 'next';
 import React, { useEffect, useReducer } from 'react';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
@@ -14,8 +16,15 @@ import { useUsers } from '../hooks/api/users';
 import { usePermissions } from '../hooks/usePermissions';
 import DashboardPopMenu, { Card } from '../lib/ui';
 import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
-import { getUsersWithMemberTrackingRecords, UserWithAll } from '../repositories/userRepo';
+import { getOrganizationTree } from '../repositories/organizationRepo';
+import {
+  findUserByEmail,
+  getUsersWithMemberTrackingRecordsByOrgId,
+  UsersWithMemberTrackingRecords,
+  UserWithAll,
+} from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
+import { jwtParser } from '../utils/jwtUtils';
 import { getStatus } from '../utils/status';
 
 const UserTable = tw.div``;
@@ -376,10 +385,46 @@ const DashboardPage: React.FC = () => {
 
 export default DashboardPage;
 
-export const getServerSideProps = async () => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  let jwt: P1_JWT;
+
+  try {
+    jwt = jwtParser(ctx.req as NextApiRequest);
+  } catch (e) {
+    return { props: {} };
+  }
+
+  const requestingUser = await findUserByEmail(jwt.email);
+
+  if (!requestingUser) {
+    return { props: {} };
+  }
+
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(['users'], () => getUsersWithMemberTrackingRecords());
+  await queryClient.prefetchQuery(['users'], async () => {
+    const userPromises: Promise<UsersWithMemberTrackingRecords>[] = [];
+
+    let organizations: Organization[];
+
+    try {
+      organizations = await getOrganizationTree(requestingUser.organizationId);
+    } catch (e) {
+      return { props: {} };
+    }
+
+    organizations.forEach(async (organization) => {
+      userPromises.push(getUsersWithMemberTrackingRecordsByOrgId(organization.id));
+    });
+
+    let users: UsersWithMemberTrackingRecords = [];
+
+    await Promise.all(userPromises).then((allUserData) => {
+      users = allUserData.flat();
+    });
+
+    return users;
+  });
 
   return {
     props: {

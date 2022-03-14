@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findOrganizations, createOrganizations } from '../../../src/repositories/organizationRepo';
 import organizationApiHandler from '../../../src/pages/api/organizations/index';

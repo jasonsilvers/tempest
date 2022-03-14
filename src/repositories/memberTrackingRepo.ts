@@ -18,6 +18,22 @@ export const deleteMemberTrackingRecord = async (id: number) => {
   });
 };
 
+export const deleteAllMemberTrackingRecordsForUserId = async (userId: number) => {
+  return prisma.memberTrackingRecord.deleteMany({
+    where: {
+      traineeId: userId,
+    },
+  });
+};
+
+export const deleteAllMemberTrackingItemsForUserId = async (userId: number) => {
+  return prisma.memberTrackingItem.deleteMany({
+    where: {
+      userId,
+    },
+  });
+};
+
 export const findMemberTrackingRecords = async (trackingItemId: number, userId: number) => {
   return prisma.memberTrackingRecord.findMany({
     where: {
@@ -144,6 +160,17 @@ export const createMemberTrackingItem = async (newMti: MemberTrackingItem) => {
     data: newMti,
     include: {
       memberTrackingRecords: true,
+    },
+  });
+};
+
+export const findMemberTrackingItemByUserId = async (userId: number) => {
+  return prisma.memberTrackingItem.findMany({
+    include: {
+      memberTrackingRecords: true,
+    },
+    where: {
+      userId,
     },
   });
 };

@@ -9,6 +9,8 @@ global.console = {
   info: jest.fn(),
   debug: jest.fn(),
 };
+// @ts-expect-error
+global.setImmediate = jest.useRealTimers;
 // speeds up *ByRole queries a bit
 // https://github.com/testing-library/dom-testing-library/issues/552
 configure({ defaultHidden: true });

@@ -2,7 +2,7 @@ import { TrackingItem } from '@prisma/client';
 import prisma from '../prisma/prisma';
 
 export async function getTrackingItems() {
-  return prisma.trackingItem.findMany();
+  return prisma.trackingItem.findMany({ orderBy: { title: 'asc' } });
 }
 
 export async function createTrackingItem(newTrackingItem: TrackingItem) {

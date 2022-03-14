@@ -1,15 +1,20 @@
+/*
+ * @jest-environment node
+ */
+
 import http from 'http';
 import queryString from 'query-string';
 import listen from 'test-listen';
-import fetch from 'isomorphic-unfetch';
+import originalFetch from 'node-fetch';
 import { apiResolver } from 'next/dist/server/api-utils/node';
 import { userJWT } from './mocks/mockJwt';
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import 'setimmediate';
+
+const fetch = require('fetch-retry')(originalFetch);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ApiHandler = (req: NextApiRequestWithAuthorization<any, any>, res: NextApiResponse<any>) => Promise<void>;
+export type ApiHandler = (req: NextApiRequestWithAuthorization<any, any>, res: NextApiResponse<any>) => Promise<void>;
 
 async function createNextApiServer(handler: ApiHandler) {
   let server: http.Server;
@@ -79,7 +84,10 @@ const baseTestNextApi = async (
 
     const base = urlParams.charAt[0] === '?' ? '/api/whocares' : '/api/whocares/';
 
-    const response = await fetch(url + base + urlParams, {
+    let responsePromise;
+    await fetch(url + base + urlParams, {
+      retries: 3,
+      retryDelay: 300,
       headers: {
         'Content-Type': 'application/json',
         ...authorization,
@@ -87,12 +95,18 @@ const baseTestNextApi = async (
       },
       method,
       body: JSON.stringify(body),
-    });
-    status = response.status;
+    })
+      .then((r) => {
+        status = r.status;
+        responsePromise = r;
+      })
+      .catch((e) => console.log('THERE WAS AN ERRROR IN THE FETCH', e));
+
+    // status = response.status;
     if (status === 204) {
       data = null;
     } else {
-      data = await response.json();
+      data = await responsePromise.json();
     }
   } catch (error) {
     data = { message: error };

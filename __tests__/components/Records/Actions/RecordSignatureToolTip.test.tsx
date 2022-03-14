@@ -13,7 +13,7 @@ afterEach(() => {
 
 test('show display rank', () => {
   const testTrainee = {
-    id: '123',
+    id: 123,
     firstName: 'bob',
     lastName: 'jones',
     rank: 'SSgt/E-5',
@@ -48,7 +48,7 @@ test('show display rank', () => {
 
 test('show display no rank if not provided', () => {
   const testTrainee = {
-    id: '123',
+    id: 123,
     firstName: 'bob',
     lastName: 'jones',
     rank: null,

@@ -6,6 +6,10 @@ import { NextApiResponse } from 'next';
 import { EResource, ERole, ITempestApiError } from '../const/enums';
 import { getAc } from '../middleware/utils';
 import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
+import {
+  deleteAllMemberTrackingItemsForUserId,
+  deleteAllMemberTrackingRecordsForUserId,
+} from '../repositories/memberTrackingRepo';
 import { getRoleByName } from '../repositories/roleRepo';
 import { deleteUser, findUserById, LoggedInUser, updateUser } from '../repositories/userRepo';
 import { userWithinOrgOrChildOrg } from '../utils/userWithinOrgorChildOrg';
@@ -112,13 +116,19 @@ const deleteUserAction = async (
     throw new PermissionError();
   }
 
-  const deletedUser = await deleteUser(userIdParam);
+  const userToDelete = await findUserById(userIdParam);
 
-  if (deletedUser) {
-    res.status(200).json({ message: 'ok' });
-  } else {
+  if (!userToDelete) {
     throw new NotFoundError();
   }
+
+  await deleteAllMemberTrackingRecordsForUserId(userIdParam);
+
+  await deleteAllMemberTrackingItemsForUserId(userIdParam);
+
+  await deleteUser(userIdParam);
+
+  res.status(200).json({ message: 'ok' });
 };
 
 export { userSchema, getUserAction, putUserAction, deleteUserAction };
