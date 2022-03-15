@@ -1,11 +1,11 @@
-import { render, waitFor, fireEvent, waitForElementToBeRemoved } from '../../testutils/TempestTestUtils';
+import { render, waitFor, fireEvent, waitForElementToBeRemoved, act } from '../../testutils/TempestTestUtils';
 import 'whatwg-fetch';
 import { server, rest } from '../../testutils/mocks/msw';
 import * as nextRouter from 'next/router';
 import { ProfileHeader } from '../../../src/components/Profile/ProfileHeader';
 
 jest.mock('../../../src/repositories/userRepo');
-import { bobJones } from '../../testutils/mocks/fixtures';
+import { andrewMonitor, bobJones } from '../../testutils/mocks/fixtures';
 import { EUri } from '../../../src/const/enums';
 import { Role, User } from '.prisma/client';
 
@@ -47,6 +47,7 @@ beforeEach(() => {
 });
 
 const bobJones2 = bobJones as User & { role: Role };
+const monitorUser = andrewMonitor as User & { role: Role };
 
 it('does not render the profile header', async () => {
   const { queryByText } = render(<ProfileHeader member={null} />);
@@ -110,6 +111,46 @@ it('renders the edit view in the profile header and edits the org drop down', as
   await waitFor(() => expect(queryByText('org 2')).not.toBeInTheDocument());
 });
 
+it('displays confirmation box when chaning organization and member is monitor', async () => {
+  const { getByText, getByRole, getByLabelText, findAllByRole } = render(<ProfileHeader member={monitorUser} />);
+
+  server.use(
+    rest.put(`/api/users/123`, (req, res, ctx) => {
+      return res(ctx.json(req.body));
+    })
+  );
+
+  await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
+  fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
+  await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
+  // change data
+  await waitForElementToBeRemoved(() => getByText(/org 1/i));
+  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  const textfield = getByLabelText(/organization/i, { selector: 'input' }) as HTMLInputElement;
+  // get value of textfield before change event
+  fireEvent.mouseDown(textfield);
+  const options = await findAllByRole('option');
+  fireEvent.click(options[1]);
+  expect(
+    getByText(/changing organizations will result in loss of permissions\. do you want to continue\?/i)
+  ).toBeInTheDocument();
+  act(() => {
+    fireEvent.click(getByRole('button', { name: /no/i }));
+  });
+
+  await waitForElementToBeRemoved(() =>
+    getByText(/changing organizations will result in loss of permissions\. do you want to continue\?/i)
+  );
+
+  fireEvent.mouseDown(textfield);
+  const options2 = await findAllByRole('option');
+  fireEvent.click(options2[0]);
+
+  act(() => {
+    fireEvent.click(getByRole('button', { name: /yes/i }));
+  });
+});
+
 it('renders the edit view in the profile header and persists data', async () => {
   server.use(
     rest.put(`/api/users/123`, (req, res, ctx) => {
@@ -128,4 +169,26 @@ it('renders the edit view in the profile header and persists data', async () => 
 
   fireEvent.click(getByText(/save/i));
   await waitFor(() => expect(queryByText('AFSC123')).toBeInTheDocument());
+});
+
+it('should show snackbar after success', async () => {
+  server.use(
+    rest.put(`/api/users/123`, (req, res, ctx) => {
+      return res(ctx.json(req.body));
+    })
+  );
+
+  const { getByText, getByRole, getByLabelText, queryByText } = render(<ProfileHeader member={bobJones2} />);
+  await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
+
+  fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
+  await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
+  // change data
+  const afsctextfield = getByLabelText(/afsc/i, { selector: 'input' }) as HTMLInputElement;
+  fireEvent.change(afsctextfield, { target: { value: 'AFSC123' } });
+
+  fireEvent.click(getByText(/save/i));
+  await waitFor(() => queryByText(/profile updated/i));
+  await waitFor(() => expect(queryByText('AFSC123')).toBeInTheDocument());
+  // expect the snackbar to be visible
 });

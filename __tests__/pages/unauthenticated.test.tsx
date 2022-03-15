@@ -14,6 +14,7 @@ it('renders the unauthenticated page with snackbar', async () => {
     error: 'Houston... theres a... yeah...',
     isLoading: false,
     user: { firstName: 'bob', id: 1, role: { name: ERole.MEMBER, id: 1 } },
+    refreshUser: () => null,
   }));
   const { getByText } = render(<Unauthenticated />);
 
