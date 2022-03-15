@@ -12,6 +12,7 @@ import ConfirmDialog from '../Dialog/ConfirmDialog';
 import { UpdateUsersOrg } from '../UpdateUsersOrg';
 import { GroupedRank } from '../../types';
 import { Button, IconButton, TextField, Autocomplete, Typography } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
 const Table = tw.div`text-left mb-6`;
 const Row = tw.div`flex flex-row p-1`;
@@ -131,6 +132,7 @@ const EditSelect: React.FC<{
 
 const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) => {
   const [isActiveEdit, setIsActiveEdit] = useState(false);
+  const snackbar = useSnackbar();
   const [formState, setFormState] = useState(member);
   const updateUserMutation = useUpdateUser();
   const { data: userOrg } = useOrg(formState?.organizationId);
@@ -151,12 +153,19 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
         <EditButtonGroup
           onEdit={() => setIsActiveEdit(true)}
           onSave={() => {
-            updateUserMutation.mutate({
-              id: formState.id,
-              afsc: formState.afsc,
-              organizationId: formState.organizationId,
-              rank: formState.rank,
-            } as User);
+            updateUserMutation.mutate(
+              {
+                id: formState.id,
+                afsc: formState.afsc,
+                organizationId: formState.organizationId,
+                rank: formState.rank,
+              } as User,
+              {
+                onSuccess: () => {
+                  snackbar.enqueueSnackbar('Profile Updated!', { variant: 'success' });
+                },
+              }
+            );
             setIsActiveEdit(false);
           }}
           onCancel={() => {
