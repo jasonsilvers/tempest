@@ -153,8 +153,7 @@ export const useDeleteMemberTrackingRecord = () => {
           updatedMemberTrackingItems
         );
       },
-      onSettled: (data: MemberTrackingRecord) => {
-        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId));
+      onSettled: () => {
         snackbar.enqueueSnackbar('Record Deleted!', { variant: 'success' });
       },
     }
