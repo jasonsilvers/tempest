@@ -2,13 +2,13 @@
 import '@testing-library/jest-dom/extend-expect';
 import { configure } from '@testing-library/react';
 
-// global.console = {
-//   ...console,
-//   log: jest.fn(),
-//   error: jest.fn(),
-//   info: jest.fn(),
-//   debug: jest.fn(),
-// };
+global.console = {
+  ...console,
+  log: jest.fn(),
+  error: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn(),
+};
 // @ts-expect-error
 global.setImmediate = jest.useRealTimers;
 // speeds up *ByRole queries a bit

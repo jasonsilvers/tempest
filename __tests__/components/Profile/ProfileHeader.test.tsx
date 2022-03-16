@@ -111,7 +111,14 @@ it('renders the edit view in the profile header and edits the org drop down', as
   await waitFor(() => expect(queryByText('org 2')).not.toBeInTheDocument());
 });
 
-it('displays confirmation box when chaning organization and member is monitor', async () => {
+it('displays confirmation box when changing organization and user is monitor', async () => {
+  server.use(
+    // return a user with the right permissions
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(monitorUser));
+    })
+  );
+
   const { getByText, getByRole, getByLabelText, findAllByRole } = render(<ProfileHeader member={monitorUser} />);
 
   server.use(

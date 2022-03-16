@@ -80,7 +80,19 @@ const EditOrg: React.FC<{
   const { userId, isEdit } = useProfileHeaderContext();
   const { role, user, isLoading } = usePermissions();
 
-  if (!isLoading && isEdit && (role === ERole.MEMBER || userId === user?.id)) {
+  let canEditOrg = false;
+
+  if (!isLoading && isEdit) {
+    if (role === ERole.MEMBER && userId === user?.id) {
+      canEditOrg = true;
+    }
+
+    if (role === ERole.MONITOR) {
+      canEditOrg = true;
+    }
+  }
+
+  if (canEditOrg) {
     return (
       <UpdateUsersOrg
         editStyle={editStyle}
