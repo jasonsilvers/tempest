@@ -7,7 +7,7 @@ export function withTempestHandlers(
   nextApiHandler: NextApiHandler,
   getUserFunc: DBQueryFunctionToReturnUser,
   schemas: ValidationSchemas = {},
-  withLogging = true
+  withLogging = false
 ) {
   const validate = withValidation();
 

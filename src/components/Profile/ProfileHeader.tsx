@@ -40,7 +40,7 @@ const EditButtonGroup: React.FC<{ onSave: () => void; onCancel: () => void; onEd
     );
   }
   return (
-    <IconButton onClick={onEdit} aria-label={`edit-user`} size="small" tw="hover:bg-transparent">
+    <IconButton color="primary" onClick={onEdit} aria-label={`edit-user`} size="small" tw="hover:bg-transparent">
       <EditIcon />
     </IconButton>
   );
@@ -160,7 +160,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
 
   return formState ? (
     <ProfileHeaderContext.Provider value={{ userId: member?.id, isEdit: isActiveEdit }}>
-      <div tw="flex space-x-6 items-start">
+      <div tw="flex space-x-6 items-center">
         <Typography variant="h4">{`${member.lastName}, ${member.firstName}`}</Typography>
         <EditButtonGroup
           onEdit={() => setIsActiveEdit(true)}
@@ -195,7 +195,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             }}
             label="Rank"
             value={formState.rank}
-            editStyle={{ width: '10rem' }}
+            editStyle={{ width: '14rem' }}
           >
             <Rank>{rankDisplay}</Rank>
           </EditSelect>
@@ -203,7 +203,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
           <EditItem
             label="AFSC"
             value={formState.afsc}
-            editStyle={{ width: '10rem' }}
+            editStyle={{ width: '14rem' }}
             onChange={(e) => setFormState((state) => ({ ...state, afsc: e.target.value }))}
           >
             <AFSC>{afscDisplay}</AFSC>

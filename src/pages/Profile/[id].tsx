@@ -54,7 +54,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
       <MemberItemTracker
         variant="In Progress"
         title="Training in Progress"
-        description="This shows you training that has yet to be completed and signed off."
+        description="This shows your training that has yet to be completed and/or signed off."
         userId={userId}
       >
         <Tab category={ECategories.ALL}>Show All</Tab>
@@ -65,7 +65,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
       <MemberItemTracker
         variant="Completed"
         title="Official Training Record"
-        description="This shows you your training that has been completed and signed off by the appropriate authority."
+        description="This shows your training that has been completed and signed off by the appropriate authority."
         userId={userId}
       >
         <Tab category={ECategories.ALL}>Show All</Tab>
