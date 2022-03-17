@@ -408,7 +408,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     try {
       organizations = await getOrganizationTree(requestingUser.organizationId);
     } catch (e) {
-      console.log(e);
+      return { props: {} };
     }
 
     let users: UsersWithMemberTrackingRecords = [];
