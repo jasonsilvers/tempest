@@ -403,8 +403,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery(['users'], async () => {
-    const userPromises: Promise<UsersWithMemberTrackingRecords>[] = [];
-
     let organizations: Organization[];
 
     try {
@@ -413,15 +411,15 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       return { props: {} };
     }
 
-    organizations.forEach(async (organization) => {
-      userPromises.push(getUsersWithMemberTrackingRecordsByOrgId(organization.id));
-    });
-
     let users: UsersWithMemberTrackingRecords = [];
 
-    await Promise.all(userPromises).then((allUserData) => {
-      users = allUserData.flat();
-    });
+    for (const organizaton of organizations) {
+      const fetchedUsers = await getUsersWithMemberTrackingRecordsByOrgId(organizaton.id);
+
+      if (fetchedUsers.length > 0) {
+        users = [...users, ...fetchedUsers];
+      }
+    }
 
     return users;
   });

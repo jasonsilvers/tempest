@@ -11,6 +11,7 @@ import {
 } from '../../../repositories/userRepo';
 import { EResource } from '../../../const/enums';
 import { getOrganizationTree } from '../../../repositories/organizationRepo';
+import { Organization } from '@prisma/client';
 const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;
 
@@ -26,9 +27,7 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
     throw new PermissionError();
   }
 
-  const userPromises: Promise<UsersWithMemberTrackingRecords>[] = [];
-
-  let organizations;
+  let organizations: Organization[];
 
   try {
     organizations = await getOrganizationTree(req.user.organizationId);
@@ -36,15 +35,15 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
     console.log(e);
   }
 
-  organizations.forEach(async (organization) => {
-    userPromises.push(getUsersWithMemberTrackingRecordsByOrgId(organization.id));
-  });
-
   let users: UsersWithMemberTrackingRecords = [];
 
-  await Promise.all(userPromises).then((allUserData) => {
-    users = allUserData.flat();
-  });
+  for (const organizaton of organizations) {
+    const fetchedUsers = await getUsersWithMemberTrackingRecordsByOrgId(organizaton.id);
+
+    if (fetchedUsers.length > 0) {
+      users = [...users, ...fetchedUsers];
+    }
+  }
 
   res.json({ users });
 };

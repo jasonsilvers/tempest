@@ -40,7 +40,16 @@ function AppProviders({ children, pageProps }: { children: React.ReactNode; page
             }}
             autoHideDuration={3000}
           >
-            <QueryProvider pageProps={pageProps}>
+            <QueryProvider
+              pageProps={pageProps}
+              queryClientOptions={{
+                defaultOptions: {
+                  queries: {
+                    refetchOnWindowFocus: false,
+                  },
+                },
+              }}
+            >
               <UserContextProvider user={pageProps?.user}>{children}</UserContextProvider>
             </QueryProvider>
           </SnackbarProvider>
