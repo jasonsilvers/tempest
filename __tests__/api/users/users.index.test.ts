@@ -3,11 +3,7 @@
  */
 
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import {
-  findUserByEmail,
-  findUsers,
-  getUsersWithMemberTrackingRecordsByOrgId,
-} from '../../../src/repositories/userRepo';
+import { findUserByEmail, findUsers, getAllUsersFromUsersOrgCascade } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { testNextApi } from '../../testutils/NextAPIUtils';
@@ -52,7 +48,7 @@ test('should return 401 if not authorized', async () => {
 });
 test('should return users', async () => {
   mockMethodAndReturn(getOrganizationTree, testOrganizations);
-  mockMethodAndReturn(getUsersWithMemberTrackingRecordsByOrgId, [userFromDb]);
+  mockMethodAndReturn(getAllUsersFromUsersOrgCascade, [userFromDb]);
   const { status, data } = await testNextApi.get(userHandler);
   expect(status).toEqual(200);
 

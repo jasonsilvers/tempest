@@ -1,17 +1,10 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
+import { EResource } from '../../../const/enums';
 import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import {
-  findUserByEmail,
-  getUsersWithMemberTrackingRecordsByOrgId,
-  LoggedInUser,
-  UsersWithMemberTrackingRecords,
-} from '../../../repositories/userRepo';
-import { EResource } from '../../../const/enums';
-import { getOrganizationTree } from '../../../repositories/organizationRepo';
-import { Organization } from '@prisma/client';
+import { findUserByEmail, getAllUsersFromUsersOrgCascade, LoggedInUser } from '../../../repositories/userRepo';
 const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;
 
@@ -27,23 +20,7 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
     throw new PermissionError();
   }
 
-  let organizations: Organization[];
-
-  try {
-    organizations = await getOrganizationTree(req.user.organizationId);
-  } catch (e) {
-    console.log(e);
-  }
-
-  let users: UsersWithMemberTrackingRecords = [];
-
-  for (const organizaton of organizations) {
-    const fetchedUsers = await getUsersWithMemberTrackingRecordsByOrgId(organizaton.id);
-
-    if (fetchedUsers.length > 0) {
-      users = [...users, ...fetchedUsers];
-    }
-  }
+  const users = await getAllUsersFromUsersOrgCascade(req.user.organizationId);
 
   res.json({ users });
 };
