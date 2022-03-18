@@ -114,7 +114,7 @@ const Users = () => {
                   onChange={(event: OrgFormEvent) => updateUsersOrg(event, user)}
                   tw="text-gray-400"
                   size="small"
-                  value={user.organizationId.toString()}
+                  value={user.organizationId?.toString()}
                 >
                   {orgsListQuery.data.map((org) => (
                     <MenuItem key={org.id} value={org.id}>

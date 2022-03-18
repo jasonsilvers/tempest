@@ -153,9 +153,27 @@ export const getAllUsersFromUsersOrgCascade = async (organizationId: number) => 
     return { props: {} };
   }
 
-  const users = await getUsersWithMemberTrackingRecords();
+  const organizationIds = organizations.map((org) => org.id);
 
-  return users.filter((user) => organizations.some((organization) => organization.id === user.id));
+  return prisma.user.findMany({
+    where: {
+      organizationId: {
+        in: organizationIds,
+      },
+    },
+    orderBy: {
+      lastName: 'asc',
+    },
+    include: {
+      role: true,
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: true,
+        },
+      },
+    },
+  });
 };
 
 /**

@@ -347,6 +347,7 @@ const DashboardPage: React.FC = () => {
             <UserTableColumn tw="w-1/6 flex text-lg justify-center">Status</UserTableColumn>
             <UserTableColumn tw="ml-auto mr-4 text-lg">Actions</UserTableColumn>
           </UserTableHeader>
+          {users.isLoading ? '...Loading' : ''}
           {dashboardState.filteredUserList?.length === 0 ? 'No Members Found' : ''}
           {dashboardState.filteredUserList?.map((user, index) => (
             <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-base mb-2 flex">
