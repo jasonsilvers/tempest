@@ -1,8 +1,9 @@
-import { User, Role, Prisma } from '@prisma/client';
+import { User, Role, Prisma, Organization } from '@prisma/client';
 import prisma from '../prisma/prisma';
 import { ERole, EUserIncludes } from '../const/enums';
 import { getRoleByName } from './roleRepo';
 import { P1_JWT } from '@tron/nextjs-auth-p1';
+import { getOrganizationTree } from './organizationRepo';
 const dayjs = require('dayjs');
 
 export const findUserByIdReturnAllIncludes = async (userId: number) => {
@@ -141,6 +142,20 @@ export const getUsersWithMemberTrackingRecords = async () => {
       },
     },
   });
+};
+
+export const getAllUsersFromUsersOrgCascade = async (organizationId: number) => {
+  let organizations: Organization[];
+
+  try {
+    organizations = await getOrganizationTree(organizationId);
+  } catch (e) {
+    return { props: {} };
+  }
+
+  const users = await getUsersWithMemberTrackingRecords();
+
+  return users.filter((user) => organizations.some((organization) => organization.id === user.id));
 };
 
 /**
