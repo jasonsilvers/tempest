@@ -15,6 +15,10 @@ export const getStatus = (completedDate: Date, interval: number) => {
   const DEFAULT_MIN_INTERVAL = 60;
   const upComing = interval <= DEFAULT_MIN_INTERVAL ? DEFAULT_INTERVAL_SMALL : DEFAULT_INTERVAL_MEDIUM;
 
+  if (interval === 0) {
+    return ECategories.DONE;
+  }
+
   if (numberOfDaysAfterCompleted >= interval) {
     return ECategories.OVERDUE;
   } else if (numberOfDaysAfterCompleted >= interval - upComing) {

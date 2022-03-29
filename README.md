@@ -137,3 +137,9 @@ docker run -it image_name sh
 ```
 ANALYZE=true npm run build
 ```
+
+## Problems with GPG
+
+```
+export GPG_TTY=$(tty)
+```

@@ -17,8 +17,8 @@ import { useSnackbar } from 'notistack';
 const Table = tw.div`text-left mb-6`;
 const Row = tw.div`flex flex-row p-1`;
 const Base = tw.div`text-lg mb-1 text-hg pr-5 capitalize`;
-const Rank = tw(Base)`w-24`;
-const AFSC = tw(Base)`w-24`;
+const Rank = tw(Base)`w-32`;
+const AFSC = tw(Base)`w-32`;
 const OrganizationField = tw(Base)``;
 
 const ProfileHeaderContext = React.createContext({ userId: null, isEdit: false });
@@ -195,7 +195,7 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
             }}
             label="Rank"
             value={formState.rank}
-            editStyle={{ width: '14rem' }}
+            editStyle={{ width: '16rem' }}
           >
             <Rank>{rankDisplay}</Rank>
           </EditSelect>
