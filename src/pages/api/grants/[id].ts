@@ -33,9 +33,6 @@ export const grantsApiHandler = async (req: ITempestOrganizationIdApiRequest<Log
 
   const bodyGrantId = parseInt(id);
 
-  console.log(bodyGrantId);
-  console.log(body);
-
   delete body.id;
 
   const updatedGrant = await updateGrant(bodyGrantId, body);
