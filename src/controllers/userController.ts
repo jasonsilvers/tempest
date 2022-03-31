@@ -18,6 +18,8 @@ const userSchema = {
   put: {
     body: Joi.object({
       id: Joi.number().optional().allow(null, ''),
+      firstName: Joi.string().optional().allow(null, ''),
+      lastName: Joi.string().optional().allow(null, ''),
       email: Joi.string().email().optional().allow(null, ''),
       roleId: Joi.number().optional().allow(null, ''),
       organizationId: Joi.number().optional().allow(null, ''),

@@ -6,6 +6,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { Button, Drawer, Fab, Tab, Tabs } from '@mui/material';
 import { Users } from './Users';
 import { Logs } from './Logs';
+import { Grants } from './Grants';
 
 interface ITabPanelProps {
   children?: React.ReactNode;
@@ -48,6 +49,7 @@ export const BasicTabs = () => {
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Users" {...a11yProps(0)} />
           <Tab label="Log Data" {...a11yProps(1)} />
+          <Tab label="Grants" {...a11yProps(3)} />
         </Tabs>
       </div>
       <TabPanel value={value} index={0}>
@@ -55,6 +57,9 @@ export const BasicTabs = () => {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Logs />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <Grants />
       </TabPanel>
     </div>
   );

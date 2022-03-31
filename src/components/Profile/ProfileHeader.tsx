@@ -161,13 +161,28 @@ const ProfileHeader: React.FC<{ member: User & { role: Role } }> = ({ member }) 
   return formState ? (
     <ProfileHeaderContext.Provider value={{ userId: member?.id, isEdit: isActiveEdit }}>
       <div tw="flex space-x-6 items-center">
-        <Typography variant="h4">{`${member.lastName}, ${member.firstName}`}</Typography>
+        <Row>
+          <EditItem
+            label="lastname"
+            value={formState.lastName}
+            onChange={(e) => setFormState((state) => ({ ...state, lastName: e.target.value }))}
+          >
+            <Typography variant="h4">{`${formState.lastName}, ${formState.firstName}`}</Typography>
+          </EditItem>
+          <EditItem
+            label="firstname"
+            value={formState.firstName}
+            onChange={(e) => setFormState((state) => ({ ...state, firstName: e.target.value }))}
+          ></EditItem>
+        </Row>
         <EditButtonGroup
           onEdit={() => setIsActiveEdit(true)}
           onSave={() => {
             updateUserMutation.mutate(
               {
                 id: formState.id,
+                firstName: formState.firstName,
+                lastName: formState.lastName,
                 afsc: formState.afsc,
                 organizationId: formState.organizationId,
                 rank: formState.rank,
