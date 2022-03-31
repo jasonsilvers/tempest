@@ -152,7 +152,7 @@ const userGrants: Grants[] = [
   },
   {
     action: EAction.UPDATE_OWN,
-    attributes: 'organizationId, tags, afsc, rank, address, dutyTitle',
+    attributes: 'organizationId, tags, afsc, rank, address, dutyTitle, firstName, lastName',
     resource: EResource.USER,
     role: ERole.MEMBER,
   },
@@ -164,13 +164,13 @@ const userGrants: Grants[] = [
   },
   {
     action: EAction.UPDATE_ANY,
-    attributes: 'tags, afsc, rank, address, dutyTitle',
+    attributes: 'tags, afsc, rank, address, dutyTitle, firstName, lastName',
     resource: EResource.USER,
     role: ERole.MONITOR,
   },
   {
     action: EAction.UPDATE_OWN,
-    attributes: 'organizationId, tags, afsc, rank, address, dutyTitle',
+    attributes: 'organizationId, tags, afsc, rank, address, dutyTitle, firstName, lastName',
     resource: EResource.USER,
     role: ERole.MONITOR,
   },

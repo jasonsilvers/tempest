@@ -246,6 +246,10 @@ export const findTrackingRecordsByAuthorityId = (userId: number, includeTracking
 export async function createNewUserFromJWT(jwt: P1_JWT) {
   const memberRole = await getRoleByName(ERole.MEMBER);
 
+  if (jwt.given_name === null || jwt.family_name === null) {
+    console.log('---------Null Names---------', jwt);
+  }
+
   const newTempestUser = await createUser(
     {
       firstName: jwt.given_name,

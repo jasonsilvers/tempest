@@ -112,7 +112,14 @@ test('Should return ToDo if no completion date', () => {
 
 test('Should return Signature Required if no signed dates', () => {
   const interval = 60;
-  const result = getCategory({ completedDate: dayjs().toISOString() } as MemberTrackingRecord, interval);
+  const result = getCategory({ completedDate: dayjs().toDate() } as MemberTrackingRecord, interval);
 
   expect(result).toBe(ECategories.SIGNATURE_REQUIRED);
+});
+
+test('should return Done if one time training is completed', () => {
+  const interval = 0;
+  const result = getStatus(dayjs().toDate(), interval);
+
+  expect(result).toBe(ECategories.DONE);
 });

@@ -16,6 +16,14 @@ import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerCon
 import 'twin.macro';
 import { TrackingItemInterval } from '../../../utils/daysToString';
 
+const DueDate = ({ completedDate, interval }: { completedDate: Date; interval: number }) => {
+  if (interval === 0) {
+    return <span>N/A</span>;
+  }
+
+  return <span>{completedDate ? dayjs(completedDate).add(interval, 'days').format('MMM D, YYYY') : 'No Date'}</span>;
+};
+
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
   status?: ECategories;
@@ -145,15 +153,7 @@ const RecordRow: React.FC<{
             />
           </TableData>
           <TableData tw="space-x-1 pt-1 text-gray-400">
-            <>
-              <span>
-                {trackingRecordQuery.data?.completedDate
-                  ? dayjs(trackingRecordQuery.data?.completedDate)
-                      .add(trackingItem?.interval, 'days')
-                      .format('MMM D, YYYY')
-                  : 'No Date'}
-              </span>
-            </>
+            <DueDate completedDate={trackingRecordQuery.data.completedDate} interval={trackingItem.interval} />
           </TableData>
         </div>
         <RecordRowActions
