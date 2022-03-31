@@ -9,6 +9,8 @@ const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<LoggedInUser>();
   let isLoading = true;
 
+  console.log(user);
+
   const grantsQuery = useGrants();
 
   let ac: AccessControl;

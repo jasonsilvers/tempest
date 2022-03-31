@@ -22,7 +22,9 @@ model User {
   role                     Role?                  @relation(fields: [roleId], references: [id])
   roleId                   Int?                   @map("role_id")
   organization             Organization?          @relation(fields: [organizationId], references: [id])
-  organizationId           Int?                @map("organization_id")
+  organizationId           Int?                   @map("organization_id")
+  reportingOrganization    Organization?          @relation(fields: [reportingOrganizationId], references: [id], name: "reportingOrganization")
+  reportingOrganizationId  Int?                   @map("reporting_organization_id")
   tags                     Tag[]
   memberTrackingItems      MemberTrackingItem[]
   traineeTrackingRecords   MemberTrackingRecord[] @relation(name: "TraineeRecords")
@@ -46,14 +48,14 @@ model MemberTrackingRecord {
   traineeSignedDate   DateTime?          @map("trainee_signed_date")
   authoritySignedDate DateTime?          @map("authority_signed_date")
   authority           User?              @relation(name: "AuthorityRecords", fields: [authorityId], references: [id])
-  authorityId         Int?            @map("authority_id")
+  authorityId         Int?               @map("authority_id")
   trainee             User?              @relation(name: "TraineeRecords", fields: [traineeId], references: [id])
   createdAt           DateTime?          @default(now()) @map("created_at")
   completedDate       DateTime?          @map("completed_date")
   order               Int
   trackingItem        TrackingItem?      @relation(fields: [trackingItemId], references: [id])
   memberTrackingItem  MemberTrackingItem @relation(fields: [traineeId, trackingItemId], references: [userId, trackingItemId])
-  traineeId           Int             @map("trainee_id")
+  traineeId           Int                @map("trainee_id")
   trackingItemId      Int                @map("tracking_item_id")
 
   @@map("member_tracking_record")
@@ -63,7 +65,7 @@ model MemberTrackingItem {
   //Compound key of userId and trackingItemId
   isActive              Boolean
   user                  User                   @relation(fields: [userId], references: [id])
-  userId                Int                 
+  userId                Int
   createdAt             DateTime?              @default(now()) @map("created_at")
   trackingItem          TrackingItem           @relation(fields: [trackingItemId], references: [id])
   trackingItemId        Int
@@ -75,15 +77,16 @@ model MemberTrackingItem {
 }
 
 model Organization {
-  id        Int         @id @default(autoincrement())
-  name      String         @map("org_name")
-  shortName String         @map("org_short_name")
+  id             Int            @id @default(autoincrement())
+  name           String         @map("org_name")
+  shortName      String         @map("org_short_name")
   //Self reference
-  parent    Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
-  parentId  Int?        @map("parent_id")
-  children  Organization[] @relation(name: "ParentChildren")
-  users     User[]
-  templates Template[]
+  parent         Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
+  parentId       Int?           @map("parent_id")
+  children       Organization[] @relation(name: "ParentChildren")
+  reportingUsers User[]         @relation("reportingOrganization")
+  users          User[]
+  templates      Template[]
 
   @@map("organization")
 }
@@ -163,7 +166,7 @@ enum LogEventType {
 model LogEvent {
   id           Int          @id @default(autoincrement())
   user         User?        @relation(fields: [userId], references: [id])
-  userId       Int?      
+  userId       Int?
   logEventType LogEventType @map("log_event_type")
   createdAt    DateTime?    @default(now())
   message      String?
