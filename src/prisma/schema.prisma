@@ -21,7 +21,7 @@ model User {
   lastLogin                DateTime?              @map("last_login")
   role                     Role?                  @relation(fields: [roleId], references: [id])
   roleId                   Int?                   @map("role_id")
-  organization             Organization?          @relation(fields: [organizationId], references: [id])
+  organization             Organization[]
   organizationId           Int?                   @map("organization_id")
   reportingOrganization    Organization?          @relation(fields: [reportingOrganizationId], references: [id], name: "reportingOrganization")
   reportingOrganizationId  Int?                   @map("reporting_organization_id")
