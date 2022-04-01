@@ -78,7 +78,7 @@ const alertIfDuplicate = (trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[
 };
 
 const formIsInValid = (trackingItem: TrackingItemToAdd): boolean => {
-  return !trackingItem.title || !trackingItem.description || trackingItem.interval === 0 ? true : false;
+  return !trackingItem.title || !trackingItem.description || trackingItem.interval < 0 ? true : false;
 };
 
 const isDuplicate = (title: string, trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[]) => {
@@ -171,7 +171,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
               </FormControl>
             </InputFieldContainer>
             <InputFieldContainer>
-              {trackingItem.interval === 0 ? (
+              {trackingItem.interval < 0 ? (
                 <DialogContentText tw="text-red-400">* Recurrance </DialogContentText>
               ) : (
                 <DialogContentText>Recurrance</DialogContentText>
