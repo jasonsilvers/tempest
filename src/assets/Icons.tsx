@@ -16,8 +16,10 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import SearchIcon from '@mui/icons-material/Search';
 import Close from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 
 export {
+  AddIcon,
   CalendarTodayIcon,
   CheckCircleIcon,
   WarningIcon,
