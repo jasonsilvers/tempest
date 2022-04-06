@@ -80,14 +80,16 @@ test('should add new training to list waiting to be added', async () => {
     })
   );
 
-  const { getByRole, getByText, getAllByRole, findByRole } = render(<Container />);
+  const { getByRole, getByText, getAllByRole } = render(<Container />);
 
   const openDialogButton = getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
-  const trainingIntervalSelect = await findByRole('button', { name: 'Annual' });
+  const trainingIntervalSelect = getByRole('button', {
+    name: /recurrance-select/i,
+  });
 
   const newTrainingItemTitle = 'New training item title';
   const newTrainingItemDescription = 'New training item description';
@@ -115,14 +117,16 @@ test('should add training with zero interval', async () => {
     })
   );
 
-  const { getByRole, getByText, getAllByRole, findByRole } = render(<Container />);
+  const { getByRole, getByText, getAllByRole } = render(<Container />);
 
   const openDialogButton = getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
-  const trainingIntervalSelect = await findByRole('button', { name: 'Annual' });
+  const trainingIntervalSelect = getByRole('button', {
+    name: /recurrance-select/i,
+  });
 
   const newTrainingItemTitle = 'New training item title';
   const newTrainingItemDescription = 'New training item description';

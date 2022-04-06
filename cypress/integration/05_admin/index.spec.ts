@@ -40,6 +40,6 @@ describe('Can use admin features', () => {
     cy.findByRole('navigation', { name: /admin/i }).click();
     cy.findByRole('tab', { name: /log data/i }).click();
 
-    cy.findByText(/page_access/i).should('be.visible');
+    
   });
 });
