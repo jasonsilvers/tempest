@@ -34,6 +34,14 @@ type AddTrackingItemDialogProps = {
   isOpen: boolean;
 };
 
+const ShowLoadingOverlay = ({ showLoading }: { showLoading: boolean }) => {
+  if (showLoading) {
+    return <LoadingOverlay />;
+  }
+
+  return null;
+};
+
 type TrackingItemToAdd = Omit<TrackingItem, 'id'>;
 
 const TableRowHeader = tw.div`text-gray-400 text-sm flex items-center flex-wrap min-width[450px] border-solid border-b border-gray-200`;
@@ -134,7 +142,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       }}
       aria-labelledby="tracking-dialog"
     >
-      {isSaving || isLoading ? <LoadingOverlay /> : null}
+      <ShowLoadingOverlay showLoading={isLoading || isSaving} />
       <DialogActions>
         <IconButton
           onClick={handleClose}
