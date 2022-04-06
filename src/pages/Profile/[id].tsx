@@ -6,13 +6,14 @@ import { ECategories, EFuncAction, EResource } from '../../const/enums';
 import { GetServerSidePropsContext } from 'next';
 import { findUserById, UserWithAll } from '../../repositories/userRepo';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
-import { Button } from '@mui/material';
 import tw from 'twin.macro';
 import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberItemTracker';
 import Tab from '../../components/Records/MemberRecordTracker/Tab';
 import { ProfileHeader } from '../../components/Profile/ProfileHeader';
 import { useMember } from '../../hooks/api/users';
 import { BreadCrumbs } from '../../components/Breadcrumbs';
+import { AddIcon } from '../../assets/Icons';
+import { Fab } from '@mui/material';
 
 const ButtonContainer = tw.div`fixed right-10 top-5 border`;
 
@@ -75,17 +76,16 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
       </MemberItemTracker>
 
       <ButtonContainer>
-        <Button
+        <Fab
           color="secondary"
-          size="medium"
-          tw="italic"
-          variant="contained"
+          variant="extended"
           onClick={() => {
             setAddNewModal(true);
           }}
         >
-          Add New +
-        </Button>
+          <AddIcon sx={{ mr: 1 }} />
+          Add New
+        </Fab>
       </ButtonContainer>
 
       {openAddNewModal ? (
