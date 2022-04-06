@@ -1,7 +1,7 @@
 import { FormControl, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 
 export const RecurrenceSelect = ({
-  value,
+  value = '',
   handleChange,
 }: {
   value: string;
@@ -9,7 +9,7 @@ export const RecurrenceSelect = ({
 }) => {
   return (
     <FormControl fullWidth>
-      <Select labelId="demo-simple-select-label" id="demo-simple-select" value={value} onChange={handleChange}>
+      <Select inputProps={{ 'aria-label': 'recurrance-select' }} value={value} onChange={handleChange}>
         <MenuItem value={365}>Annual</MenuItem>
         <MenuItem value={180}>Bi-Annual</MenuItem>
         <MenuItem value={90}>Quarterly</MenuItem>

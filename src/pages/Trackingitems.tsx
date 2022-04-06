@@ -1,30 +1,177 @@
-import React, { useState } from 'react';
-import { tiQueryKeys, useTrackingItems } from '../hooks/api/trackingItem';
+import React, { useMemo, useState } from 'react';
+import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
-import { TrainingItemRow, TrainingItemHeader } from '../components/TrainingItems/TrainingItemRow';
-import { Button, TextField, InputAdornment } from '@mui/material';
+import { Button, TextField, InputAdornment, Box, Popper, Paper, Typography } from '@mui/material';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
 import { getTrackingItems } from '../repositories/trackingItemRepo';
 
 import tw from 'twin.macro';
-import { SearchIcon } from '../assets/Icons';
+import { DeleteIcon, SearchIcon } from '../assets/Icons';
+import { DataGrid, GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid';
+import { useSnackbar } from 'notistack';
+import { TrackingItemInterval } from '../utils/daysToString';
 
 const H1 = tw.h1`text-2xl mb-2`;
+interface IGridCellExpandProps {
+  value: string;
+  width: number;
+}
+
+function isOverflown(element: Element): boolean {
+  return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+}
+
+const GridCellExpand = React.memo(function GridCellExpand(props: IGridCellExpandProps) {
+  const { width, value } = props;
+  const wrapper = React.useRef<HTMLDivElement | null>(null);
+  const cellDiv = React.useRef(null);
+  const cellValue = React.useRef(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [showFullCell, setShowFullCell] = React.useState(false);
+  const [showPopper, setShowPopper] = React.useState(false);
+
+  const handleMouseEnter = () => {
+    const isCurrentlyOverflown = isOverflown(cellValue.current);
+    setShowPopper(isCurrentlyOverflown);
+    setAnchorEl(cellDiv.current);
+    setShowFullCell(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowFullCell(false);
+  };
+
+  React.useEffect(() => {
+    if (!showFullCell) {
+      return undefined;
+    }
+
+    function handleKeyDown(nativeEvent: KeyboardEvent) {
+      // IE11, Edge (prior to using Bink?) use 'Esc'
+      if (nativeEvent.key === 'Escape' || nativeEvent.key === 'Esc') {
+        setShowFullCell(false);
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [setShowFullCell, showFullCell]);
+
+  return (
+    <Box
+      ref={wrapper}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      sx={{
+        alignItems: 'center',
+        lineHeight: '24px',
+        width: 1,
+        height: 1,
+        position: 'relative',
+        display: 'flex',
+      }}
+    >
+      <Box
+        ref={cellDiv}
+        sx={{
+          height: 1,
+          width,
+          display: 'block',
+          position: 'absolute',
+          top: 0,
+        }}
+      />
+      <Box ref={cellValue} sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {value}
+      </Box>
+      {showPopper && (
+        <Popper open={showFullCell && anchorEl !== null} anchorEl={anchorEl} style={{ width, marginLeft: -17 }}>
+          <Paper elevation={1} style={{ minHeight: wrapper.current?.offsetHeight - 3 }}>
+            <Typography variant="body2" style={{ padding: 8 }}>
+              {value}
+            </Typography>
+          </Paper>
+        </Popper>
+      )}
+    </Box>
+  );
+});
+
+function renderCellExpand(params: GridRenderCellParams<string>) {
+  return <GridCellExpand value={params.value || ''} width={params.colDef.computedWidth} />;
+}
 
 const TrackingItems = () => {
   const { data: trackingItems } = useTrackingItems();
   const [search, setSearch] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const { user, permissionCheck, isLoading } = usePermissions();
+  const { mutate: del } = useDeleteTrackingItem();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const canDeleteTrackingItem = permissionCheck(user?.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
+  const canCreateTrackingItem = permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM);
+
+  const columns = useMemo(
+    () => [
+      {
+        headerName: 'Title',
+        field: 'title',
+        renderCell: renderCellExpand,
+        flex: 0.5,
+      },
+      {
+        headerName: 'Recurrence',
+        field: 'interval',
+        valueFormatter: ({ value }) => {
+          return TrackingItemInterval[value];
+        },
+        width: 150,
+      },
+      {
+        headerName: 'Description',
+        field: 'description',
+        renderCell: renderCellExpand,
+        flex: 1,
+      },
+      {
+        field: 'actions',
+        type: 'actions',
+        width: 150,
+        getActions: ({ id }) => {
+          if (!canDeleteTrackingItem?.granted) {
+            return [];
+          }
+
+          return [
+            // eslint-disable-next-line react/jsx-key
+            <GridActionsCellItem
+              icon={<DeleteIcon />}
+              label="Delete"
+              onClick={() =>
+                del(id, {
+                  onSuccess: () => {
+                    enqueueSnackbar('Tracking Item Deleted', { variant: 'success' });
+                  },
+                })
+              }
+            />,
+          ];
+        },
+      },
+    ],
+    [canDeleteTrackingItem]
+  );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>...loading</div>;
   }
-
-  const deletePermission = permissionCheck(user.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
 
   return (
     <div tw="flex flex-col max-width[1440px] min-width[800px] pr-5">
@@ -34,6 +181,7 @@ const TrackingItems = () => {
           <TextField
             tw="bg-white rounded"
             id="SearchBar"
+            aria-label="searchbar"
             size="small"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -45,23 +193,20 @@ const TrackingItems = () => {
               ),
             }}
           />
-          <Button variant="contained" size="small" color="primary" onClick={() => setOpenDialog(true)}>
-            + Add New
-          </Button>
+          {canCreateTrackingItem?.granted ? (
+            <Button variant="contained" size="small" color="primary" onClick={() => setOpenDialog(true)}>
+              + Add New
+            </Button>
+          ) : null}
         </div>
       </div>
-      <div tw="border-radius[10px] border overflow-hidden bg-white">
-        <TrainingItemHeader />
-        {trackingItems.length === 0 ? <div tw="p-5">No Records</div> : null}
-        {trackingItems
-          ?.filter(
-            (item) =>
-              item.title.toLowerCase().includes(search.toLowerCase()) ||
-              item.description.toLowerCase().includes(search.toLowerCase())
-          )
-          .map((trackingItem) => (
-            <TrainingItemRow key={trackingItem.id} trackingItem={trackingItem} canDelete={deletePermission.granted} />
-          ))}
+      <div tw="border-radius[10px] border bg-white">
+        {trackingItems.length === 0 ? (
+          <div tw="p-5">No Records</div>
+        ) : (
+          //disableVertualization is for testing!! It won't render the actions without it. Need to workout a way to remove and still be able to test
+          <DataGrid disableSelectionOnClick autoHeight columns={columns} rows={trackingItems} disableVirtualization />
+        )}
       </div>
       <AddTrackingItemDialog isOpen={openDialog} handleClose={() => setOpenDialog(false)}></AddTrackingItemDialog>
     </div>

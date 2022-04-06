@@ -1,5 +1,12 @@
 import TrackingItemPage, { getServerSideProps } from '../../src/pages/Trackingitems';
-import { fireEvent, render, waitFor, waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+  waitForLoadingToFinish,
+  within,
+} from '../testutils/TempestTestUtils';
 import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';
 import { ERole, EUri } from '../../src/const/enums';
@@ -30,7 +37,7 @@ beforeEach(() => {
   server.use(
     // return a user with the right permissions
     rest.get(EUri.LOGIN, (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 0, name: ERole.ADMIN } } as LoggedInUser));
+      return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 0, name: ERole.MONITOR } } as LoggedInUser));
     }),
 
     // set up tracking items to be returned
@@ -75,9 +82,16 @@ it('renders the Tracking Item page', async () => {
   expect(getByText(/test title/i)).toBeInTheDocument();
 });
 
-it('renders the tracking item page as admin an deletes trackingItem', async () => {
+it('renders the tracking item page as admin and deletes trackingItem', async () => {
+  server.use(
+    // return a user with the right permissions
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 0, name: ERole.ADMIN } } as LoggedInUser));
+    })
+  );
+
   const { getByText, getByRole } = render(<TrackingItemPage />);
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  await waitForLoadingToFinish();
   expect(getByText(/global training/i)).toBeInTheDocument();
   await waitFor(() => getByText(/test title/i));
   expect(getByText(/test title/i)).toBeInTheDocument();
@@ -93,7 +107,13 @@ it('renders the tracking item page as admin an deletes trackingItem', async () =
     })
   );
 
-  fireEvent.click(getByRole('button', { name: /delete/i }));
+  const row = getByRole('row', {
+    name: /test title/i,
+  });
+
+  const button = within(row).getByTestId('DeleteIcon');
+
+  fireEvent.click(button);
 
   await waitForElementToBeRemoved(() => getByText(/test title/i));
 });
@@ -117,21 +137,24 @@ it('renders the tracking item page as user with out delete permissions', async (
  * Search tests
  */
 it('test the dashboard searches for the items by title', async () => {
-  const { getByText, getByRole } = render(<TrackingItemPage />);
+  const { getByText, getByLabelText } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
   await waitFor(() => getByText(/test title/i));
-  const input = getByRole('textbox') as HTMLInputElement;
+  const textfield = getByLabelText('searchbar');
+
+  const input = within(textfield).getByRole('textbox') as HTMLInputElement;
   fireEvent.change(input, { target: { value: 'title' } });
   expect(getByText(/test title/i)).toBeInTheDocument();
 });
 
 it('test the dashboard searches for the items by description', async () => {
-  const { getByText, getByRole } = render(<TrackingItemPage />);
+  const { getByText, getByLabelText } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
   await waitFor(() => getByText(/test title/i));
-  const input = getByRole('textbox') as HTMLInputElement;
+  const textfield = getByLabelText('searchbar');
+  const input = within(textfield).getByRole('textbox') as HTMLInputElement;
   fireEvent.change(input, { target: { value: 'description' } });
   expect(getByText(/test title/i)).toBeInTheDocument();
 });
@@ -142,7 +165,9 @@ test('should open then close the dialog box', async () => {
   const title = getByText(/global training/i) as HTMLElement;
   expect(title).toBeInTheDocument();
   await waitFor(() => getByText(/test title/i));
-  const button = getByRole('button', { name: '+ Add New' }) as HTMLButtonElement;
+  const button = getByRole('button', {
+    name: /\+ add new/i,
+  });
   fireEvent.click(button);
   expect(getByText(/Please create the training title/i)).toBeInTheDocument();
   fireEvent.click(getByRole('button', { name: /dialog-close-button/i }));

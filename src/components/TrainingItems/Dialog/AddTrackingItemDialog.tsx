@@ -47,7 +47,7 @@ const AdjustedOutlinedInput: React.FC<OutlinedInputProps> = (props) => (
 
 const Bold = tw.div`font-bold bg-yellow-100`;
 
-const initialTrackingItemToAdd: TrackingItemToAdd = { title: '', description: '', interval: 0 };
+const initialTrackingItemToAdd: TrackingItemToAdd = { title: '', description: '', interval: null };
 
 const resolveAttribute = (obj, key) => key.split('.').reduce((prev, curr) => prev?.[curr], obj);
 
@@ -103,7 +103,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       setTrackingItem({
         title: '',
         description: '',
-        interval: 365,
+        interval: null,
       } as TrackingItemToAdd);
     };
   }, [isOpen]);
@@ -171,13 +171,13 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
               </FormControl>
             </InputFieldContainer>
             <InputFieldContainer>
-              {trackingItem.interval < 0 ? (
+              {trackingItem.interval < 0 || trackingItem.interval === null ? (
                 <DialogContentText tw="text-red-400">* Recurrance </DialogContentText>
               ) : (
                 <DialogContentText>Recurrance</DialogContentText>
               )}
               <RecurrenceSelect
-                value={trackingItem.interval.toString()}
+                value={trackingItem.interval?.toString()}
                 handleChange={(event: SelectChangeEvent) => {
                   handleTrackingItemInput('interval', parseInt(event.target.value));
                 }}
