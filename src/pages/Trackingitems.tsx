@@ -2,15 +2,15 @@ import React, { useMemo, useState } from 'react';
 import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
-import { Button, TextField, InputAdornment, Box, Popper, Paper, Typography } from '@mui/material';
+import { Button, Box, Popper, Paper, Typography } from '@mui/material';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
 import { getTrackingItems } from '../repositories/trackingItemRepo';
 
 import tw from 'twin.macro';
-import { DeleteIcon, SearchIcon } from '../assets/Icons';
-import { DataGrid, GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid';
+import { DeleteIcon } from '../assets/Icons';
+import { DataGrid, GridActionsCellItem, GridRenderCellParams, GridToolbar } from '@mui/x-data-grid';
 import { useSnackbar } from 'notistack';
 import { TrackingItemInterval } from '../utils/daysToString';
 
@@ -109,7 +109,6 @@ function renderCellExpand(params: GridRenderCellParams<string>) {
 
 const TrackingItems = () => {
   const { data: trackingItems } = useTrackingItems();
-  const [search, setSearch] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const { user, permissionCheck, isLoading } = usePermissions();
   const { mutate: del } = useDeleteTrackingItem();
@@ -177,24 +176,9 @@ const TrackingItems = () => {
     <div tw="flex flex-col max-width[1440px] min-width[800px] pr-5">
       <div tw="flex items-center pb-10">
         <H1>Global Training Catalog</H1>
-        <div tw="flex ml-auto space-x-6">
-          <TextField
-            tw="bg-white rounded"
-            id="SearchBar"
-            aria-label="searchbar"
-            size="small"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+        <div tw="flex ml-auto">
           {canCreateTrackingItem?.granted ? (
-            <Button variant="contained" size="small" color="primary" onClick={() => setOpenDialog(true)}>
+            <Button variant="contained" color="primary" onClick={() => setOpenDialog(true)}>
               + Add New
             </Button>
           ) : null}
@@ -205,7 +189,14 @@ const TrackingItems = () => {
           <div tw="p-5">No Records</div>
         ) : (
           //disableVertualization is for testing!! It won't render the actions without it. Need to workout a way to remove and still be able to test
-          <DataGrid disableSelectionOnClick autoHeight columns={columns} rows={trackingItems} disableVirtualization />
+          <DataGrid
+            disableSelectionOnClick
+            autoHeight
+            columns={columns}
+            rows={trackingItems}
+            disableVirtualization
+            components={{ Toolbar: GridToolbar }}
+          />
         )}
       </div>
       <AddTrackingItemDialog isOpen={openDialog} handleClose={() => setOpenDialog(false)}></AddTrackingItemDialog>

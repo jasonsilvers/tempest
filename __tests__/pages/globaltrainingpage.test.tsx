@@ -133,32 +133,6 @@ it('renders the tracking item page as user with out delete permissions', async (
   expect(queryByRole('button', { name: /delete/i })).toBeFalsy();
 });
 
-/**
- * Search tests
- */
-it('test the dashboard searches for the items by title', async () => {
-  const { getByText, getByLabelText } = render(<TrackingItemPage />);
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
-  expect(getByText(/global training/i)).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
-  const textfield = getByLabelText('searchbar');
-
-  const input = within(textfield).getByRole('textbox') as HTMLInputElement;
-  fireEvent.change(input, { target: { value: 'title' } });
-  expect(getByText(/test title/i)).toBeInTheDocument();
-});
-
-it('test the dashboard searches for the items by description', async () => {
-  const { getByText, getByLabelText } = render(<TrackingItemPage />);
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
-  expect(getByText(/global training/i)).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
-  const textfield = getByLabelText('searchbar');
-  const input = within(textfield).getByRole('textbox') as HTMLInputElement;
-  fireEvent.change(input, { target: { value: 'description' } });
-  expect(getByText(/test title/i)).toBeInTheDocument();
-});
-
 test('should open then close the dialog box', async () => {
   const { getByText, getByRole, queryByText } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));

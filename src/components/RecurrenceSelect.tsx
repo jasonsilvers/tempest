@@ -10,7 +10,7 @@ export const RecurrenceSelect = ({
   return (
     <FormControl fullWidth>
       <Select inputProps={{ 'aria-label': 'recurrance-select' }} value={value} onChange={handleChange}>
-        <MenuItem value={365}>Annual</MenuItem>
+        <MenuItem value={365}>Annually</MenuItem>
         <MenuItem value={180}>Bi-Annual</MenuItem>
         <MenuItem value={90}>Quarterly</MenuItem>
         <MenuItem value={30}>Monthly</MenuItem>
