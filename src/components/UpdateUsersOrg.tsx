@@ -1,19 +1,16 @@
+import { Organization, User } from '@prisma/client';
+import { useUser } from '@tron/nextjs-auth-p1';
+import { useSnackbar } from 'notistack';
+import React, { CSSProperties } from 'react';
+import 'twin.macro';
 import { useOrgs } from '../hooks/api/organizations';
 import { useUpdateUser } from '../hooks/api/users';
-import { Autocomplete, TextField } from '@mui/material';
-import { Organization, User } from '@prisma/client';
-import { useSnackbar } from 'notistack';
-import { useUser } from '@tron/nextjs-auth-p1';
-
-import 'twin.macro';
-import React, { CSSProperties } from 'react';
+import { OrganizationSelect } from './OrganizationSelect';
 
 export const UpdateUsersOrg = ({
   userId,
   userOrganizationId,
   onChange = null,
-  label = '',
-  editStyle,
 }: {
   userId: number;
   userOrganizationId?: number;
@@ -33,6 +30,7 @@ export const UpdateUsersOrg = ({
     }
     // if no onchange function execute update on change of org id
     if (!onChange && selectedOrg.id !== userOrganizationId) {
+      console.log('It is updating the user');
       const updatedUser = {
         id: userId,
         organizationId: selectedOrg.id,
@@ -53,26 +51,5 @@ export const UpdateUsersOrg = ({
     return <div>...loading</div>;
   }
 
-  return (
-    <Autocomplete
-      defaultValue={orgsQuery.data?.find((org) => org.id === userOrganizationId)}
-      options={orgsQuery.data ?? []}
-      getOptionLabel={(option) => option.shortName}
-      onChange={updateOrg}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="filled"
-          size="small"
-          label={label}
-          name={`${label}_textfield`}
-          id={`${label}_textfield`}
-          style={{ paddingRight: '1rem', ...editStyle }}
-          InputProps={{
-            ...params.InputProps,
-          }}
-        />
-      )}
-    />
-  );
+  return <OrganizationSelect onChange={updateOrg} />;
 };

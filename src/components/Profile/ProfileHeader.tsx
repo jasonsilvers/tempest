@@ -94,13 +94,15 @@ const EditOrg: React.FC<{
 
   if (canEditOrg) {
     return (
-      <UpdateUsersOrg
-        editStyle={editStyle}
-        label={label}
-        userId={userId}
-        userOrganizationId={orgId}
-        onChange={onChange}
-      />
+      <div tw="w-96">
+        <UpdateUsersOrg
+          editStyle={editStyle}
+          label={label}
+          userId={userId}
+          userOrganizationId={orgId}
+          onChange={onChange}
+        />
+      </div>
     );
   }
   return <div>{children}</div>;
