@@ -1,4 +1,13 @@
-import { render, waitFor, fireEvent, waitForElementToBeRemoved, act, screen } from '../../testutils/TempestTestUtils';
+import {
+  render,
+  waitFor,
+  fireEvent,
+  waitForElementToBeRemoved,
+  act,
+  screen,
+  userEvent,
+  waitForLoadingToFinish,
+} from '../../testutils/TempestTestUtils';
 import 'whatwg-fetch';
 import { server, rest } from '../../testutils/mocks/msw';
 import * as nextRouter from 'next/router';
@@ -82,35 +91,6 @@ it('renders the edit view in the profile header and edits the rank drop down', a
   await waitFor(() => expect(getByText(startingRank)).toBeInTheDocument());
 });
 
-it('renders the edit view in the profile header and edits the org drop down', async () => {
-  const { getByText, getByRole, getByLabelText, queryByText, findAllByRole } = render(
-    <ProfileHeader member={bobJones2} />
-  );
-
-  server.use(
-    rest.put(`/api/users/123`, (req, res, ctx) => {
-      return res(ctx.json(req.body));
-    })
-  );
-
-  await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
-  fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
-  await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
-  // change data
-  await waitForElementToBeRemoved(() => getByText(/org 1/i));
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
-  const textfield = getByLabelText(/organization/i, { selector: 'input' }) as HTMLInputElement;
-  // get value of textfield before change event
-  fireEvent.mouseDown(textfield);
-  const options = await findAllByRole('option');
-  fireEvent.click(options[1]);
-
-  await waitFor(() => expect(textfield.value).toBe('org 2'));
-  // exits the edit mode with out persisting data
-  fireEvent.click(getByText(/save/i));
-  await waitFor(() => expect(queryByText('org 2')).not.toBeInTheDocument());
-});
-
 it('displays confirmation box when changing organization and user is monitor', async () => {
   server.use(
     // return a user with the right permissions
@@ -119,7 +99,7 @@ it('displays confirmation box when changing organization and user is monitor', a
     })
   );
 
-  const { getByText, getByRole, getByLabelText, findAllByRole } = render(<ProfileHeader member={monitorUser} />);
+  const { getByText, getByRole } = render(<ProfileHeader member={monitorUser} />);
 
   server.use(
     rest.put(`/api/users/123`, (req, res, ctx) => {
@@ -132,14 +112,18 @@ it('displays confirmation box when changing organization and user is monitor', a
   await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
   // change data
   await waitForElementToBeRemoved(() => getByText(/org 1/i));
-  const textfield = getByLabelText(/organization/i, { selector: 'input' }) as HTMLInputElement;
-  // get value of textfield before change event
-  fireEvent.mouseDown(textfield);
-  const options = await findAllByRole('option');
-  fireEvent.click(options[1]);
+  await waitForLoadingToFinish();
+  const searchInput = getByRole('combobox', {
+    name: /organizations/i,
+  });
+
+  userEvent.type(searchInput, 'org 1');
+
+  fireEvent.click(getByText('test org 1'));
   expect(
     getByText(/changing organizations will result in loss of permissions\. do you want to continue\?/i)
   ).toBeInTheDocument();
+
   act(() => {
     fireEvent.click(getByRole('button', { name: /no/i }));
   });
@@ -147,14 +131,6 @@ it('displays confirmation box when changing organization and user is monitor', a
   await waitForElementToBeRemoved(() =>
     getByText(/changing organizations will result in loss of permissions\. do you want to continue\?/i)
   );
-
-  fireEvent.mouseDown(textfield);
-  const options2 = await findAllByRole('option');
-  fireEvent.click(options2[0]);
-
-  act(() => {
-    fireEvent.click(getByRole('button', { name: /yes/i }));
-  });
 });
 
 it('renders the edit view in the profile header and persists data', async () => {

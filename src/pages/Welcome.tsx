@@ -23,24 +23,24 @@ const WelcomePage = () => {
           </div>
           <div tw="pl-20">
             <div tw="pb-8">
-              <h2 tw="text-4xl">Welcome To Cascade!</h2>
+              <h2 tw="text-4xl pt-6 pb-2">Welcome To Cascade!</h2>
               <h3 tw="text-3xl text-secondary">
                 {isLoading && '...Loading'}
                 {user?.rank ? user?.rank : ''} {user?.lastName}, {user?.firstName}
               </h3>
             </div>
             <div>
-              <p tw="pb-2 text-lg">Please select your organization</p>
+              <p tw="pb-6 text-lg">Please select your organization</p>
               <div tw="flex items-center">
-                <div>
+                <div tw="w-96">
                   <UpdateUsersOrg
                     userId={user?.id}
                     userOrganizationId={user?.organizationId ? user.organizationId : null}
-                    editStyle={{ width: '20rem' }}
                   />
                 </div>
                 <div tw="pl-6">
                   <Button
+                    sx={{ height: '56px' }}
                     disabled={!user?.organizationId}
                     onClick={() => router.push('/')}
                     size="large"
@@ -53,7 +53,7 @@ const WelcomePage = () => {
               </div>
             </div>
           </div>
-          <div tw="flex flex-col text-sm text-center">
+          <div tw="flex flex-col text-sm text-center pt-5">
             <p>Organization doesn&apos;t exist?</p>
             <p>*Please contact us at contactus@tron.dso.mil so we can create one!</p>
           </div>
