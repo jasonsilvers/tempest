@@ -1,5 +1,5 @@
 import { MemberTrackingRecord, Organization } from '.prisma/client';
-import { InputAdornment, TextField } from '@mui/material';
+import { InputAdornment, TablePagination, TextField, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import React, { useEffect, useReducer } from 'react';
 import tw from 'twin.macro';
@@ -17,12 +17,11 @@ import { removeOldCompletedRecords } from '../utils';
 import { getStatus } from '../utils/status';
 
 const UserTable = tw.div``;
-const UserTableHeader = tw.div`flex text-sm text-gray-400 mb-4 pl-2 border-b border-gray-400`;
-const UserTableRow = ({ isOdd, children }: { isOdd: boolean; children: React.ReactNode }) => {
-  return <div css={[isOdd && tw`bg-gray-100`, tw`pl-2 flex py-2 justify-center items-center`]}>{children}</div>;
-};
+const UserTableHeader = tw.div`flex text-sm mb-4`;
+const UserTableRow = tw.div`border-t h-12 flex items-center justify-center py-2`;
 
 const UserTableColumn = tw.div``;
+const UserTableColumnHeader = tw.div`text-lg font-bold`;
 
 const StatusPillVariant = {
   Done: {
@@ -266,6 +265,18 @@ const DashboardPage: React.FC = () => {
     statusFilter: EStatus.ALL,
   });
 
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const permission = permissionCheck(loggedInUser?.role?.name, EFuncAction.READ_ANY, EResource.USER);
 
   useEffect(() => {
@@ -313,44 +324,46 @@ const DashboardPage: React.FC = () => {
           dispatch={dispatch}
         />
       </div> */}
-      <div tw="flex space-x-2 pb-5">
-        <div tw="w-1/2">
-          <TextField
-            tw="bg-white rounded w-full"
-            id="SearchBar"
-            label="Search"
-            value={dashboardState.nameFilter}
-            onChange={(event) => dispatch({ type: 'filterByName', nameFilter: event.target.value })}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+      <Card tw="px-5 pt-5">
+        <Typography variant="h6">Member List</Typography>
+        <div tw="pb-8"></div>
+        <div tw="flex space-x-2 pb-8">
+          <div tw="w-1/2">
+            <TextField
+              tw="bg-white rounded w-full"
+              id="SearchBar"
+              label="Search"
+              value={dashboardState.nameFilter}
+              onChange={(event) => dispatch({ type: 'filterByName', nameFilter: event.target.value })}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </div>
+          <div tw="w-1/2">
+            <OrganizationSelect
+              onChange={(event, value: Organization) =>
+                dispatch({ type: 'filterByOrganization', organizationIdFilter: value?.id })
+              }
+            />
+          </div>
         </div>
-        <div tw="w-1/2">
-          <OrganizationSelect
-            onChange={(event, value: Organization) =>
-              dispatch({ type: 'filterByOrganization', organizationIdFilter: value?.id })
-            }
-          />
-        </div>
-      </div>
 
-      <Card tw="p-5">
         <UserTable>
           <UserTableHeader>
-            <UserTableColumn tw="w-1/3 text-lg">Name</UserTableColumn>
-            <UserTableColumn tw="w-1/6 text-lg">Rank</UserTableColumn>
-            <UserTableColumn tw="w-1/6 flex text-lg justify-center">Status</UserTableColumn>
-            <UserTableColumn tw="ml-auto mr-4 text-lg">Actions</UserTableColumn>
+            <UserTableColumnHeader tw="w-1/3">Name</UserTableColumnHeader>
+            <UserTableColumnHeader tw="w-1/6">Rank</UserTableColumnHeader>
+            <UserTableColumnHeader tw="w-1/6 flex justify-center">Status</UserTableColumnHeader>
+            <UserTableColumnHeader tw="ml-auto mr-4">Actions</UserTableColumnHeader>
           </UserTableHeader>
           {users.isLoading ? '...Loading' : ''}
           {dashboardState.filteredUserList?.length === 0 ? 'No Members Found' : ''}
-          {dashboardState.filteredUserList?.map((user, index) => (
-            <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-base mb-2 flex">
+          {dashboardState.filteredUserList?.map((user) => (
+            <UserTableRow key={user.id} tw="text-base flex">
               <UserTableColumn tw="w-1/3">
                 {`${user.lastName}, ${user.firstName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
               </UserTableColumn>
@@ -368,6 +381,15 @@ const DashboardPage: React.FC = () => {
             </UserTableRow>
           ))}
         </UserTable>
+
+        <TablePagination
+          component="div"
+          count={dashboardState.filteredUserList ? dashboardState.filteredUserList.length : 0}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Card>
     </main>
   );
