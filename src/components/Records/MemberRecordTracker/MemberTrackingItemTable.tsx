@@ -1,3 +1,4 @@
+import { TablePagination } from '@mui/material';
 import React from 'react';
 import tw from 'twin.macro';
 import { useMemberTrackingItems } from '../../../hooks/api/memberTrackingItem';
@@ -15,6 +16,18 @@ const MemberTrackingItemTable: React.FC<{
   variant: Variant;
 }> = ({ userId, variant }) => {
   const memberTrackingItemsQuery = useMemberTrackingItems(userId);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <Container>
@@ -43,12 +56,23 @@ const MemberTrackingItemTable: React.FC<{
       {/* Map though items and create Table Data Rows */}
       {memberTrackingItemsQuery.data?.length == 0 ? <div tw="p-4">Nothing to show</div> : null}
       {memberTrackingItemsQuery.data && memberTrackingItemsQuery.isSuccess ? (
-        memberTrackingItemsQuery.data?.map((mti) => (
-          <MemberTrackingItemRow key={`${mti.userId}${mti.trackingItemId}`} memberTrackingItemId={mti} />
-        ))
+        memberTrackingItemsQuery.data
+          ?.slice(page * rowsPerPage, (page + 2) * rowsPerPage)
+          .map((mti) => <MemberTrackingItemRow key={`${mti.userId}${mti.trackingItemId}`} memberTrackingItemId={mti} />)
       ) : (
         <MemberTrackingItemTableSkeleton />
       )}
+
+      <div tw="pt-5">
+        <TablePagination
+          component="div"
+          count={memberTrackingItemsQuery.data ? memberTrackingItemsQuery.data.length : 0}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </div>
     </Container>
   );
 };

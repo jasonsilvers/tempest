@@ -1,22 +1,13 @@
-import {
-  render,
-  waitFor,
-  fireEvent,
-  waitForElementToBeRemoved,
-  act,
-  screen,
-  userEvent,
-  waitForLoadingToFinish,
-} from '../../testutils/TempestTestUtils';
-import 'whatwg-fetch';
-import { server, rest } from '../../testutils/mocks/msw';
+import { Organization, Role, User } from '.prisma/client';
 import * as nextRouter from 'next/router';
+import 'whatwg-fetch';
 import { ProfileHeader } from '../../../src/components/Profile/ProfileHeader';
+import { EUri } from '../../../src/const/enums';
+import { bobJones } from '../../testutils/mocks/fixtures';
+import { rest, server } from '../../testutils/mocks/msw';
+import { render, waitFor } from '../../testutils/TempestTestUtils';
 
 jest.mock('../../../src/repositories/userRepo');
-import { andrewMonitor, bobJones } from '../../testutils/mocks/fixtures';
-import { EUri } from '../../../src/const/enums';
-import { Role, User } from '.prisma/client';
 
 beforeAll(() => {
   server.listen({
@@ -55,8 +46,7 @@ beforeEach(() => {
   );
 });
 
-const bobJones2 = bobJones as User & { role: Role };
-const monitorUser = andrewMonitor as User & { role: Role };
+const bobJones2 = bobJones as User & { role: Role; organization: Organization };
 
 it('does not render the profile header', async () => {
   const { queryByText } = render(<ProfileHeader member={null} />);
@@ -66,135 +56,4 @@ it('does not render the profile header', async () => {
 it('renders the profile header', async () => {
   const { getByText } = render(<ProfileHeader member={bobJones2} />);
   await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
-});
-
-it('renders the edit view in the profile header and edits the rank drop down', async () => {
-  const { getByText, getByRole, getByLabelText, queryByText, findAllByRole } = render(
-    <ProfileHeader member={bobJones2} />
-  );
-  const startingRank = bobJones.rank;
-  await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
-
-  fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
-  await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
-  // change data
-  const textfield = getByLabelText(/rank/i, { selector: 'input' }) as HTMLInputElement;
-  // get value of textfield before change event
-  fireEvent.mouseDown(textfield);
-  const options = await findAllByRole('option');
-  fireEvent.click(options[1]);
-
-  await waitFor(() => expect(textfield.value).toBe('Amn/E-2'));
-  // exits the edit mode with out persisting data
-  fireEvent.click(getByText(/cancel/i));
-  await waitFor(() => expect(queryByText('Amn/E-2')).not.toBeInTheDocument());
-  await waitFor(() => expect(getByText(startingRank)).toBeInTheDocument());
-});
-
-it('displays confirmation box when changing organization and user is monitor', async () => {
-  server.use(
-    // return a user with the right permissions
-    rest.get(EUri.LOGIN, (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(monitorUser));
-    })
-  );
-
-  const { getByText, getByRole } = render(<ProfileHeader member={monitorUser} />);
-
-  server.use(
-    rest.put(`/api/users/123`, (req, res, ctx) => {
-      return res(ctx.json(req.body));
-    })
-  );
-
-  await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
-  fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
-  await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
-  // change data
-  await waitForElementToBeRemoved(() => getByText(/org 1/i));
-  await waitForLoadingToFinish();
-  const searchInput = getByRole('combobox', {
-    name: /organizations/i,
-  });
-
-  userEvent.type(searchInput, 'org 1');
-
-  fireEvent.click(getByText('test org 1'));
-  expect(
-    getByText(/changing organizations will result in loss of permissions\. do you want to continue\?/i)
-  ).toBeInTheDocument();
-
-  act(() => {
-    fireEvent.click(getByRole('button', { name: /no/i }));
-  });
-
-  await waitForElementToBeRemoved(() =>
-    getByText(/changing organizations will result in loss of permissions\. do you want to continue\?/i)
-  );
-});
-
-it('renders the edit view in the profile header and persists data', async () => {
-  server.use(
-    rest.put(`/api/users/123`, (req, res, ctx) => {
-      return res(ctx.json(req.body));
-    })
-  );
-
-  const { getByText, getByRole, getByLabelText, queryByText } = render(<ProfileHeader member={bobJones2} />);
-  await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
-
-  fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
-  await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
-  // change data
-  const afsctextfield = getByLabelText(/afsc/i, { selector: 'input' }) as HTMLInputElement;
-  fireEvent.change(afsctextfield, { target: { value: 'AFSC123' } });
-
-  fireEvent.click(getByText(/save/i));
-  await waitFor(() => expect(queryByText('AFSC123')).toBeInTheDocument());
-});
-
-it('allows user to change first name and last name', async () => {
-  server.use(
-    rest.put(`/api/users/123`, (req, res, ctx) => {
-      console.log(req);
-      return res(ctx.json(req.body));
-    })
-  );
-  const { getByRole, getByLabelText, queryByText, getByText } = render(<ProfileHeader member={bobJones2} />);
-
-  fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
-  const firstNameTextField = getByLabelText(/firstname/i, { selector: 'input' }) as HTMLInputElement;
-  const lastNameTextField = getByLabelText(/lastname/i, { selector: 'input' }) as HTMLInputElement;
-  fireEvent.change(firstNameTextField, { target: { value: 'Emily' } });
-  fireEvent.change(lastNameTextField, { target: { value: 'Johnson' } });
-
-  screen.debug();
-
-  fireEvent.click(getByText(/save/i));
-  await waitFor(() => queryByText(/profile updated/i));
-  await waitFor(() => expect(queryByText(/emily/i)).toBeInTheDocument());
-  await waitFor(() => expect(queryByText(/Johnson/i)).toBeInTheDocument());
-});
-
-it('should show snackbar after success', async () => {
-  server.use(
-    rest.put(`/api/users/123`, (req, res, ctx) => {
-      return res(ctx.json(req.body));
-    })
-  );
-
-  const { getByText, getByRole, getByLabelText, queryByText } = render(<ProfileHeader member={bobJones2} />);
-  await waitFor(() => expect(getByRole(/button/i, { name: 'edit-user' })).toBeInTheDocument());
-
-  fireEvent.click(getByRole(/button/i, { name: 'edit-user' }));
-  await waitFor(() => expect(getByText(/save/i)).toBeInTheDocument());
-  // change data
-  const afsctextfield = getByLabelText(/afsc/i, { selector: 'input' }) as HTMLInputElement;
-  fireEvent.change(afsctextfield, { target: { value: 'AFSC123' } });
-
-  fireEvent.click(getByText(/save/i));
-  await waitFor(() => queryByText(/profile updated/i));
-  screen.debug();
-  // await waitFor(() => expect(queryByText('AFSC123')).toBeInTheDocument());
-  // expect the snackbar to be visible
 });

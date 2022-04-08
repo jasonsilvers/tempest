@@ -52,6 +52,7 @@ export const findUserById = async (id: number) => {
     },
     include: {
       role: true,
+      organization: true,
     },
   });
 };
