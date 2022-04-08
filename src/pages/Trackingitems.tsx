@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
-import { Button, Box, Popper, Paper, Typography, Fab } from '@mui/material';
+import { Box, Popper, Paper, Typography, Fab } from '@mui/material';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
