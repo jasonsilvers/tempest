@@ -25,15 +25,13 @@ afterAll(() => {
 test('should render a navbar', async () => {
   const { getByText } = render(<Navbar />);
 
-  await waitFor(() => getByText(/my profile/i));
+  await waitFor(() => getByText(/training record/i));
 
-  await waitFor(() => getByText(/Cascade/i));
-
-  expect(getByText(/Cascade/i)).toBeInTheDocument;
+  expect(getByText(/training record/i)).toBeInTheDocument;
 });
 
 test('should not render navbar with no user', async () => {
   const { queryByText } = render(<Navbar />);
 
-  await waitFor(() => expect(queryByText(/Cascade/i)).toBeFalsy);
+  await waitFor(() => expect(queryByText(/training record/i)).toBeFalsy);
 });

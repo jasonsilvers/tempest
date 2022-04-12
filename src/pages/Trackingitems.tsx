@@ -192,11 +192,11 @@ const TrackingItems = () => {
           ) : null}
         </div>
       </div>
-      <div tw="border-radius[10px] border bg-white">
+      <div tw="border-radius[10px] bg-white">
         {trackingItems.length === 0 ? (
           <div tw="p-5">No Records</div>
         ) : (
-          //disableVertualization is for testing!! It won't render the actions without it. Need to workout a way to remove and still be able to test
+          //disableVirtualization is for testing!! It won't render the actions without it. Need to workout a way to remove and still be able to test
           <DataGrid
             disableSelectionOnClick
             autoHeight
