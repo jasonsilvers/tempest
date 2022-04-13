@@ -27,7 +27,7 @@ type AdminNavigationProps = {
 const AdminNavigation = ({ canViewDashboard, canCreateGlobalTrackingItem, canViewAdminPage }: AdminNavigationProps) => {
   return (
     <div tw="text-secondary">
-      <div tw="py-6">
+      <div tw="py-6 px-4">
         <h3 tw="text-[#7B7B7B]">Monitor tools</h3>
       </div>
       {canViewDashboard ? (

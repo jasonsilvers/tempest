@@ -1,9 +1,8 @@
-import { User, Role, Prisma, Organization } from '@prisma/client';
+import { Organization, Prisma, Role, User } from '@prisma/client';
+import { EUserIncludes } from '../const/enums';
 import prisma from '../prisma/prisma';
-import { ERole, EUserIncludes } from '../const/enums';
-import { getRoleByName } from './roleRepo';
-import { P1_JWT } from '@tron/nextjs-auth-p1';
 import { getOrganizationTree } from './organizationRepo';
+
 const dayjs = require('dayjs');
 
 export const findUserByIdReturnAllIncludes = async (userId: number) => {
@@ -151,7 +150,7 @@ export const getAllUsersFromUsersOrgCascade = async (organizationId: number) => 
   try {
     organizations = await getOrganizationTree(organizationId);
   } catch (e) {
-    return { props: {} };
+    throw new Error('There was an error getting organization tree');
   }
 
   const organizationIds = organizations.map((org) => org.id);
@@ -243,28 +242,6 @@ export const findTrackingRecordsByAuthorityId = (userId: number, includeTracking
     },
   });
 };
-
-export async function createNewUserFromJWT(jwt: P1_JWT) {
-  const memberRole = await getRoleByName(ERole.MEMBER);
-
-  if (jwt.given_name === null || jwt.family_name === null) {
-    console.log('---------Null Names---------', jwt);
-  }
-
-  const newTempestUser = await createUser(
-    {
-      firstName: jwt.given_name,
-      lastName: jwt.family_name,
-      email: jwt.email,
-    } as User,
-    memberRole
-  );
-
-  return {
-    ...newTempestUser,
-    role: memberRole,
-  } as LoggedInUser;
-}
 
 export async function updateLastLogin(id: number) {
   return prisma.user.update({

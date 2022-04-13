@@ -29,7 +29,7 @@ const Link: React.FC<ILinkProps> = ({ children, goToUrl, icon }) => {
         <a>
           <div tw="flex space-x-8 h-12 px-4">
             <div>{icon}</div>
-            <Typography variant="body1" tw="text-secondary">
+            <Typography component="div" variant="body1" tw="text-secondary">
               {children}
             </Typography>
           </div>
@@ -43,7 +43,7 @@ const Link: React.FC<ILinkProps> = ({ children, goToUrl, icon }) => {
       <a>
         <div tw="flex space-x-8 h-12 px-4">
           <div>{icon}</div>
-          <Typography variant="body1" tw="text-black">
+          <Typography component="div" variant="body1" tw="text-black">
             {children}
           </Typography>
         </div>

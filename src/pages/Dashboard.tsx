@@ -87,20 +87,6 @@ const determineMemberCounts = (
   return newCounts;
 };
 
-const determineOverallUserCounts = (userCounts: UserCounts, newCounts: StatusCounts) => {
-  if (userCounts.Overdue > 0) {
-    newCounts.Overdue = newCounts.Overdue + 1;
-  }
-
-  if (userCounts.Overdue === 0 && userCounts.Upcoming > 0) {
-    newCounts.Upcoming = newCounts.Upcoming + 1;
-  }
-
-  if (userCounts.Upcoming === 0 && userCounts.Overdue === 0 && userCounts.Done > 0) {
-    newCounts.Done = newCounts.Done + 1;
-  }
-};
-
 interface IDashboardState {
   userList: UserWithAll[];
   filteredUserList: UserWithAll[];
@@ -112,7 +98,6 @@ interface IDashboardState {
 
 interface IFilters {
   nameFilter: string;
-  statusFilter: EStatus;
   OrganizationIdFilter: number;
 }
 
@@ -126,41 +111,6 @@ const applyNameFilter = (userList: UserWithAll[], nameFilter: string) => {
   });
 };
 
-const applyStatusFilter = (userList: UserWithAll[], statusFilter: EStatus, counts: StatusCounts) => {
-  if (statusFilter === EStatus.ALL) {
-    return userList;
-  }
-
-  return userList.filter((user) => {
-    const userCounts = counts[user.id];
-
-    switch (statusFilter) {
-      case EStatus.OVERDUE:
-        if (userCounts.Overdue > 0) {
-          return true;
-        }
-
-        return false;
-
-      case EStatus.UPCOMING:
-        if (userCounts.Upcoming > 0) {
-          return true;
-        }
-
-        return false;
-
-      case EStatus.DONE:
-        if (userCounts.Done > 0 && userCounts.OverDue === 0 && userCounts.Upcoming === 0) {
-          return true;
-        }
-
-        return false;
-      default:
-        return false;
-    }
-  });
-};
-
 const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: number) => {
   if (!organizationIdFilter) {
     return userList;
@@ -171,11 +121,8 @@ const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: 
   });
 };
 
-const applyFilters = (userList: UserWithAll[], filters: IFilters, counts: StatusCounts) => {
-  return applyNameFilter(
-    applyStatusFilter(applyOrganizationFilter(userList, filters.OrganizationIdFilter), filters.statusFilter, counts),
-    filters.nameFilter
-  );
+const applyFilters = (userList: UserWithAll[], filters: IFilters) => {
+  return applyNameFilter(applyOrganizationFilter(userList, filters.OrganizationIdFilter), filters.nameFilter);
 };
 
 const filterReducer = (state: IDashboardState, action: Actions): IDashboardState => {
@@ -184,60 +131,30 @@ const filterReducer = (state: IDashboardState, action: Actions): IDashboardState
       return {
         ...state,
         nameFilter: action.nameFilter,
-        filteredUserList: applyFilters(
-          state.userList,
-          {
-            nameFilter: action.nameFilter,
-            OrganizationIdFilter: state.organizationIdFilter,
-            statusFilter: state.statusFilter,
-          },
-          state.counts
-        ),
-      };
-    }
-    case 'filterByStatus': {
-      return {
-        ...state,
-        statusFilter: action.statusFilter,
-        filteredUserList: applyFilters(
-          state.userList,
-          {
-            nameFilter: state.nameFilter,
-            OrganizationIdFilter: state.organizationIdFilter,
-            statusFilter: action.statusFilter,
-          },
-          state.counts
-        ),
+        filteredUserList: applyFilters(state.userList, {
+          nameFilter: action.nameFilter,
+          OrganizationIdFilter: state.organizationIdFilter,
+        }),
       };
     }
     case 'filterByOrganization': {
       return {
         ...state,
         organizationIdFilter: action.organizationIdFilter,
-        filteredUserList: applyFilters(
-          state.userList,
-          {
-            nameFilter: state.nameFilter,
-            OrganizationIdFilter: action.organizationIdFilter,
-            statusFilter: state.statusFilter,
-          },
-          state.counts
-        ),
+        filteredUserList: applyFilters(state.userList, {
+          nameFilter: state.nameFilter,
+          OrganizationIdFilter: action.organizationIdFilter,
+        }),
       };
     }
     case 'setUserList': {
       return {
         ...state,
         userList: action.userList,
-        filteredUserList: applyFilters(
-          action.userList,
-          {
-            nameFilter: state.nameFilter,
-            OrganizationIdFilter: state.organizationIdFilter,
-            statusFilter: state.statusFilter,
-          },
-          state.counts
-        ),
+        filteredUserList: applyFilters(action.userList, {
+          nameFilter: state.nameFilter,
+          OrganizationIdFilter: state.organizationIdFilter,
+        }),
       };
     }
 
@@ -299,8 +216,6 @@ const DashboardPage: React.FC = () => {
           determineMemberCounts(mti, mtr, newCounts, userCounts);
         });
       });
-
-      determineOverallUserCounts(userCounts, newCounts);
     });
 
     dispatch({ type: 'setCounts', counts: newCounts });
@@ -316,14 +231,6 @@ const DashboardPage: React.FC = () => {
 
   return (
     <main tw="pr-14 max-width[900px] min-width[720px]">
-      {/* <div tw="flex space-x-8 pb-5">
-        <MemberCountCards
-          isLoading={users?.isLoading}
-          counts={dashboardState.counts}
-          variant={dashboardState.statusFilter}
-          dispatch={dispatch}
-        />
-      </div> */}
       <Card tw="px-5 pt-5">
         <Typography variant="h6">Member List</Typography>
         <div tw="pb-8"></div>
