@@ -94,7 +94,7 @@ const Navbar: React.FC = () => {
               </div>
             </Link>
 
-            <Link goToUrl={`/account`} icon={<SettingsIcon fontSize="medium" />}>
+            <Link goToUrl={`/Account`} icon={<SettingsIcon fontSize="medium" />}>
               <div role="navigation" aria-label="account-settings">
                 Account Settings
               </div>

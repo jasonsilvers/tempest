@@ -185,7 +185,7 @@ const DashboardPage: React.FC = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
   };
 
@@ -253,7 +253,7 @@ const DashboardPage: React.FC = () => {
           </div>
           <div tw="w-1/2">
             <OrganizationSelect
-              onChange={(event, value: Organization) =>
+              onChange={(_event, value: Organization) =>
                 dispatch({ type: 'filterByOrganization', organizationIdFilter: value?.id })
               }
             />
