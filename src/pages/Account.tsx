@@ -81,6 +81,7 @@ const WorkForm = ({ user }: { user: LoggedInUser }) => {
   const {
     control,
     register,
+    reset,
     setValue,
     handleSubmit,
     formState: { errors },
@@ -155,7 +156,12 @@ const WorkForm = ({ user }: { user: LoggedInUser }) => {
         </div>
 
         <FormControl fullWidth error={!!errors.dutyTitle}>
-          <TextField error={!!errors.dutyTitle} fullWidth size="small" inputProps={{ ...register('dutyTitle') }} />
+          <TextField
+            error={!!errors.dutyTitle}
+            fullWidth
+            size="small"
+            inputProps={{ ...register('dutyTitle'), 'aria-label': 'dutyTitle' }}
+          />
           <FormHelperText>{errors.dutyTitle ? errors.dutyTitle.message : null}</FormHelperText>
         </FormControl>
       </div>
@@ -166,7 +172,12 @@ const WorkForm = ({ user }: { user: LoggedInUser }) => {
         </div>
 
         <FormControl fullWidth error={!!errors.afsc}>
-          <TextField error={!!errors.afsc} fullWidth size="small" inputProps={{ ...register('afsc') }} />
+          <TextField
+            error={!!errors.afsc}
+            fullWidth
+            size="small"
+            inputProps={{ ...register('afsc'), 'aria-label': 'afsc' }}
+          />
           <FormHelperText>{errors.afsc ? errors.afsc.message : null}</FormHelperText>
         </FormControl>
       </div>
@@ -176,7 +187,14 @@ const WorkForm = ({ user }: { user: LoggedInUser }) => {
           Update profile settings
         </Button>
         {/* Send to the training record page */}
-        <Button color="secondary">Cancel</Button>
+        <Button
+          color="secondary"
+          onClick={() =>
+            reset({ organization: user.organizationId.toString(), dutyTitle: user.dutyTitle, afsc: user.afsc })
+          }
+        >
+          Cancel
+        </Button>
       </div>
     </form>
   );
@@ -195,6 +213,7 @@ const PersonalForm = ({ user }: { user: LoggedInUser }) => {
     control,
     register,
     setValue,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -216,7 +235,7 @@ const PersonalForm = ({ user }: { user: LoggedInUser }) => {
     userMutation.mutate(
       {
         id: user.id,
-        firstName: data.firstname,
+        firstName: data.firstName,
         lastName: data.lastName,
         rank: data.rankSelect,
       } as User,
@@ -236,7 +255,12 @@ const PersonalForm = ({ user }: { user: LoggedInUser }) => {
         </div>
 
         <FormControl fullWidth error={!!errors.firstName}>
-          <TextField error={!!errors.firstName} fullWidth size="small" inputProps={{ ...register('firstName') }} />
+          <TextField
+            error={!!errors.firstName}
+            fullWidth
+            size="small"
+            inputProps={{ ...register('firstName'), 'aria-label': 'firstName' }}
+          />
           <FormHelperText>{errors.firstName ? errors.firstName.message : null}</FormHelperText>
         </FormControl>
       </div>
@@ -247,7 +271,12 @@ const PersonalForm = ({ user }: { user: LoggedInUser }) => {
         </div>
 
         <FormControl fullWidth error={!!errors.lastName}>
-          <TextField error={!!errors.lastName} fullWidth size="small" inputProps={{ ...register('lastName') }} />
+          <TextField
+            error={!!errors.lastName}
+            fullWidth
+            size="small"
+            inputProps={{ ...register('lastName'), 'aria-label': 'lastName' }}
+          />
           <FormHelperText>{errors.lastName ? errors.lastName.message : null}</FormHelperText>
         </FormControl>
       </div>
@@ -283,7 +312,12 @@ const PersonalForm = ({ user }: { user: LoggedInUser }) => {
           Update profile settings
         </Button>
         {/* Send to the training record page */}
-        <Button color="secondary">Cancel</Button>
+        <Button
+          color="secondary"
+          onClick={() => reset({ firstName: user.firstName, lastName: user.lastName, rankSelect: user.rank })}
+        >
+          Cancel
+        </Button>
       </div>
     </form>
   );
@@ -291,7 +325,6 @@ const PersonalForm = ({ user }: { user: LoggedInUser }) => {
 
 const AccountPage = () => {
   const { user, isLoading } = useUser<LoggedInUser>();
-
   const [tabValue, setTabValue] = React.useState(0);
   const theme = useTheme();
 
@@ -332,7 +365,9 @@ const AccountPage = () => {
           </TabPanel>
         </div>
       </div>
-      ∏
+      <div tw="flex justify-center pt-20 text-gray-400">
+        <Typography>Need monitor access? Please contact a Tron team member</Typography>
+      </div>
     </Card>
   );
 };
