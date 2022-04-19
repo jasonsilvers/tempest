@@ -1,17 +1,8 @@
 import 'whatwg-fetch';
-import { rest, server } from '../testutils/mocks/msw';
-import {
-  render,
-  waitForLoadingToFinish,
-  screen,
-  rtlRender,
-  Wrapper,
-  waitFor,
-  fireEvent,
-  userEvent,
-} from '../testutils/TempestTestUtils';
-import Accountpage from '../../src/pages/Account';
 import { EUri } from '../../src/const/enums';
+import Accountpage from '../../src/pages/Account';
+import { rest, server } from '../testutils/mocks/msw';
+import { fireEvent, render, screen, userEvent, waitFor } from '../testutils/TempestTestUtils';
 
 beforeAll(() => {
   server.listen({
