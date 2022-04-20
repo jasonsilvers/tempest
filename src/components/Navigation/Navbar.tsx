@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
-import { Header, Link } from './Navigation';
-import { TempestDrawer } from '../../lib/ui';
-import { DashboardIcon, DescriptionIcon, PersonIcon, SecurityIcon, SettingsIcon } from '../../assets/Icons';
-import { useQueryClient } from 'react-query';
-import { usePermissions } from '../../hooks/usePermissions';
-import { EFuncAction, EResource } from '../../const/enums';
-import { styled } from 'twin.macro';
 import { Divider } from '@mui/material';
+import React, { useMemo } from 'react';
+import { useQueryClient } from 'react-query';
+import { styled } from 'twin.macro';
+import { DashboardIcon, DescriptionIcon, FolderSharedIcon, SecurityIcon, SettingsIcon } from '../../assets/Icons';
+import { EFuncAction, EResource } from '../../const/enums';
+import { usePermissions } from '../../hooks/usePermissions';
+import { TempestDrawer } from '../../lib/ui';
+import { Header, Link } from './Navigation';
 
 const SideBarDrawer = styled(TempestDrawer)`
   & .MuiDrawer-paper {
@@ -88,7 +88,7 @@ const Navbar: React.FC = () => {
       <div tw="text-secondary">
         {canViewMyProfile?.granted ? (
           <>
-            <Link goToUrl={`/Profile/${user.id}`} icon={<PersonIcon fontSize="medium" />}>
+            <Link goToUrl={`/Profile/${user.id}`} icon={<FolderSharedIcon fontSize="medium" />}>
               <div role="navigation" aria-label="training-record">
                 Training Record
               </div>

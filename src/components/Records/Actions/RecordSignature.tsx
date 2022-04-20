@@ -44,7 +44,15 @@ export const determineActionOnRecord = (
 
 const AwaitingSignature: React.FC = ({ children }) => (
   <TableData tw="text-xs mr-3">
-    <DisabledButton tw="h-8 text-gray-600" disabled>
+    <DisabledButton tw="h-8" disabled>
+      {children ?? 'Awaiting Signature'}
+    </DisabledButton>
+  </TableData>
+);
+
+const AwaitingSignatureSecondary: React.FC = ({ children }) => (
+  <TableData tw="text-xs mr-3">
+    <DisabledButton tw="h-8 text-secondary border-secondary" disabled>
       {children ?? 'Awaiting Signature'}
     </DisabledButton>
   </TableData>
@@ -99,7 +107,7 @@ const getAllowedActions = (
   if (determinedAction === 'authorityCanSign' || determinedAction === 'traineeCanSign') {
     return (
       <TableData>
-        <ActionButton tw="h-8" aria-label={setDomRole('Signature Button')} onClick={handleSignTrainee}>
+        <ActionButton tw="h-8 hover:bg-primary" aria-label={setDomRole('Signature Button')} onClick={handleSignTrainee}>
           Sign
         </ActionButton>
       </TableData>
@@ -123,7 +131,7 @@ const getAllowedActions = (
     );
   }
 
-  return <AwaitingSignature />;
+  return <>{memberTrackingRecord.traineeSignedDate ? <AwaitingSignatureSecondary /> : <AwaitingSignature />}</>;
 };
 
 const RecordRowActions: React.FC<{
@@ -169,7 +177,11 @@ const RecordRowActions: React.FC<{
           title={'No Completed Date'}
         >
           <span>
-            <AwaitingSignature />
+            <TableData tw="text-xs mr-3">
+              <DisabledButton tw="h-8 bg-gray-300 text-disabledText border-0 text-[14px]" disabled>
+                Sign
+              </DisabledButton>
+            </TableData>
           </span>
         </TempestToolTip>
         <TableData>
