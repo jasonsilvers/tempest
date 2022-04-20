@@ -1,37 +1,40 @@
+import { MemberTrackingRecord, Organization, Role, User } from '@prisma/client';
+import { EUserIncludes } from '../../src/const/enums';
+import { getOrganizationTree } from '../../src/repositories/organizationRepo';
 import prisma from '../setup/mockedPrisma';
 import {
   createUser,
-  findUserByEmail,
-  findUserById,
-  updateUser,
+  deleteUser,
   findTrackingRecordsByAuthorityId,
   findTrackingRecordsByTraineeId,
+  findUserByEmail,
+  findUserById,
   findUserByIdReturnAllIncludes,
   findUserByIdWithMemberTrackingItems,
   findUsers,
+  getAllUsersFromUsersOrgCascade,
   getUsers,
+  getUsersWithMemberTrackingRecords,
+  getUsersWithMemberTrackingRecordsByOrgId,
   updateLastLogin,
+  updateUser,
   updateUserRole,
 } from '../../src/repositories/userRepo';
-import { MemberTrackingRecord, Role, User } from '@prisma/client';
-import { IPerson } from '../../src/repositories/common/types';
-import { EUserIncludes } from '../../src/const/enums';
+import { mockMethodAndReturn } from '../testutils/mocks/repository';
+
+jest.mock('../../src/repositories/organizationRepo.ts');
+jest.mock('../../src/repositories/roleRepo');
 
 const commonApiPerson = {
-  address: '123 Fake St',
   branch: 'USAF',
-  dodid: '123456789',
-  dutyPhone: '568-897-6548',
-  dutyTitle: 'duty title',
   email: 'email@test.jest',
   firstName: 'Bob',
   id: 1234,
   lastName: 'Jones',
   middleName: 'Cory',
-  phone: '568-897-6548',
   rank: 'SSgt/E-6',
   title: 'Prestigious Jest Mock User',
-} as IPerson;
+} as unknown as User;
 
 const mockUser: User = {
   firstName: commonApiPerson.firstName,
@@ -43,22 +46,39 @@ const mockUser: User = {
   lastLogin: new Date(),
   lastName: commonApiPerson.lastName,
   middleName: commonApiPerson.middleName,
-  organizationId: '1',
+  organizationId: 1,
   rank: commonApiPerson.rank,
   roleId: 0,
   updatedAt: new Date(),
 };
 
-afterAll = () => {
+const mockOrg: Organization = {
+  id: 1,
+  name: 'test org',
+  shortName: 'torg',
+  parentId: null,
+};
+
+const testOrganizations = [
+  {
+    id: 1,
+    name: 'testOrg1',
+  },
+  {
+    id: 2,
+    name: 'testOrg2',
+  },
+];
+
+afterEach = () => {
   jest.clearAllMocks();
 };
 
 const user: User = { ...mockUser };
 delete user.id;
 test('Repository User Prisma Mock Test for Create', async () => {
-  prisma.user.create.mockImplementationOnce(() => mockUser);
+  prisma.user.create.mockImplementation(() => mockUser);
   const returnPostUser = await createUser(user as User);
-
   expect(returnPostUser).toStrictEqual({ ...user, id: 1234 });
 });
 
@@ -205,4 +225,107 @@ test('should findTrackingRecordsByTraineeId', async () => {
   prisma.memberTrackingRecord.findMany.mockImplementationOnce(() => [dummyMemberTrackingRecord]);
   const result = await findTrackingRecordsByTraineeId(1);
   expect(result).toStrictEqual([dummyMemberTrackingRecord]);
+});
+
+test('should return usrs with member trakcing records by org id', async () => {
+  const mockResult = {
+    ...mockUser,
+    organization: mockOrg,
+  };
+
+  const spy = prisma.user.findMany.mockImplementationOnce(() => mockResult);
+
+  await getUsersWithMemberTrackingRecordsByOrgId(1);
+
+  expect(spy).toBeCalledWith({
+    where: {
+      organizationId: 1,
+    },
+    include: {
+      role: true,
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: {
+            orderBy: {
+              order: 'desc',
+            },
+          },
+        },
+      },
+    },
+  });
+});
+
+test('should return usrs with member trakcing records', async () => {
+  const mockResult = {
+    ...mockUser,
+    organization: mockOrg,
+  };
+
+  const spy = prisma.user.findMany.mockImplementationOnce(() => mockResult);
+
+  await getUsersWithMemberTrackingRecords();
+
+  expect(spy).toBeCalledWith({
+    orderBy: {
+      lastName: 'asc',
+    },
+    include: {
+      role: true,
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: true,
+        },
+      },
+    },
+  });
+});
+
+test('should return list of organizations and their children', async () => {
+  mockMethodAndReturn(getOrganizationTree, testOrganizations);
+  const mockResult = {
+    ...mockUser,
+    organization: mockOrg,
+  };
+
+  const spy = prisma.user.findMany.mockImplementation(() => mockResult);
+
+  await getAllUsersFromUsersOrgCascade(1);
+
+  expect(spy).toBeCalledWith({
+    where: {
+      organizationId: {
+        in: [1, 2],
+      },
+    },
+    orderBy: {
+      lastName: 'asc',
+    },
+    include: {
+      role: true,
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: true,
+        },
+      },
+    },
+  });
+});
+
+test('should catch error when getting organization tree', async () => {
+  const mockedGetOrganizationTree = getOrganizationTree as jest.MockedFunction<typeof getOrganizationTree>;
+  mockedGetOrganizationTree.mockImplementation(() => {
+    throw new Error('Test');
+  });
+
+  await expect(getAllUsersFromUsersOrgCascade(1)).rejects.toThrowError('There was an error getting organization tree');
+});
+
+test('should delete user', async () => {
+  const spy = prisma.user.delete;
+  await deleteUser(1);
+  expect(spy).toBeCalledWith({ where: { id: 1 } });
 });

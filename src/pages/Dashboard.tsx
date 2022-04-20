@@ -1,5 +1,5 @@
 import { MemberTrackingRecord, Organization } from '.prisma/client';
-import { InputAdornment, TextField } from '@mui/material';
+import { InputAdornment, TablePagination, TextField, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import React, { useEffect, useReducer } from 'react';
 import tw from 'twin.macro';
@@ -17,12 +17,11 @@ import { removeOldCompletedRecords } from '../utils';
 import { getStatus } from '../utils/status';
 
 const UserTable = tw.div``;
-const UserTableHeader = tw.div`flex text-sm text-gray-400 mb-4 pl-2 border-b border-gray-400`;
-const UserTableRow = ({ isOdd, children }: { isOdd: boolean; children: React.ReactNode }) => {
-  return <div css={[isOdd && tw`bg-gray-100`, tw`pl-2 flex py-2 justify-center items-center`]}>{children}</div>;
-};
+const UserTableHeader = tw.div`flex text-sm mb-4`;
+const UserTableRow = tw.div`border-t h-12 flex items-center justify-center py-2`;
 
 const UserTableColumn = tw.div``;
+const UserTableColumnHeader = tw.div`text-lg font-bold`;
 
 const StatusPillVariant = {
   Done: {
@@ -88,20 +87,6 @@ const determineMemberCounts = (
   return newCounts;
 };
 
-const determineOverallUserCounts = (userCounts: UserCounts, newCounts: StatusCounts) => {
-  if (userCounts.Overdue > 0) {
-    newCounts.Overdue = newCounts.Overdue + 1;
-  }
-
-  if (userCounts.Overdue === 0 && userCounts.Upcoming > 0) {
-    newCounts.Upcoming = newCounts.Upcoming + 1;
-  }
-
-  if (userCounts.Upcoming === 0 && userCounts.Overdue === 0 && userCounts.Done > 0) {
-    newCounts.Done = newCounts.Done + 1;
-  }
-};
-
 interface IDashboardState {
   userList: UserWithAll[];
   filteredUserList: UserWithAll[];
@@ -113,7 +98,6 @@ interface IDashboardState {
 
 interface IFilters {
   nameFilter: string;
-  statusFilter: EStatus;
   OrganizationIdFilter: number;
 }
 
@@ -127,41 +111,6 @@ const applyNameFilter = (userList: UserWithAll[], nameFilter: string) => {
   });
 };
 
-const applyStatusFilter = (userList: UserWithAll[], statusFilter: EStatus, counts: StatusCounts) => {
-  if (statusFilter === EStatus.ALL) {
-    return userList;
-  }
-
-  return userList.filter((user) => {
-    const userCounts = counts[user.id];
-
-    switch (statusFilter) {
-      case EStatus.OVERDUE:
-        if (userCounts.Overdue > 0) {
-          return true;
-        }
-
-        return false;
-
-      case EStatus.UPCOMING:
-        if (userCounts.Upcoming > 0) {
-          return true;
-        }
-
-        return false;
-
-      case EStatus.DONE:
-        if (userCounts.Done > 0 && userCounts.OverDue === 0 && userCounts.Upcoming === 0) {
-          return true;
-        }
-
-        return false;
-      default:
-        return false;
-    }
-  });
-};
-
 const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: number) => {
   if (!organizationIdFilter) {
     return userList;
@@ -172,11 +121,8 @@ const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: 
   });
 };
 
-const applyFilters = (userList: UserWithAll[], filters: IFilters, counts: StatusCounts) => {
-  return applyNameFilter(
-    applyStatusFilter(applyOrganizationFilter(userList, filters.OrganizationIdFilter), filters.statusFilter, counts),
-    filters.nameFilter
-  );
+const applyFilters = (userList: UserWithAll[], filters: IFilters) => {
+  return applyNameFilter(applyOrganizationFilter(userList, filters.OrganizationIdFilter), filters.nameFilter);
 };
 
 const filterReducer = (state: IDashboardState, action: Actions): IDashboardState => {
@@ -185,60 +131,30 @@ const filterReducer = (state: IDashboardState, action: Actions): IDashboardState
       return {
         ...state,
         nameFilter: action.nameFilter,
-        filteredUserList: applyFilters(
-          state.userList,
-          {
-            nameFilter: action.nameFilter,
-            OrganizationIdFilter: state.organizationIdFilter,
-            statusFilter: state.statusFilter,
-          },
-          state.counts
-        ),
-      };
-    }
-    case 'filterByStatus': {
-      return {
-        ...state,
-        statusFilter: action.statusFilter,
-        filteredUserList: applyFilters(
-          state.userList,
-          {
-            nameFilter: state.nameFilter,
-            OrganizationIdFilter: state.organizationIdFilter,
-            statusFilter: action.statusFilter,
-          },
-          state.counts
-        ),
+        filteredUserList: applyFilters(state.userList, {
+          nameFilter: action.nameFilter,
+          OrganizationIdFilter: state.organizationIdFilter,
+        }),
       };
     }
     case 'filterByOrganization': {
       return {
         ...state,
         organizationIdFilter: action.organizationIdFilter,
-        filteredUserList: applyFilters(
-          state.userList,
-          {
-            nameFilter: state.nameFilter,
-            OrganizationIdFilter: action.organizationIdFilter,
-            statusFilter: state.statusFilter,
-          },
-          state.counts
-        ),
+        filteredUserList: applyFilters(state.userList, {
+          nameFilter: state.nameFilter,
+          OrganizationIdFilter: action.organizationIdFilter,
+        }),
       };
     }
     case 'setUserList': {
       return {
         ...state,
         userList: action.userList,
-        filteredUserList: applyFilters(
-          action.userList,
-          {
-            nameFilter: state.nameFilter,
-            OrganizationIdFilter: state.organizationIdFilter,
-            statusFilter: state.statusFilter,
-          },
-          state.counts
-        ),
+        filteredUserList: applyFilters(action.userList, {
+          nameFilter: state.nameFilter,
+          OrganizationIdFilter: state.organizationIdFilter,
+        }),
       };
     }
 
@@ -266,6 +182,18 @@ const DashboardPage: React.FC = () => {
     statusFilter: EStatus.ALL,
   });
 
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const permission = permissionCheck(loggedInUser?.role?.name, EFuncAction.READ_ANY, EResource.USER);
 
   useEffect(() => {
@@ -288,8 +216,6 @@ const DashboardPage: React.FC = () => {
           determineMemberCounts(mti, mtr, newCounts, userCounts);
         });
       });
-
-      determineOverallUserCounts(userCounts, newCounts);
     });
 
     dispatch({ type: 'setCounts', counts: newCounts });
@@ -305,52 +231,46 @@ const DashboardPage: React.FC = () => {
 
   return (
     <main tw="pr-14 max-width[900px] min-width[720px]">
-      {/* <div tw="flex space-x-8 pb-5">
-        <MemberCountCards
-          isLoading={users?.isLoading}
-          counts={dashboardState.counts}
-          variant={dashboardState.statusFilter}
-          dispatch={dispatch}
-        />
-      </div> */}
-      <div tw="flex space-x-2 pb-5">
-        <div tw="w-1/2">
-          <TextField
-            tw="bg-white rounded w-full"
-            id="SearchBar"
-            label="Search"
-            value={dashboardState.nameFilter}
-            onChange={(event) => dispatch({ type: 'filterByName', nameFilter: event.target.value })}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+      <Card tw="px-5 pt-5">
+        <Typography variant="h6">Member List</Typography>
+        <div tw="pb-8"></div>
+        <div tw="flex space-x-2 pb-8">
+          <div tw="w-1/2">
+            <TextField
+              tw="bg-white rounded w-full"
+              id="SearchBar"
+              label="Search"
+              value={dashboardState.nameFilter}
+              onChange={(event) => dispatch({ type: 'filterByName', nameFilter: event.target.value })}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </div>
+          <div tw="w-1/2">
+            <OrganizationSelect
+              onChange={(_event, value: Organization) =>
+                dispatch({ type: 'filterByOrganization', organizationIdFilter: value?.id })
+              }
+            />
+          </div>
         </div>
-        <div tw="w-1/2">
-          <OrganizationSelect
-            onChange={(event, value: Organization) =>
-              dispatch({ type: 'filterByOrganization', organizationIdFilter: value?.id })
-            }
-          />
-        </div>
-      </div>
 
-      <Card tw="p-5">
         <UserTable>
           <UserTableHeader>
-            <UserTableColumn tw="w-1/3 text-lg">Name</UserTableColumn>
-            <UserTableColumn tw="w-1/6 text-lg">Rank</UserTableColumn>
-            <UserTableColumn tw="w-1/6 flex text-lg justify-center">Status</UserTableColumn>
-            <UserTableColumn tw="ml-auto mr-4 text-lg">Actions</UserTableColumn>
+            <UserTableColumnHeader tw="w-1/3">Name</UserTableColumnHeader>
+            <UserTableColumnHeader tw="w-1/6">Rank</UserTableColumnHeader>
+            <UserTableColumnHeader tw="w-1/6 flex justify-center">Status</UserTableColumnHeader>
+            <UserTableColumnHeader tw="ml-auto mr-4">Actions</UserTableColumnHeader>
           </UserTableHeader>
           {users.isLoading ? '...Loading' : ''}
           {dashboardState.filteredUserList?.length === 0 ? 'No Members Found' : ''}
-          {dashboardState.filteredUserList?.map((user, index) => (
-            <UserTableRow isOdd={!!(index % 2)} key={user.id} tw="text-base mb-2 flex">
+          {dashboardState.filteredUserList?.map((user) => (
+            <UserTableRow key={user.id} tw="text-base flex">
               <UserTableColumn tw="w-1/3">
                 {`${user.lastName}, ${user.firstName} ${user.id === loggedInUser.id ? '(You)' : ''}`}
               </UserTableColumn>
@@ -368,6 +288,15 @@ const DashboardPage: React.FC = () => {
             </UserTableRow>
           ))}
         </UserTable>
+
+        <TablePagination
+          component="div"
+          count={dashboardState.filteredUserList ? dashboardState.filteredUserList.length : 0}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Card>
     </main>
   );

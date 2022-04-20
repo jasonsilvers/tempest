@@ -15,12 +15,12 @@ const Tab: React.FC<ITabProps> = ({ children, category }) => {
   return (
     <Container>
       {activeCategory === category ? (
-        <Chip color="primary" role={setDomRole(children as string, 'Tab')} label={children} clickable />
+        <Chip color="secondary" role={setDomRole(children as string, 'Tab')} label={children} clickable />
       ) : (
         <Chip
           onClick={() => setActiveCategory(category)}
           variant="outlined"
-          color="primary"
+          color="secondary"
           role={setDomRole(children as string, 'Tab')}
           label={children}
           id={children.toString()}

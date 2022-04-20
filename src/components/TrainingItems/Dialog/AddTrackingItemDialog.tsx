@@ -16,7 +16,7 @@ import Fuse from 'fuse.js';
 import ConfirmDialog from '../../Dialog/ConfirmDialog';
 import { useSnackbar } from 'notistack';
 import { RecurrenceSelect } from '../../RecurrenceSelect';
-import { OutlinedInput, IconButton, FormControl, DialogContentText, Button } from '@mui/material';
+import { OutlinedInput, IconButton, FormControl, DialogContentText, Button, Typography } from '@mui/material';
 
 const fuseOptions: Fuse.IFuseOptions<TrackingItem> = {
   isCaseSensitive: false,
@@ -48,7 +48,6 @@ const TableRowHeader = tw.div`text-gray-400 text-sm flex items-center flex-wrap 
 const TableRow = tw.div`py-2 text-sm flex items-center flex-wrap min-width[450px] border-solid border-b border-gray-200`;
 const TableData = tw.div`pr-3 font-size[12px] flex[0 0 auto] pb-0`;
 
-const InputFieldContainer = tw.div`w-full`;
 const AdjustedOutlinedInput: React.FC<OutlinedInputProps> = (props) => (
   <OutlinedInput margin="dense" fullWidth {...props} />
 );
@@ -140,6 +139,8 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       onClose={() => {
         handleClose();
       }}
+      maxWidth="sm"
+      fullWidth
       aria-labelledby="tracking-dialog"
     >
       <ShowLoadingOverlay showLoading={isLoading || isSaving} />
@@ -158,65 +159,70 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
         <p tw="text-xs pb-4">
           Please create the training title, interval of training, and write a brief description of training.
         </p>
-        <DialogContent>
-          <div tw="flex space-x-5 mb-3">
-            <InputFieldContainer>
-              <FormControl>
-                {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
-                  <DialogContentText tw="text-red-400 flex">* Title</DialogContentText>
-                ) : (
-                  <DialogContentText>Title</DialogContentText>
-                )}
-                <AdjustedOutlinedInput
-                  name="title"
-                  inputProps={{ 'aria-label': 'training-title-input' }}
-                  value={trackingItem.title}
-                  onChange={(e: ChangeEvent<{ name: string; value: string }>) => {
-                    handleTrackingItemInput(e.target.name, e.target.value);
-                    handleTrackingItemMatch(e);
-                  }}
-                />
-              </FormControl>
-            </InputFieldContainer>
-            <InputFieldContainer>
-              {trackingItem.interval < 0 || trackingItem.interval === null ? (
-                <DialogContentText tw="text-red-400">* Recurrance </DialogContentText>
+
+        <div tw="flex mb-3 space-x-5">
+          <div tw="w-2/3">
+            <FormControl fullWidth>
+              {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
+                <DialogContentText tw="text-red-400 flex">* Title</DialogContentText>
               ) : (
-                <DialogContentText>Recurrance</DialogContentText>
+                <DialogContentText>Title</DialogContentText>
               )}
-              <RecurrenceSelect
-                value={trackingItem.interval?.toString()}
-                handleChange={(event: SelectChangeEvent) => {
-                  handleTrackingItemInput('interval', parseInt(event.target.value));
+              <AdjustedOutlinedInput
+                name="title"
+                inputProps={{ 'aria-label': 'training-title-input' }}
+                value={trackingItem.title}
+                onChange={(e: ChangeEvent<{ name: string; value: string }>) => {
+                  handleTrackingItemInput(e.target.name, e.target.value);
+                  handleTrackingItemMatch(e);
                 }}
               />
-            </InputFieldContainer>
+            </FormControl>
           </div>
-          <InputFieldContainer>
-            {trackingItem.description === '' ? (
-              <DialogContentText tw="text-red-400">* Description</DialogContentText>
+          <div tw="w-1/3">
+            {trackingItem.interval < 0 || trackingItem.interval === null ? (
+              <DialogContentText tw="text-red-400">* Recurrance </DialogContentText>
             ) : (
-              <DialogContentText>Description</DialogContentText>
+              <DialogContentText>Recurrance</DialogContentText>
             )}
-            <AdjustedOutlinedInput
-              required
-              name="description"
-              inputProps={{ 'aria-label': 'training-description-input' }}
-              value={trackingItem.description}
-              onChange={(e: ChangeEvent<{ name: string; value: string }>) =>
-                handleTrackingItemInput(e.target.name, e.target.value)
-              }
+            <RecurrenceSelect
+              value={trackingItem.interval?.toString()}
+              handleChange={(event: SelectChangeEvent) => {
+                handleTrackingItemInput('interval', parseInt(event.target.value));
+              }}
             />
-          </InputFieldContainer>
-        </DialogContent>
+          </div>
+        </div>
+        <div>
+          {trackingItem.description === '' ? (
+            <DialogContentText tw="text-red-400">* Description</DialogContentText>
+          ) : (
+            <DialogContentText>Description</DialogContentText>
+          )}
+          <AdjustedOutlinedInput
+            required
+            name="description"
+            inputProps={{ 'aria-label': 'training-description-input' }}
+            value={trackingItem.description}
+            onChange={(e: ChangeEvent<{ name: string; value: string }>) =>
+              handleTrackingItemInput(e.target.name, e.target.value)
+            }
+          />
+        </div>
+
         <div tw="pt-2 text-sm text-red-400">{alertIfDuplicate(trackingItemsThatMatch)}</div>
       </DialogContent>
 
       {trackingItemsThatMatch?.length > 0 ? (
         <>
-          <DialogTitle>Matches</DialogTitle>
           <DialogContent>
-            <p tw="text-xs pb-4">Below are potential duplicates based on the title you entered. </p>
+            <Typography tw="pb-4" variant="h5">
+              Similiar Training Items
+            </Typography>
+            <p tw="text-sm text-gray-400 pb-5">
+              The following trainings already exist within the Global Training Catalog. Please ensure you are not
+              creating a duplicate training.
+            </p>
             <TableRowHeader>
               <TableData tw="w-1/3">Training Title</TableData>
               <TableData tw="w-1/4 text-center">Interval (days)</TableData>

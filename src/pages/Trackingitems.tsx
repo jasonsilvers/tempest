@@ -2,14 +2,14 @@ import React, { useMemo, useState } from 'react';
 import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
-import { Button, Box, Popper, Paper, Typography } from '@mui/material';
+import { Box, Popper, Paper, Typography, Fab } from '@mui/material';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
 import { getTrackingItems } from '../repositories/trackingItemRepo';
 
 import tw from 'twin.macro';
-import { DeleteIcon } from '../assets/Icons';
+import { AddIcon, DeleteIcon } from '../assets/Icons';
 import { DataGrid, GridActionsCellItem, GridRenderCellParams, GridToolbar } from '@mui/x-data-grid';
 import { useSnackbar } from 'notistack';
 import { TrackingItemInterval } from '../utils/daysToString';
@@ -178,17 +178,25 @@ const TrackingItems = () => {
         <H1>Global Training Catalog</H1>
         <div tw="flex ml-auto">
           {canCreateTrackingItem?.granted ? (
-            <Button variant="contained" color="primary" onClick={() => setOpenDialog(true)}>
-              + Add New
-            </Button>
+            <Fab
+              color="secondary"
+              size="medium"
+              variant="extended"
+              onClick={() => {
+                setOpenDialog(true);
+              }}
+            >
+              <AddIcon sx={{ mr: 1 }} />
+              Create
+            </Fab>
           ) : null}
         </div>
       </div>
-      <div tw="border-radius[10px] border bg-white">
+      <div tw="border-radius[10px] bg-white">
         {trackingItems.length === 0 ? (
           <div tw="p-5">No Records</div>
         ) : (
-          //disableVertualization is for testing!! It won't render the actions without it. Need to workout a way to remove and still be able to test
+          //disableVirtualization is for testing!! It won't render the actions without it. Need to workout a way to remove and still be able to test
           <DataGrid
             disableSelectionOnClick
             autoHeight

@@ -17,6 +17,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import SearchIcon from '@mui/icons-material/Search';
 import Close from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
 
 export {
   AddIcon,
@@ -34,8 +35,9 @@ export {
   SecurityIcon,
   DashboardIcon,
   PersonIcon,
-  SettingsIcon,
   DescriptionIcon,
   SearchIcon,
   Close,
+  FolderSharedIcon,
+  SettingsIcon,
 };

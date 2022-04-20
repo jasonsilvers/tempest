@@ -24,7 +24,7 @@ describe('Can view Global Tracking Items', () => {
   });
 
   it('should create new training item', () => {
-    cy.findByRole('button', { name: /add new/i }).click();
+    cy.findByRole('button', { name: /create/i }).click();
 
     const newTrainingItemTitle = 'New training item title';
     const newTrainingItemDescription = 'New training item description';

@@ -113,14 +113,6 @@ const RecordRow: React.FC<{
     }
   }, [trackingRecordQuery.data, trackingItem?.interval]);
 
-  if (!trackingRecordQuery || trackingRecordQuery.isLoading || !user) {
-    return <RecordRowSkeleton />;
-  }
-
-  if (isFiltered(categories, activeCategory, status)) {
-    return null;
-  }
-
   const handleCompletionDateChange = (inputDate: Date) => {
     const date = dayjs(inputDate);
     if (trackingRecordQuery.data.authoritySignedDate || trackingRecordQuery.data.traineeSignedDate) {
@@ -130,14 +122,22 @@ const RecordRow: React.FC<{
     }
   };
 
-  const DynamicToken = TokenObj[status];
+  if (!trackingRecordQuery || trackingRecordQuery.isLoading || !user) {
+    return <RecordRowSkeleton />;
+  }
+
+  if (isFiltered(categories, activeCategory, status)) {
+    return null;
+  }
+
+  const DynamicStatus = TokenObj[status];
   return (
     <>
       <TableRow>
         <TableData tw={'text-base w-60'}>
           <div tw={'flex'}>
             <div tw="pt-1">
-              <DynamicToken />
+              <DynamicStatus />
             </div>
             <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64 pt-[2px]">{trackingItem?.title}</div>
             {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}

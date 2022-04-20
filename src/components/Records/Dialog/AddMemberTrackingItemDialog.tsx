@@ -11,7 +11,7 @@ import { useSnackbar } from 'notistack';
 import { useQueryClient } from 'react-query';
 import { memberTrackingRecordIsComplete } from '../../../utils/status';
 import { TrackingItemInterval } from '../../../utils/daysToString';
-import { IconButton, Autocomplete, TextField, CircularProgress, Button } from '@mui/material';
+import { IconButton, Autocomplete, TextField, CircularProgress, Button, Box } from '@mui/material';
 
 type IMemberTrackingItemsToAdd = {
   [key: number]: IMemberTrackingItemToAdd;
@@ -139,6 +139,15 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           key={dayjs().toISOString()}
           options={trackingItemOptions}
           getOptionLabel={(options) => options.title}
+          renderOption={(props, option) => (
+            <li {...props}>
+              <Box>
+                {option.title}
+                <br />
+                <span tw="text-sm text-gray-400">{option.description}</span>
+              </Box>
+            </li>
+          )}
           onChange={(event, value) => {
             const selectedTrackingItem = value as TrackingItem;
             const filteredOptions = trackingItemOptions.filter((tio) => tio.id !== selectedTrackingItem.id);

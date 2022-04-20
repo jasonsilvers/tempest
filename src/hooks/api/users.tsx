@@ -1,4 +1,4 @@
-import { Role, User } from '@prisma/client';
+import { Organization, Role, User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
@@ -22,9 +22,10 @@ const useUsers = () => {
 };
 
 const useMember = (id: number, initialMemberData: UserWithAll) => {
-  return useQuery<User & { role: Role }>(
+  return useQuery<User & { role: Role; organization: Organization }>(
     usersQueryKeys.member(id),
-    async () => axios.get<User & { role: Role }>(EUri.USERS + `${id}`).then((result) => result.data),
+    async () =>
+      axios.get<User & { role: Role; organization: Organization }>(EUri.USERS + `${id}`).then((result) => result.data),
     { enabled: !!id, initialData: initialMemberData, placeholderData: initialMemberData }
   );
 };

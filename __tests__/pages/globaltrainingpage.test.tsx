@@ -140,7 +140,7 @@ test('should open then close the dialog box', async () => {
   expect(title).toBeInTheDocument();
   await waitFor(() => getByText(/test title/i));
   const button = getByRole('button', {
-    name: /\+ add new/i,
+    name: /create/i,
   });
   fireEvent.click(button);
   expect(getByText(/Please create the training title/i)).toBeInTheDocument();
