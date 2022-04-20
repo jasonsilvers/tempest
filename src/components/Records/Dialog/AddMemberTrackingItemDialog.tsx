@@ -138,7 +138,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           //This is a hack to get the input box to clear after selecting an option
           key={dayjs().toISOString()}
           options={trackingItemOptions}
-          getOptionLabel={(options) => options.title}
+          getOptionLabel={(options: TrackingItem) => options.title}
           renderOption={(props, option) => (
             <li {...props}>
               <Box>

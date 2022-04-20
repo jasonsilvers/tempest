@@ -14,7 +14,7 @@ export function OrganizationSelect({ onChange }: OrganizationSelectProps) {
     <Autocomplete
       options={orgsQuery.data ?? []}
       loading={orgsQuery.isLoading}
-      getOptionLabel={(option) => option.name}
+      getOptionLabel={(option: Organization) => option.name}
       onChange={onChange}
       groupBy={(option) => {
         if (option.parentId) {
