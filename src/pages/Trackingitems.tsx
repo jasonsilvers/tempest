@@ -123,7 +123,7 @@ const TrackingItems = () => {
         headerName: 'Title',
         field: 'title',
         renderCell: renderCellExpand,
-        flex: 0.5,
+        flex: 0.8,
       },
       {
         headerName: 'Recurrence',
@@ -199,6 +199,7 @@ const TrackingItems = () => {
           //disableVirtualization is for testing!! It won't render the actions without it. Need to workout a way to remove and still be able to test
           <DataGrid
             disableSelectionOnClick
+            disableColumnSelector
             autoHeight
             columns={columns}
             rows={trackingItems}

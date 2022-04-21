@@ -7,7 +7,7 @@ import { Variant } from './MemberItemTracker';
 import MemberTrackingItemRow from './MemberTrackingItemRow';
 
 // styled twin elements
-const Container = tw.div`bg-white text-black pt-4 text-left flex flex-col h-64 overflow-y-auto overflow-x-hidden max-width[1440px] rounded-lg`;
+const Container = tw.div`bg-white text-black pt-4 text-left flex flex-col overflow-y-auto overflow-x-hidden max-width[1440px] rounded-lg`;
 
 const MemberTrackingItemTableSkeleton = tw.div`border animate-pulse bg-gray-400 h-full px-2 border-gray-300`;
 
@@ -47,7 +47,7 @@ const MemberTrackingItemTable: React.FC<{
             </>
           ) : (
             <>
-              <TableData tw="w-72 pr-10">Signatures (hover to view)</TableData>
+              <TableData tw="w-72 pr-10 font-bold">Signatures</TableData>
               <TableData tw="w-4"></TableData>
             </>
           )}

@@ -2,7 +2,7 @@ import { Divider } from '@mui/material';
 import React, { useMemo } from 'react';
 import { useQueryClient } from 'react-query';
 import { styled } from 'twin.macro';
-import { DashboardIcon, DescriptionIcon, FolderSharedIcon, SecurityIcon, SettingsIcon } from '../../assets/Icons';
+import { AssignmentIcon, DashboardIcon, FolderSharedIcon, SecurityIcon, SettingsIcon } from '../../assets/Icons';
 import { EFuncAction, EResource } from '../../const/enums';
 import { usePermissions } from '../../hooks/usePermissions';
 import { TempestDrawer } from '../../lib/ui';
@@ -39,7 +39,7 @@ const AdminNavigation = ({ canViewDashboard, canCreateGlobalTrackingItem, canVie
       ) : null}
 
       {canCreateGlobalTrackingItem ? (
-        <Link goToUrl="/Trackingitems" icon={<DescriptionIcon fontSize="medium" />}>
+        <Link goToUrl="/Trackingitems" icon={<AssignmentIcon fontSize="medium" />}>
           <div role="navigation" aria-label="global-training-catalog">
             Global Training Catalog
           </div>

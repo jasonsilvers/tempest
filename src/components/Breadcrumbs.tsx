@@ -10,7 +10,7 @@ export const BreadCrumbs = () => {
           Dashboard
         </Link>
       </NextLink>
-      <p tw="text-secondary">Member Profile</p>
+      <p tw="text-secondary">Member Training Record</p>
     </Breadcrumbs>
   );
 };

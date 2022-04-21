@@ -92,15 +92,17 @@ const putUserAction = async (
 
   let filteredData = permission.filter(body);
 
-  const organizationIdNumber = body.organizationId ? parseInt(body.organizationId) : null;
+  const parsedOrganizationId = body.organizationId ? parseInt(body.organizationId) : null;
+  let finalOrganizationId = user.organizationId;
 
   // if check on change of orgId is needed
-  if (organizationIdNumber && organizationIdNumber !== user.organizationId) {
+  if (parsedOrganizationId && parsedOrganizationId !== user.organizationId) {
     const memberRole = await getRoleByName(ERole.MEMBER);
     filteredData = { ...filteredData, roleId: memberRole.id };
+    finalOrganizationId = parsedOrganizationId;
   }
 
-  const preparedFilteredData = { ...filteredData, organizationId: organizationIdNumber };
+  const preparedFilteredData = { ...filteredData, organizationId: finalOrganizationId };
 
   const updatedUser = await updateUser(userIdParam, preparedFilteredData);
 

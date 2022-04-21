@@ -10,7 +10,7 @@ interface ILinkProps {
   icon?: React.ReactNode;
 }
 
-const StyledHeader = tw.a` mr-8 mb-6 uppercase text-4xl`;
+const StyledHeader = tw.a`mb-6 uppercase text-4xl`;
 
 const Header: React.FC<ILinkProps> = ({ children, goToUrl = '/', className = '' }) => {
   return (

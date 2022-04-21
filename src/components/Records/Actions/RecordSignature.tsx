@@ -122,16 +122,24 @@ const getAllowedActions = (
           traineeSignature={{ signee: memberTrackingRecord[signee], date: memberTrackingRecord[signatureType] }}
         >
           <span>
-            <DisabledButton tw="text-xs h-8">{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
-              'MM/DD/YY'
-            )}`}</DisabledButton>
+            <DisabledButton tw="text-xs h-8 border-0 text-secondarytext">{`Signed On ${dayjs(
+              memberTrackingRecord[signatureType]
+            ).format('MM/DD/YY')}`}</DisabledButton>
           </span>
         </RecordSignatureToolTip>
       </TableData>
     );
   }
 
-  return <>{memberTrackingRecord.traineeSignedDate ? <AwaitingSignatureSecondary /> : <AwaitingSignature />}</>;
+  return (
+    <>
+      {memberTrackingRecord.traineeSignedDate || memberTrackingRecord.authoritySignedDate ? (
+        <AwaitingSignatureSecondary />
+      ) : (
+        <AwaitingSignature />
+      )}
+    </>
+  );
 };
 
 const RecordRowActions: React.FC<{
@@ -148,6 +156,19 @@ const RecordRowActions: React.FC<{
 
   const { trainee, authority } = memberTrackingRecord;
   const { isLoading, permissionCheck } = usePermissions();
+
+  const determineActionForAuthority = determineActionOnRecord(
+    'authority',
+    memberTrackingRecord,
+    'authoritySignedDate',
+    LoggedInUser
+  );
+  const determineActionForTrainee = determineActionOnRecord(
+    'trainee',
+    memberTrackingRecord,
+    'traineeSignedDate',
+    LoggedInUser
+  );
 
   const canDeleteAny = permissionCheck(
     LoggedInUser?.role?.name,
@@ -166,7 +187,15 @@ const RecordRowActions: React.FC<{
           title={'No Completed Date'}
         >
           <span>
-            <AwaitingSignature />
+            {determineActionForAuthority === 'authorityCanSign' ? (
+              <TableData tw="text-xs mr-3">
+                <DisabledButton tw="h-8 bg-gray-300 text-disabledText border-0 text-[14px]" disabled>
+                  Sign
+                </DisabledButton>
+              </TableData>
+            ) : (
+              <AwaitingSignature />
+            )}
           </span>
         </TempestToolTip>
         <TempestToolTip
@@ -177,11 +206,15 @@ const RecordRowActions: React.FC<{
           title={'No Completed Date'}
         >
           <span>
-            <TableData tw="text-xs mr-3">
-              <DisabledButton tw="h-8 bg-gray-300 text-disabledText border-0 text-[14px]" disabled>
-                Sign
-              </DisabledButton>
-            </TableData>
+            {determineActionForTrainee === 'traineeCanSign' ? (
+              <TableData tw="text-xs mr-3">
+                <DisabledButton tw="h-8 bg-gray-300 text-disabledText border-0 text-[14px]" disabled>
+                  Sign
+                </DisabledButton>
+              </TableData>
+            ) : (
+              <AwaitingSignature />
+            )}
           </span>
         </TempestToolTip>
         <TableData>
