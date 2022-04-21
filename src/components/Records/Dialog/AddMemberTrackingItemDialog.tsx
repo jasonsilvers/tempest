@@ -148,7 +148,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
               </Box>
             </li>
           )}
-          onChange={(event, value) => {
+          onChange={(_event, value) => {
             const selectedTrackingItem = value as TrackingItem;
             const filteredOptions = trackingItemOptions.filter((tio) => tio.id !== selectedTrackingItem.id);
 

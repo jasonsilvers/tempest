@@ -7,7 +7,7 @@ import { Variant } from './MemberItemTracker';
 import MemberTrackingItemRow from './MemberTrackingItemRow';
 
 // styled twin elements
-const Container = tw.div`bg-white text-black pt-4 text-left flex flex-col h-64 overflow-y-auto overflow-x-hidden max-width[1440px] rounded-lg`;
+const Container = tw.div`bg-white text-black pt-4 text-left flex flex-col overflow-y-auto overflow-x-hidden max-width[1440px] rounded-lg`;
 
 const MemberTrackingItemTableSkeleton = tw.div`border animate-pulse bg-gray-400 h-full px-2 border-gray-300`;
 
@@ -20,7 +20,7 @@ const MemberTrackingItemTable: React.FC<{
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
   };
 
@@ -32,22 +32,22 @@ const MemberTrackingItemTable: React.FC<{
   return (
     <Container>
       <TableHeaderRow tw="min-height[35px]">
-        <TableData tw="w-60">Training Title</TableData>
-        <TableData tw="w-24">Recurrence</TableData>
+        <TableData tw="w-60 text-primarytext font-bold">Training Title</TableData>
+        <TableData tw="w-24 text-primarytext font-bold">Recurrence</TableData>
         <div tw="flex justify-between">
-          <TableData tw="w-32">Completion Date</TableData>
-          <TableData tw="w-16 pl-1">Due Date</TableData>
+          <TableData tw="w-32 text-primarytext font-bold">Completion Date</TableData>
+          <TableData tw="w-16 pl-1 text-primarytext font-bold">Due Date</TableData>
         </div>
         <div tw="flex ml-auto">
           {variant === 'In Progress' ? (
             <>
-              <TableData tw="w-32 pl-2">Authority Signature</TableData>
-              <TableData tw="w-32">Member Signature</TableData>
+              <TableData tw="w-32 pl-2 text-primarytext font-bold">Authority Signature</TableData>
+              <TableData tw="w-32 text-primarytext font-bold">Member Signature</TableData>
               <TableData tw="w-8"></TableData>
             </>
           ) : (
             <>
-              <TableData tw="w-72 pr-10">Signatures (hover to view)</TableData>
+              <TableData tw="w-72 pr-10 font-bold">Signatures</TableData>
               <TableData tw="w-4"></TableData>
             </>
           )}

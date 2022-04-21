@@ -18,9 +18,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import Close from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 export {
   AddIcon,
+  AssignmentIcon,
   CalendarTodayIcon,
   CheckCircleIcon,
   WarningIcon,

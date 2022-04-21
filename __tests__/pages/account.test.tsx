@@ -48,7 +48,7 @@ it('should update personal fields', async () => {
     name: 'TSgt/E-6',
   });
   const submit = screen.getByRole('button', {
-    name: /update profile settings/i,
+    name: /update/i,
   });
 
   userEvent.type(firstNameInput, 'firstNameChanged');
@@ -118,7 +118,7 @@ it('should update work fields', async () => {
   fireEvent.click(newOption[2]);
 
   const submit = screen.getByRole('button', {
-    name: /update profile settings/i,
+    name: /update/i,
   });
 
   fireEvent.click(submit);

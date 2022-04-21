@@ -182,9 +182,9 @@ const WorkForm = ({ user }: { user: LoggedInUser }) => {
         </FormControl>
       </div>
 
-      <div tw="p-7 flex space-x-4 float-right">
+      <div tw="pb-7 pt-4 flex space-x-4 justify-center">
         <Button variant="contained" color="secondary" type="submit">
-          Update profile settings
+          Update
         </Button>
         {/* Send to the training record page */}
         <Button
@@ -307,9 +307,9 @@ const PersonalForm = ({ user }: { user: LoggedInUser }) => {
         </FormControl>
       </div>
 
-      <div tw="p-7 flex space-x-4 float-right">
+      <div tw="pb-7 pt-4 flex space-x-4 justify-center">
         <Button variant="contained" color="secondary" type="submit">
-          Update profile settings
+          Update
         </Button>
         {/* Send to the training record page */}
         <Button

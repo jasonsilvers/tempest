@@ -139,11 +139,13 @@ const RecordRow: React.FC<{
             <div tw="pt-1">
               <DynamicStatus />
             </div>
-            <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64 pt-[2px]">{trackingItem?.title}</div>
+            <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64 pt-[2px] text-secondary underline">
+              {trackingItem?.title}
+            </div>
             {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
           </div>
         </TableData>
-        <TableData tw={'text-sm text-purple-500 w-24 pt-1'}>{TrackingItemInterval[trackingItem?.interval]}</TableData>
+        <TableData tw={'text-sm w-24 pt-1'}>{TrackingItemInterval[trackingItem?.interval]}</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
             <ConditionalDateInput
