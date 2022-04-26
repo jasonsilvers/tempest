@@ -31,6 +31,7 @@ const newOrgId = '67c6657f-0022-48b0-89b3-866dd89831ef';
 
 const newOrg = {
   name: 'Vaccinations Squadron',
+  shortName: 'vacc squad',
   parentId: null,
 };
 

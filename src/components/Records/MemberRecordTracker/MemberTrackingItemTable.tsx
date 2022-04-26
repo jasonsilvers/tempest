@@ -57,7 +57,7 @@ const MemberTrackingItemTable: React.FC<{
       {memberTrackingItemsQuery.data?.length == 0 ? <div tw="p-4">Nothing to show</div> : null}
       {memberTrackingItemsQuery.data && memberTrackingItemsQuery.isSuccess ? (
         memberTrackingItemsQuery.data
-          ?.slice(page * rowsPerPage, (page + 2) * rowsPerPage)
+          ?.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
           .map((mti) => <MemberTrackingItemRow key={`${mti.userId}${mti.trackingItemId}`} memberTrackingItemId={mti} />)
       ) : (
         <MemberTrackingItemTableSkeleton />

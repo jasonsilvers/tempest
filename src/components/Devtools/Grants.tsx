@@ -2,6 +2,7 @@ import { useGrants, useUpdateGrant } from '../../hooks/api/grants';
 import { DataGrid, GridColumns, GridRowModel } from '@mui/x-data-grid';
 import { useCallback } from 'react';
 import { Grant } from '@prisma/client';
+import 'twin.macro';
 
 const columns: GridColumns = [
   { field: 'action', headerName: 'action', flex: 1, editable: true },
@@ -32,7 +33,7 @@ export const Grants = () => {
   }, []);
 
   return (
-    <div style={{ height: 720, width: '100%' }}>
+    <div tw="h-[720px]">
       <DataGrid
         rows={grantsQuery.data}
         columns={columns}

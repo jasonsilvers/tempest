@@ -269,7 +269,7 @@ const DashboardPage: React.FC = () => {
           </UserTableHeader>
           {users.isLoading ? '...Loading' : ''}
           {dashboardState.filteredUserList?.length === 0 ? 'No Members Found' : ''}
-          {dashboardState.filteredUserList?.map((user) => (
+          {dashboardState.filteredUserList?.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((user) => (
             <UserTableRow key={user.id} tw="text-base flex">
               <UserTableColumn tw="w-1/3">
                 {`${user.lastName}, ${user.firstName} ${user.id === loggedInUser.id ? '(You)' : ''}`}

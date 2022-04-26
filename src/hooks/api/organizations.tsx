@@ -1,6 +1,7 @@
 import { Organization } from '.prisma/client';
-import axios from 'axios';
-import { useQuery } from 'react-query';
+import axios, { AxiosResponse } from 'axios';
+import { useSnackbar } from 'notistack';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { EUri } from '../../const/enums';
 import { OrgsDTO } from '../../types';
 
@@ -21,4 +22,30 @@ export const useOrg = (organizationId: number) => {
     () => axios.get<Organization>(EUri.ORGANIZATIONS + organizationId).then((res) => res.data),
     { enabled: !!organizationId }
   );
+};
+
+export const useCreateOrg = () => {
+  const queryClient = useQueryClient();
+  const snackbar = useSnackbar();
+  return useMutation<AxiosResponse<Organization>, unknown, Organization>(
+    (newOrganization: Organization) => axios.post<Organization>(EUri.ORGANIZATIONS, newOrganization),
+    {
+      onError: () => {
+        snackbar.enqueueSnackbar('Error adding Organization. Please try again!', { variant: 'error' });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries(organizationQueryKeys.organizations());
+      },
+    }
+  );
+};
+
+export const useDeleteOrganization = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(async (organizationId: number) => (await axios.delete(EUri.ORGANIZATIONS + organizationId)).data, {
+    onSettled: () => {
+      queryClient.invalidateQueries(organizationQueryKeys.organizations());
+    },
+  });
 };

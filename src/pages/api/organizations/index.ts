@@ -11,7 +11,8 @@ import Joi from 'joi';
 const organizationPostSchema = {
   body: Joi.object({
     name: Joi.string().required(),
-    parentId: Joi.string().optional().allow(null),
+    shortName: Joi.string().required(),
+    parentId: Joi.number().optional().allow(null),
   }),
 };
 
@@ -32,6 +33,8 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
     }
     case 'POST': {
       const permission = ac.can(req.user.role.name).createAny(EResource.ORGANIZATION);
+
+      console.log(body);
 
       if (!permission.granted) {
         throw new PermissionError();

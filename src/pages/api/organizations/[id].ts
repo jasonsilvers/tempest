@@ -1,73 +1,33 @@
 import { NextApiResponse } from 'next';
-import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { findOrganizationById } from '../../../repositories/organizationRepo';
-import { getAc } from '../../../middleware/utils';
-import { EResource } from '../../../const/enums';
-import { getIncludesQueryArray } from '../../../utils/includeQuery';
-import { Permission } from 'accesscontrol';
-import { isOrgChildOf } from '../../../utils/isOrgChildOf';
-import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
+import {
+  deleteOrganizationAction,
+  getOrganizationAction,
+  ITempestOrganizationIdApiRequest,
+} from '../../../controllers/organizationController';
+import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-
-interface ITempestOrganizationIdApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
-  query: {
-    id: string;
-    include: string | string[];
-  };
-}
-
-enum EOrganizationIdIncludes {
-  USERS = 'users',
-  CHILDREN = 'children',
-}
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 
 export const organizationIdApiHandler = async (
   req: ITempestOrganizationIdApiRequest<LoggedInUser>,
   res: NextApiResponse
 ) => {
-  const {
-    method,
-    query: { id, include },
-  } = req;
-
-  if (method !== 'GET') {
-    throw new MethodNotAllowedError(method);
-  }
-
-  const includesQuery = getIncludesQueryArray(include);
-
-  const ac = await getAc();
-  const bodyOrgId = parseInt(id);
-
-  const organization = await findOrganizationById(bodyOrgId, {
-    withChildren: includesQuery.includes(EOrganizationIdIncludes.CHILDREN),
-    withUsers: includesQuery.includes(EOrganizationIdIncludes.USERS),
-  });
-
-  if (!organization) {
-    throw new NotFoundError();
-  }
-
-  let permission: Permission;
-
-  if (bodyOrgId !== req.user.organizationId) {
-    const isChild = isOrgChildOf(bodyOrgId, req.user.organizationId);
-    if (isChild) {
-      permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
-    } else {
-      permission = ac.can(req.user.role.name).readAny(EResource.ORGANIZATION);
+  switch (req.method) {
+    case 'GET': {
+      return getOrganizationAction(req, res);
     }
-  } else {
-    permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
-  }
 
-  if (!permission.granted) {
-    throw new PermissionError();
-  }
+    // case 'PUT': {
+    //   return putUserAction(req, res);
+    // }
 
-  res.status(200);
-  res.json(organization);
+    case 'DELETE': {
+      return deleteOrganizationAction(req, res);
+    }
+
+    default:
+      throw new MethodNotAllowedError(req.method);
+  }
 };
 
 export default withTempestHandlers(organizationIdApiHandler, findUserByEmail);
