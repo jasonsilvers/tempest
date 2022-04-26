@@ -1,5 +1,5 @@
 import { useCreateOrg, useDeleteOrganization, useOrgs } from '../../hooks/api/organizations';
-import { DataGrid, GridActionsCellItem, GridColumns } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridColumns, GridRowParams } from '@mui/x-data-grid';
 
 import 'twin.macro';
 import { useMemo, useState } from 'react';
@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay } from '../../lib/ui';
 import Joi from 'joi';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldError, useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 
 const organizationSchema = Joi.object({
@@ -36,6 +36,28 @@ const ShowLoadingOverlay = ({ showLoading }: { showLoading: boolean }) => {
   return null;
 };
 
+type FormErrors = {
+  name?: FieldError;
+  shortName?: FieldError;
+  parentId?: FieldError;
+};
+
+type DirtyFormFields = {
+  name?: boolean;
+  shortName?: boolean;
+  parentId?: boolean;
+};
+
+type InputVariant = 'name' | 'shortName' | 'parentId';
+
+const determineInputLabelColor = (errors: FormErrors, dirtyFields: DirtyFormFields, variant: InputVariant) => {
+  return errors[variant] || !dirtyFields[variant] ? '#d3302f' : 'black';
+};
+
+const InputHelperText = ({ errors, variant }: { errors: FormErrors; variant: InputVariant }) => {
+  return <FormHelperText>{errors[variant] ? errors[variant].message : null}</FormHelperText>;
+};
+
 export const OrganizationList = () => {
   const { data: orgs, isLoading } = useOrgs();
   const createOrg = useCreateOrg();
@@ -47,7 +69,6 @@ export const OrganizationList = () => {
     control,
     register,
     reset,
-
     handleSubmit,
     formState: { errors, dirtyFields },
   } = useForm({
@@ -58,6 +79,31 @@ export const OrganizationList = () => {
       parentId: -1,
     },
   });
+
+  const deleteCellAction = (params: GridRowParams) => {
+    const disabled = params.row._count.users > 0 || params.row._count.children > 0;
+
+    return [
+      // eslint-disable-next-line react/jsx-key
+      <GridActionsCellItem
+        icon={<DeleteIcon />}
+        label="Delete"
+        disabled={disabled}
+        onClick={() => {
+          deleteOrg.mutate(params.row.id, {
+            onSuccess: () => {
+              enqueueSnackbar('Organization Deleted', { variant: 'success' });
+            },
+            onError: (error: { response: { status: number; data: { message: string } } }) => {
+              if (error.response.status === 409) {
+                enqueueSnackbar(error.response.data.message, { variant: 'error' });
+              }
+            },
+          });
+        }}
+      />,
+    ];
+  };
 
   const columns: GridColumns<Organization> = useMemo(
     () => [
@@ -76,30 +122,7 @@ export const OrganizationList = () => {
         field: 'actions',
         type: 'actions',
         width: 150,
-        getActions: (params) => {
-          const disabled = params.row._count.users > 0 || params.row._count.children > 0 ? true : false;
-
-          return [
-            // eslint-disable-next-line react/jsx-key
-            <GridActionsCellItem
-              icon={<DeleteIcon />}
-              label="Delete"
-              disabled={disabled}
-              onClick={() => {
-                deleteOrg.mutate(params.row.id, {
-                  onSuccess: () => {
-                    enqueueSnackbar('Organization Deleted', { variant: 'success' });
-                  },
-                  onError: (error: { response: { status: number; data: { message: string } } }) => {
-                    if (error.response.status === 409) {
-                      enqueueSnackbar(error.response.data.message, { variant: 'error' });
-                    }
-                  },
-                });
-              }}
-            />,
-          ];
-        },
+        getActions: deleteCellAction,
       },
     ],
     []
@@ -153,17 +176,17 @@ export const OrganizationList = () => {
           <DialogContent tw="min-height[220px]">
             <div tw="flex flex-col space-y-10">
               <FormControl fullWidth error={!!errors.name}>
-                <Typography sx={{ color: errors.name || !dirtyFields.name ? '#d3302f' : 'black' }}>* Name</Typography>
+                <Typography sx={{ color: determineInputLabelColor(errors, dirtyFields, 'name') }}>* Name</Typography>
                 <TextField
                   error={!!errors.name}
                   fullWidth
                   size="small"
                   inputProps={{ ...register('name'), 'aria-label': 'name' }}
                 />
-                <FormHelperText>{errors.name ? errors.name.message : null}</FormHelperText>
+                <InputHelperText errors={errors} variant="name" />
               </FormControl>
               <FormControl fullWidth error={!!errors.shortName}>
-                <Typography sx={{ color: errors.shortName || !dirtyFields.shortName ? '#d3302f' : 'black' }}>
+                <Typography sx={{ color: determineInputLabelColor(errors, dirtyFields, 'shortName') }}>
                   * Short Name
                 </Typography>
                 <TextField
@@ -172,7 +195,7 @@ export const OrganizationList = () => {
                   size="small"
                   inputProps={{ ...register('shortName'), 'aria-label': 'shortName' }}
                 />
-                <FormHelperText>{errors.shortName ? errors.shortName.message : null}</FormHelperText>
+                <InputHelperText errors={errors} variant="shortName" />
               </FormControl>
               <FormControl fullWidth error={!!errors.parentId}>
                 <Typography sx={{ color: errors.parentId ? '#d3302f' : 'black' }}>Parent Organization</Typography>
@@ -195,7 +218,7 @@ export const OrganizationList = () => {
                   )}
                 />
 
-                <FormHelperText>{errors.parentId ? errors.parentId.message : null}</FormHelperText>
+                <InputHelperText errors={errors} variant="parentId" />
               </FormControl>
             </div>
           </DialogContent>
