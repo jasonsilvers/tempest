@@ -22,7 +22,7 @@ const TabPanel = (props: ITabPanelProps) => {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
     >
-      {value === index && <div tw="p-2">{children}</div>}
+      {value === index ? <div tw="p-2">{children}</div> : null}
     </div>
   );
 };

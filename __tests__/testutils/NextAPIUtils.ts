@@ -82,7 +82,7 @@ const baseTestNextApi = async (
         }
       : { Authorization: `Bearer` };
 
-    const base = urlParams.charAt[0] === '?' ? '/api/whocares' : '/api/whocares/';
+    const base = urlParams.charAt[0] === '?' ? '/api/nexttester' : '/api/nexttester/';
 
     let responsePromise;
     await fetch(url + base + urlParams, {

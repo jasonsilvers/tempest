@@ -2,6 +2,7 @@ import { Grant } from '@prisma/client';
 import dayjs from 'dayjs';
 import 'whatwg-fetch';
 import { Devtools } from '../../src/components/Devtools';
+import { OrganizationList } from '../../src/components/Devtools/OrganizationList';
 import { ERole, EUri } from '../../src/const/enums';
 import { grants } from '../../src/const/grants';
 import { rest, server } from '../testutils/mocks/msw';
@@ -59,7 +60,7 @@ const getUsers = (userList = users) =>
 // Establish API mocking before tests.
 beforeEach(() => {
   server.listen({
-    onUnhandledRequest: 'bypass',
+    onUnhandledRequest: 'error',
   });
 
   server.use(
@@ -268,10 +269,7 @@ test('should show logs', async () => {
 });
 
 test('should show organizations', async () => {
-  const screen = render(<Devtools />);
-
-  const orgTab = await screen.findByRole('tab', { name: 'Organizations' });
-  fireEvent.click(orgTab);
+  const screen = render(<OrganizationList />);
 
   expect(await screen.findByText(/15th mdg/i)).toBeInTheDocument();
 });
@@ -283,11 +281,11 @@ test('should delete a organization', async () => {
     })
   );
 
-  const screen = render(<Devtools />);
+  const screen = render(<OrganizationList />);
 
-  const orgTab = await screen.findByRole('tab', { name: 'Organizations' });
-  fireEvent.click(orgTab);
-  const row = await screen.findByRole('row', {
+  expect(await screen.findByText(/15th mdg/i)).toBeInTheDocument();
+
+  const row = screen.getByRole('row', {
     name: /organization 2/i,
   });
 
@@ -316,10 +314,7 @@ test('should not be able to delete org with children or users', async () => {
     })
   );
 
-  const screen = render(<Devtools />);
-
-  const orgTab = await screen.findByRole('tab', { name: 'Organizations' });
-  fireEvent.click(orgTab);
+  const screen = render(<OrganizationList />);
 
   const row = await screen.findByRole('row', {
     name: /organization 2/i,
@@ -328,6 +323,8 @@ test('should not be able to delete org with children or users', async () => {
   const deleteButton = within(row).getByTestId('DeleteIcon');
 
   fireEvent.click(deleteButton);
+
+  await waitFor(() => screen.findByRole('alert'));
 });
 
 test('should add new organization', async () => {
@@ -337,10 +334,7 @@ test('should add new organization', async () => {
     })
   );
 
-  const screen = render(<Devtools />);
-
-  const orgTab = await screen.findByRole('tab', { name: 'Organizations' });
-  fireEvent.click(orgTab);
+  const screen = render(<OrganizationList />);
 
   const addIcon = await screen.findByTestId('AddIcon');
 
