@@ -363,7 +363,7 @@ test('should add new organization', async () => {
   fireEvent.click(addIcon);
 
   const closeIcon = screen.getByRole('button', {
-    name: /dialog\-close\-button/i,
+    name: /dialog-close-button/i,
   });
 
   fireEvent.click(closeIcon);
@@ -371,7 +371,7 @@ test('should add new organization', async () => {
   fireEvent.click(addIcon);
 
   const nameInput = screen.getByRole('textbox', {
-    name: /name\-input/i,
+    name: /name-input/i,
   });
 
   const shortNameInput = screen.getByRole('textbox', {

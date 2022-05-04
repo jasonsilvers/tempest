@@ -1,11 +1,4 @@
-import { useCreateOrg, useDeleteOrganization, useOrgs } from '../../hooks/api/organizations';
-import { DataGrid, GridActionsCellItem, GridColumns, GridRowModel, GridRowParams } from '@mui/x-data-grid';
-
-import 'twin.macro';
-import { useCallback, useMemo, useState } from 'react';
-import { useSnackbar } from 'notistack';
-import { AddIcon, Close, DeleteIcon } from '../../assets/Icons';
-import { Organization } from '@prisma/client';
+import { joiResolver } from '@hookform/resolvers/joi';
 import {
   Button,
   Fab,
@@ -17,10 +10,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay } from '../../lib/ui';
+import { DataGrid, GridActionsCellItem, GridColumns, GridRowParams } from '@mui/x-data-grid';
+import { Organization } from '@prisma/client';
 import Joi from 'joi';
+import { useSnackbar } from 'notistack';
+import { useMemo, useState } from 'react';
 import { Controller, FieldError, useForm } from 'react-hook-form';
-import { joiResolver } from '@hookform/resolvers/joi';
+import 'twin.macro';
+import { AddIcon, Close, DeleteIcon } from '../../assets/Icons';
+import { useCreateOrg, useDeleteOrganization, useOrgs } from '../../hooks/api/organizations';
+import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay } from '../../lib/ui';
 
 const organizationSchema = Joi.object({
   name: Joi.string().required(),

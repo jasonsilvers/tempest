@@ -1,13 +1,10 @@
+import { Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
-import tw from 'twin.macro';
-import { SecurityIcon } from '../../assets/Icons';
-import { ERole } from '../../const/enums';
-import { usePermissions } from '../../hooks/usePermissions';
-import { Button, Drawer, Fab, Tab, Tabs } from '@mui/material';
-import { Users } from './Users';
-import { Logs } from './Logs';
 import { Grants } from './Grants';
+import { Logs } from './Logs';
 import { OrganizationList } from './OrganizationList';
+import { Users } from './Users';
+import 'twin.macro';
 
 interface ITabPanelProps {
   children?: React.ReactNode;
