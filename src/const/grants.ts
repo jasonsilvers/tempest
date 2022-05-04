@@ -197,6 +197,18 @@ const organizationGrants: Grants[] = [
     role: ERole.ADMIN,
   },
   {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.DELETE_ANY,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.ADMIN,
+  },
+  {
     action: EAction.READ_ANY,
     attributes: '*',
     resource: EResource.ROLE,

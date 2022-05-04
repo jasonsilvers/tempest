@@ -28,6 +28,10 @@ export async function deleteOrganization(organizationId: number) {
   return prisma.organization.delete({ where: { id: organizationId } });
 }
 
+export async function updateOrganization(organizationId: number, organization: Partial<Organization>) {
+  return prisma.organization.update({ where: { id: organizationId }, data: organization });
+}
+
 export async function getOrganizationTree(organizationId: number) {
   return prisma.$queryRaw<Organization[]>(
     Prisma.sql`

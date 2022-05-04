@@ -8,7 +8,12 @@ import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import organizationsIdApiHandler from '../../../src/pages/api/organizations/[id]';
 import { testNextApi } from '../../testutils/NextAPIUtils';
-import { findOrganizationById, OrganizationWithChildren } from '../../../src/repositories/organizationRepo';
+import {
+  deleteOrganization,
+  findOrganizationById,
+  OrganizationWithChildren,
+  updateOrganization,
+} from '../../../src/repositories/organizationRepo';
 import { User } from '@prisma/client';
 import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';
 
@@ -171,7 +176,28 @@ test('should return 404 if record not found', async () => {
   expect(status).toBe(404);
 });
 
-test('should only allow get', async () => {
+test('should return 403 if not allowed to update organization', async () => {
+  mockMethodAndReturn(updateOrganization, organizationWithNoChildren);
+
+  const { status } = await testNextApi.put(organizationsIdApiHandler, {
+    urlId: '2',
+    body: { shortName: 'testUpdate' },
+  });
+
+  expect(status).toBe(403);
+});
+
+test('should return 403 if not allowed to delete organization', async () => {
+  mockMethodAndReturn(deleteOrganization, organizationWithNoChildren);
+
+  const { status } = await testNextApi.delete(organizationsIdApiHandler, {
+    urlId: '2',
+  });
+
+  expect(status).toBe(403);
+});
+
+test('should not allow post', async () => {
   mockMethodAndReturn(findOrganizationById, organizationWithChildren);
   const { status } = await testNextApi.post(organizationsIdApiHandler, { body: {} });
 

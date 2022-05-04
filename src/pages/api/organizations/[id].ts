@@ -3,6 +3,7 @@ import {
   deleteOrganizationAction,
   getOrganizationAction,
   ITempestOrganizationIdApiRequest,
+  putOrganizationAction,
 } from '../../../controllers/organizationController';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
@@ -17,9 +18,9 @@ export const organizationIdApiHandler = async (
       return getOrganizationAction(req, res);
     }
 
-    // case 'PUT': {
-    //   return putUserAction(req, res);
-    // }
+    case 'PUT': {
+      return putOrganizationAction(req, res);
+    }
 
     case 'DELETE': {
       return deleteOrganizationAction(req, res);

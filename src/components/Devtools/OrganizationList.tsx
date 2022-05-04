@@ -1,8 +1,8 @@
 import { useCreateOrg, useDeleteOrganization, useOrgs } from '../../hooks/api/organizations';
-import { DataGrid, GridActionsCellItem, GridColumns, GridRowParams } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridColumns, GridRowModel, GridRowParams } from '@mui/x-data-grid';
 
 import 'twin.macro';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { AddIcon, Close, DeleteIcon } from '../../assets/Icons';
 import { Organization } from '@prisma/client';
@@ -81,7 +81,7 @@ export const OrganizationList = () => {
   });
 
   const deleteCellAction = (params: GridRowParams) => {
-    const disabled = params.row._count.users > 0 || params.row._count.children > 0;
+    const disabled = params.row?._count?.users > 0 || params.row?._count?.children > 0;
 
     return [
       // eslint-disable-next-line react/jsx-key
@@ -135,6 +135,8 @@ export const OrganizationList = () => {
       parentId: data.parentId === -1 ? null : data.parentId,
     };
 
+    setIsSavingOrg(true);
+
     createOrg.mutate(newOrg as Organization, {
       onSuccess: () => {
         enqueueSnackbar('Added Organization', { variant: 'success' });
@@ -152,7 +154,7 @@ export const OrganizationList = () => {
   return (
     <div>
       <div tw="h-[500px] pb-10">
-        <DataGrid rows={orgs} columns={columns} experimentalFeatures={{ newEditingApi: true }} />
+        <DataGrid rows={orgs} columns={columns} disableVirtualization />
       </div>
       <div tw="flex justify-center">
         <Fab color="secondary" onClick={() => setDialogIsOpen(true)}>
@@ -181,7 +183,7 @@ export const OrganizationList = () => {
                   error={!!errors.name}
                   fullWidth
                   size="small"
-                  inputProps={{ ...register('name'), 'aria-label': 'name' }}
+                  inputProps={{ ...register('name'), 'aria-label': 'name-input' }}
                 />
                 <InputHelperText errors={errors} variant="name" />
               </FormControl>
@@ -198,7 +200,7 @@ export const OrganizationList = () => {
                 <InputHelperText errors={errors} variant="shortName" />
               </FormControl>
               <FormControl fullWidth error={!!errors.parentId}>
-                <Typography sx={{ color: errors.parentId ? '#d3302f' : 'black' }}>Parent Organization</Typography>
+                <Typography>Parent Organization</Typography>
                 <Controller
                   name="parentId"
                   control={control}

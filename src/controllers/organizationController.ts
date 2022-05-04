@@ -5,7 +5,7 @@ import { NextApiResponse } from 'next';
 import { EResource, ITempestApiError } from '../const/enums';
 import { getAc } from '../middleware/utils';
 import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
-import { deleteOrganization, findOrganizationById } from '../repositories/organizationRepo';
+import { deleteOrganization, findOrganizationById, updateOrganization } from '../repositories/organizationRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { getIncludesQueryArray } from '../utils/includeQuery';
 import { isOrgChildOf } from '../utils/isOrgChildOf';
@@ -70,7 +70,7 @@ export const deleteOrganizationAction = async (
   res: NextApiResponse<Organization | ITempestApiError>
 ) => {
   const { query, user } = req;
-  const organizationId = query.id as string;
+  const organizationId = query.id;
   const organizationIdParam = parseInt(organizationId);
   const ac = await getAc();
 
@@ -97,4 +97,26 @@ export const deleteOrganizationAction = async (
   await deleteOrganization(organizationIdParam);
 
   res.status(200).json({ message: 'ok' });
+};
+
+export const putOrganizationAction = async (
+  req: ITempestOrganizationIdApiRequest<LoggedInUser>,
+  res: NextApiResponse<Organization | ITempestApiError>
+) => {
+  const { query, body, user } = req;
+  const organizationId = query.id;
+  const organizationIdParam = parseInt(organizationId);
+  const ac = await getAc();
+
+  const permission = ac.can(user.role.name).updateAny(EResource.ORGANIZATION);
+
+  if (!permission.granted) {
+    throw new PermissionError();
+  }
+
+  const filteredData = permission.filter(body);
+
+  const updatedOrganization = await updateOrganization(organizationIdParam, filteredData);
+
+  res.status(200).json(updatedOrganization);
 };

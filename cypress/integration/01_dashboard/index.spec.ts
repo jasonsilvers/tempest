@@ -11,6 +11,13 @@ describe('Can view Global Tracking Items', () => {
   });
 
   it('should show list of users in organization', () => {
+
+    cy.findByRole('button', {
+      name: /rows per page: 10/i
+    }).click()
+    cy.findByRole('option', {
+      name: /100/i
+    }).click()
     cy.findByText(/member, sam/i, { timeout: 10000 }).should('exist');
     cy.findByText(/member, scarlet/i, { timeout: 10000 }).should('exist');
     cy.findByText(/monitor, frank/i, { timeout: 10000 }).should('exist');

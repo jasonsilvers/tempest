@@ -1,5 +1,5 @@
 import React from 'react';
-import { BasicTabs } from '../components/Devtools';
+import { Devtools } from '../components/Devtools';
 import { EFuncAction, EResource } from '../const/enums';
 import { usePermissions } from '../hooks/usePermissions';
 import { Card } from '../lib/ui';
@@ -20,7 +20,7 @@ function AdminPage() {
   return (
     <main tw="pr-14 min-width[1024px]">
       <Card>
-        <BasicTabs />
+        <Devtools />
       </Card>
     </main>
   );

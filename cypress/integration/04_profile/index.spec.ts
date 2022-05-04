@@ -25,6 +25,12 @@ describe('Member role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
+     cy.findByRole('button', {
+      name: /rows per page: 10/i
+    }).click()
+    cy.findByRole('option', {
+      name: /100/i
+    }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
       .within((elem) => {
@@ -64,6 +70,12 @@ describe('Member role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
+     cy.findByRole('button', {
+      name: /rows per page: 10/i
+    }).click()
+    cy.findByRole('option', {
+      name: /100/i
+    }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
       .within((elem) => {
@@ -101,6 +113,12 @@ describe('Member role', () => {
 describe('Monitor role', () => {
   it('should show training record for selected member', () => {
     cy.loginAsMonitor();
+     cy.findByRole('button', {
+      name: /rows per page: 10/i
+    }).click()
+    cy.findByRole('option', {
+      name: /100/i
+    }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
       .within((elem) => {
@@ -123,6 +141,12 @@ describe('Monitor role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
+    cy.findByRole('button', {
+      name: /rows per page: 10/i
+    }).click()
+    cy.findByRole('option', {
+      name: /100/i
+    }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
       .within((elem) => {
