@@ -325,20 +325,6 @@ test('should not be able to delete org with children or users', async () => {
     name: /organization 2/i,
   });
 
-  server.use(
-    rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          organizations: [
-            { id: 1, name: '15th Medical group', shortName: '15th mdg', parentId: null },
-            { id: 2, name: 'organization 2', shortName: 'org 2', parentId: 1 },
-          ],
-        })
-      );
-    })
-  );
-
   const deleteButton = within(row).getByTestId('DeleteIcon');
 
   fireEvent.click(deleteButton);
