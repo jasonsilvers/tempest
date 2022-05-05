@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import prisma from '../prisma/prisma';
 
 export async function findOrganizations() {
-  return prisma.organization.findMany();
+  return prisma.organization.findMany({ include: { _count: { select: { users: true, children: true } } } });
 }
 
 export async function findOrganizationById(
@@ -22,6 +22,14 @@ export async function createOrganizations(organization: Organization) {
   return prisma.organization.create({
     data: organization,
   });
+}
+
+export async function deleteOrganization(organizationId: number) {
+  return prisma.organization.delete({ where: { id: organizationId } });
+}
+
+export async function updateOrganization(organizationId: number, organization: Partial<Organization>) {
+  return prisma.organization.update({ where: { id: organizationId }, data: organization });
 }
 
 export async function getOrganizationTree(organizationId: number) {
