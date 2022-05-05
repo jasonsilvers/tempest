@@ -10,7 +10,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { DataGrid, GridActionsCellItem, GridColumns, GridRowParams } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridColumns, GridRowParams, GridValueGetterParams } from '@mui/x-data-grid';
 import { Organization } from '@prisma/client';
 import Joi from 'joi';
 import { useSnackbar } from 'notistack';
@@ -48,6 +48,12 @@ type DirtyFormFields = {
 };
 
 type InputVariant = 'name' | 'shortName' | 'parentId';
+
+type OrgFormData = {
+  name: string;
+  shortName: string;
+  parentId: number;
+};
 
 const determineInputLabelColor = (errors: FormErrors, dirtyFields: DirtyFormFields, variant: InputVariant) => {
   return errors[variant] || !dirtyFields[variant] ? '#d3302f' : 'black';
@@ -107,13 +113,13 @@ export const OrganizationList = () => {
   const columns: GridColumns<Organization> = useMemo(
     () => [
       { field: 'id', headerName: 'Id', flex: 1 },
-      { field: 'name', headerName: 'Name', flex: 1, editable: true },
-      { field: 'shortName', headerName: 'Short Name', flex: 1, editable: true },
+      { field: 'name', headerName: 'Name', flex: 1 },
+      { field: 'shortName', headerName: 'Short Name', flex: 1 },
       {
         field: 'parentId',
         headerName: 'Parent',
         flex: 1,
-        valueGetter: (params) => {
+        valueGetter: (params: GridValueGetterParams) => {
           return orgs?.find((org) => org.id === params.value)?.name;
         },
       },
@@ -127,7 +133,7 @@ export const OrganizationList = () => {
     []
   );
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: OrgFormData) => {
     const newOrg = {
       name: data.name,
       shortName: data.shortName,
@@ -153,7 +159,7 @@ export const OrganizationList = () => {
   return (
     <div>
       <div tw="h-[500px] pb-10">
-        <DataGrid rows={orgs} columns={columns} disableVirtualization />
+        <DataGrid rows={orgs} columns={columns} disableVirtualization disableSelectionOnClick />
       </div>
       <div tw="flex justify-center">
         <Fab color="secondary" onClick={() => setDialogIsOpen(true)}>
