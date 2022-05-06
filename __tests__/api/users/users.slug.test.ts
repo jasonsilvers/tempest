@@ -100,10 +100,10 @@ test('GET - should return member tracking items.  member tracking records and tr
   };
   mockMethodAndReturn(findUserByIdWithMemberTrackingItems, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '1/membertrackingitems?include=trackingitem',
+    urlSlug: '1/membertrackingitems?include=all',
   });
 
-  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(1, EUserIncludes.TRACKING_ITEM);
+  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(1, EUserIncludes.ALL);
   expect(status).toBe(200);
   expect(data).toStrictEqual(recordFromDb);
 });
@@ -111,7 +111,7 @@ test('GET - should return member tracking items.  member tracking records and tr
 test('should return 401 if not authorized', async () => {
   const { status } = await testNextApi.get(userSlugHandler, {
     withJwt: false,
-    urlSlug: '/1/membertrackingitems?include=membertrackingrecords',
+    urlSlug: '/1/membertrackingitems?include=all',
   });
 
   expect(status).toBe(401);
@@ -124,7 +124,7 @@ test('should return 403 if not correct permissions', async () => {
     role: { id: '22', name: 'norole' },
   });
   const { status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords',
+    urlSlug: '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=all',
   });
 
   expect(status).toBe(403);

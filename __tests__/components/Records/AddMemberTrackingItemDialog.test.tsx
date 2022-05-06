@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';
 import { UserWithAll } from '../../../src/repositories/userRepo';
 import { QueryClient } from 'react-query';
-import { mtrQueryKeys } from '../../../src/hooks/api/memberTrackingRecord';
+import { mtiQueryKeys } from '../../../src/hooks/api/memberTrackingItem';
 
 // Establish API mocking before tests.
 beforeAll(() => {
@@ -194,10 +194,7 @@ test('should not allow duplicate memberTrackingRecords in progress', async () =>
 
   const singleMemberTrackingRecord = memberTrackingItems[0].memberTrackingRecords[0];
 
-  queryClient.setQueryData(
-    mtrQueryKeys.memberTrackingRecord(singleMemberTrackingRecord.id),
-    singleMemberTrackingRecord
-  );
+  queryClient.setQueryData(mtiQueryKeys.memberTrackingItems(singleMemberTrackingRecord.traineeId), memberTrackingItems);
 
   const Wrapper = createWrapper(queryClient);
 

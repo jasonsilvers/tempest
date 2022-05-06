@@ -1,6 +1,12 @@
-import { MemberTrackingRecord } from '.prisma/client';
+import { MemberTrackingRecord, TrackingItem, User } from '.prisma/client';
 
-export const removeOldCompletedRecords = (memberTrackingRecords: MemberTrackingRecord[]) => {
+type MemberTrackingRecordWithAll = MemberTrackingRecord & {
+  trackingItem: TrackingItem;
+  authority: User;
+  trainee: User;
+};
+
+export const removeOldCompletedRecords = (memberTrackingRecords: MemberTrackingRecordWithAll[]) => {
   const inProgressMemberTrackingRecords = memberTrackingRecords.filter(
     (mtr) => mtr.authoritySignedDate === null || mtr.traineeSignedDate === null || mtr.completedDate === null
   );

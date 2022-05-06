@@ -1,13 +1,12 @@
-import { TrackingItem } from '.prisma/client';
+import { MemberTrackingRecord, TrackingItem, User } from '.prisma/client';
 import React from 'react';
-import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
-import RecordRow, { RecordWithTrackingItem } from '../../../src/components/Records/MemberRecordTracker/RecordRow';
-import { ECategories, EUri } from '../../../src/const/enums';
-import { render, waitFor, waitForLoadingToFinish } from '../../testutils/TempestTestUtils';
-import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 import 'whatwg-fetch';
-import { server, rest } from '../../testutils/mocks/msw';
-import dayjs from 'dayjs';
+import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
+import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
+import RecordRow from '../../../src/components/Records/MemberRecordTracker/RecordRow';
+import { ECategories } from '../../../src/const/enums';
+import { server } from '../../testutils/mocks/msw';
+import { render, waitFor } from '../../testutils/TempestTestUtils';
 
 const trackingItemWithAnnualInterval: TrackingItem = {
   description: 'description',
@@ -16,51 +15,25 @@ const trackingItemWithAnnualInterval: TrackingItem = {
   title: 'Item Title',
 };
 
+const mtr1 = {
+  authorityId: null,
+  id: 1,
+  authoritySignedDate: null,
+  completedDate: null,
+  createdAt: null,
+  order: 0,
+  trackingItemId: 1,
+  traineeId: 1,
+  traineeSignedDate: null,
+  trackingItem: trackingItemWithAnnualInterval,
+} as MemberTrackingRecord & { trackingItem: TrackingItem; trainee: User; authority: User };
+
 // Establish API mocking before tests.
-beforeEach(() => {
+beforeAll(() => {
   server.listen({
     onUnhandledRequest: 'bypass',
   });
-
-  server.use(
-    // return member tracking record with status of 'todo'
-    rest.get(EUri.MEMBER_TRACKING_RECORDS + '1', (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          authorityId: null,
-          id: 1,
-          authoritySignedDate: null,
-          completedDate: null,
-          createdAt: null,
-          order: 0,
-          trackingItemId: 1,
-          traineeId: 1,
-          traineeSignedDate: null,
-          trackingItem: trackingItemWithAnnualInterval,
-        } as RecordWithTrackingItem)
-      );
-    }),
-    rest.get(EUri.MEMBER_TRACKING_RECORDS + 2, (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          authorityId: null,
-          id: 2,
-          authoritySignedDate: dayjs('2021-01-02').toDate(),
-          completedDate: null,
-          createdAt: null,
-          order: 0,
-          trackingItemId: 1,
-          traineeId: 1,
-          traineeSignedDate: null,
-          trackingItem: trackingItemWithAnnualInterval,
-        } as RecordWithTrackingItem)
-      );
-    })
-  );
 });
-
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
 afterEach(() => {
@@ -76,8 +49,7 @@ test('should render default case', async () => {
     setActiveCategory: jest.fn(),
   }));
 
-  const { getByText } = render(<RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithAnnualInterval} />);
-  await waitForLoadingToFinish();
+  const { getByText } = render(<RecordRow memberTrackingRecord={mtr1} trackingItem={trackingItemWithAnnualInterval} />);
   await waitFor(() => getByText(/item title/i));
   expect(getByText(/item title/i)).toBeInTheDocument();
 });
@@ -90,10 +62,8 @@ test('should not render if the category list does not include the active categor
   }));
 
   const { queryByText } = render(
-    <RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithAnnualInterval} />
+    <RecordRow memberTrackingRecord={mtr1} trackingItem={trackingItemWithAnnualInterval} />
   );
-  // give everything time to settle
-  await waitForLoadingToFinish();
   expect(queryByText(/item title/i)).toBeFalsy();
 });
 
@@ -106,11 +76,10 @@ test('should not render if the status is not in the category list', async () => 
 
   const { queryByText } = render(
     <MemberItemTrackerContextProvider categories={[ECategories.ALL]}>
-      <RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithAnnualInterval} />
+      <RecordRow memberTrackingRecord={mtr1} trackingItem={trackingItemWithAnnualInterval} />
     </MemberItemTrackerContextProvider>
   );
-  // give everything time to settle
-  await waitForLoadingToFinish();
+
   expect(queryByText(/item title/i)).toBeFalsy();
 });
 
@@ -122,10 +91,9 @@ test('should not render if the item status does not match active category', asyn
   }));
 
   const { queryByText } = render(
-    <RecordRow memberTrackingRecordId={1} trackingItem={trackingItemWithAnnualInterval} />
+    <RecordRow memberTrackingRecord={mtr1} trackingItem={trackingItemWithAnnualInterval} />
   );
-  // give everything time to settle
-  await waitForLoadingToFinish();
+
   await waitFor(() => queryByText(/item title/i));
   expect(queryByText(/item title/i)).toBeFalsy();
 });

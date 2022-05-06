@@ -10,7 +10,6 @@ import { EFuncAction, EMtrVerb, EResource } from '../../../const/enums';
 import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { LoadingSpinner, TempestDeleteIcon, TempestToolTip } from '../../../lib/ui';
-import { MemberTrackingRecordWithUsers } from '../../../repositories/memberTrackingRepo';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
 import setDomRole from '../../../utils/setDomRole';
 import { ActionButton, DisabledButton, TableData } from '../TwinMacro/Twin';
@@ -21,16 +20,16 @@ type DeterminedActionOnRecord = 'traineeCanSign' | 'authorityCanSign' | 'complet
 
 export const determineActionOnRecord = (
   signee: 'trainee' | 'authority',
-  memberTrackingRecord: MemberTrackingRecordWithUsers,
+  memberTrackingRecord: MemberTrackingRecord,
   signatureType: 'authoritySignedDate' | 'traineeSignedDate',
   loggedInUser: User
 ): DeterminedActionOnRecord => {
   let action: DeterminedActionOnRecord;
   if (!memberTrackingRecord[signatureType]) {
-    if (signee === 'authority' && loggedInUser.id !== memberTrackingRecord.traineeId) {
+    if (signee === 'authority' && loggedInUser?.id !== memberTrackingRecord.traineeId) {
       action = 'authorityCanSign';
     }
-    if (signee === 'trainee' && loggedInUser.id === memberTrackingRecord.traineeId) {
+    if (signee === 'trainee' && loggedInUser?.id === memberTrackingRecord.traineeId) {
       action = 'traineeCanSign';
     }
   }
@@ -69,7 +68,7 @@ const AwaitingSignatureSecondary: React.FC = ({ children }) => (
 
 const getAllowedActions = (
   signee: 'trainee' | 'authority',
-  memberTrackingRecord: MemberTrackingRecordWithUsers,
+  memberTrackingRecord: MemberTrackingRecord,
   signatureType: 'authoritySignedDate' | 'traineeSignedDate',
   loggedInUser: User,
   signRecordFor: UseMutateFunction<
@@ -85,9 +84,9 @@ const getAllowedActions = (
     return 'Fetching Data...';
   }
 
-  const handleSignTrainee = () => {
+  const handleSign = () => {
     signRecordFor(
-      { memberTrackingRecord, userId: loggedInUser.id },
+      { memberTrackingRecord, userId: memberTrackingRecord.traineeId },
       {
         onSuccess: () => {
           enqueueSnackbar('A record was successfully Signed', { variant: 'success' });
@@ -107,7 +106,7 @@ const getAllowedActions = (
   if (determinedAction === 'authorityCanSign' || determinedAction === 'traineeCanSign') {
     return (
       <TableData>
-        <ActionButton tw="h-8 hover:bg-primary" aria-label={setDomRole('Signature Button')} onClick={handleSignTrainee}>
+        <ActionButton tw="h-8 hover:bg-primary" aria-label={setDomRole('Signature Button')} onClick={handleSign}>
           Sign
         </ActionButton>
       </TableData>
@@ -145,7 +144,7 @@ const getAllowedActions = (
 const RecordRowActions: React.FC<{
   authoritySignedDate: Date;
   traineeSignedDate: Date;
-  memberTrackingRecord: MemberTrackingRecordWithUsers;
+  memberTrackingRecord: MemberTrackingRecord & { trainee: User; authority: User };
   disabled: boolean;
 }> = ({ authoritySignedDate, traineeSignedDate, memberTrackingRecord, disabled }) => {
   const { user: LoggedInUser } = useUser<LoggedInUserType>();
@@ -221,7 +220,9 @@ const RecordRowActions: React.FC<{
           <IconButton
             aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
             size="small"
-            onClick={() => deleteRecord(memberTrackingRecord.id)}
+            onClick={() =>
+              deleteRecord({ memberTrackingRecordId: memberTrackingRecord.id, userId: memberTrackingRecord.traineeId })
+            }
             tw="ml-auto mr-3 hover:bg-transparent"
           >
             <TempestDeleteIcon />
@@ -285,7 +286,9 @@ const RecordRowActions: React.FC<{
           }
           aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
           size="small"
-          onClick={() => deleteRecord(memberTrackingRecord.id)}
+          onClick={() =>
+            deleteRecord({ memberTrackingRecordId: memberTrackingRecord.id, userId: memberTrackingRecord.traineeId })
+          }
           tw="ml-auto mr-3 hover:bg-transparent"
         >
           <TempestDeleteIcon />

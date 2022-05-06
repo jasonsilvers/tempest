@@ -62,11 +62,24 @@ export const findUserByIdWithMemberTrackingItems = async (id: number, variant: E
       id,
     },
     include: {
-      memberTrackingItems: {
-        include: {
-          trackingItem: variant === EUserIncludes.TRACKING_ITEM,
-        },
-      },
+      memberTrackingItems:
+        variant === EUserIncludes.ALL
+          ? {
+              include: {
+                trackingItem: true,
+                memberTrackingRecords: {
+                  orderBy: {
+                    order: 'desc',
+                  },
+                  include: {
+                    trackingItem: true,
+                    authority: true,
+                    trainee: true,
+                  },
+                },
+              },
+            }
+          : {},
     },
   });
 };

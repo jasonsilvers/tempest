@@ -33,7 +33,7 @@ describe('Member role', () => {
     }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
-      .within((elem) => {
+      .within(() => {
         cy.findByRole('button', { name: /member-popup-menu/i }).click();
         cy.focused().click();
       });
@@ -78,7 +78,7 @@ describe('Member role', () => {
     }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
-      .within((elem) => {
+      .within(() => {
         cy.findByRole('button', { name: 'member-popup-menu' }).click();
         cy.focused().click();
       });
@@ -121,7 +121,7 @@ describe('Monitor role', () => {
     }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
-      .within((elem) => {
+      .within(() => {
         cy.findByRole('button', { name: 'member-popup-menu' }).click();
         cy.focused().click();
       });
@@ -149,7 +149,7 @@ describe('Monitor role', () => {
     }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
-      .within((elem) => {
+      .within(() => {
         cy.findByRole('button', { name: 'member-popup-menu' }).click();
         cy.focused().click();
       });
@@ -161,6 +161,6 @@ describe('Monitor role', () => {
     cy.findAllByRole('button', { name: /delete-tracking-record-/i }).should('not.be.disabled');
     cy.findByTestId('DeleteIcon').click()
     cy.findByRole('alert').should('be.visible');
-    cy.findByText(/nothing to show/i).should('be.visible')
+
   });
 });

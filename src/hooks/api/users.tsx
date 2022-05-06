@@ -2,13 +2,48 @@ import { Organization, Role, User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { UserWithAll } from '../../repositories/userRepo';
 import { EUri } from '../../const/enums';
+import { MemberTrackingItemWithAll } from '../../repositories/memberTrackingRepo';
+import { UserWithAll } from '../../repositories/userRepo';
 import { UsersDTO } from '../../types';
+import { removeOldCompletedRecords } from '../../utils';
+import { MEMBER_TRACKING_ITEM_RESOURCE, mtiQueryKeys } from './memberTrackingItem';
 
 export const usersQueryKeys = {
   users: () => ['users'],
   member: (id: number) => ['member', id],
+};
+
+const sortMemberTrackingItems = (memberTrackingItems: MemberTrackingItemWithAll[]) => {
+  return memberTrackingItems.sort((mtiA, mtiB) => (mtiA.trackingItem.title >= mtiB.trackingItem.title ? 1 : -1));
+};
+
+export const fetchMemberTrackingItems = async (userId: number): Promise<MemberTrackingItemWithAll[]> => {
+  const { data } = await axios.get<UserWithAll>(EUri.USERS + `${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}?include=all`);
+
+  return sortMemberTrackingItems(data.memberTrackingItems);
+};
+
+/**
+ * Array MTI Query
+ * @param userId
+ * @returns
+ */
+const useMemberTrackingItemsForUser = (userId: number) => {
+  return useQuery<MemberTrackingItemWithAll[], unknown, MemberTrackingItemWithAll[]>(
+    mtiQueryKeys.memberTrackingItems(userId),
+    () => fetchMemberTrackingItems(userId),
+    {
+      enabled: !!userId,
+      select: (memberTrackingItems) => {
+        memberTrackingItems.forEach(
+          (mti) => (mti.memberTrackingRecords = removeOldCompletedRecords(mti.memberTrackingRecords))
+        );
+
+        return memberTrackingItems;
+      },
+    }
+  );
 };
 
 const sortUsers = (userList: UserWithAll[]) => {
@@ -44,4 +79,4 @@ const useUpdateUser = () => {
   );
 };
 
-export { useUsers, useUpdateUser, useMember };
+export { useUsers, useUpdateUser, useMember, useMemberTrackingItemsForUser };
