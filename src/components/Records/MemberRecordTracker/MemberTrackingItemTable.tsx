@@ -26,7 +26,7 @@ const RecordRowSkeleton = () => {
   );
 };
 
-const MemberTrackingRecordSkeleton = tw.div`animate-pulse h-12`;
+const MemberTrackingRecordSkeleton = tw.div`animate-pulse h-40`;
 
 const LoadingSkeleton = () => {
   return (
