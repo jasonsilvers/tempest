@@ -95,7 +95,7 @@ export interface ITempestApiError {
 }
 
 export enum EUserIncludes {
-  TRACKING_ITEM = 'trackingitem',
+  ALL = 'all',
 }
 
 export enum EUserResources {

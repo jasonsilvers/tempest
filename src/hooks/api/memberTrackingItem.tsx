@@ -1,17 +1,8 @@
-import { MemberTrackingItem, TrackingItem } from '.prisma/client';
-import { MemberTrackingRecord } from '@prisma/client';
+import { MemberTrackingItem } from '.prisma/client';
 import axios from 'axios';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { MemberTrackingItemWithAll } from '../../repositories/memberTrackingRepo';
-import { UserWithAll } from '../../repositories/userRepo';
-import { EUri } from '../../const/enums';
-import { removeOldCompletedRecords } from '../../utils';
+import { useMutation, useQueryClient } from 'react-query';
 
-const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
-
-const sortMemberTrackingItems = (memberTrackingItems: MemberTrackingItemWithAll[]) => {
-  return memberTrackingItems.sort((mtiA, mtiB) => (mtiA.trackingItem.title >= mtiB.trackingItem.title ? 1 : -1));
-};
+export const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
 
 export const mtiQueryKeys = {
   memberTrackingItems: (userId: number) => [MEMBER_TRACKING_ITEM_RESOURCE, userId],
@@ -20,64 +11,6 @@ export const mtiQueryKeys = {
     userId,
     trackingItemId,
   ],
-};
-
-export const fetchMemberTrackingItems = async (userId: number): Promise<MemberTrackingItemWithAll[]> => {
-  const { data } = await axios.get<UserWithAll>(
-    EUri.USERS + `${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}?include=trackingitem`
-  );
-
-  return sortMemberTrackingItems(data.memberTrackingItems);
-};
-
-/**
- * Array MTI Query
- * @param userId
- * @returns
- */
-const useMemberTrackingItems = (userId: number) => {
-  return useQuery<MemberTrackingItemWithAll[], unknown, MemberTrackingItem[]>(
-    mtiQueryKeys.memberTrackingItems(userId),
-    () => fetchMemberTrackingItems(userId),
-    {
-      enabled: !!userId,
-    }
-  );
-};
-
-type MemberTrackingItemData = MemberTrackingItem & {
-  trackingItem: TrackingItem;
-  memberTrackingRecords: Pick<MemberTrackingRecord, 'id'>[];
-};
-/**
- * Single MTI Query
- * @param userId
- * @param trackingItemId
- * @returns
- */
-export const useMemberTrackingItem = (userId: number, trackingItemId: number) => {
-  return useQuery<MemberTrackingItemWithAll, unknown, MemberTrackingItemData>(
-    mtiQueryKeys.memberTrackingItem(userId, trackingItemId),
-    () =>
-      axios
-        .get(
-          `/api/${MEMBER_TRACKING_ITEM_RESOURCE}?userId=${userId}&trackingItemId=${trackingItemId}&include=membertrackingrecords&include=trackingitems`
-        )
-        .then((response) => response.data),
-    {
-      enabled: !!userId && !!trackingItemId,
-      select: (memberTrackingItem): MemberTrackingItemData => {
-        const memberTrackingRecordList = removeOldCompletedRecords(memberTrackingItem.memberTrackingRecords).map(
-          (i) => ({ id: i?.id })
-        );
-
-        return {
-          ...memberTrackingItem,
-          memberTrackingRecords: memberTrackingRecordList,
-        };
-      },
-    }
-  );
 };
 
 const useCreateMemberTrackingItemAndRecord = () => {
@@ -100,4 +33,4 @@ const useCreateMemberTrackingItemAndRecord = () => {
   );
 };
 
-export { useMemberTrackingItems, useCreateMemberTrackingItemAndRecord };
+export { useCreateMemberTrackingItemAndRecord };

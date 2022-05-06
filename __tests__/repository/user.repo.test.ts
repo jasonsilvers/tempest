@@ -141,7 +141,7 @@ test('should findUserByIdReturnAllIncludes', async () => {
 
 test('should findUserByIdWithMemberTrackingItems', async () => {
   const spy = prisma.user.findUnique.mockImplementationOnce(() => mockUser);
-  const result = await findUserByIdWithMemberTrackingItems(1, EUserIncludes.TRACKING_ITEM);
+  const result = await findUserByIdWithMemberTrackingItems(1, EUserIncludes.ALL);
   expect(spy).toHaveBeenCalledWith({
     where: {
       id: 1,
@@ -150,6 +150,16 @@ test('should findUserByIdWithMemberTrackingItems', async () => {
       memberTrackingItems: {
         include: {
           trackingItem: true,
+          memberTrackingRecords: {
+            include: {
+              authority: true,
+              trackingItem: true,
+              trainee: true,
+            },
+            orderBy: {
+              order: 'desc',
+            },
+          },
         },
       },
     },

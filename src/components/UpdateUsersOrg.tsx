@@ -30,7 +30,6 @@ export const UpdateUsersOrg = ({
     }
     // if no onchange function execute update on change of org id
     if (!onChange && selectedOrg.id !== userOrganizationId) {
-      console.log('It is updating the user');
       const updatedUser = {
         id: userId,
         organizationId: selectedOrg.id,
