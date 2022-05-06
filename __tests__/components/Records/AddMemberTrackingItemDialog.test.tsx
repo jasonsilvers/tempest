@@ -17,7 +17,6 @@ import dayjs from 'dayjs';
 import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';
 import { UserWithAll } from '../../../src/repositories/userRepo';
 import { QueryClient } from 'react-query';
-import { mtrQueryKeys } from '../../../src/hooks/api/memberTrackingRecord';
 import { mtiQueryKeys } from '../../../src/hooks/api/memberTrackingItem';
 
 // Establish API mocking before tests.
