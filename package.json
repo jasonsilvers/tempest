@@ -39,7 +39,7 @@
     "shell-quote": "1.7.3",
     "node-fetch": "2.6.7",
     "follow-redirects": "1.14.8",
-    "superjson": "1.8.1",
+    "superjson": "1.9.1",
     "minimist": "1.2.6",
     "qs": "6.10.3",
     "moment": "2.29.2",
