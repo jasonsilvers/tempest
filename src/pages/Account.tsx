@@ -70,8 +70,8 @@ function a11yProps(index: number) {
 
 const workFormSchema = Joi.object({
   organization: Joi.required(),
-  dutyTitle: Joi.string().optional(),
-  afsc: Joi.string().optional(),
+  dutyTitle: Joi.string().optional().allow(''),
+  afsc: Joi.string().optional().allow(''),
 });
 
 const WorkForm = ({ user }: { user: LoggedInUser }) => {
