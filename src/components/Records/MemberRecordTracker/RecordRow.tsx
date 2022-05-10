@@ -59,6 +59,14 @@ const RecordRow: React.FC<{
   const [modalState, setModalState] = useState({ open: false, date: null });
 
   const handleMutation = (date?: Dayjs) => {
+    if (date && !date.isValid()) {
+      return;
+    }
+
+    if (date && date?.toISOString() === memberTrackingRecord.completedDate?.toString()) {
+      return;
+    }
+
     const updatedMemberTrackingRecord = {
       ...memberTrackingRecord,
       completedDate: date ?? modalState.date,
@@ -67,7 +75,7 @@ const RecordRow: React.FC<{
       { memberTrackingRecord: updatedMemberTrackingRecord, userId: memberTrackingRecord.traineeId },
       {
         onSettled: async () => {
-          enqueueSnackbar('Completion date updated, Signatures cleared', { variant: 'success' });
+          enqueueSnackbar('Completion date updated', { variant: 'success' });
         },
         // currently not firing onError.
         // see https://react-query.tanstack.com/guides/mutations#mutation-side-effects for doc on how it should work.
