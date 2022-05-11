@@ -7,9 +7,13 @@ import { ERole } from '../const/enums';
 
 import 'twin.macro';
 import { AuthenticatingApp } from '../components/AuthenticatingApp';
+import { useQueryClient } from 'react-query';
+import { fetchMemberTrackingItems } from '../hooks/api/users';
+import { mtiQueryKeys } from '../hooks/api/memberTrackingItem';
 
 function Home() {
   const { user, isLoading } = useUser<LoggedInUser>();
+  const queryClient = useQueryClient();
   const router = useRouter();
 
   if (!user && !isLoading) {
@@ -21,6 +25,7 @@ function Home() {
   }
 
   if (user && user.role?.name === ERole.MEMBER && user.organizationId) {
+    queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(user.id), () => fetchMemberTrackingItems(user.id));
     router.push(`/Profile/${user.id}`);
   }
 
