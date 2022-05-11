@@ -268,6 +268,48 @@ test('should show logs', async () => {
   expect(getByText(/Successful Login/)).toBeInTheDocument();
 });
 
+test('should show logs and not error when name is null ', async () => {
+  server.use(
+    rest.get(EUri.LOGS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          logEvents: [
+            {
+              id: 1,
+              userId: '51c59467-516d-48f6-92ea-0623137378c0',
+              logEventType: 'API_ACCESS',
+              createdAt: '2021-10-20T17:19:34.634Z',
+              message: 'URI: /api/login Method: GET',
+              user: null,
+            },
+            {
+              id: 2,
+              userId: null,
+              logEventType: 'LOGIN',
+              createdAt: '2021-10-20T17:19:35.361Z',
+              message: null,
+              user: {
+                firstName: 'Joe',
+                lastName: 'smith',
+              },
+            },
+          ],
+        })
+      );
+    })
+  );
+
+  const { findByRole, getByText } = render(<Devtools />);
+
+  const logTab = await findByRole('tab', { name: 'Log Data' });
+  fireEvent.click(logTab);
+
+  await waitForLoadingToFinish();
+
+  expect(getByText(/joe smith/i)).toBeInTheDocument();
+});
+
 test('should show organizations', async () => {
   const screen = render(<OrganizationList />);
 

@@ -17,7 +17,7 @@ const Logs = () => {
         headerName: 'User',
         field: 'name',
         valueGetter: (params) => {
-          return `${params.row.user.firstName} ${params.row.user.lastName}`;
+          return `${params.row.user?.firstName} ${params.row.user?.lastName}`;
         },
         flex: 1,
       },
