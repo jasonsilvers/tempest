@@ -19,6 +19,9 @@ import { useRouter } from 'next/router';
 import React, { CSSProperties } from 'react';
 import tw, { styled } from 'twin.macro';
 import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
+import { mtiQueryKeys } from '../hooks/api/memberTrackingItem';
+import { fetchMemberTrackingItems } from '../hooks/api/users';
+import { useQueryClient } from 'react-query';
 
 const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 
@@ -64,9 +67,21 @@ const TempestToolTip = styled(({ className, ...props }) => <Tooltip {...props} c
 export default function DashboardPopMenu({ userId }: { userId: number }) {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const queryClient = useQueryClient();
+
+  const prefetchUserTrainingRecord = (userIdToFetch: number) => {
+    queryClient.prefetchQuery(
+      mtiQueryKeys.memberTrackingItems(userIdToFetch),
+      () => fetchMemberTrackingItems(userIdToFetch),
+      {
+        staleTime: 5000,
+      }
+    );
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
+    prefetchUserTrainingRecord(userId);
   };
 
   const handleClose = () => {

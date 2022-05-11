@@ -173,6 +173,7 @@ const filterReducer = (state: IDashboardState, action: Actions): IDashboardState
 const DashboardPage: React.FC = () => {
   const { user: loggedInUser, permissionCheck, isLoading } = usePermissions();
   const users = useUsers();
+
   const [dashboardState, dispatch] = useReducer(filterReducer, {
     userList: [],
     filteredUserList: [],
