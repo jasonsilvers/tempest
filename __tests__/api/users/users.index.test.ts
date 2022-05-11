@@ -3,7 +3,7 @@
  */
 
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByEmail, findUsers, getAllUsersFromUsersOrgCascade } from '../../../src/repositories/userRepo';
+import { findUserByEmail, getAllUsersFromUsersOrgCascade, getUsers } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { testNextApi } from '../../testutils/NextAPIUtils';
@@ -56,7 +56,7 @@ test('should return users', async () => {
 });
 
 test('should not allow post', async () => {
-  mockMethodAndReturn(findUsers, [userFromDb]);
+  mockMethodAndReturn(getUsers, [userFromDb]);
   const { status } = await testNextApi.post(userHandler, { body: {} });
   expect(status).toEqual(405);
 });
@@ -64,7 +64,7 @@ test('should not allow post', async () => {
 test('should return permission denied with bad grants', async () => {
   /*eslint-disable */
   const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-  mockMethodAndReturn(findUsers, [userFromDb]);
+  mockMethodAndReturn(getUsers, [userFromDb]);
   mockMethodAndReturn(findGrants, null);
   const { status } = await testNextApi.get(userHandler);
   expect(status).toEqual(500);

@@ -97,32 +97,30 @@ export const findUserByEmail = async (email: string) => {
 };
 
 /**
- * Get user method to query the PSQL db though tπuhe prisma client
- *
- * @param query unique db id
- * @returns UserWithRole
- */
-
-export const findUsers = async () => {
-  return prisma.user.findMany({
-    include: {
-      role: true,
-      organization: true,
-    },
-  });
-};
-
-/**
  * Get user method to query the PSQL db though the prisma client
  *
  * @returns User[]
  */
-export const getUsers = async () => prisma.user.findMany();
+export const getUsers = async () =>
+  prisma.user.findMany({
+    include: {
+      role: true,
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: true,
+        },
+      },
+    },
+  });
 
 export const getUsersWithMemberTrackingRecordsByOrgId = async (organizationId: number) => {
   return prisma.user.findMany({
     where: {
       organizationId,
+    },
+    orderBy: {
+      lastName: 'asc',
     },
     include: {
       role: true,

@@ -1,10 +1,15 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { EResource } from '../../../const/enums';
+import { EResource, ERole } from '../../../const/enums';
 import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { findUserByEmail, getAllUsersFromUsersOrgCascade, LoggedInUser } from '../../../repositories/userRepo';
+import {
+  findUserByEmail,
+  getAllUsersFromUsersOrgCascade,
+  getUsers,
+  LoggedInUser,
+} from '../../../repositories/userRepo';
 const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;
 
@@ -20,9 +25,14 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
     throw new PermissionError();
   }
 
+  if (req.user.role.name === ERole.ADMIN) {
+    const allUsers = await getUsers();
+    return res.status(200).json({ users: allUsers });
+  }
+
   const users = await getAllUsersFromUsersOrgCascade(req.user.organizationId);
 
-  res.json({ users });
+  res.status(200).json({ users });
 };
 
 export default withTempestHandlers(usersApiHandler, findUserByEmail);

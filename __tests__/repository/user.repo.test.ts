@@ -11,7 +11,6 @@ import {
   findUserById,
   findUserByIdReturnAllIncludes,
   findUserByIdWithMemberTrackingItems,
-  findUsers,
   getAllUsersFromUsersOrgCascade,
   getUsers,
   getUsersWithMemberTrackingRecords,
@@ -167,21 +166,12 @@ test('should findUserByIdWithMemberTrackingItems', async () => {
   expect(result).toStrictEqual(mockUser);
 });
 
-test('should findUsers', async () => {
-  const spy = prisma.user.findMany;
-  await findUsers();
-  expect(spy).toHaveBeenCalledWith({
-    include: {
-      role: true,
-      organization: true,
-    },
-  });
-});
-
 test('should getUsers', async () => {
   const spy = prisma.user.findMany;
   await getUsers();
-  expect(spy).toHaveBeenCalledWith();
+  expect(spy).toHaveBeenCalledWith({
+    include: { memberTrackingItems: { include: { memberTrackingRecords: true, trackingItem: true } }, role: true },
+  });
 });
 
 test('should createUser with role', async () => {
@@ -237,7 +227,7 @@ test('should findTrackingRecordsByTraineeId', async () => {
   expect(result).toStrictEqual([dummyMemberTrackingRecord]);
 });
 
-test('should return usrs with member trakcing records by org id', async () => {
+test('should return users with member tracking records by org id', async () => {
   const mockResult = {
     ...mockUser,
     organization: mockOrg,
@@ -250,6 +240,9 @@ test('should return usrs with member trakcing records by org id', async () => {
   expect(spy).toBeCalledWith({
     where: {
       organizationId: 1,
+    },
+    orderBy: {
+      lastName: 'asc',
     },
     include: {
       role: true,
