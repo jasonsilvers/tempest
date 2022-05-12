@@ -21,4 +21,5 @@ export const ranks: GroupedRank[] = [
   { value: 'Brig Gen/O-7', group: 'Officer' },
   { value: 'Maj Gen/O-8', group: 'Officer' },
   { value: 'Lt Gen/O-9', group: 'Officer' },
+  { value: 'Civilian', group: 'Other' },
 ];
