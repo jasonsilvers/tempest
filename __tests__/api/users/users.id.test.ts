@@ -8,15 +8,15 @@ import userQueryHandler from '../../../src/pages/api/users/[id]';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { testNextApi } from '../../testutils/NextAPIUtils';
-import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';
 import { User } from '@prisma/client';
 import { getRoleByName } from '../../../src/repositories/roleRepo';
 import { EAction, EResource, ERole } from '../../../src/const/enums';
+import { userWithinOrgOrChildOrg } from '../../../src/utils/userWithinOrgorChildOrg';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/roleRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');
-jest.mock('../../../src/utils/isOrgChildOf.ts');
+jest.mock('../../../src/utils/userWithinOrgorChildOrg');
 jest.mock('../../../src/repositories/memberTrackingRepo');
 
 const userFromDb = {
@@ -41,14 +41,6 @@ afterEach(() => {
 });
 
 test('GET - should return user - read any', async () => {
-  mockMethodAndReturn(findUserById, userFromDb);
-  const { data, status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
-
-  expect(status).toBe(200);
-  expect(data).toStrictEqual(userFromDb);
-});
-
-test('GET - should return user - read any', async () => {
   mockMethodAndReturn(findUserByEmail, {
     id: 1,
     firstName: 'joe',
@@ -62,6 +54,7 @@ test('GET - should return user - read any', async () => {
     role: { id: '22', name: 'monitor' },
     organizationId: '123',
   };
+  mockMethodAndReturn(userWithinOrgOrChildOrg, true);
 
   mockMethodAndReturn(findUserById, userFromDbRead);
   const { data, status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
@@ -100,7 +93,31 @@ test('GET - should return 403 - read any', async () => {
   };
 
   mockMethodAndReturn(findUserById, userFromDbReadAny);
-  mockMethodAndReturn(isOrgChildOf, false);
+  mockMethodAndReturn(userWithinOrgOrChildOrg, false);
+
+  const { status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
+
+  expect(status).toBe(403);
+});
+
+test('GET - should return 403 - read any', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 1,
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+    organizationId: '124',
+  });
+
+  const userFromDbReadAny = {
+    id: 2,
+    firstName: 'joe',
+    lastName: 'anderson',
+    role: { id: '22', name: 'member' },
+    organizationId: '123',
+  };
+
+  mockMethodAndReturn(findUserById, userFromDbReadAny);
+  mockMethodAndReturn(userWithinOrgOrChildOrg, true);
 
   const { status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
 
@@ -114,8 +131,23 @@ test('GET - should return 403 - No role', async () => {
     firstName: 'joe',
     role: { id: '22', name: 'norole' },
   });
-  mockMethodAndReturn(isOrgChildOf, false);
+  mockMethodAndReturn(userWithinOrgOrChildOrg, false);
   const { status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
+
+  expect(status).toBe(403);
+});
+
+test('GET - should return 403 - read own', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  mockMethodAndReturn(findUserById, { id: 1, firstName: 'Not Joe' });
+
+  const { status } = await testNextApi.get(userQueryHandler, {
+    urlId: 1,
+  });
 
   expect(status).toBe(403);
 });
@@ -285,6 +317,8 @@ test('PUT - should set role to member when org changes', async () => {
 test('PUT - should return user - update any', async () => {
   mockMethodAndReturn(findUserById, userFromDb);
   mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  mockMethodAndReturn(userWithinOrgOrChildOrg, true);
+
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 2,
     body: { rank: 'bob' },
@@ -292,6 +326,33 @@ test('PUT - should return user - update any', async () => {
 
   expect(status).toBe(200);
   expect(data).toStrictEqual({ name: 'bob', id: 123 });
+});
+
+test('PUT - should return user if not in org and requesting user has adminrole - update any', async () => {
+  mockMethodAndReturn(findUserByEmail, { ...userFromDb, id: 321, role: { id: 2, name: ERole.ADMIN } });
+  mockMethodAndReturn(findUserById, userFromDb);
+  mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  mockMethodAndReturn(userWithinOrgOrChildOrg, false);
+  const { data, status } = await testNextApi.put(userQueryHandler, {
+    urlId: 2,
+    body: { rank: 'bob' },
+  });
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ name: 'bob', id: 123 });
+});
+
+test('PUT - should return user if not in org and requesting user has adminrole - update any', async () => {
+  mockMethodAndReturn(findUserByEmail, { ...userFromDb, id: 321, role: { id: 2, name: ERole.MEMBER } });
+  mockMethodAndReturn(findUserById, userFromDb);
+  mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  mockMethodAndReturn(userWithinOrgOrChildOrg, true);
+  const { status } = await testNextApi.put(userQueryHandler, {
+    urlId: 2,
+    body: { rank: 'bob' },
+  });
+
+  expect(status).toBe(403);
 });
 
 test('PUT - should return 400 if data is incorrect - update any', async () => {

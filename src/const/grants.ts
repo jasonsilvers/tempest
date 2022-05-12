@@ -169,6 +169,12 @@ const userGrants: Grants[] = [
     role: ERole.MONITOR,
   },
   {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.USER,
+    role: ERole.ADMIN,
+  },
+  {
     action: EAction.UPDATE_OWN,
     attributes: 'organizationId, tags, afsc, rank, address, dutyTitle, firstName, lastName',
     resource: EResource.USER,

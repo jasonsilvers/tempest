@@ -36,24 +36,24 @@ const setup = async (req: NextApiRequestWithAuthorization<LoggedInUser>) => {
   const { query, body } = req;
   const userId = query.id as string;
   const userIdParam = parseInt(userId);
-  const user = await findUserById(userIdParam);
-  if (!user) {
+  const userFromRequest = await findUserById(userIdParam);
+  if (!userFromRequest) {
     throw new NotFoundError();
   }
   const ac = await getAc();
 
-  return { body, userIdParam, user, ac };
+  return { body, userIdParam, userFromRequest, ac };
 };
 
 const getUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiError>
 ) => {
-  const { userIdParam, ac, user } = await setup(req);
+  const { userIdParam, ac, userFromRequest } = await setup(req);
   let permission: Permission;
 
   if (req.user.id !== userIdParam) {
-    if (await userWithinOrgOrChildOrg(req.user.organizationId, user.organizationId)) {
+    if (await userWithinOrgOrChildOrg(req.user.organizationId, userFromRequest.organizationId)) {
       permission = ac.can(req.user.role.name).readAny(EResource.USER);
     } else {
       throw new PermissionError();
@@ -66,18 +66,21 @@ const getUserAction = async (
     throw new PermissionError();
   }
 
-  res.status(200).json(user);
+  res.status(200).json(userFromRequest);
 };
 
 const putUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiError>
 ) => {
-  const { userIdParam, ac, user, body } = await setup(req);
+  const { userIdParam, ac, userFromRequest, body } = await setup(req);
 
   let permission: Permission;
+
   if (req.user.id !== userIdParam) {
-    if (await userWithinOrgOrChildOrg(req.user.organizationId, user.organizationId)) {
+    if (await userWithinOrgOrChildOrg(req.user.organizationId, userFromRequest.organizationId)) {
+      permission = ac.can(req.user.role.name).updateAny(EResource.USER);
+    } else if (req.user.role.name === ERole.ADMIN) {
       permission = ac.can(req.user.role.name).updateAny(EResource.USER);
     } else {
       throw new PermissionError();
@@ -93,10 +96,10 @@ const putUserAction = async (
   let filteredData = permission.filter(body);
 
   const parsedOrganizationId = body.organizationId ? parseInt(body.organizationId) : null;
-  let finalOrganizationId = user.organizationId;
+  let finalOrganizationId = userFromRequest.organizationId;
 
   // if check on change of orgId is needed
-  if (parsedOrganizationId && parsedOrganizationId !== user.organizationId) {
+  if (parsedOrganizationId && parsedOrganizationId !== userFromRequest.organizationId) {
     const memberRole = await getRoleByName(ERole.MEMBER);
     filteredData = { ...filteredData, roleId: memberRole.id };
     finalOrganizationId = parsedOrganizationId;
