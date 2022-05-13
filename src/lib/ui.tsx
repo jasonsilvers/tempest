@@ -120,8 +120,11 @@ export default function DashboardPopMenu({ userId }: { userId: number }) {
   );
 }
 
+const litCompletionDate = tw`placeholder:text-secondary`;
+const litInputBorder = tw`border-secondary`;
+
 const noCompletionDateStyles = css`
-  ${tw`placeholder:text-secondary`}
+  ${litCompletionDate}
 `;
 
 const TempestDatePicker = styled((props) => (
@@ -137,7 +140,7 @@ const TempestDatePicker = styled((props) => (
             tw`flex items-center border rounded px-2 h-8`,
             inputIsNull &&
               css`
-                ${tw`border-secondary`}
+                ${litInputBorder}
               `,
           ]}
         >
