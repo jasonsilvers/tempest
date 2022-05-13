@@ -1,27 +1,27 @@
+import DatePicker from '@mui/lab/DatePicker';
 import {
-  DrawerProps,
-  Drawer,
   CircularProgress,
-  LinearProgress,
+  Dialog as MuiDialog,
+  DialogActions as MuiDialogActions,
+  DialogContent as MuiDialogContent,
+  DialogTitle as MuiDialogTitle,
+  Drawer,
+  DrawerProps,
   IconButton,
+  LinearProgress,
   Menu,
+  MenuItem as TempestMenuItem,
   OutlinedInputProps,
   SelectChangeEvent,
-  DialogTitle as MuiDialogTitle,
-  DialogContent as MuiDialogContent,
-  DialogActions as MuiDialogActions,
-  Dialog as MuiDialog,
-  MenuItem as TempestMenuItem,
   Tooltip,
 } from '@mui/material';
-import DatePicker from '@mui/lab/DatePicker';
 import { useRouter } from 'next/router';
 import React, { CSSProperties } from 'react';
-import tw, { styled } from 'twin.macro';
-import { DeleteIcon, MoreHorizIcon } from '../assets/Icons';
+import { useQueryClient } from 'react-query';
+import tw, { css, styled } from 'twin.macro';
+import { DeleteIcon, EventIcon, MoreHorizIcon } from '../assets/Icons';
 import { mtiQueryKeys } from '../hooks/api/memberTrackingItem';
 import { fetchMemberTrackingItems } from '../hooks/api/users';
-import { useQueryClient } from 'react-query';
 
 const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 
@@ -120,27 +120,50 @@ export default function DashboardPopMenu({ userId }: { userId: number }) {
   );
 }
 
+const noCompletionDateStyles = css`
+  ${tw`placeholder:text-secondary`}
+`;
+
 const TempestDatePicker = styled((props) => (
   <DatePicker
     variant="inline"
     aria-label="tempest-date-picker"
-    renderInput={({ inputRef, inputProps, InputProps }) => (
-      <div tw="flex items-center border border-gray-200 rounded px-2 h-8">
-        <input title="date-picker-input" tw="w-20 bg-white text-gray-600" ref={inputRef} {...inputProps} disabled />
-        {InputProps?.endAdornment}
-      </div>
-    )}
+    renderInput={({ inputRef, inputProps, InputProps }) => {
+      const inputIsNull = inputProps.value === '';
+
+      return (
+        <div
+          css={[
+            tw`flex items-center border rounded px-2 h-8`,
+            inputIsNull &&
+              css`
+                ${tw`border-secondary`}
+              `,
+          ]}
+        >
+          <input
+            title="date-picker-input"
+            css={[tw`w-20 bg-white ml-2`, inputIsNull && noCompletionDateStyles]}
+            ref={inputRef}
+            {...inputProps}
+            disabled
+          />
+          <IconButton
+            // @ts-expect-error
+            {...InputProps.endAdornment?.props.children.props}
+            aria-label="calendar-open-button"
+          >
+            <EventIcon color={inputIsNull ? 'secondary' : 'inherit'} />
+          </IconButton>
+        </div>
+      );
+    }}
     InputProps={{
       role: 'date-picker',
     }}
     {...props}
   />
-))`
-  & .MuiIconButton-root {
-    height: 0.5em;
-    width: 0.75em;
-  }
-`;
+))(() => ({}));
 
 const TempestDeleteIcon = tw(DeleteIcon)`text-xl`;
 

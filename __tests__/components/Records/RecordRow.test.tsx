@@ -137,7 +137,7 @@ test('should change completion date', async () => {
 
   const date = getToday();
 
-  const datePicker = await screen.findByLabelText(/choose date/i);
+  const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
   userEvent.type(datePicker, date);
   const chosenDate = screen.getByRole('button', { name: date }); // choose any date that the calender shows
   fireEvent.click(chosenDate);
@@ -180,7 +180,7 @@ test('should alert user that signatures will be removed', async () => {
 
   const date = getToday();
 
-  const datePicker = await screen.findByLabelText(/choose date/i);
+  const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
   userEvent.type(datePicker, date);
   const chosenDate = screen.getByRole('button', { name: date }); // choose any date that the calender shows
   fireEvent.click(chosenDate);
@@ -214,7 +214,7 @@ test('should not fire mutation if completion date did not change and was empty',
     />
   );
 
-  const datePicker = await screen.findByLabelText(/choose date/i);
+  const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
   fireEvent.click(datePicker);
   userEvent.type(datePicker, '');
 
@@ -242,7 +242,7 @@ test('should not fire mutation if completion date did not change', async () => {
     />
   );
 
-  const datePicker = await screen.findByLabelText(/choose date/i);
+  const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
   fireEvent.click(datePicker);
   userEvent.type(datePicker, date);
 

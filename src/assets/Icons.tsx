@@ -19,6 +19,7 @@ import Close from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import EventIcon from '@mui/icons-material/Event';
 
 export {
   AddIcon,
@@ -40,6 +41,7 @@ export {
   DescriptionIcon,
   SearchIcon,
   Close,
+  EventIcon,
   FolderSharedIcon,
   SettingsIcon,
 };
