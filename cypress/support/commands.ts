@@ -62,7 +62,7 @@ Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, date:
   // cy.findByRole('option', { name: trackingItemName }).click();
   cy.findByText(trackingItemName).click()
 
-  cy.findByLabelText(/choose date/i).click();
+  cy.findByRole('button', { name: 'calendar-open-button' }).click();
 
   cy.findByLabelText(date).click();
 
