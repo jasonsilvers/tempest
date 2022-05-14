@@ -3,13 +3,13 @@
  */
 
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByEmail, findUserByIdWithMemberTrackingItems } from '../../../src/repositories/userRepo';
+import { findUserByEmail, findUserById, findUserByIdWithMemberTrackingItems } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import userSlugHandler from '../../../src/pages/api/users/[...slug]';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import dayjs from 'dayjs';
-import { EUserIncludes } from '../../../src/const/enums';
+import { EMtrVariant, EUserResources } from '../../../src/const/enums';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');
@@ -63,10 +63,37 @@ test('GET - should return member tracking items', async () => {
   };
   mockMethodAndReturn(findUserByIdWithMemberTrackingItems, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '1/membertrackingitems',
+    urlSlug: '1/membertrackingitems/all',
   });
 
-  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(1, null);
+  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(1, EUserResources.MEMBER_TRACKING_ITEMS, EMtrVariant.ALL);
+  expect(status).toBe(200);
+  expect(data).toStrictEqual(recordFromDb);
+});
+
+test('GET - should return member tracking items', async () => {
+  const recordFromDb = {
+    ...userFromDb,
+    trackingItems: [
+      {
+        isActive: true,
+        userId: 1,
+        trackingItemId: 23,
+      },
+      {
+        isActive: true,
+        userId: 1,
+        trackingItemId: 14,
+      },
+    ],
+  };
+  mockMethodAndReturn(findUserById, recordFromDb);
+  const { data, status } = await testNextApi.get(userSlugHandler, {
+    urlSlug: '1',
+  });
+
+  expect(findUserByIdWithMemberTrackingItems).not.toBeCalled();
+  expect(findUserById).toBeCalled();
   expect(status).toBe(200);
   expect(data).toStrictEqual(recordFromDb);
 });
@@ -100,10 +127,10 @@ test('GET - should return member tracking items.  member tracking records and tr
   };
   mockMethodAndReturn(findUserByIdWithMemberTrackingItems, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '1/membertrackingitems?include=all',
+    urlSlug: '1/membertrackingitems/all',
   });
 
-  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(1, EUserIncludes.ALL);
+  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(1, EUserResources.MEMBER_TRACKING_ITEMS, EMtrVariant.ALL);
   expect(status).toBe(200);
   expect(data).toStrictEqual(recordFromDb);
 });
@@ -111,7 +138,7 @@ test('GET - should return member tracking items.  member tracking records and tr
 test('should return 401 if not authorized', async () => {
   const { status } = await testNextApi.get(userSlugHandler, {
     withJwt: false,
-    urlSlug: '/1/membertrackingitems?include=all',
+    urlSlug: '1/membertrackingitems/all',
   });
 
   expect(status).toBe(401);
@@ -124,7 +151,7 @@ test('should return 403 if not correct permissions', async () => {
     role: { id: '22', name: 'norole' },
   });
   const { status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=all',
+    urlSlug: '1/membertrackingitems/all',
   });
 
   expect(status).toBe(403);
@@ -137,7 +164,7 @@ test('should return 403 if member and not own record', async () => {
     role: { id: '22', name: 'member' },
   });
   const { status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: 'b100e2fa-50d0-49a6-b10f-00adde24d0c2/membertrackingitems?include=membertrackingrecords',
+    urlSlug: '2/membertrackingitems/all',
   });
 
   expect(status).toBe(403);
@@ -177,20 +204,28 @@ test('should return user if own record', async () => {
   };
   mockMethodAndReturn(findUserByIdWithMemberTrackingItems, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '1/membertrackingitems',
+    urlSlug: '1/membertrackingitems/all',
   });
 
-  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(1, null);
+  expect(findUserByIdWithMemberTrackingItems).toBeCalledWith(1, EUserResources.MEMBER_TRACKING_ITEMS, EMtrVariant.ALL);
   expect(status).toBe(200);
   expect(data).toStrictEqual(recordFromDb);
 });
 
 test('GET - should return 404 if incorrect resource', async () => {
   const { status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '/a100e2fa-50d0-49a6-b10f-00adde24d0c2/noresource',
+    urlSlug: '1/noresource',
   });
 
   expect(status).toBe(404);
+});
+
+test('GET - should return 400 if incorrect variant', async () => {
+  const { status } = await testNextApi.get(userSlugHandler, {
+    urlSlug: '1/membertrackingitems/badvariant',
+  });
+
+  expect(status).toBe(400);
 });
 
 test('should return 404 if user not found', async () => {
@@ -201,7 +236,7 @@ test('should return 404 if user not found', async () => {
   });
   mockMethodAndReturn(findUserByIdWithMemberTrackingItems, null);
   const { status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '1/membertrackingitems?include=membertrackingrecords&include=trackingitems',
+    urlSlug: '1/membertrackingitems/all',
   });
 
   expect(status).toBe(404);

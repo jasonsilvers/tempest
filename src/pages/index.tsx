@@ -3,7 +3,7 @@ import React from 'react';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useRouter } from 'next/router';
 import { LoggedInUser } from '../repositories/userRepo';
-import { ERole } from '../const/enums';
+import { EMtrVariant, ERole } from '../const/enums';
 
 import 'twin.macro';
 import { AuthenticatingApp } from '../components/AuthenticatingApp';
@@ -25,7 +25,12 @@ function Home() {
   }
 
   if (user && user.role?.name === ERole.MEMBER && user.organizationId) {
-    queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(user.id), () => fetchMemberTrackingItems(user.id));
+    queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(user.id, EMtrVariant.IN_PROGRESS), () =>
+      fetchMemberTrackingItems(user.id, EMtrVariant.IN_PROGRESS)
+    );
+    queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(user.id, EMtrVariant.COMPLETED), () =>
+      fetchMemberTrackingItems(user.id, EMtrVariant.COMPLETED)
+    );
     router.push(`/Profile/${user.id}`);
   }
 

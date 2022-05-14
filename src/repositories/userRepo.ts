@@ -1,5 +1,5 @@
 import { Organization, Prisma, Role, User } from '@prisma/client';
-import { EUserIncludes } from '../const/enums';
+import { EMtrVariant, EUserResources } from '../const/enums';
 import prisma from '../prisma/prisma';
 import { getOrganizationTree } from './organizationRepo';
 
@@ -56,18 +56,35 @@ export const findUserById = async (id: number) => {
   });
 };
 
-export const findUserByIdWithMemberTrackingItems = async (id: number, variant: EUserIncludes) => {
+export const findUserByIdWithMemberTrackingItems = async (
+  id: number,
+  resource: EUserResources,
+  variant: EMtrVariant
+) => {
+  const whereInProgressVariant = { where: { OR: [{ traineeSignedDate: null }, { authoritySignedDate: null }] } };
+  const whereCompletedVariant = { where: { NOT: [{ traineeSignedDate: null }, { authoritySignedDate: null }] } };
+  let whereVariant = { where: {} };
+
+  if (variant === EMtrVariant.IN_PROGRESS) {
+    whereVariant = whereInProgressVariant;
+  }
+
+  if (variant === EMtrVariant.COMPLETED) {
+    whereVariant = whereCompletedVariant;
+  }
+
   return prisma.user.findUnique({
     where: {
       id,
     },
     include: {
       memberTrackingItems:
-        variant === EUserIncludes.ALL
+        resource === EUserResources.MEMBER_TRACKING_ITEMS
           ? {
               include: {
                 trackingItem: true,
                 memberTrackingRecords: {
+                  ...whereVariant,
                   orderBy: {
                     order: 'desc',
                   },
@@ -292,6 +309,7 @@ export async function updateUserRole(id: number, roleName: string) {
 
 // required to infer the return type from the Prisma Client
 export type UserWithMemberTrackingItems = Prisma.PromiseReturnType<typeof findUserByIdWithMemberTrackingItems>;
+export type FindUserById = Prisma.PromiseReturnType<typeof findUserById>;
 export type UserWithAll = Prisma.PromiseReturnType<typeof findUserByIdReturnAllIncludes>;
 export type LoggedInUser = Prisma.PromiseReturnType<typeof findUserByEmail>;
 export type UsersWithMemberTrackingRecords = Prisma.PromiseReturnType<typeof getUsersWithMemberTrackingRecordsByOrgId>;

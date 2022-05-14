@@ -2,7 +2,7 @@ import { MemberTrackingRecord, TrackingItem } from '.prisma/client';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQueryClient } from 'react-query';
-import { EMtrVerb, EUri } from '../../const/enums';
+import { EMtrVariant, EMtrVerb, EUri } from '../../const/enums';
 import { mtiQueryKeys } from './memberTrackingItem';
 
 const MEMBER_TRACKING_RECORD_RESOURCE = 'membertrackingrecords';
@@ -28,7 +28,7 @@ export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
         .then((response) => response.data),
     {
       onSettled: async (_data, _err, { userId }) => {
-        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(userId));
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(userId, EMtrVariant.IN_PROGRESS));
       },
     }
   );
@@ -41,7 +41,7 @@ export const useCreateMemberTrackingRecord = () => {
       axios.post(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}`, memberTrackingRecord).then((response) => response.data),
     {
       onSuccess: (data: MemberTrackingRecord) => {
-        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId));
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId, EMtrVariant.IN_PROGRESS));
       },
     }
   );
@@ -61,7 +61,8 @@ export const useDeleteMemberTrackingRecord = () => {
         snackbar.enqueueSnackbar('Error deleting record', { variant: 'error' });
       },
       onSettled: async (_data, _err, { userId }) => {
-        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(userId));
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(userId, EMtrVariant.IN_PROGRESS));
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(userId, EMtrVariant.COMPLETED));
       },
     }
   );

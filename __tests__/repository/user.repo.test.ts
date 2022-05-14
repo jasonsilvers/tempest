@@ -1,7 +1,7 @@
-import { MemberTrackingRecord, Organization, Role, User } from '@prisma/client';
-import { EUserIncludes } from '../../src/const/enums';
-import { getOrganizationTree } from '../../src/repositories/organizationRepo';
 import prisma from '../setup/mockedPrisma';
+import { MemberTrackingRecord, Organization, Role, User } from '@prisma/client';
+import { EMtrVariant, EUserResources } from '../../src/const/enums';
+import { getOrganizationTree } from '../../src/repositories/organizationRepo';
 import {
   createUser,
   deleteUser,
@@ -19,6 +19,7 @@ import {
   updateUser,
   updateUserRole,
 } from '../../src/repositories/userRepo';
+
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 
 jest.mock('../../src/repositories/organizationRepo.ts');
@@ -138,9 +139,9 @@ test('should findUserByIdReturnAllIncludes', async () => {
   });
 });
 
-test('should findUserByIdWithMemberTrackingItems', async () => {
+test('should findUserByIdWithMemberTrackingItems all variant', async () => {
   const spy = prisma.user.findUnique.mockImplementationOnce(() => mockUser);
-  const result = await findUserByIdWithMemberTrackingItems(1, EUserIncludes.ALL);
+  const result = await findUserByIdWithMemberTrackingItems(1, EUserResources.MEMBER_TRACKING_ITEMS, EMtrVariant.ALL);
   expect(spy).toHaveBeenCalledWith({
     where: {
       id: 1,
@@ -150,6 +151,73 @@ test('should findUserByIdWithMemberTrackingItems', async () => {
         include: {
           trackingItem: true,
           memberTrackingRecords: {
+            where: {},
+            include: {
+              authority: true,
+              trackingItem: true,
+              trainee: true,
+            },
+            orderBy: {
+              order: 'desc',
+            },
+          },
+        },
+      },
+    },
+  });
+  expect(result).toStrictEqual(mockUser);
+});
+
+test('should findUserByIdWithMemberTrackingItems completed variant', async () => {
+  const spy = prisma.user.findUnique.mockImplementationOnce(() => mockUser);
+  const result = await findUserByIdWithMemberTrackingItems(
+    1,
+    EUserResources.MEMBER_TRACKING_ITEMS,
+    EMtrVariant.COMPLETED
+  );
+  expect(spy).toHaveBeenCalledWith({
+    where: {
+      id: 1,
+    },
+    include: {
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: {
+            where: { NOT: [{ traineeSignedDate: null }, { authoritySignedDate: null }] },
+            include: {
+              authority: true,
+              trackingItem: true,
+              trainee: true,
+            },
+            orderBy: {
+              order: 'desc',
+            },
+          },
+        },
+      },
+    },
+  });
+  expect(result).toStrictEqual(mockUser);
+});
+
+test('should findUserByIdWithMemberTrackingItems in progress variant', async () => {
+  const spy = prisma.user.findUnique.mockImplementationOnce(() => mockUser);
+  const result = await findUserByIdWithMemberTrackingItems(
+    1,
+    EUserResources.MEMBER_TRACKING_ITEMS,
+    EMtrVariant.IN_PROGRESS
+  );
+  expect(spy).toHaveBeenCalledWith({
+    where: {
+      id: 1,
+    },
+    include: {
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: {
+            where: { OR: [{ traineeSignedDate: null }, { authoritySignedDate: null }] },
             include: {
               authority: true,
               trackingItem: true,

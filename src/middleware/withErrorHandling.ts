@@ -25,6 +25,19 @@ export class NotFoundError extends Error {
   }
 }
 
+export class BadRequestError extends Error {
+  readonly status: number;
+  readonly name: string;
+  readonly message: string;
+
+  constructor(message?: string) {
+    super('BadRequestError');
+    this.status = 400;
+    this.name = 'BadRequestError';
+    this.message = message ?? 'The URI provided is malformed';
+  }
+}
+
 export class PermissionError extends Error {
   readonly status: number;
   readonly name: string;
@@ -90,6 +103,11 @@ export const withErrorHandling =
         return res.status(e.status).json({ message: e.message });
       }
       if (e instanceof AppError) {
+        log.warn(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
+        return res.status(e.status).json({ message: e.message });
+      }
+
+      if (e instanceof BadRequestError) {
         log.warn(`Error in ${req.url} for ${req.method} -- Error: ${e}`);
         return res.status(e.status).json({ message: e.message });
       }

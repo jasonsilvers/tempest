@@ -11,7 +11,7 @@ import { rest } from 'msw';
 import { AddMemberTrackingItemDialog } from '../../../src/components/Records/Dialog/AddMemberTrackingItemDialog';
 import { server } from '../../testutils/mocks/msw';
 import 'whatwg-fetch';
-import { EUri } from '../../../src/const/enums';
+import { EMtrVariant, EUri } from '../../../src/const/enums';
 import { TrackingItem, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';
@@ -22,7 +22,7 @@ import { mtiQueryKeys } from '../../../src/hooks/api/memberTrackingItem';
 // Establish API mocking before tests.
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'bypass',
+    onUnhandledRequest: 'error',
   });
 });
 // Reset any request handlers that we may add during the tests,
@@ -108,7 +108,7 @@ const memberTrackingItems: MemberTrackingItemWithAll[] = [
 
 // use member tracking record
 const memberTrackingItemsGet = (user) =>
-  rest.get(EUri.USERS + '*/membertrackingitems', (req, res, ctx) => {
+  rest.get(EUri.USERS + '*/membertrackingitems/all', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(user));
   });
 
@@ -160,27 +160,27 @@ const trackingItemAndRecordPost = () =>
   });
 
 test('should be able to add/delete items to list', async () => {
-  server.use(trackingItemsGet(trackingItemsList));
+  server.use(trackingItemsGet(trackingItemsList), memberTrackingItemsGet({ ...testTrainee, memberTrackingItems }));
 
-  const { getByRole, findAllByRole, getByText } = render(
+  const screen = render(
     <AddMemberTrackingItemDialog handleClose={() => {}} forMemberId={testTrainee.id} /> // eslint-disable-line
   );
 
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
 
-  const trackingItemTrigger = getByRole('combobox');
+  const trackingItemTrigger = screen.getByRole('combobox');
 
   fireEvent.mouseDown(trackingItemTrigger);
 
-  const options = await findAllByRole('option');
+  const options = await screen.findAllByRole('option');
 
   fireEvent.click(options[1]);
 
-  const selectedTrackingItem = getByText(/supervisor safety training/i);
+  const selectedTrackingItem = await screen.findByText(/supervisor safety training/i);
 
   expect(selectedTrackingItem).toBeInTheDocument;
 
-  const selectedTrackingItemDeletButton = getByRole('button', { name: 'tracking-item-delete-button' });
+  const selectedTrackingItemDeletButton = screen.getByRole('button', { name: 'tracking-item-delete-button' });
 
   fireEvent.click(selectedTrackingItemDeletButton);
 
@@ -194,7 +194,10 @@ test('should not allow duplicate memberTrackingRecords in progress', async () =>
 
   const singleMemberTrackingRecord = memberTrackingItems[0].memberTrackingRecords[0];
 
-  queryClient.setQueryData(mtiQueryKeys.memberTrackingItems(singleMemberTrackingRecord.traineeId), memberTrackingItems);
+  queryClient.setQueryData(
+    mtiQueryKeys.memberTrackingItems(singleMemberTrackingRecord.traineeId, EMtrVariant.IN_PROGRESS),
+    memberTrackingItems
+  );
 
   const Wrapper = createWrapper(queryClient);
 

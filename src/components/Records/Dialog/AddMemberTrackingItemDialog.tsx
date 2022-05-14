@@ -5,6 +5,7 @@ import React, { useMemo, useState } from 'react';
 import { useQueryClient } from 'react-query';
 import tw from 'twin.macro';
 import { Close, DeleteIcon } from '../../../assets/Icons';
+import { EMtrVariant } from '../../../const/enums';
 import { mtiQueryKeys, useCreateMemberTrackingItemAndRecord } from '../../../hooks/api/memberTrackingItem';
 import { useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { useTrackingItems } from '../../../hooks/api/trackingItem';
@@ -49,7 +50,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
 
   useMemo(() => {
     const memberTrackingItemQueries = queryClient.getQueriesData<MemberTrackingItemWithAll>(
-      mtiQueryKeys.memberTrackingItems(forMemberId)
+      mtiQueryKeys.memberTrackingItems(forMemberId, EMtrVariant.IN_PROGRESS)
     );
 
     const memberTrackingRecords = memberTrackingItemQueries
