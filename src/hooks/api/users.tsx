@@ -2,7 +2,7 @@ import { Organization, Role, User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { EUri } from '../../const/enums';
+import { EMtrVariant, EUri } from '../../const/enums';
 import { MemberTrackingItemWithAll } from '../../repositories/memberTrackingRepo';
 import { UserWithAll } from '../../repositories/userRepo';
 import { UsersDTO } from '../../types';
@@ -18,8 +18,11 @@ const sortMemberTrackingItems = (memberTrackingItems: MemberTrackingItemWithAll[
   return memberTrackingItems.sort((mtiA, mtiB) => (mtiA.trackingItem.title >= mtiB.trackingItem.title ? 1 : -1));
 };
 
-export const fetchMemberTrackingItems = async (userId: number): Promise<MemberTrackingItemWithAll[]> => {
-  const { data } = await axios.get<UserWithAll>(EUri.USERS + `${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}?include=all`);
+export const fetchMemberTrackingItems = async (
+  userId: number,
+  variant: EMtrVariant = EMtrVariant.ALL
+): Promise<MemberTrackingItemWithAll[]> => {
+  const { data } = await axios.get<UserWithAll>(EUri.USERS + `${userId}/${MEMBER_TRACKING_ITEM_RESOURCE}/${variant}`);
 
   return sortMemberTrackingItems(data.memberTrackingItems);
 };
@@ -29,10 +32,10 @@ export const fetchMemberTrackingItems = async (userId: number): Promise<MemberTr
  * @param userId
  * @returns
  */
-const useMemberTrackingItemsForUser = (userId: number) => {
+const useMemberTrackingItemsForUser = (userId: number, variant: EMtrVariant = EMtrVariant.ALL) => {
   return useQuery<MemberTrackingItemWithAll[], unknown, MemberTrackingItemWithAll[]>(
-    mtiQueryKeys.memberTrackingItems(userId),
-    () => fetchMemberTrackingItems(userId),
+    mtiQueryKeys.memberTrackingItems(userId, variant),
+    () => fetchMemberTrackingItems(userId, variant),
     {
       enabled: !!userId,
       select: (memberTrackingItems) => {
@@ -40,7 +43,7 @@ const useMemberTrackingItemsForUser = (userId: number) => {
           (mti) => (mti.memberTrackingRecords = removeOldCompletedRecords(mti.memberTrackingRecords))
         );
 
-        return memberTrackingItems;
+        return memberTrackingItems.filter((mti) => mti.memberTrackingRecords.length !== 0);
       },
     }
   );

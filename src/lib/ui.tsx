@@ -20,6 +20,7 @@ import React, { CSSProperties } from 'react';
 import { useQueryClient } from 'react-query';
 import tw, { css, styled } from 'twin.macro';
 import { DeleteIcon, EventIcon, MoreHorizIcon } from '../assets/Icons';
+import { EMtrVariant } from '../const/enums';
 import { mtiQueryKeys } from '../hooks/api/memberTrackingItem';
 import { fetchMemberTrackingItems } from '../hooks/api/users';
 
@@ -71,8 +72,16 @@ export default function DashboardPopMenu({ userId }: { userId: number }) {
 
   const prefetchUserTrainingRecord = (userIdToFetch: number) => {
     queryClient.prefetchQuery(
-      mtiQueryKeys.memberTrackingItems(userIdToFetch),
-      () => fetchMemberTrackingItems(userIdToFetch),
+      mtiQueryKeys.memberTrackingItems(userIdToFetch, EMtrVariant.IN_PROGRESS),
+      () => fetchMemberTrackingItems(userIdToFetch, EMtrVariant.IN_PROGRESS),
+      {
+        staleTime: 5000,
+      }
+    );
+
+    queryClient.prefetchQuery(
+      mtiQueryKeys.memberTrackingItems(userIdToFetch, EMtrVariant.COMPLETED),
+      () => fetchMemberTrackingItems(userIdToFetch, EMtrVariant.COMPLETED),
       {
         staleTime: 5000,
       }

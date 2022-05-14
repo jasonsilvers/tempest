@@ -94,8 +94,10 @@ export interface ITempestApiError {
   message: string;
 }
 
-export enum EUserIncludes {
+export enum EMtrVariant {
   ALL = 'all',
+  COMPLETED = 'completed',
+  IN_PROGRESS = 'in_progress',
 }
 
 export enum EUserResources {

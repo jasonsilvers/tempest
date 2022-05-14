@@ -1,11 +1,12 @@
 import { MemberTrackingItem } from '.prisma/client';
 import axios from 'axios';
 import { useMutation, useQueryClient } from 'react-query';
+import { EMtrVariant } from '../../const/enums';
 
 export const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
 
 export const mtiQueryKeys = {
-  memberTrackingItems: (userId: number) => [MEMBER_TRACKING_ITEM_RESOURCE, userId],
+  memberTrackingItems: (userId: number, variant: EMtrVariant) => [MEMBER_TRACKING_ITEM_RESOURCE, userId, variant],
   memberTrackingItem: (userId: number, trackingItemId: number) => [
     MEMBER_TRACKING_ITEM_RESOURCE,
     userId,
@@ -27,7 +28,7 @@ const useCreateMemberTrackingItemAndRecord = () => {
         .then((result) => result.data),
     {
       onSuccess: (data) => {
-        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId));
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.IN_PROGRESS));
       },
     }
   );

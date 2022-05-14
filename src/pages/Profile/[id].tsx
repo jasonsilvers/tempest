@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useRouter } from 'next/router';
-import { ECategories, EFuncAction, EResource } from '../../const/enums';
+import { ECategories, EFuncAction, EMtrVariant, EResource } from '../../const/enums';
 import { GetServerSidePropsContext } from 'next';
 import { findUserById, UserWithAll } from '../../repositories/userRepo';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
 import 'twin.macro';
-import MemberItemTracker, { Variant } from '../../components/Records/MemberRecordTracker/MemberItemTracker';
+import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberItemTracker';
 import Tab from '../../components/Records/MemberRecordTracker/Tab';
 import { ProfileHeader } from '../../components/Profile/ProfileHeader';
 import { useMember } from '../../hooks/api/users';
@@ -22,7 +22,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
   const { permissionCheck, role, isLoading, user } = usePermissions();
   const [openAddNewModal, setAddNewModal] = useState(false);
-  const [view, setView] = useState<Variant>('In Progress');
+  const [view, setView] = useState<EMtrVariant>(EMtrVariant.IN_PROGRESS);
   const userId = parseInt(id?.toString());
   const { data: member } = useMember(userId, initialMemberData);
 
@@ -31,7 +31,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   }
 
   const handleViewChange = (event: SelectChangeEvent) => {
-    setView(event.target.value as Variant);
+    setView(event.target.value as EMtrVariant);
   };
 
   const persmission =
@@ -64,22 +64,22 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
         <div tw="pb-8">
           <FormControl>
             <Select tw="bg-white w-56" labelId="view-select" id="view-select" value={view} onChange={handleViewChange}>
-              <MenuItem value="In Progress">Training In Progress</MenuItem>
-              <MenuItem value="Completed">Offical Training Record</MenuItem>
+              <MenuItem value={EMtrVariant.IN_PROGRESS}>Training In Progress</MenuItem>
+              <MenuItem value={EMtrVariant.COMPLETED}>Offical Training Record</MenuItem>
             </Select>
           </FormControl>
         </div>
 
-        {view === 'In Progress' ? (
-          <MemberItemTracker variant="In Progress" userId={userId}>
+        {view === EMtrVariant.IN_PROGRESS ? (
+          <MemberItemTracker variant={EMtrVariant.IN_PROGRESS} userId={userId}>
             <Tab category={ECategories.ALL}>Show All</Tab>
             <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
             <Tab category={ECategories.TODO}>To Do</Tab>
           </MemberItemTracker>
         ) : null}
 
-        {view === 'Completed' ? (
-          <MemberItemTracker variant="Completed" userId={userId}>
+        {view === EMtrVariant.COMPLETED ? (
+          <MemberItemTracker variant={EMtrVariant.COMPLETED} userId={userId}>
             <Tab category={ECategories.ALL}>Show All</Tab>
             <Tab category={ECategories.DONE}>Current</Tab>
             <Tab category={ECategories.UPCOMING}>Upcoming</Tab>

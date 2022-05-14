@@ -3,12 +3,11 @@ import tw from 'twin.macro';
 import MemberTrackingItemTable from './MemberTrackingItemTable';
 import { ITabProps } from './Tab';
 import { MemberItemTrackerContextProvider } from './providers/MemberItemTrackerContext';
+import { EMtrVariant } from '../../../const/enums';
 
 const TabContainer = tw.div`flex space-x-4`;
 
 const TabAndTableContainer = tw.div`flex flex-col `;
-
-export type Variant = 'In Progress' | 'Completed';
 
 /**
  *
@@ -16,7 +15,7 @@ export type Variant = 'In Progress' | 'Completed';
  */
 const MemberItemTracker: React.FC<{
   userId: number;
-  variant: Variant;
+  variant: EMtrVariant;
 }> = ({ userId, variant, children }) => {
   const TabAndTableRef: LegacyRef<HTMLDivElement> = useRef();
 

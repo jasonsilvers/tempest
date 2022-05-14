@@ -1,9 +1,9 @@
 import { TablePagination } from '@mui/material';
 import React from 'react';
 import tw from 'twin.macro';
+import { EMtrVariant } from '../../../const/enums';
 import { useMemberTrackingItemsForUser } from '../../../hooks/api/users';
 import { TableData, TableHeaderRow, Token } from '../TwinMacro/Twin';
-import { Variant } from './MemberItemTracker';
 import MemberTrackingItemRow from './MemberTrackingItemRow';
 
 // styled twin elements
@@ -40,9 +40,9 @@ const LoadingSkeleton = () => {
 
 const MemberTrackingItemTable: React.FC<{
   userId: number;
-  variant: Variant;
+  variant: EMtrVariant;
 }> = ({ userId, variant }) => {
-  const memberTrackingItemsQuery = useMemberTrackingItemsForUser(userId);
+  const memberTrackingItemsQuery = useMemberTrackingItemsForUser(userId, variant);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -66,7 +66,7 @@ const MemberTrackingItemTable: React.FC<{
           <TableData tw="w-16 pl-1 text-primarytext font-bold">Due Date</TableData>
         </div>
         <div tw="flex ml-auto">
-          {variant === 'In Progress' ? (
+          {variant === EMtrVariant.IN_PROGRESS ? (
             <>
               <TableData tw="w-32 pl-2 text-primarytext font-bold">Authority Signature</TableData>
               <TableData tw="w-32 text-primarytext font-bold">Member Signature</TableData>
