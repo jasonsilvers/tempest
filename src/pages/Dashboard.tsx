@@ -1,6 +1,5 @@
 import { MemberTrackingRecord, Organization } from '.prisma/client';
 import { InputAdornment, TablePagination, TextField, Typography } from '@mui/material';
-import dayjs from 'dayjs';
 import React, { useEffect, useReducer } from 'react';
 import tw from 'twin.macro';
 import { SearchIcon } from '../assets/Icons';
@@ -72,16 +71,6 @@ const determineMemberCounts = (
   if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
     const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
     userCounts[status] = userCounts[status] + 1;
-  } else {
-    const today = dayjs();
-    const dateTrainingGivenToMember = dayjs(mtr.createdAt);
-
-    const differenceInDays = today.diff(dateTrainingGivenToMember, 'days');
-    if (differenceInDays && differenceInDays > 30) {
-      userCounts.Overdue = userCounts.Overdue + 1;
-    } else {
-      userCounts.Upcoming = userCounts.Upcoming + 1;
-    }
   }
 
   return newCounts;
