@@ -1,3 +1,4 @@
+import { Popover, Typography } from '@mui/material';
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import dayjs, { Dayjs } from 'dayjs';
 import { useSnackbar } from 'notistack';
@@ -46,6 +47,53 @@ const isFiltered = (categories: ECategories[], activeCategory: ECategories, stat
   }
 
   return false;
+};
+
+const TrainingTitle = ({ title, description }) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  return (
+    <div>
+      <Typography
+        aria-owns={open ? 'mouse-over-popover' : undefined}
+        aria-haspopup="true"
+        onMouseEnter={handlePopoverOpen}
+        onMouseLeave={handlePopoverClose}
+      >
+        {title}
+      </Typography>
+      <Popover
+        id="mouse-over-popover"
+        sx={{
+          pointerEvents: 'none',
+        }}
+        open={open}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        onClose={handlePopoverClose}
+        disableRestoreFocus
+      >
+        <Typography sx={{ p: 1 }}>{description}</Typography>
+      </Popover>
+    </div>
+  );
 };
 
 const RecordRow: React.FC<{
@@ -117,13 +165,13 @@ const RecordRow: React.FC<{
   return (
     <>
       <TableRow>
-        <TableData tw={'text-base w-60'}>
+        <TableData tw={'text-base w-1/3'}>
           <div tw={'flex'}>
             <div tw="pt-1">
               <DynamicStatus />
             </div>
-            <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64 pt-[2px] text-secondary underline">
-              {trackingItem?.title}
+            <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden pt-[2px] text-secondary underline">
+              <TrainingTitle title={trackingItem?.title} description={trackingItem?.description} />
             </div>
           </div>
         </TableData>
