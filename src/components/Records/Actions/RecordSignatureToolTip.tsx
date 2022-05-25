@@ -10,12 +10,13 @@ const Name = tw.div``;
 const Date = tw.div``;
 
 const getTitle = (traineeSignature: Signature, authoritySignature: Signature) => {
-  const { firstName: tranieeFN, lastName: traineeLN, rank: traineeRank } = traineeSignature.signee;
+  const { firstName: tranieeFN, lastName: traineeLN, rank: traineeRank } = traineeSignature?.signee || {};
+
   const {
     firstName: authorityFN = null,
     lastName: authorityLN = null,
     rank: authorityRank = null,
-  } = authoritySignature ? authoritySignature.signee : {};
+  } = authoritySignature ? authoritySignature?.signee || {} : {};
 
   const authorityRankDisplay = authorityRank ? authorityRank?.split('/')[0] : '';
   const traineeRankDisplay = traineeRank ? traineeRank?.split('/')[0] : '';
