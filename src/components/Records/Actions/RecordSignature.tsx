@@ -6,7 +6,7 @@ import React from 'react';
 import { UseMutateFunction } from 'react-query';
 import 'twin.macro';
 import { DoneAllIcon } from '../../../assets/Icons';
-import { EFuncAction, EMtrVerb, EResource } from '../../../const/enums';
+import { EFuncAction, EMtrVerb, EResource, ERole } from '../../../const/enums';
 import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { LoadingSpinner, TempestDeleteIcon, TempestToolTip } from '../../../lib/ui';
@@ -175,6 +175,8 @@ const RecordRowActions: React.FC<{
     EResource.MEMBER_TRACKING_RECORD
   );
 
+  const isAdmin = LoggedInUser?.role?.name === ERole.ADMIN;
+
   if (disabled) {
     return (
       <div tw="flex ml-auto">
@@ -253,7 +255,23 @@ const RecordRowActions: React.FC<{
             </div>
           </RecordSignatureToolTip>
         </TableData>
-        <TableData tw="w-4"></TableData>
+        <TableData tw="w-4">
+          {isAdmin && (
+            <IconButton
+              aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
+              size="small"
+              onClick={() =>
+                deleteRecord({
+                  memberTrackingRecordId: memberTrackingRecord.id,
+                  userId: memberTrackingRecord.traineeId,
+                })
+              }
+              tw="ml-auto mr-3 hover:bg-transparent"
+            >
+              <TempestDeleteIcon />
+            </IconButton>
+          )}
+        </TableData>
       </>
     );
   }

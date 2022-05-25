@@ -96,4 +96,25 @@ export const andrewMonitor = {
   },
 } as unknown as User;
 
+export const joeAdmin = {
+  id: 321,
+  firstName: 'joe',
+  lastName: 'admin',
+  role: {
+    id: 2,
+    name: ERole.ADMIN,
+  },
+  afsc: '12345',
+  email: 'bob.jones@email.com',
+  rank: 'E-6',
+  dutyTitle: 'Chief',
+  organizationId: 1,
+  organization: {
+    id: 2,
+    name: 'test org 1',
+    shortName: 'org 1',
+    parentId: 1,
+  },
+} as unknown as User;
+
 export { grants };

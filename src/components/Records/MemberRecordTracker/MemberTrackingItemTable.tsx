@@ -59,7 +59,7 @@ const MemberTrackingItemTable: React.FC<{
   return (
     <Container>
       <TableHeaderRow tw="min-height[35px]">
-        <TableData tw="w-1/3 text-primarytext font-bold">Training Title</TableData>
+        <TableData tw="w-1/4 text-primarytext font-bold">Training Title</TableData>
         <TableData tw="w-24 text-primarytext font-bold">Recurrence</TableData>
         <div tw="flex justify-between">
           <TableData tw="w-32 text-primarytext font-bold">Completion Date</TableData>

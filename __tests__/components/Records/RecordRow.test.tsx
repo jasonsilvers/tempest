@@ -3,12 +3,14 @@ import { MemberTrackingRecord, TrackingItem, User } from '.prisma/client';
 import dayjs from 'dayjs';
 import React from 'react';
 import 'whatwg-fetch';
+import { RecordRowActions } from '../../../src/components/Records/Actions/RecordSignature';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 import RecordRow from '../../../src/components/Records/MemberRecordTracker/RecordRow';
 import { ECategories, EUri } from '../../../src/const/enums';
+import { joeAdmin } from '../../testutils/mocks/fixtures';
 import { rest, server } from '../../testutils/mocks/msw';
-import { fireEvent, render, userEvent, waitFor } from '../../testutils/TempestTestUtils';
+import { fireEvent, render, userEvent, waitFor, waitForLoadingToFinish } from '../../testutils/TempestTestUtils';
 
 export function getToday(minus = 0) {
   const date = new Date();
@@ -293,4 +295,42 @@ test('should not render if the item status does not match active category', asyn
 
   await waitFor(() => queryByText(/item title/i));
   expect(queryByText(/item title/i)).toBeFalsy();
+});
+
+test('should not show delete button on completed record if monitor or member', async () => {
+  const date = new Date();
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={date}
+      traineeSignedDate={date}
+      memberTrackingRecord={{ ...mtr1, traineeSignedDate: date, authoritySignedDate: date }}
+      disabled={false}
+    />
+  );
+
+  await waitForLoadingToFinish();
+
+  expect(screen.queryByTestId('DeleteIcon')).not.toBeInTheDocument();
+});
+
+test('should show delete button on completed record if admin', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(joeAdmin));
+    })
+  );
+
+  const date = new Date();
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={date}
+      traineeSignedDate={date}
+      memberTrackingRecord={{ ...mtr1, traineeSignedDate: date, authoritySignedDate: date }}
+      disabled={false}
+    />
+  );
+
+  await waitForLoadingToFinish();
+
+  expect(screen.queryByTestId('DeleteIcon')).toBeInTheDocument();
 });

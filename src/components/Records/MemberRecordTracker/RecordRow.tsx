@@ -165,7 +165,7 @@ const RecordRow: React.FC<{
   return (
     <>
       <TableRow>
-        <TableData tw={'text-base w-1/3'}>
+        <TableData tw={'text-base w-1/4'}>
           <div tw={'flex'}>
             <div tw="pt-1">
               <DynamicStatus />
