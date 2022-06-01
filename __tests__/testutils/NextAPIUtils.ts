@@ -200,10 +200,12 @@ const testNextApi = {
       withJwt = true,
       urlId,
       urlSlug,
+      customHeaders = {},
     }: {
       withJwt?: boolean;
       urlId?: string | number;
       urlSlug?: string;
+      customHeaders?: { [key: string]: unknown };
     } = {}
   ) => {
     return baseTestNextApi(handler, {
@@ -211,6 +213,7 @@ const testNextApi = {
       urlId,
       urlSlug,
       method: 'DELETE',
+      customHeaders,
     });
   },
 

@@ -55,6 +55,19 @@ async function createOrganization(name: string, shortName: string, parentId?: nu
   });
 }
 
+async function addPPEItem(userId: number) {
+  return prisma.personalProtectionEquipmentItem.create({
+    data: {
+      name: casual.title,
+      inUse: casual.boolean,
+      inUseDetails: casual.short_description,
+      provided: casual.boolean,
+      providedDetails: casual.short_description,
+      userId,
+    },
+  });
+}
+
 async function createOrganizationStructure() {
   const mdg = await createOrganization('15th Medical Group', '15th MDG');
   const omrs = await createOrganization('15 Operation Medical Readiness Squadron', '15 OMRS', mdg.id);
@@ -165,6 +178,11 @@ async function seedDev() {
   const user2 = createUser('Sam', 'Member', 'sam.member@gmail.com');
 
   const createdUser2 = await addUserToDb(user2, organization3.id, memberRole ? memberRole.id : 2);
+
+  await addPPEItem(createdUser2.id);
+  await addPPEItem(createdUser2.id);
+  await addPPEItem(createdUser2.id);
+  await addPPEItem(createdUser2.id);
 
   const user3 = createUser('Frank', 'Monitor', 'frank.monitor@gmail.com');
 

@@ -96,7 +96,7 @@ const Users = () => {
 
   return (
     <div tw="p-6">
-      {usersListQuery?.data.map((user) => {
+      {usersListQuery?.data?.map((user) => {
         return (
           <div key={user.id} tw="flex items-center p-2">
             <Data>
