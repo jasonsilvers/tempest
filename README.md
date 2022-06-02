@@ -40,6 +40,8 @@ Mock Service Worker (MSW) is a network api mock where we define what is returned
 
 #### Setting up MSW per test
 
+# SUPER IMPORTANT!! if you forget to close the server it will cause unrelated tests to FAIL!
+
 1. Add fetch polyfill
    - `import 'whatwg-fetch'`
 2. Add server and rest from ./testutils/mocks/msw

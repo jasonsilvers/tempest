@@ -66,6 +66,7 @@ const AddGrantDialog = ({ isOpen, setIsOpen }) => {
     createGrant(data, {
       onSuccess: () => {
         snackbar.enqueueSnackbar('Grant Added!', { variant: 'success' });
+        resetValues();
         setIsOpen(false);
       },
     });
@@ -252,6 +253,7 @@ export const Grants = () => {
         columns={columns}
         processRowUpdate={processRowUpdate}
         experimentalFeatures={{ newEditingApi: true }}
+        disableVirtualization
         components={{
           Toolbar: GridToolbar,
         }}
