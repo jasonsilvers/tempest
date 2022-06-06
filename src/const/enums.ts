@@ -50,6 +50,7 @@ export enum EUri {
   ROLES = '/api/roles/',
   ORGANIZATIONS = '/api/organizations/',
   LOGS = '/api/logs',
+  PPE_ITEMS = 'api/ppeitems/',
 }
 
 export enum EAttribute {
@@ -91,7 +92,7 @@ export enum ECategories {
   ARCHIVED = 'Archived',
   TODO = 'To_Do',
 }
-export interface ITempestApiError {
+export interface ITempestApiMessage {
   message: string;
 }
 

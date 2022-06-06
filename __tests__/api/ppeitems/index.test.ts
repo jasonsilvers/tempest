@@ -3,7 +3,7 @@ import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { testNextApi } from '../../testutils/NextAPIUtils';
-import { getPPEItemsByUserId } from '../../../src/repositories/ppeItemsRepo';
+import { findPPEItemsByUserId } from '../../../src/repositories/ppeItemsRepo';
 import ppeItemsHandler from '../../../src/pages/api/ppeitems';
 
 jest.mock('../../../src/repositories/grantsRepo.ts');
@@ -35,7 +35,7 @@ afterEach(() => {
 });
 
 test('member should be able to get all ppe items', async () => {
-  mockMethodAndReturn(getPPEItemsByUserId, [testPPEItem]);
+  mockMethodAndReturn(findPPEItemsByUserId, [testPPEItem]);
   const { status, data } = await testNextApi.get(ppeItemsHandler, { urlSlug: '?userId=5' });
 
   expect(status).toBe(200);
@@ -49,7 +49,7 @@ test('monitor should be able to get all ppe items', async () => {
     role: { id: '22', name: 'monitor' },
     organizationId: '2',
   });
-  mockMethodAndReturn(getPPEItemsByUserId, [testPPEItem]);
+  mockMethodAndReturn(findPPEItemsByUserId, [testPPEItem]);
   const { status, data } = await testNextApi.get(ppeItemsHandler, { urlSlug: '?userId=5' });
 
   expect(status).toBe(200);
@@ -57,29 +57,22 @@ test('monitor should be able to get all ppe items', async () => {
 });
 
 test('member or monitor should not be able to get another member/monitors ppeItems', async () => {
-  mockMethodAndReturn(getPPEItemsByUserId, [testPPEItem]);
+  mockMethodAndReturn(findPPEItemsByUserId, [testPPEItem]);
   const { status } = await testNextApi.get(ppeItemsHandler, { urlSlug: '?userId=3' });
 
   expect(status).toBe(403);
 });
 
 test('get should always include userId in query', async () => {
-  mockMethodAndReturn(getPPEItemsByUserId, [testPPEItem]);
+  mockMethodAndReturn(findPPEItemsByUserId, [testPPEItem]);
   const { status } = await testNextApi.get(ppeItemsHandler);
 
   expect(status).toBe(400);
 });
 
 test('get - should return 401 if no JWT', async () => {
-  mockMethodAndReturn(getPPEItemsByUserId, [testPPEItem]);
+  mockMethodAndReturn(findPPEItemsByUserId, [testPPEItem]);
   const { status } = await testNextApi.get(ppeItemsHandler, { withJwt: false });
 
   expect(status).toBe(401);
-});
-
-test('should not allow Post', async () => {
-  mockMethodAndReturn(getPPEItemsByUserId, [testPPEItem]);
-  const { status } = await testNextApi.post(ppeItemsHandler, { body: {}, urlSlug: '?userId=3' });
-
-  expect(status).toBe(405);
 });

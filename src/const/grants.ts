@@ -305,6 +305,18 @@ const ppeItemGrants: Grants[] = [
     resource: EResource.PPE_ITEM,
     role: ERole.MONITOR,
   },
+  {
+    action: EAction.UPDATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.UPDATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MEMBER,
+  },
 ];
 
 export const grants: Grants[] = [

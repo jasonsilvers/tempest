@@ -1,36 +1,38 @@
 import { PersonalProtectionEquipmentItem } from '@prisma/client';
 import { NextApiResponse } from 'next';
+import { ITempestApiMessage } from '../../../const/enums';
 import {
-  getPpeItemsAction,
+  deletePpeItemsAction,
   ITempestppeItemsApiRequest,
-  postPpeItemsAction,
-  postPpeItemSchema,
+  putPpeItemsAction,
+  putPpeItemSchema,
 } from '../../../controllers/ppeItemsController';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { PPEItemsDTO } from '../../../types';
 
 export const ppeScema = {
-  post: postPpeItemSchema,
+  put: putPpeItemSchema,
 };
 
-const ppeItemsHandler = async (
+const ppeItemsIdHandler = async (
   req: ITempestppeItemsApiRequest<LoggedInUser>,
-  res: NextApiResponse<PPEItemsDTO | PersonalProtectionEquipmentItem>
+  res: NextApiResponse<PersonalProtectionEquipmentItem | ITempestApiMessage>
 ) => {
   const { method } = req;
 
-  switch (method) {
-    case 'GET':
-      return getPpeItemsAction(req, res);
+  console.log(method);
 
-    case 'POST':
-      return postPpeItemsAction(req, res);
+  switch (method) {
+    case 'PUT':
+      return putPpeItemsAction(req, res);
+
+    case 'DELETE':
+      return deletePpeItemsAction(req, res);
 
     default:
       throw new MethodNotAllowedError();
   }
 };
 
-export default withTempestHandlers(ppeItemsHandler, findUserByEmail);
+export default withTempestHandlers(ppeItemsIdHandler, findUserByEmail);

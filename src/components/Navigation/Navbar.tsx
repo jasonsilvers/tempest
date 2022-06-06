@@ -2,7 +2,14 @@ import { Divider } from '@mui/material';
 import React, { useMemo } from 'react';
 import { useQueryClient } from 'react-query';
 import { styled } from 'twin.macro';
-import { AssignmentIcon, DashboardIcon, FolderSharedIcon, SecurityIcon, SettingsIcon } from '../../assets/Icons';
+import {
+  AssignmentIcon,
+  DashboardIcon,
+  FolderSharedIcon,
+  MasksIcon,
+  SecurityIcon,
+  SettingsIcon,
+} from '../../assets/Icons';
 import { EFuncAction, EResource } from '../../const/enums';
 import { usePermissions } from '../../hooks/usePermissions';
 import { TempestDrawer } from '../../lib/ui';
@@ -91,6 +98,11 @@ const Navbar: React.FC = () => {
             <Link goToUrl={`/Profile/${user.id}`} icon={<FolderSharedIcon fontSize="medium" />}>
               <div role="navigation" aria-label="training-record">
                 Training Record
+              </div>
+            </Link>
+            <Link goToUrl={`/Ppe`} icon={<MasksIcon fontSize="medium" />}>
+              <div role="navigation" aria-label="ppe">
+                Personal Protection Equipment
               </div>
             </Link>
 

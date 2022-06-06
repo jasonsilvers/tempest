@@ -17,11 +17,11 @@ import {
   findUserById,
   FindUserById,
 } from '../../../repositories/userRepo';
-import { EResource, EMtrVariant, EUserResources, ITempestApiError } from '../../../const/enums';
+import { EResource, EMtrVariant, EUserResources, ITempestApiMessage } from '../../../const/enums';
 
 async function userSlugHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<User | ITempestApiError>
+  res: NextApiResponse<User | ITempestApiMessage>
 ) {
   const {
     query: { slug },
