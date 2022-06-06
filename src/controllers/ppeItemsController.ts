@@ -128,8 +128,6 @@ export const putPpeItemsAction = async (
 
   const ac = await getAc();
 
-  console.log(req.user.id, ppeItemForUser.userId);
-
   const permission =
     req.user.id !== ppeItemForUser.userId
       ? ac.can(req.user.role.name).updateAny(EResource.PPE_ITEM)
@@ -167,8 +165,6 @@ export const deletePpeItemsAction = async (
   }
 
   const ac = await getAc();
-
-  console.log(req.user.id, ppeItemForUser.userId);
 
   const permission =
     req.user.id !== ppeItemForUser.userId

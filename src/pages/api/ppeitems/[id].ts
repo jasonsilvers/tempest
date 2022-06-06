@@ -21,8 +21,6 @@ const ppeItemsIdHandler = async (
 ) => {
   const { method } = req;
 
-  console.log(method);
-
   switch (method) {
     case 'PUT':
       return putPpeItemsAction(req, res);

@@ -43,7 +43,6 @@ async function userSlugHandler(
   }
 
   if (variant && !Object.values(EMtrVariant).includes(variant)) {
-    console.log('test');
     throw new BadRequestError();
   }
 

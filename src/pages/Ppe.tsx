@@ -58,7 +58,6 @@ const PpeItem = ({
   }, []);
 
   const handleChange = (data: PersonalProtectionEquipmentItem) => {
-    console.log(data);
     //This is a new record that is created
     if (data.id === -1) {
       delete data.id;
@@ -104,11 +103,12 @@ const PpeItem = ({
             defaultValue={localPpeItem.provided}
             render={({ field: props }) => (
               <Checkbox
-                {...props}
+                inputProps={{ 'aria-label': 'checkbox-provided' }}
                 checked={props.value}
                 color="secondary"
                 onChange={(e) => [props.onChange(e.target.checked), handleSubmit]}
                 disabled={inFlight}
+                {...props}
               />
             )}
           />
@@ -133,11 +133,12 @@ const PpeItem = ({
             defaultValue={localPpeItem.inUse}
             render={({ field: props }) => (
               <Checkbox
-                {...props}
+                inputProps={{ 'aria-label': 'checkbox-inuse' }}
                 checked={props.value}
                 color="secondary"
                 onChange={(e) => [props.onChange(e.target.checked), handleSubmit]}
                 disabled={inFlight}
+                {...props}
               />
             )}
           />
