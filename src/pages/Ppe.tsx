@@ -179,15 +179,35 @@ const PpePage = () => {
 
   const [ppeItems, setPpeItems] = useState<PersonalProtectionEquipmentItem[]>([]);
 
-  useEffect(() => {
-    setPpeItems(ppeQuery.data);
-  }, [ppeQuery.data]);
+  const addPpeItem = () => {
+    const newPpeItem: PersonalProtectionEquipmentItem = {
+      id: -1,
+      name: '',
+      provided: false,
+      providedDetails: '',
+      inUse: false,
+      inUseDetails: '',
+      userId: user.id,
+    };
+    setPpeItems([...ppeItems, newPpeItem]);
+  };
 
   const removeAddedPpeItem = () => {
     const ppeItemsWithNewItemRemoved = ppeItems.filter((ppeItem) => ppeItem.id !== -1);
 
     setPpeItems(ppeItemsWithNewItemRemoved);
   };
+
+  useEffect(() => {
+    if (ppeQuery.data?.length > 0) {
+      setPpeItems(ppeQuery.data);
+      return;
+    }
+
+    if (ppeQuery.isFetched && ppeItems.length === 0) {
+      addPpeItem();
+    }
+  }, [ppeQuery.data]);
 
   return (
     <div tw="relative min-w-min max-width[1440px] pr-8">
@@ -221,19 +241,7 @@ const PpePage = () => {
             disabled={ppeItems?.some((ppeItem) => ppeItem.id === -1)}
             size="medium"
             variant="circular"
-            onClick={() => {
-              const newPpeItem: PersonalProtectionEquipmentItem = {
-                id: -1,
-                name: '',
-                provided: false,
-                providedDetails: '',
-                inUse: false,
-                inUseDetails: '',
-                userId: user.id,
-              };
-
-              setPpeItems([...ppeItems, newPpeItem]);
-            }}
+            onClick={addPpeItem}
           >
             <AddIcon />
           </Fab>
