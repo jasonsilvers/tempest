@@ -29,7 +29,7 @@ export const useAddGrant = () => {
         queryClient.invalidateQueries(grantsQueryKeys.grants());
       },
       onError: () => {
-        snackbar.enqueueSnackbar('Error adding TrackingItem. Please try again!', { variant: 'error' });
+        snackbar.enqueueSnackbar('Error adding Grant. Please try again!', { variant: 'error' });
       },
     }
   );

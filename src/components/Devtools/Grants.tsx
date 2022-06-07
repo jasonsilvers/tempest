@@ -215,7 +215,7 @@ export const Grants = () => {
               onClick={() =>
                 del(id, {
                   onSuccess: () => {
-                    enqueueSnackbar('Tracking Item Deleted', { variant: 'success' });
+                    enqueueSnackbar('Grant Deleted', { variant: 'success' });
                   },
                 })
               }
