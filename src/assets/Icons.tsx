@@ -16,8 +16,16 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import SearchIcon from '@mui/icons-material/Search';
 import Close from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import EventIcon from '@mui/icons-material/Event';
+import MasksIcon from '@mui/icons-material/Masks';
 
 export {
+  MasksIcon,
+  AddIcon,
+  AssignmentIcon,
   CalendarTodayIcon,
   CheckCircleIcon,
   WarningIcon,
@@ -32,8 +40,10 @@ export {
   SecurityIcon,
   DashboardIcon,
   PersonIcon,
-  SettingsIcon,
   DescriptionIcon,
   SearchIcon,
   Close,
+  EventIcon,
+  FolderSharedIcon,
+  SettingsIcon,
 };

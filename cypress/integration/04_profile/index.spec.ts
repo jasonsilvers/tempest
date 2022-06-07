@@ -4,7 +4,7 @@ describe('Member role', () => {
   it('should show No items', () => {
     cy.loginAsMember();
     cy.wait(5000);
-    cy.findAllByText(/nothing to show/i).should('have.length', 2);
+    cy.findAllByText(/nothing to show/i).should('have.length', 1);
   });
 
   it('should add new training and be able to sign', () => {
@@ -21,41 +21,19 @@ describe('Member role', () => {
     cy.findByText(/fire extinguisher/i).should('not.exist');
   });
 
-  it('should change profile data in the header then cancel save', () => {
-    cy.loginAsMember();
-    cy.findByRole('button', { name: 'edit-user' }).click();
-    cy.intercept('/api/organizations');
-    cy.findByText(/loading/).should('not.exist');
-    cy.findByRole('combobox', { name: /rank/i }).click();
-    cy.findByRole('option', { name: /SSgt/i }).click();
-    cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
-    cy.findByRole('combobox', { name: /organization/i }).click();
-    cy.findByRole('option', { name: /dental/i }).click();
-    cy.findByRole('button', { name: /cancel/i }).click();
-  });
-
-  it.only('should change profile data in the header then save', () => {
-    cy.loginAsMember();
-    cy.findByRole('button', { name: 'edit-user' }).click();
-    cy.intercept('/api/organizations');
-    cy.findByText(/loading/).should('not.exist');
-    cy.findByRole('combobox', { name: /rank/i }).click();
-    cy.findByRole('option', { name: /SSgt/i }).click();
-    cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
-    cy.findByRole('combobox', { name: /organization/i }).click();
-    cy.findByRole('option', { name: /dental/i }).click();
-    cy.findByRole('button', { name: /save/i }).click();
-    cy.findByText(/dental/i).should('exist');
-  });
-  
-
   it('should be able to complete record if already signed by training monitor - part 1', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
+     cy.findByRole('button', {
+      name: /rows per page: 10/i
+    }).click()
+    cy.findByRole('option', {
+      name: /100/i
+    }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
-      .within((elem) => {
+      .within(() => {
         cy.findByRole('button', { name: /member-popup-menu/i }).click();
         cy.focused().click();
       });
@@ -69,7 +47,13 @@ describe('Member role', () => {
 
   it('should be able to complete record if already signed by training monitor - part 2', () => {
     cy.loginAsMember();
+    
     cy.findByRole('button', { name: 'signature_button' }).click();
+
+    cy.findByRole('button', {name: /training in progress/i}).click()
+    cy.findByRole('option', {
+      name: /offical training record/i
+    }).click()
     cy.findByText(/signatures present/i).should('be.visible');
   });
 
@@ -86,9 +70,15 @@ describe('Member role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
+     cy.findByRole('button', {
+      name: /rows per page: 10/i
+    }).click()
+    cy.findByRole('option', {
+      name: /100/i
+    }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
-      .within((elem) => {
+      .within(() => {
         cy.findByRole('button', { name: 'member-popup-menu' }).click();
         cy.focused().click();
       });
@@ -107,6 +97,11 @@ describe('Member role', () => {
     cy.loginAsMember();
     cy.findByRole('button', { name: 'signature_button' }).click();
 
+    cy.findByRole('button', {name: /training in progress/i}).click()
+    cy.findByRole('option', {
+      name: /offical training record/i
+    }).click()
+
     const oldDate = getToday(1);
     const date = getToday();
 
@@ -118,9 +113,15 @@ describe('Member role', () => {
 describe('Monitor role', () => {
   it('should show training record for selected member', () => {
     cy.loginAsMonitor();
+     cy.findByRole('button', {
+      name: /rows per page: 10/i
+    }).click()
+    cy.findByRole('option', {
+      name: /100/i
+    }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
-      .within((elem) => {
+      .within(() => {
         cy.findByRole('button', { name: 'member-popup-menu' }).click();
         cy.focused().click();
       });
@@ -140,9 +141,15 @@ describe('Monitor role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
+    cy.findByRole('button', {
+      name: /rows per page: 10/i
+    }).click()
+    cy.findByRole('option', {
+      name: /100/i
+    }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
-      .within((elem) => {
+      .within(() => {
         cy.findByRole('button', { name: 'member-popup-menu' }).click();
         cy.focused().click();
       });
@@ -152,21 +159,8 @@ describe('Monitor role', () => {
     cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByRole('button', { name: 'signature_button' }).click();
     cy.findAllByRole('button', { name: /delete-tracking-record-/i }).should('not.be.disabled');
-  });
+    cy.findByTestId('DeleteIcon').click()
+    cy.findByRole('alert').should('be.visible');
 
-  it('should change profile data in the header but prompt user of permission change', () => {
-    cy.loginAsMonitor();
-    cy.findByText(/profile/i).click();
-    cy.findByRole('button', { name: 'edit-user' }).click();
-    cy.intercept('/api/organizations');
-    cy.findByText(/loading/).should('not.exist');
-    cy.findByRole('combobox', { name: /rank/i }).click();
-    cy.findByRole('option', { name: /SSgt/i }).click();
-    cy.findByRole('textbox', { name: /afsc/i }).clear().type('3D0X4');
-    cy.findByRole('combobox', { name: /organization/i }).click();
-    cy.findByRole('option', { name: /dental/i }).click();
-    cy.findByRole('button', { name: /no/i }).click();
-    cy.findByRole('button', { name: /cancel/i }).click();
-    cy.findByText(/dental/).should('not.exist');
   });
 });

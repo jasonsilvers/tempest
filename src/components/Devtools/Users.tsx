@@ -22,7 +22,7 @@ type OrgFormEvent = SelectChangeEvent<string>;
 const Users = () => {
   const [modalState, setModalState] = useState({ userId: null, open: false });
   const queryClient = useQueryClient();
-  const { user: LoggedInUser } = usePermissions();
+  const { user: LoggedInUser, isLoading } = usePermissions();
   const usersListQuery = useQuery<UserWithAll[]>('users', () =>
     axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.users)
   );
@@ -90,13 +90,13 @@ const Users = () => {
     });
   };
 
-  if (usersListQuery.isLoading) {
+  if (usersListQuery.isLoading || isLoading) {
     return <div>...loading users</div>;
   }
 
   return (
     <div tw="p-6">
-      {usersListQuery?.data.map((user) => {
+      {usersListQuery?.data?.map((user) => {
         return (
           <div key={user.id} tw="flex items-center p-2">
             <Data>
@@ -147,7 +147,7 @@ const Users = () => {
               )}
             </div>
             <div tw="ml-auto">
-              {LoggedInUser.id !== user.id ? (
+              {LoggedInUser?.id !== user.id ? (
                 <Button
                   color="secondary"
                   variant="contained"

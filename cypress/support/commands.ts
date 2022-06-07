@@ -53,15 +53,16 @@ Cypress.Commands.add('loginAsMember', () => {
 });
 
 Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, date: string) => {
-  cy.findByRole('button', { name: /add new/i, timeout: 10000 }).click();
+  cy.findByRole('button', { name: /add/i, timeout: 10000 }).click();
 
   cy.wait(10000);
 
   cy.findByRole('combobox').type(trackingItemName);
 
-  cy.findByRole('option', { name: trackingItemName }).click();
 
-  cy.findByLabelText(/choose date/i).click();
+  cy.findByText(trackingItemName).click()
+
+  cy.findByRole('button', { name: 'calendar-open-button' }).click();
 
   cy.findByLabelText(date).click();
 

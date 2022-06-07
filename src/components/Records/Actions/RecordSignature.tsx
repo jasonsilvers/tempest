@@ -6,11 +6,10 @@ import React from 'react';
 import { UseMutateFunction } from 'react-query';
 import 'twin.macro';
 import { DoneAllIcon } from '../../../assets/Icons';
-import { EFuncAction, EMtrVerb, EResource } from '../../../const/enums';
+import { EFuncAction, EMtrVerb, EResource, ERole } from '../../../const/enums';
 import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { LoadingSpinner, TempestDeleteIcon, TempestToolTip } from '../../../lib/ui';
-import { MemberTrackingRecordWithUsers } from '../../../repositories/memberTrackingRepo';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
 import setDomRole from '../../../utils/setDomRole';
 import { ActionButton, DisabledButton, TableData } from '../TwinMacro/Twin';
@@ -21,16 +20,16 @@ type DeterminedActionOnRecord = 'traineeCanSign' | 'authorityCanSign' | 'complet
 
 export const determineActionOnRecord = (
   signee: 'trainee' | 'authority',
-  memberTrackingRecord: MemberTrackingRecordWithUsers,
+  memberTrackingRecord: MemberTrackingRecord,
   signatureType: 'authoritySignedDate' | 'traineeSignedDate',
   loggedInUser: User
 ): DeterminedActionOnRecord => {
   let action: DeterminedActionOnRecord;
   if (!memberTrackingRecord[signatureType]) {
-    if (signee === 'authority' && loggedInUser.id !== memberTrackingRecord.traineeId) {
+    if (signee === 'authority' && loggedInUser?.id !== memberTrackingRecord.traineeId) {
       action = 'authorityCanSign';
     }
-    if (signee === 'trainee' && loggedInUser.id === memberTrackingRecord.traineeId) {
+    if (signee === 'trainee' && loggedInUser?.id === memberTrackingRecord.traineeId) {
       action = 'traineeCanSign';
     }
   }
@@ -44,7 +43,15 @@ export const determineActionOnRecord = (
 
 const AwaitingSignature: React.FC = ({ children }) => (
   <TableData tw="text-xs mr-3">
-    <DisabledButton tw="h-8 text-gray-600" disabled>
+    <DisabledButton tw="h-8" disabled>
+      {children ?? 'Awaiting Signature'}
+    </DisabledButton>
+  </TableData>
+);
+
+const AwaitingSignatureSecondary: React.FC = ({ children }) => (
+  <TableData tw="text-xs mr-3">
+    <DisabledButton tw="h-8 text-secondary border-secondary" disabled>
       {children ?? 'Awaiting Signature'}
     </DisabledButton>
   </TableData>
@@ -61,7 +68,7 @@ const AwaitingSignature: React.FC = ({ children }) => (
 
 const getAllowedActions = (
   signee: 'trainee' | 'authority',
-  memberTrackingRecord: MemberTrackingRecordWithUsers,
+  memberTrackingRecord: MemberTrackingRecord,
   signatureType: 'authoritySignedDate' | 'traineeSignedDate',
   loggedInUser: User,
   signRecordFor: UseMutateFunction<
@@ -77,9 +84,9 @@ const getAllowedActions = (
     return 'Fetching Data...';
   }
 
-  const handleSignTrainee = () => {
+  const handleSign = () => {
     signRecordFor(
-      { memberTrackingRecord, userId: loggedInUser.id },
+      { memberTrackingRecord, userId: memberTrackingRecord.traineeId },
       {
         onSuccess: () => {
           enqueueSnackbar('A record was successfully Signed', { variant: 'success' });
@@ -99,7 +106,7 @@ const getAllowedActions = (
   if (determinedAction === 'authorityCanSign' || determinedAction === 'traineeCanSign') {
     return (
       <TableData>
-        <ActionButton tw="h-8" aria-label={setDomRole('Signature Button')} onClick={handleSignTrainee}>
+        <ActionButton tw="h-8 hover:bg-primary" aria-label={setDomRole('Signature Button')} onClick={handleSign}>
           Sign
         </ActionButton>
       </TableData>
@@ -114,22 +121,30 @@ const getAllowedActions = (
           traineeSignature={{ signee: memberTrackingRecord[signee], date: memberTrackingRecord[signatureType] }}
         >
           <span>
-            <DisabledButton tw="text-xs h-8">{`Signed On ${dayjs(memberTrackingRecord[signatureType]).format(
-              'MM/DD/YY'
-            )}`}</DisabledButton>
+            <DisabledButton tw="text-xs h-8 border-0 text-secondarytext">{`Signed On ${dayjs(
+              memberTrackingRecord[signatureType]
+            ).format('MM/DD/YY')}`}</DisabledButton>
           </span>
         </RecordSignatureToolTip>
       </TableData>
     );
   }
 
-  return <AwaitingSignature />;
+  return (
+    <>
+      {memberTrackingRecord.traineeSignedDate || memberTrackingRecord.authoritySignedDate ? (
+        <AwaitingSignatureSecondary />
+      ) : (
+        <AwaitingSignature />
+      )}
+    </>
+  );
 };
 
 const RecordRowActions: React.FC<{
   authoritySignedDate: Date;
   traineeSignedDate: Date;
-  memberTrackingRecord: MemberTrackingRecordWithUsers;
+  memberTrackingRecord: MemberTrackingRecord & { trainee: User; authority: User };
   disabled: boolean;
 }> = ({ authoritySignedDate, traineeSignedDate, memberTrackingRecord, disabled }) => {
   const { user: LoggedInUser } = useUser<LoggedInUserType>();
@@ -141,11 +156,26 @@ const RecordRowActions: React.FC<{
   const { trainee, authority } = memberTrackingRecord;
   const { isLoading, permissionCheck } = usePermissions();
 
+  const determineActionForAuthority = determineActionOnRecord(
+    'authority',
+    memberTrackingRecord,
+    'authoritySignedDate',
+    LoggedInUser
+  );
+  const determineActionForTrainee = determineActionOnRecord(
+    'trainee',
+    memberTrackingRecord,
+    'traineeSignedDate',
+    LoggedInUser
+  );
+
   const canDeleteAny = permissionCheck(
     LoggedInUser?.role?.name,
     EFuncAction.DELETE_ANY,
     EResource.MEMBER_TRACKING_RECORD
   );
+
+  const isAdmin = LoggedInUser?.role?.name === ERole.ADMIN;
 
   if (disabled) {
     return (
@@ -158,7 +188,15 @@ const RecordRowActions: React.FC<{
           title={'No Completed Date'}
         >
           <span>
-            <AwaitingSignature />
+            {determineActionForAuthority === 'authorityCanSign' ? (
+              <TableData tw="text-xs mr-3">
+                <DisabledButton tw="h-8 bg-gray-300 text-disabledText border-0 text-[14px]" disabled>
+                  Sign
+                </DisabledButton>
+              </TableData>
+            ) : (
+              <AwaitingSignature />
+            )}
           </span>
         </TempestToolTip>
         <TempestToolTip
@@ -169,14 +207,24 @@ const RecordRowActions: React.FC<{
           title={'No Completed Date'}
         >
           <span>
-            <AwaitingSignature />
+            {determineActionForTrainee === 'traineeCanSign' ? (
+              <TableData tw="text-xs mr-3">
+                <DisabledButton tw="h-8 bg-gray-300 text-disabledText border-0 text-[14px]" disabled>
+                  Sign
+                </DisabledButton>
+              </TableData>
+            ) : (
+              <AwaitingSignature />
+            )}
           </span>
         </TempestToolTip>
         <TableData>
           <IconButton
             aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
             size="small"
-            onClick={() => deleteRecord(memberTrackingRecord.id)}
+            onClick={() =>
+              deleteRecord({ memberTrackingRecordId: memberTrackingRecord.id, userId: memberTrackingRecord.traineeId })
+            }
             tw="ml-auto mr-3 hover:bg-transparent"
           >
             <TempestDeleteIcon />
@@ -207,7 +255,23 @@ const RecordRowActions: React.FC<{
             </div>
           </RecordSignatureToolTip>
         </TableData>
-        <TableData tw="w-4"></TableData>
+        <TableData tw="w-4">
+          {isAdmin && (
+            <IconButton
+              aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
+              size="small"
+              onClick={() =>
+                deleteRecord({
+                  memberTrackingRecordId: memberTrackingRecord.id,
+                  userId: memberTrackingRecord.traineeId,
+                })
+              }
+              tw="ml-auto mr-3 hover:bg-transparent"
+            >
+              <TempestDeleteIcon />
+            </IconButton>
+          )}
+        </TableData>
       </>
     );
   }
@@ -240,7 +304,9 @@ const RecordRowActions: React.FC<{
           }
           aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
           size="small"
-          onClick={() => deleteRecord(memberTrackingRecord.id)}
+          onClick={() =>
+            deleteRecord({ memberTrackingRecordId: memberTrackingRecord.id, userId: memberTrackingRecord.traineeId })
+          }
           tw="ml-auto mr-3 hover:bg-transparent"
         >
           <TempestDeleteIcon />

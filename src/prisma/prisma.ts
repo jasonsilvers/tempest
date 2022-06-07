@@ -17,6 +17,7 @@ const prisma =
 
 if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
 
+/* istanbul ignore next */
 if (process.env.NODE_ENV === 'production') {
   prisma.$use(async (params, next) => {
     const before = Date.now();

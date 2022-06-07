@@ -1,17 +1,20 @@
-import React, { useMemo, useState } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay, TempestDatePicker } from '../../../lib/ui';
-import tw from 'twin.macro';
-import { useTrackingItems } from '../../../hooks/api/trackingItem';
+import { Autocomplete, Box, Button, CircularProgress, IconButton, TextField } from '@mui/material';
 import { MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '@prisma/client';
-const dayjs = require('dayjs');
-import { DeleteIcon, Close } from '../../../assets/Icons';
-import { useCreateMemberTrackingItemAndRecord, useMemberTrackingItems } from '../../../hooks/api/memberTrackingItem';
-import { mtrQueryKeys, useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { useSnackbar } from 'notistack';
+import React, { useMemo, useState } from 'react';
 import { useQueryClient } from 'react-query';
-import { memberTrackingRecordIsComplete } from '../../../utils/status';
+import tw from 'twin.macro';
+import { Close, DeleteIcon } from '../../../assets/Icons';
+import { EMtrVariant } from '../../../const/enums';
+import { mtiQueryKeys, useCreateMemberTrackingItemAndRecord } from '../../../hooks/api/memberTrackingItem';
+import { useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
+import { useTrackingItems } from '../../../hooks/api/trackingItem';
+import { useMemberTrackingItemsForUser } from '../../../hooks/api/users';
+import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay, TempestDatePicker } from '../../../lib/ui';
+import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
 import { TrackingItemInterval } from '../../../utils/daysToString';
-import { IconButton, Autocomplete, TextField, CircularProgress, Button } from '@mui/material';
+import { memberTrackingRecordIsComplete } from '../../../utils/status';
+const dayjs = require('dayjs');
 
 type IMemberTrackingItemsToAdd = {
   [key: number]: IMemberTrackingItemToAdd;
@@ -36,7 +39,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   const trackingItemsQuery = useTrackingItems();
   const addMemberTrackingItemAndRecord = useCreateMemberTrackingItemAndRecord();
   const addMemberTrackingRecord = useCreateMemberTrackingRecord();
-  const memberTrackingItemsQuery = useMemberTrackingItems(forMemberId);
+  const memberTrackingItemsQuery = useMemberTrackingItemsForUser(forMemberId);
   const queryClient = useQueryClient();
 
   const [memberTrackingItemsToAdd, setMemberTrackingItemsToAdd] = useState<IMemberTrackingItemsToAdd>([]);
@@ -46,11 +49,13 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   const [isSaving, setIsSaving] = useState(false);
 
   useMemo(() => {
-    const memberTrackingRecordQueries = queryClient.getQueriesData<MemberTrackingRecord>(
-      mtrQueryKeys.memberTrackingRecords()
+    const memberTrackingItemQueries = queryClient.getQueriesData<MemberTrackingItemWithAll>(
+      mtiQueryKeys.memberTrackingItems(forMemberId, EMtrVariant.IN_PROGRESS)
     );
 
-    const memberTrackingRecords = memberTrackingRecordQueries.map((mtrq) => mtrq[1]);
+    const memberTrackingRecords = memberTrackingItemQueries
+      .flatMap((mtiq) => mtiq[1])
+      .flatMap((mti) => mti?.memberTrackingRecords);
 
     const trackingItemsList = trackingItemsQuery.data?.filter(
       (trackingItem) =>
@@ -138,8 +143,17 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
           //This is a hack to get the input box to clear after selecting an option
           key={dayjs().toISOString()}
           options={trackingItemOptions}
-          getOptionLabel={(options) => options.title}
-          onChange={(event, value) => {
+          getOptionLabel={(options: TrackingItem) => options.title}
+          renderOption={(props, option) => (
+            <li {...props}>
+              <Box>
+                {option.title}
+                <br />
+                <span tw="text-sm text-gray-400">{option.description}</span>
+              </Box>
+            </li>
+          )}
+          onChange={(_event, value) => {
             const selectedTrackingItem = value as TrackingItem;
             const filteredOptions = trackingItemOptions.filter((tio) => tio.id !== selectedTrackingItem.id);
 

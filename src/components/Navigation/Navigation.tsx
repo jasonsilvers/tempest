@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -9,7 +10,7 @@ interface ILinkProps {
   icon?: React.ReactNode;
 }
 
-const StyledHeader = tw.a` mr-8 mb-6 uppercase text-4xl`;
+const StyledHeader = tw.a`mb-6 uppercase text-4xl`;
 
 const Header: React.FC<ILinkProps> = ({ children, goToUrl = '/', className = '' }) => {
   return (
@@ -19,32 +20,34 @@ const Header: React.FC<ILinkProps> = ({ children, goToUrl = '/', className = '' 
   );
 };
 
-const StyledLink = tw.a`text-base text-secondary flex flex-row items-center space-x-6 cursor-pointer h-14 w-auto`;
-const StyledActiveLInk = tw(StyledLink)`bg-secondary text-white rounded-lg`;
-const StyledIcon = tw.div`bg-accent rounded-l-lg h-full flex items-center w-16 justify-center`;
-const StyledChildren = tw.div`w-60`;
-const StyledNonActiveIcon = tw(StyledIcon)`bg-white`;
-
 const Link: React.FC<ILinkProps> = ({ children, goToUrl, icon }) => {
   const router = useRouter();
 
   if (router.asPath === goToUrl) {
     return (
       <NextLink href={goToUrl}>
-        <StyledActiveLInk>
-          <StyledIcon>{icon}</StyledIcon>
-          <StyledChildren>{children}</StyledChildren>
-        </StyledActiveLInk>
+        <a>
+          <div tw="flex space-x-8 h-12 px-4">
+            <div>{icon}</div>
+            <Typography component="div" variant="body1" tw="text-secondary">
+              {children}
+            </Typography>
+          </div>
+        </a>
       </NextLink>
     );
   }
 
   return (
     <NextLink href={goToUrl}>
-      <StyledLink>
-        <StyledNonActiveIcon>{icon}</StyledNonActiveIcon>
-        <StyledChildren>{children}</StyledChildren>
-      </StyledLink>
+      <a>
+        <div tw="flex space-x-8 h-12 px-4">
+          <div>{icon}</div>
+          <Typography component="div" variant="body1" tw="text-black">
+            {children}
+          </Typography>
+        </div>
+      </a>
     </NextLink>
   );
 };

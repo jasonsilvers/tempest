@@ -2,23 +2,29 @@ import { User } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { getAc } from '../../../middleware/utils';
-import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
+import {
+  BadRequestError,
+  MethodNotAllowedError,
+  NotFoundError,
+  PermissionError,
+} from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import {
   findUserByEmail,
   findUserByIdWithMemberTrackingItems,
   UserWithMemberTrackingItems,
   LoggedInUser,
+  findUserById,
+  FindUserById,
 } from '../../../repositories/userRepo';
-import { EResource, EUserIncludes, EUserResources, ITempestApiError } from '../../../const/enums';
-import { getIncludesQueryArray } from '../../../utils/includeQuery';
+import { EResource, EMtrVariant, EUserResources, ITempestApiMessage } from '../../../const/enums';
 
 async function userSlugHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<User | ITempestApiError>
+  res: NextApiResponse<User | ITempestApiMessage>
 ) {
   const {
-    query: { slug, include },
+    query: { slug },
     method,
   } = req;
 
@@ -27,11 +33,18 @@ async function userSlugHandler(
   }
 
   const userId = slug[0];
-  const resource = slug[1];
+  const resource = slug[1] as EUserResources;
+  const variant = slug[2] as EMtrVariant;
 
   const userIdParam = parseInt(userId);
 
-  const includesQuery = getIncludesQueryArray(include);
+  if (resource && !Object.values(EUserResources).includes(resource)) {
+    throw new NotFoundError();
+  }
+
+  if (variant && !Object.values(EMtrVariant).includes(variant)) {
+    throw new BadRequestError();
+  }
 
   const ac = await getAc();
 
@@ -44,13 +57,12 @@ async function userSlugHandler(
     throw new PermissionError();
   }
 
-  let user: UserWithMemberTrackingItems;
+  let user: UserWithMemberTrackingItems | FindUserById;
 
   if (resource === EUserResources.MEMBER_TRACKING_ITEMS) {
-    user = await findUserByIdWithMemberTrackingItems(
-      userIdParam,
-      includesQuery.includes(EUserIncludes.TRACKING_ITEM) ? EUserIncludes.TRACKING_ITEM : null
-    );
+    user = await findUserByIdWithMemberTrackingItems(userIdParam, resource, variant);
+  } else {
+    user = await findUserById(userIdParam);
   }
 
   if (!user) {

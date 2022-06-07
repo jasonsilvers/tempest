@@ -11,27 +11,28 @@ generator client {
 }
 
 model User {
-  id                       Int                    @id @default(autoincrement())
-  firstName                String?                @map("first_name")
-  lastName                 String?                @map("last_name")
-  middleName               String?                @map("middle_name")
-  email                    String?                @unique
-  createdAt                DateTime?              @default(now()) @map("created_at")
-  updatedAt                DateTime?              @updatedAt @map("updated_at")
-  lastLogin                DateTime?              @map("last_login")
-  role                     Role?                  @relation(fields: [roleId], references: [id])
-  roleId                   Int?                   @map("role_id")
-  organization             Organization[]
-  organizationId           Int?                   @map("organization_id")
-  reportingOrganization    Organization?          @relation(fields: [reportingOrganizationId], references: [id], name: "reportingOrganization")
-  reportingOrganizationId  Int?                   @map("reporting_organization_id")
+  id                       Int                               @id @default(autoincrement())
+  firstName                String?                           @map("first_name")
+  lastName                 String?                           @map("last_name")
+  middleName               String?                           @map("middle_name")
+  email                    String?                           @unique
+  createdAt                DateTime?                         @default(now()) @map("created_at")
+  updatedAt                DateTime?                         @updatedAt @map("updated_at")
+  lastLogin                DateTime?                         @map("last_login")
+  role                     Role?                             @relation(fields: [roleId], references: [id])
+  roleId                   Int?                              @map("role_id")
+  organization             Organization?                     @relation(fields: [organizationId], references: [id])
+  organizationId           Int?                              @map("organization_id")
+  reportingOrganization    Organization?                     @relation(fields: [reportingOrganizationId], references: [id], name: "reportingOrganization")
+  reportingOrganizationId  Int?                              @map("reporting_organization_id")
   tags                     Tag[]
+  ppeItems                 PersonalProtectionEquipmentItem[]
   memberTrackingItems      MemberTrackingItem[]
-  traineeTrackingRecords   MemberTrackingRecord[] @relation(name: "TraineeRecords")
-  authorityTrackingRecords MemberTrackingRecord[] @relation(name: "AuthorityRecords")
+  traineeTrackingRecords   MemberTrackingRecord[]            @relation(name: "TraineeRecords")
+  authorityTrackingRecords MemberTrackingRecord[]            @relation(name: "AuthorityRecords")
   rank                     String?
   afsc                     String?
-  dutyTitle                String?                @map("duty_title")
+  dutyTitle                String?                           @map("duty_title")
   logEvent                 LogEvent[]
 
   @@map(name: "user")
@@ -41,6 +42,17 @@ model Tag {
   id    Int     @id @default(autoincrement())
   name  String?
   users User[]
+}
+
+model PersonalProtectionEquipmentItem {
+  id              Int     @id @default(autoincrement())
+  name            String
+  provided        Boolean
+  providedDetails String
+  inUse           Boolean
+  inUseDetails    String
+  user            User    @relation(fields: [userId], references: [id])
+  userId          Int
 }
 
 model MemberTrackingRecord {

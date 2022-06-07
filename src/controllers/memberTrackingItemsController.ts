@@ -13,7 +13,7 @@ import {
   deleteMemberTrackingItem,
 } from '../repositories/memberTrackingRepo';
 import { LoggedInUser } from '../repositories/userRepo';
-import { ITempestApiError, EResource } from '../const/enums';
+import { ITempestApiMessage, EResource } from '../const/enums';
 import { getIncludesQueryArray } from '../utils/includeQuery';
 import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
 import { userHasPermissionWithinOrg } from '../utils/userHasPermissionWithinOrg';
@@ -25,7 +25,7 @@ export enum EMemberTrackingItemIncludes {
 
 type IMemberTrackingItemController = (
   req: ITempestMemberTrackingItemApiRequest<LoggedInUser>,
-  res: NextApiResponse<MemberTrackingItem | ITempestApiError>
+  res: NextApiResponse<MemberTrackingItem | ITempestApiMessage>
 ) => Promise<void>;
 
 export const memberTrackingItemGetSchema = {

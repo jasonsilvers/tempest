@@ -1,18 +1,15 @@
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
-import {
-  findUserByEmail,
-  updateLastLogin,
-  updateUserRole,
-  createNewUserFromJWT,
-} from '../../src/repositories/userRepo';
+import { findUserByEmail, updateLastLogin, updateUserRole } from '../../src/repositories/userRepo';
 import { explodedJwt, explodedJwt_admin, grants } from '../testutils/mocks/fixtures';
 import { server } from '../testutils/mocks/msw';
 import { findGrants } from '../../src/repositories/grantsRepo';
 import { returnUser } from '../../src/repositories/loginRepo';
+import { createNewUserFromJWT } from '../../src/repositories/utils';
 
 jest.mock('../../src/repositories/userRepo');
 jest.mock('../../src/repositories/roleRepo');
 jest.mock('../../src/repositories/grantsRepo.ts');
+jest.mock('../../src/repositories/utils.ts');
 
 const dodId = '2223332221';
 
@@ -49,6 +46,7 @@ afterAll(() => {
 test('login findOrAdduser should return user if found in tempest', async () => {
   const expectedUser = { ...returnedUser, dodId };
   mockMethodAndReturn(findUserByEmail, expectedUser);
+  mockMethodAndReturn(createNewUserFromJWT, expectedUser);
 
   const user = await returnUser(dodId, explodedJwt);
 

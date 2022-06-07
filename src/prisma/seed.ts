@@ -1,4 +1,4 @@
-import { Grant, PrismaClient } from '@prisma/client';
+import { Grant, PrismaClient, User } from '@prisma/client';
 import { EAction, EResource, ERole } from '../const/enums';
 import { grants } from '../const/grants';
 const casual = require('casual');
@@ -28,6 +28,21 @@ function createUser(firstName?: string, lastName?: string, email?: string) {
   };
 }
 
+async function addUserToDb(user: Partial<User>, organizationId: number, roleId: number) {
+  return prisma.user.create({
+    data: {
+      ...user,
+      organizationId,
+      roleId,
+    },
+  });
+}
+
+async function createRandomUser(organizationId: number, roleId: number) {
+  const newUser = createUser();
+  return addUserToDb(newUser, organizationId, roleId);
+}
+
 async function createOrganization(name: string, shortName: string, parentId?: number) {
   const connection = parentId ? { parent: { connect: { id: parentId } } } : null;
 
@@ -36,6 +51,19 @@ async function createOrganization(name: string, shortName: string, parentId?: nu
       name,
       shortName,
       ...connection,
+    },
+  });
+}
+
+async function addPPEItem(userId: number) {
+  return prisma.personalProtectionEquipmentItem.create({
+    data: {
+      name: casual.title,
+      inUse: casual.boolean,
+      inUseDetails: casual.short_description,
+      provided: casual.boolean,
+      providedDetails: casual.short_description,
+      userId,
     },
   });
 }
@@ -143,23 +171,18 @@ async function seedDev() {
     },
   });
 
+  for (let i = 0; i <= 20; i++) {
+    await createRandomUser(organization1.id, memberRole ? memberRole.id : 2);
+  }
+
   const user2 = createUser('Sam', 'Member', 'sam.member@gmail.com');
 
-  const createdUser2 = await prisma.user.create({
-    data: {
-      ...user2,
-      organization: {
-        connect: {
-          id: organization3.id,
-        },
-      },
-      role: {
-        connect: {
-          id: memberRole ? memberRole.id : 2,
-        },
-      },
-    },
-  });
+  const createdUser2 = await addUserToDb(user2, organization3.id, memberRole ? memberRole.id : 2);
+
+  await addPPEItem(createdUser2.id);
+  await addPPEItem(createdUser2.id);
+  await addPPEItem(createdUser2.id);
+  await addPPEItem(createdUser2.id);
 
   const user3 = createUser('Frank', 'Monitor', 'frank.monitor@gmail.com');
 

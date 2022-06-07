@@ -12,7 +12,7 @@ async function main() {
         id: user.id,
       },
       data: {
-        organization: {
+        reportingOrganization: {
           connect: {
             id: user.organizationId,
           },

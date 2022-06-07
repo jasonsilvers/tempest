@@ -11,7 +11,8 @@ import Joi from 'joi';
 const organizationPostSchema = {
   body: Joi.object({
     name: Joi.string().required(),
-    parentId: Joi.string().optional().allow(null),
+    shortName: Joi.string().required(),
+    parentId: Joi.number().optional().allow(null),
   }),
 };
 

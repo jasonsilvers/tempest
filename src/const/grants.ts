@@ -169,6 +169,12 @@ const userGrants: Grants[] = [
     role: ERole.MONITOR,
   },
   {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.USER,
+    role: ERole.ADMIN,
+  },
+  {
     action: EAction.UPDATE_OWN,
     attributes: 'organizationId, tags, afsc, rank, address, dutyTitle, firstName, lastName',
     resource: EResource.USER,
@@ -192,6 +198,18 @@ const organizationGrants: Grants[] = [
 
   {
     action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.DELETE_ANY,
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.ADMIN,
@@ -249,6 +267,58 @@ const trackingItemGrants: Grants[] = [
   },
 ];
 
+const ppeItemGrants: Grants[] = [
+  {
+    action: EAction.CREATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MEMBER,
+  },
+
+  {
+    action: EAction.READ_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MEMBER,
+  },
+  {
+    action: EAction.DELETE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MEMBER,
+  },
+  {
+    action: EAction.CREATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.READ_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.DELETE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.UPDATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.UPDATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MEMBER,
+  },
+];
+
 export const grants: Grants[] = [
   ...mattermostGrants,
   ...pageGrants,
@@ -258,4 +328,5 @@ export const grants: Grants[] = [
   ...organizationGrants,
   ...uploadGrants,
   ...trackingItemGrants,
+  ...ppeItemGrants,
 ];

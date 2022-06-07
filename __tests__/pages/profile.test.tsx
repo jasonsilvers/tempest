@@ -1,5 +1,5 @@
 import { waitFor, fireEvent, rtlRender, Wrapper } from '../testutils/TempestTestUtils';
-import Profile from '../../src/pages/Profile/[id]';
+import Profile, { getServerSideProps } from '../../src/pages/Profile/[id]';
 import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';
 import singletonRouter from 'next/router';
@@ -7,6 +7,9 @@ import singletonRouter from 'next/router';
 import mockRouter from 'next-router-mock';
 import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
 import { EUri } from '../../src/const/enums';
+import { findUserById } from '../../src/repositories/userRepo';
+import { mockMethodAndReturn } from '../testutils/mocks/repository';
+import { GetServerSidePropsContext } from 'next/types';
 
 jest.mock('../../src/repositories/userRepo');
 jest.mock('next/router', () => require('next-router-mock'));
@@ -16,7 +19,6 @@ beforeAll(() => {
   server.listen({
     onUnhandledRequest: 'bypass',
   });
-  // @ts-expect-error
   server.use(
     rest.get('/api/users/123', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(bobJones));
@@ -114,7 +116,7 @@ it('should show breadcrumbs if monitor and not on own profile', async () => {
   expect(queryByText(/dashboard/i)).toBeInTheDocument();
 });
 
-it('renders opens the dialog modal', async () => {
+it('opens the dialog modal', async () => {
   server.use(
     rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
@@ -142,11 +144,24 @@ it('renders opens the dialog modal', async () => {
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
   await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
-  fireEvent.click(getByText(/add new/i));
+  fireEvent.click(getByText(/add/i));
 
   await waitFor(() => expect(getByText(/add new training/i)).toBeInTheDocument());
 
   // handle close modal by clicking off the modal
   fireEvent.click(getByRole('button', { name: /dialog-close-button/i }));
   expect(queryByText(/add new training/i)).not.toBeInTheDocument();
+});
+
+test('should do serverside rending and return user', async () => {
+  const user = {
+    id: 1,
+    firstName: 'joe',
+    role: { id: '22', name: 'monitor' },
+  };
+
+  mockMethodAndReturn(findUserById, user);
+  const value = await getServerSideProps({ context: { params: { id: 1 } } } as unknown as GetServerSidePropsContext);
+
+  expect(value.props.initialMemberData).toStrictEqual(user);
 });

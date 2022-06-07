@@ -22,6 +22,7 @@ module.exports = {
     '/src/types',
     '/src/components/Dashboard/Enums.ts',
     '/src/components/Dashboard/Types.ts',
+    '/src/pages/_document.tsx',
     '/src/const/',
     '/src/assets/',
     '/src/prisma/seed.ts',

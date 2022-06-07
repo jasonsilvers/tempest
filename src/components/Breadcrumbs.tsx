@@ -1,15 +1,16 @@
-import { Breadcrumbs, Link, Typography } from '@mui/material';
+import { Breadcrumbs, Link } from '@mui/material';
 import NextLink from 'next/link';
+import 'twin.macro';
 
 export const BreadCrumbs = () => {
   return (
     <Breadcrumbs aria-label="breadcrumb">
       <NextLink href={'/Dashboard'}>
-        <Link underline="hover" color="inherit">
+        <Link tw="cursor-pointer" underline="hover" color="inherit">
           Dashboard
         </Link>
       </NextLink>
-      <Typography color="text.primary">Member Profile</Typography>
+      <p tw="text-secondary">Member Training Record</p>
     </Breadcrumbs>
   );
 };

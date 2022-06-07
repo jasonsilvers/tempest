@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useRouter } from 'next/router';
-import { ECategories, EFuncAction, EResource } from '../../const/enums';
+import { ECategories, EFuncAction, EMtrVariant, EResource } from '../../const/enums';
 import { GetServerSidePropsContext } from 'next';
 import { findUserById, UserWithAll } from '../../repositories/userRepo';
 import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
-import { Button } from '@mui/material';
-import tw from 'twin.macro';
+import 'twin.macro';
 import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberItemTracker';
 import Tab from '../../components/Records/MemberRecordTracker/Tab';
 import { ProfileHeader } from '../../components/Profile/ProfileHeader';
 import { useMember } from '../../hooks/api/users';
 import { BreadCrumbs } from '../../components/Breadcrumbs';
-
-const ButtonContainer = tw.div`fixed right-10 top-5 border`;
+import { AddIcon } from '../../assets/Icons';
+import { Card, Fab, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 
 const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
   const {
@@ -23,13 +22,17 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
   const { permissionCheck, role, isLoading, user } = usePermissions();
   const [openAddNewModal, setAddNewModal] = useState(false);
-
+  const [view, setView] = useState<EMtrVariant>(EMtrVariant.IN_PROGRESS);
   const userId = parseInt(id?.toString());
   const { data: member } = useMember(userId, initialMemberData);
 
   if (isLoading || !id) {
     return <div>Loading Profile</div>;
   }
+
+  const handleViewChange = (event: SelectChangeEvent) => {
+    setView(event.target.value as EMtrVariant);
+  };
 
   const persmission =
     user.id !== userId
@@ -44,49 +47,60 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   }
 
   return (
-    <div tw="relative min-w-min max-width[1440px]">
+    <div tw="relative min-w-min max-width[1440px] pr-8">
       {canViewDashboard.granted && !isOnOwnProfile ? (
-        <div tw="pb-20">
+        <div tw="pb-10">
           <BreadCrumbs />
         </div>
       ) : null}
-      <ProfileHeader member={member} />
-      <MemberItemTracker
-        variant="In Progress"
-        title="Training in Progress"
-        description="This shows your training that has yet to be completed and/or signed off."
-        userId={userId}
-      >
-        <Tab category={ECategories.ALL}>Show All</Tab>
-        <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
-        <Tab category={ECategories.TODO}>To Do</Tab>
-      </MemberItemTracker>
-      <br />
-      <MemberItemTracker
-        variant="Completed"
-        title="Official Training Record"
-        description="This shows your training that has been completed and signed off by the appropriate authority."
-        userId={userId}
-      >
-        <Tab category={ECategories.ALL}>Show All</Tab>
-        <Tab category={ECategories.DONE}>Current</Tab>
-        <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
-        <Tab category={ECategories.OVERDUE}>Overdue</Tab>
-      </MemberItemTracker>
+      <div tw="pb-5">
+        <ProfileHeader member={member} />
+      </div>
 
-      <ButtonContainer>
-        <Button
-          color="secondary"
-          size="medium"
-          tw="italic"
-          variant="contained"
-          onClick={() => {
-            setAddNewModal(true);
-          }}
-        >
-          Add New +
-        </Button>
-      </ButtonContainer>
+      <Card tw="p-8 relative">
+        <Typography tw="pb-6" variant="h5">
+          My Training
+        </Typography>
+        <div tw="pb-8">
+          <FormControl>
+            <Select tw="bg-white w-56" labelId="view-select" id="view-select" value={view} onChange={handleViewChange}>
+              <MenuItem value={EMtrVariant.IN_PROGRESS}>Training In Progress</MenuItem>
+              <MenuItem value={EMtrVariant.COMPLETED}>Offical Training Record</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+
+        {view === EMtrVariant.IN_PROGRESS ? (
+          <MemberItemTracker variant={EMtrVariant.IN_PROGRESS} userId={userId}>
+            <Tab category={ECategories.ALL}>Show All</Tab>
+            <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+            <Tab category={ECategories.TODO}>To Do</Tab>
+          </MemberItemTracker>
+        ) : null}
+
+        {view === EMtrVariant.COMPLETED ? (
+          <MemberItemTracker variant={EMtrVariant.COMPLETED} userId={userId}>
+            <Tab category={ECategories.ALL}>Show All</Tab>
+            <Tab category={ECategories.DONE}>Current</Tab>
+            <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
+            <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+          </MemberItemTracker>
+        ) : null}
+
+        <div tw="absolute top-6 right-6">
+          <Fab
+            color="secondary"
+            size="medium"
+            variant="extended"
+            onClick={() => {
+              setAddNewModal(true);
+            }}
+          >
+            <AddIcon sx={{ mr: 1 }} />
+            Add
+          </Fab>
+        </div>
+      </Card>
 
       {openAddNewModal ? (
         <AddMemberTrackingItemDialog

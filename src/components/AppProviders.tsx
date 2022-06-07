@@ -17,10 +17,10 @@ const onClickDismiss = (key: string) => () => {
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2D2270',
+      main: '#5344AE',
     },
     secondary: {
-      main: '#6A5CBE',
+      main: '#7B6CD3',
     },
   },
 });

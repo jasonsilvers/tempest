@@ -1,9 +1,8 @@
-import { User, Role, Prisma, Organization } from '@prisma/client';
+import { Organization, Prisma, Role, User } from '@prisma/client';
+import { EMtrVariant, EUserResources } from '../const/enums';
 import prisma from '../prisma/prisma';
-import { ERole, EUserIncludes } from '../const/enums';
-import { getRoleByName } from './roleRepo';
-import { P1_JWT } from '@tron/nextjs-auth-p1';
 import { getOrganizationTree } from './organizationRepo';
+
 const dayjs = require('dayjs');
 
 export const findUserByIdReturnAllIncludes = async (userId: number) => {
@@ -52,21 +51,52 @@ export const findUserById = async (id: number) => {
     },
     include: {
       role: true,
+      organization: true,
     },
   });
 };
 
-export const findUserByIdWithMemberTrackingItems = async (id: number, variant: EUserIncludes) => {
+export const findUserByIdWithMemberTrackingItems = async (
+  id: number,
+  resource: EUserResources,
+  variant: EMtrVariant
+) => {
+  const whereInProgressVariant = { where: { OR: [{ traineeSignedDate: null }, { authoritySignedDate: null }] } };
+  const whereCompletedVariant = { where: { NOT: [{ traineeSignedDate: null }, { authoritySignedDate: null }] } };
+  let whereVariant = { where: {} };
+
+  if (variant === EMtrVariant.IN_PROGRESS) {
+    whereVariant = whereInProgressVariant;
+  }
+
+  if (variant === EMtrVariant.COMPLETED) {
+    whereVariant = whereCompletedVariant;
+  }
+
   return prisma.user.findUnique({
     where: {
       id,
     },
     include: {
-      memberTrackingItems: {
-        include: {
-          trackingItem: variant === EUserIncludes.TRACKING_ITEM,
-        },
-      },
+      memberTrackingItems:
+        resource === EUserResources.MEMBER_TRACKING_ITEMS
+          ? {
+              include: {
+                trackingItem: true,
+                memberTrackingRecords: {
+                  ...whereVariant,
+                  orderBy: {
+                    order: 'desc',
+                  },
+                  include: {
+                    trackingItem: true,
+                    authority: true,
+                    trainee: true,
+                  },
+                },
+              },
+            }
+          : {},
     },
   });
 };
@@ -84,32 +114,30 @@ export const findUserByEmail = async (email: string) => {
 };
 
 /**
- * Get user method to query the PSQL db though tπuhe prisma client
- *
- * @param query unique db id
- * @returns UserWithRole
- */
-
-export const findUsers = async () => {
-  return prisma.user.findMany({
-    include: {
-      role: true,
-      organization: true,
-    },
-  });
-};
-
-/**
  * Get user method to query the PSQL db though the prisma client
  *
  * @returns User[]
  */
-export const getUsers = async () => prisma.user.findMany();
+export const getUsers = async () =>
+  prisma.user.findMany({
+    include: {
+      role: true,
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: true,
+        },
+      },
+    },
+  });
 
 export const getUsersWithMemberTrackingRecordsByOrgId = async (organizationId: number) => {
   return prisma.user.findMany({
     where: {
       organizationId,
+    },
+    orderBy: {
+      lastName: 'asc',
     },
     include: {
       role: true,
@@ -150,7 +178,7 @@ export const getAllUsersFromUsersOrgCascade = async (organizationId: number) => 
   try {
     organizations = await getOrganizationTree(organizationId);
   } catch (e) {
-    return { props: {} };
+    throw new Error('There was an error getting organization tree');
   }
 
   const organizationIds = organizations.map((org) => org.id);
@@ -243,28 +271,6 @@ export const findTrackingRecordsByAuthorityId = (userId: number, includeTracking
   });
 };
 
-export async function createNewUserFromJWT(jwt: P1_JWT) {
-  const memberRole = await getRoleByName(ERole.MEMBER);
-
-  if (jwt.given_name === null || jwt.family_name === null) {
-    console.log('---------Null Names---------', jwt);
-  }
-
-  const newTempestUser = await createUser(
-    {
-      firstName: jwt.given_name,
-      lastName: jwt.family_name,
-      email: jwt.email,
-    } as User,
-    memberRole
-  );
-
-  return {
-    ...newTempestUser,
-    role: memberRole,
-  } as LoggedInUser;
-}
-
 export async function updateLastLogin(id: number) {
   return prisma.user.update({
     where: {
@@ -303,6 +309,7 @@ export async function updateUserRole(id: number, roleName: string) {
 
 // required to infer the return type from the Prisma Client
 export type UserWithMemberTrackingItems = Prisma.PromiseReturnType<typeof findUserByIdWithMemberTrackingItems>;
+export type FindUserById = Prisma.PromiseReturnType<typeof findUserById>;
 export type UserWithAll = Prisma.PromiseReturnType<typeof findUserByIdReturnAllIncludes>;
 export type LoggedInUser = Prisma.PromiseReturnType<typeof findUserByEmail>;
 export type UsersWithMemberTrackingRecords = Prisma.PromiseReturnType<typeof getUsersWithMemberTrackingRecordsByOrgId>;

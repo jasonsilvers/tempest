@@ -8,9 +8,15 @@ import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import organizationsIdApiHandler from '../../../src/pages/api/organizations/[id]';
 import { testNextApi } from '../../testutils/NextAPIUtils';
-import { findOrganizationById, OrganizationWithChildren } from '../../../src/repositories/organizationRepo';
+import {
+  deleteOrganization,
+  findOrganizationById,
+  OrganizationWithChildren,
+  updateOrganization,
+} from '../../../src/repositories/organizationRepo';
 import { User } from '@prisma/client';
 import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';
+import { EAction, EResource, ERole } from '../../../src/const/enums';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
@@ -31,7 +37,13 @@ const organizationWithChildren: OrganizationWithChildren = {
   shortName: '15wg',
   parentId: null,
   children: [organizationWithNoChildren],
-  users: [],
+  users: [
+    {
+      id: 2,
+      firstName: 'joe',
+      organizationId: 2,
+    } as User,
+  ],
 };
 
 beforeEach(() => {
@@ -41,7 +53,15 @@ beforeEach(() => {
     role: { id: '22', name: 'monitor' },
     organizationId: 2,
   });
-  mockMethodAndReturn(findGrants, grants);
+  mockMethodAndReturn(findGrants, [
+    ...grants,
+    {
+      action: EAction.UPDATE_ANY,
+      attributes: '*',
+      resource: EResource.ORGANIZATION,
+      role: ERole.ADMIN,
+    },
+  ]);
 });
 
 afterEach(() => {
@@ -171,7 +191,113 @@ test('should return 404 if record not found', async () => {
   expect(status).toBe(404);
 });
 
-test('should only allow get', async () => {
+test('should return 403 if not allowed to update organization', async () => {
+  mockMethodAndReturn(updateOrganization, organizationWithNoChildren);
+
+  const { status } = await testNextApi.put(organizationsIdApiHandler, {
+    urlId: '2',
+    body: { shortName: 'testUpdate' },
+  });
+
+  expect(status).toBe(403);
+});
+
+test('should update organization', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+    organizationId: 2,
+  });
+  mockMethodAndReturn(updateOrganization, organizationWithNoChildren);
+
+  const { status, data } = await testNextApi.put(organizationsIdApiHandler, {
+    urlId: 2,
+    body: { shortName: 'testUpdate' },
+  });
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual(organizationWithNoChildren);
+});
+
+test('should return 403 if not allowed to delete organization', async () => {
+  mockMethodAndReturn(deleteOrganization, organizationWithNoChildren);
+
+  const { status } = await testNextApi.delete(organizationsIdApiHandler, {
+    urlId: '2',
+  });
+
+  expect(status).toBe(403);
+});
+
+test('should delete organization', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+    organizationId: 2,
+  });
+  mockMethodAndReturn(findOrganizationById, organizationWithNoChildren);
+  mockMethodAndReturn(deleteOrganization, organizationWithNoChildren);
+
+  const { status, data } = await testNextApi.delete(organizationsIdApiHandler, {
+    urlId: 2,
+  });
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ message: 'ok' });
+});
+
+test('delete organization - should return not found', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+    organizationId: 2,
+  });
+  mockMethodAndReturn(findOrganizationById, null);
+  mockMethodAndReturn(deleteOrganization, organizationWithNoChildren);
+
+  const { status } = await testNextApi.delete(organizationsIdApiHandler, {
+    urlId: 2,
+  });
+
+  expect(status).toBe(404);
+});
+
+test('delete organization - should return unable to delete of there are children', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+    organizationId: 2,
+  });
+  mockMethodAndReturn(findOrganizationById, organizationWithChildren);
+
+  const { status } = await testNextApi.delete(organizationsIdApiHandler, {
+    urlId: 2,
+  });
+
+  expect(status).toBe(409);
+});
+
+test('delete organization - should return unable to delete of there are users', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+    organizationId: 2,
+  });
+  mockMethodAndReturn(findOrganizationById, { ...organizationWithChildren, children: null });
+
+  const { status } = await testNextApi.delete(organizationsIdApiHandler, {
+    urlId: 2,
+  });
+
+  expect(status).toBe(409);
+});
+
+test('should not allow post', async () => {
   mockMethodAndReturn(findOrganizationById, organizationWithChildren);
   const { status } = await testNextApi.post(organizationsIdApiHandler, { body: {} });
 

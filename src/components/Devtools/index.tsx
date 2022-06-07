@@ -1,12 +1,10 @@
+import { Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
-import tw from 'twin.macro';
-import { SecurityIcon } from '../../assets/Icons';
-import { ERole } from '../../const/enums';
-import { usePermissions } from '../../hooks/usePermissions';
-import { Button, Drawer, Fab, Tab, Tabs } from '@mui/material';
-import { Users } from './Users';
-import { Logs } from './Logs';
 import { Grants } from './Grants';
+import { Logs } from './Logs';
+import { OrganizationList } from './OrganizationList';
+import { Users } from './Users';
+import 'twin.macro';
 
 interface ITabPanelProps {
   children?: React.ReactNode;
@@ -24,7 +22,7 @@ const TabPanel = (props: ITabPanelProps) => {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
     >
-      {value === index && <div tw="p-2">{children}</div>}
+      {value === index ? <div tw="p-2">{children}</div> : null}
     </div>
   );
 };
@@ -36,10 +34,10 @@ const a11yProps = (index: number) => {
   };
 };
 
-export const BasicTabs = () => {
+export const Devtools = () => {
   const [value, setValue] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
@@ -50,6 +48,7 @@ export const BasicTabs = () => {
           <Tab label="Users" {...a11yProps(0)} />
           <Tab label="Log Data" {...a11yProps(1)} />
           <Tab label="Grants" {...a11yProps(3)} />
+          <Tab label="Organizations" {...a11yProps(3)} />
         </Tabs>
       </div>
       <TabPanel value={value} index={0}>
@@ -61,45 +60,9 @@ export const BasicTabs = () => {
       <TabPanel value={value} index={2}>
         <Grants />
       </TabPanel>
+      <TabPanel value={value} index={3}>
+        <OrganizationList />
+      </TabPanel>
     </div>
   );
 };
-
-const DevDrawer = ({ showDrawer, toggleDrawer }: { showDrawer: boolean; toggleDrawer: () => void }) => {
-  return (
-    <>
-      <Drawer anchor="bottom" open={showDrawer}>
-        <div tw="absolute top-2 right-2 z-30">
-          <Button size="small" variant="contained" onClick={toggleDrawer}>
-            Close
-          </Button>
-        </div>
-        <BasicTabs />
-      </Drawer>
-    </>
-  );
-};
-
-const FabLayout = tw.div`fixed bottom-4 right-4`;
-
-const Devtools = () => {
-  const [showDrawer, toggleDrawer] = useState(false);
-  const { role } = usePermissions();
-
-  if (role !== ERole.ADMIN) {
-    return null;
-  }
-
-  return (
-    <div id="devtoolfab">
-      <FabLayout>
-        <Fab aria-label="devtool-button" size="small" onClick={() => toggleDrawer((old) => !old)}>
-          <SecurityIcon fontSize="small"></SecurityIcon>
-        </Fab>
-      </FabLayout>
-      <DevDrawer showDrawer={showDrawer} toggleDrawer={() => toggleDrawer((old) => !old)} />
-    </div>
-  );
-};
-
-export { Devtools };

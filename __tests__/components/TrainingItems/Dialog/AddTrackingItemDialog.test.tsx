@@ -80,14 +80,16 @@ test('should add new training to list waiting to be added', async () => {
     })
   );
 
-  const { getByRole, getByText, getAllByRole, findByRole } = render(<Container />);
+  const { getByRole, getByText, getAllByRole } = render(<Container />);
 
   const openDialogButton = getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
-  const trainingIntervalSelect = await findByRole('button', { name: 'Annual' });
+  const trainingIntervalSelect = getByRole('button', {
+    name: /recurrance-select/i,
+  });
 
   const newTrainingItemTitle = 'New training item title';
   const newTrainingItemDescription = 'New training item description';
@@ -98,6 +100,43 @@ test('should add new training to list waiting to be added', async () => {
 
   const options = getAllByRole('option');
   fireEvent.click(options[1]);
+
+  const createButton = getByRole('button', { name: /create/i });
+  fireEvent.click(createButton);
+
+  await waitForElementToBeRemoved(() => getByText(/create new training/i));
+});
+
+test('should add training with zero interval', async () => {
+  server.use(
+    rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+      );
+    })
+  );
+
+  const { getByRole, getByText, getAllByRole } = render(<Container />);
+
+  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  fireEvent.click(openDialogButton);
+
+  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  const trainingIntervalSelect = getByRole('button', {
+    name: /recurrance-select/i,
+  });
+
+  const newTrainingItemTitle = 'New training item title';
+  const newTrainingItemDescription = 'New training item description';
+
+  fireEvent.change(trainingTitleInput, { target: { value: newTrainingItemTitle } });
+  fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  fireEvent.mouseDown(trainingIntervalSelect);
+
+  const options = getAllByRole('option');
+  fireEvent.click(options[5]);
 
   const createButton = getByRole('button', { name: /create/i });
   fireEvent.click(createButton);

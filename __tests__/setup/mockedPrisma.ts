@@ -11,11 +11,14 @@ interface IMockedPrisma {
     update: jest.Mock;
     findUnique: jest.Mock;
     findMany: jest.Mock;
+    delete: jest.Mock;
   };
   organization: {
     create: jest.Mock;
     findMany: jest.Mock;
     findUnique: jest.Mock;
+    delete: jest.Mock;
+    update: jest.Mock;
   };
   trackingItem: {
     findMany: jest.Mock;
@@ -28,6 +31,9 @@ interface IMockedPrisma {
   };
   grant: {
     findMany: jest.Mock;
+    update: jest.Mock;
+    create: jest.Mock;
+    delete: jest.Mock;
   };
   memberTrackingItem: {
     findUnique: jest.Mock;
@@ -42,6 +48,13 @@ interface IMockedPrisma {
     delete: jest.Mock;
     update: jest.Mock;
     count: jest.Mock;
+  };
+  personalProtectionEquipmentItem: {
+    findUnique: jest.Mock;
+    findMany: jest.Mock;
+    create: jest.Mock;
+    delete: jest.Mock;
+    update: jest.Mock;
   };
 }
 
@@ -58,11 +71,14 @@ jest.mock(
       findUnique: jest.fn(),
       update: jest.fn(),
       findMany: jest.fn(),
+      delete: jest.fn(),
     },
     organization: {
       create: jest.fn(),
       findMany: jest.fn(),
       findUnique: jest.fn(),
+      delete: jest.fn(),
+      update: jest.fn(),
     },
     trackingItem: {
       findMany: jest.fn(),
@@ -75,6 +91,9 @@ jest.mock(
     },
     grant: {
       findMany: jest.fn(),
+      update: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
     },
     memberTrackingItem: {
       findUnique: jest.fn(),
@@ -89,6 +108,13 @@ jest.mock(
       delete: jest.fn(),
       update: jest.fn(),
       count: jest.fn(),
+    },
+    personalProtectionEquipmentItem: {
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
+      update: jest.fn(),
     },
   })
 );

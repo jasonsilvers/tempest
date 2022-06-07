@@ -13,7 +13,7 @@ import { TrackingItem } from '.prisma/client';
 import { User } from '@prisma/client';
 import { server } from '../../testutils/mocks/msw';
 import Tab from '../../../src/components/Records/MemberRecordTracker/Tab';
-import { ECategories, EUri } from '../../../src/const/enums';
+import { ECategories, EMtrVariant, EUri } from '../../../src/const/enums';
 
 import 'whatwg-fetch';
 
@@ -53,19 +53,9 @@ const fireSafetyItem: TrackingItem = {
 };
 
 // use Member tracking items
-const memberTrackingItemsGet = (user, memberTrackingItems) =>
-  rest.get(EUri.USERS + `${user.id}/membertrackingitems`, (req, res, ctx) => {
+const memberTrackingItemsGet = (user, memberTrackingItems, variant) =>
+  rest.get(EUri.USERS + `${user.id}/membertrackingitems/${variant}`, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({ ...user, memberTrackingItems }));
-  });
-// use member tracking item single
-const memberTrackingItemGet = (memberTrackingItem) =>
-  rest.get(EUri.MEMBER_TRACKING_ITEMS, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(memberTrackingItem));
-  });
-// use member tracking record
-const memberTrackingRecordGet = (memberTrackingRecord) =>
-  rest.get(EUri.MEMBER_TRACKING_RECORDS + memberTrackingRecord.id, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(memberTrackingRecord));
   });
 
 test('should render a record requiring signature - authority signed', async () => {
@@ -95,14 +85,10 @@ test('should render a record requiring signature - authority signed', async () =
     },
   ];
 
-  server.use(
-    memberTrackingItemsGet(testTrainee, memberTrackingItems_authSigned),
-    memberTrackingItemGet(memberTrackingItems_authSigned[0]),
-    memberTrackingRecordGet(memberTrackingItems_authSigned[0].memberTrackingRecords[0])
-  );
+  server.use(memberTrackingItemsGet(testTrainee, memberTrackingItems_authSigned, EMtrVariant.IN_PROGRESS));
 
   const { getByText, getByRole } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="In Progress">
+    <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.IN_PROGRESS}>
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -146,14 +132,10 @@ test('should render a record requiring signature - trainee signed', async () => 
     },
   ];
 
-  server.use(
-    memberTrackingItemsGet(testTrainee, memberTrackingItems_traineeSigned),
-    memberTrackingItemGet(memberTrackingItems_traineeSigned[0]),
-    memberTrackingRecordGet(memberTrackingItems_traineeSigned[0].memberTrackingRecords[0])
-  );
+  server.use(memberTrackingItemsGet(testTrainee, memberTrackingItems_traineeSigned, EMtrVariant.IN_PROGRESS));
 
   const { getByText, getByRole } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="In Progress">
+    <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.IN_PROGRESS}>
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -196,14 +178,10 @@ test('should render a record that is done', async () => {
     },
   ];
 
-  server.use(
-    memberTrackingItemsGet(testTrainee, memberTrackingItems_done),
-    memberTrackingItemGet(memberTrackingItems_done[0]),
-    memberTrackingRecordGet(memberTrackingItems_done[0].memberTrackingRecords[0])
-  );
+  server.use(memberTrackingItemsGet(testTrainee, memberTrackingItems_done, EMtrVariant.COMPLETED));
 
   const { getByText } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="Completed">
+    <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.COMPLETED}>
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -252,14 +230,10 @@ test('should render a record that is coming due', async () => {
     },
   ];
 
-  server.use(
-    memberTrackingItemsGet(testTrainee, memberTrackingItems_upcoming),
-    memberTrackingItemGet(memberTrackingItems_upcoming[0]),
-    memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
-  );
+  server.use(memberTrackingItemsGet(testTrainee, memberTrackingItems_upcoming, EMtrVariant.COMPLETED));
 
   const { getByText } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="Completed">
+    <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.COMPLETED}>
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -305,14 +279,10 @@ test('should render a record that is overdue', async () => {
     },
   ];
 
-  server.use(
-    memberTrackingItemsGet(testTrainee, memberTrackingItems_upcoming),
-    memberTrackingItemGet(memberTrackingItems_upcoming[0]),
-    memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
-  );
+  server.use(memberTrackingItemsGet(testTrainee, memberTrackingItems_upcoming, EMtrVariant.COMPLETED));
 
   const { getByText } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="Completed">
+    <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.COMPLETED}>
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -367,14 +337,10 @@ test('should sign record as trainee and mark as done', async () => {
     },
   ];
 
-  server.use(
-    memberTrackingItemsGet(testTrainee, memberTrackingItems_upcoming),
-    memberTrackingItemGet(memberTrackingItems_upcoming[0]),
-    memberTrackingRecordGet(memberTrackingItems_upcoming[0].memberTrackingRecords[0])
-  );
+  server.use(memberTrackingItemsGet(testTrainee, memberTrackingItems_upcoming, EMtrVariant.IN_PROGRESS));
 
   const { getByText, getByRole, queryByText } = render(
-    <MemberItemTracker userId={testTrainee.id} title="Test Records" description="test" variant="In Progress">
+    <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.IN_PROGRESS}>
       <Tab category={ECategories.ALL}>All</Tab>
       <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
       <Tab category={ECategories.OVERDUE}>Overdue</Tab>
@@ -390,9 +356,8 @@ test('should sign record as trainee and mark as done', async () => {
   const signatureButton = getByRole('button', { name: 'signature_button' });
 
   server.use(
-    memberTrackingItemsGet(testTrainee, memberTrackingItems_Done),
-    memberTrackingItemGet(memberTrackingItems_Done[0]),
-    memberTrackingRecordGet(memberTrackingItems_Done[0].memberTrackingRecords[0]),
+    memberTrackingItemsGet(testTrainee, memberTrackingItems_Done, EMtrVariant.IN_PROGRESS),
+
     rest.post(EUri.MEMBER_TRACKING_RECORDS + '*', (req, res, ctx) => {
       return res(
         ctx.status(200),

@@ -1,20 +1,19 @@
+import { Popover, Typography } from '@mui/material';
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
-import { useUser } from '@tron/nextjs-auth-p1';
 import dayjs, { Dayjs } from 'dayjs';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
+import 'twin.macro';
 import { ECategories, EMtrVerb } from '../../../const/enums';
-import { useMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
+import { useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import ConditionalDateInput from '../../../lib/ConditionalDateInput';
 import { DialogContent, DialogTitle } from '../../../lib/ui';
-import { LoggedInUser } from '../../../repositories/userRepo';
+import { TrackingItemInterval } from '../../../utils/daysToString';
 import { getCategory } from '../../../utils/status';
 import ConfirmDialog from '../../Dialog/ConfirmDialog';
 import { RecordRowActions } from '../Actions/RecordSignature';
-import { TableData, TableRow, Token, TokenObj } from '../TwinMacro/Twin';
+import { TableData, TableRow, TokenObj } from '../TwinMacro/Twin';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
-import 'twin.macro';
-import { TrackingItemInterval } from '../../../utils/daysToString';
 
 const DueDate = ({ completedDate, interval }: { completedDate: Date; interval: number }) => {
   if (interval === 0) {
@@ -50,44 +49,81 @@ const isFiltered = (categories: ECategories[], activeCategory: ECategories, stat
   return false;
 };
 
-const RecordRowSkeleton = () => {
+const TrainingTitle = ({ title, description }) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
   return (
-    <div role="progressbar" title="progressbar" tw="border border-gray-300 ">
-      <div tw="animate-pulse flex h-12 justify-items-center items-center px-2">
-        <Token tw="bg-gray-400 pr-2" />
-        <div tw="h-4 w-40 bg-gray-400 rounded-sm"></div>
-        <div tw="ml-auto flex space-x-4">
-          <div tw="h-2 w-14 bg-gray-400"></div>
-          <div tw="h-2 w-14 bg-gray-400"></div>
-          <div tw="h-2 w-14 bg-gray-400"></div>
-          <div tw="h-2 w-14 bg-gray-400"></div>
-        </div>
-      </div>
+    <div>
+      <Typography
+        aria-owns={open ? 'mouse-over-popover' : undefined}
+        aria-haspopup="true"
+        onMouseEnter={handlePopoverOpen}
+        onMouseLeave={handlePopoverClose}
+      >
+        {title}
+      </Typography>
+      <Popover
+        id="mouse-over-popover"
+        sx={{
+          pointerEvents: 'none',
+        }}
+        open={open}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        onClose={handlePopoverClose}
+        disableRestoreFocus
+      >
+        <Typography sx={{ p: 1 }}>{description}</Typography>
+      </Popover>
     </div>
   );
 };
 
 const RecordRow: React.FC<{
-  memberTrackingRecordId: number;
+  memberTrackingRecord: MemberTrackingRecord & { trackingItem: TrackingItem; trainee: User; authority: User };
   trackingItem: TrackingItem;
-}> = ({ memberTrackingRecordId, trackingItem }) => {
+}> = ({ memberTrackingRecord, trackingItem }) => {
   const { activeCategory, categories } = useMemberItemTrackerContext();
-  const trackingRecordQuery = useMemberTrackingRecord(memberTrackingRecordId);
   const completionDate = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
-  const { user } = useUser<LoggedInUser>();
+
   const { enqueueSnackbar } = useSnackbar();
   const [modalState, setModalState] = useState({ open: false, date: null });
 
   const handleMutation = (date?: Dayjs) => {
-    const memberTrackingRecord = {
-      ...trackingRecordQuery.data,
+    if (date && !date.isValid()) {
+      return;
+    }
+
+    if (date && date?.toISOString() === memberTrackingRecord.completedDate?.toString()) {
+      return;
+    }
+
+    const updatedMemberTrackingRecord = {
+      ...memberTrackingRecord,
       completedDate: date ?? modalState.date,
     };
     completionDate.mutate(
-      { memberTrackingRecord, userId: user.id },
+      { memberTrackingRecord: updatedMemberTrackingRecord, userId: memberTrackingRecord.traineeId },
       {
         onSettled: async () => {
-          enqueueSnackbar('Completion date updated, Signatures cleared', { variant: 'success' });
+          enqueueSnackbar('Completion date updated', { variant: 'success' });
         },
         // currently not firing onError.
         // see https://react-query.tanstack.com/guides/mutations#mutation-side-effects for doc on how it should work.
@@ -108,59 +144,55 @@ const RecordRow: React.FC<{
   };
 
   const status = useMemo(() => {
-    if (trackingRecordQuery.data) {
-      return getCategory(trackingRecordQuery.data, trackingItem?.interval);
+    if (memberTrackingRecord) {
+      return getCategory(memberTrackingRecord, trackingItem?.interval);
     }
-  }, [trackingRecordQuery.data, trackingItem?.interval]);
-
-  if (!trackingRecordQuery || trackingRecordQuery.isLoading || !user) {
-    return <RecordRowSkeleton />;
-  }
-
-  if (isFiltered(categories, activeCategory, status)) {
-    return null;
-  }
+  }, [memberTrackingRecord, trackingItem?.interval]);
 
   const handleCompletionDateChange = (inputDate: Date) => {
     const date = dayjs(inputDate);
-    if (trackingRecordQuery.data.authoritySignedDate || trackingRecordQuery.data.traineeSignedDate) {
+    if (memberTrackingRecord.authoritySignedDate || memberTrackingRecord.traineeSignedDate) {
       setModalState({ open: true, date });
     } else {
       handleMutation(date);
     }
   };
+  if (isFiltered(categories, activeCategory, status)) {
+    return null;
+  }
 
-  const DynamicToken = TokenObj[status];
+  const DynamicStatus = TokenObj[status];
   return (
     <>
       <TableRow>
-        <TableData tw={'text-base w-60'}>
+        <TableData tw={'text-base w-1/4'}>
           <div tw={'flex'}>
             <div tw="pt-1">
-              <DynamicToken />
+              <DynamicStatus />
             </div>
-            <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden w-64 pt-[2px]">{trackingItem?.title}</div>
-            {trackingRecordQuery.isLoading ? <div>...Loading</div> : null}
+            <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden pt-[2px] text-secondary underline">
+              <TrainingTitle title={trackingItem?.title} description={trackingItem?.description} />
+            </div>
           </div>
         </TableData>
-        <TableData tw={'text-sm text-purple-500 w-24 pt-1'}>{TrackingItemInterval[trackingItem?.interval]}</TableData>
+        <TableData tw={'text-sm w-24 pt-1'}>{TrackingItemInterval[trackingItem?.interval]}</TableData>
         <div tw="flex justify-between">
           <TableData tw="flex space-x-1">
             <ConditionalDateInput
               onChange={handleCompletionDateChange}
-              condition={!!trackingRecordQuery.data.authoritySignedDate && !!trackingRecordQuery.data.traineeSignedDate}
-              dateValue={trackingRecordQuery.data.completedDate}
+              condition={!!memberTrackingRecord.authoritySignedDate && !!memberTrackingRecord.traineeSignedDate}
+              dateValue={memberTrackingRecord.completedDate}
             />
           </TableData>
           <TableData tw="space-x-1 pt-1 text-gray-400">
-            <DueDate completedDate={trackingRecordQuery.data.completedDate} interval={trackingItem.interval} />
+            <DueDate completedDate={memberTrackingRecord.completedDate} interval={trackingItem.interval} />
           </TableData>
         </div>
         <RecordRowActions
-          memberTrackingRecord={trackingRecordQuery.data}
-          authoritySignedDate={trackingRecordQuery.data.authoritySignedDate}
-          traineeSignedDate={trackingRecordQuery.data.traineeSignedDate}
-          disabled={!trackingRecordQuery.data.completedDate}
+          memberTrackingRecord={memberTrackingRecord}
+          authoritySignedDate={memberTrackingRecord.authoritySignedDate}
+          traineeSignedDate={memberTrackingRecord.traineeSignedDate}
+          disabled={!memberTrackingRecord.completedDate}
         />
       </TableRow>
       <ConfirmDialog open={modalState.open} handleNo={handleNo} handleYes={handleYes}>

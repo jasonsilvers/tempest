@@ -1,25 +1,15 @@
 import React from 'react';
-import { useMemberTrackingItem } from '../../../hooks/api/memberTrackingItem';
+import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
 import RecordRow from './RecordRow';
 
-const MemberTrackingRecordSkeleton = () => {
-  return <div tw="animate-pulse h-12"></div>;
-};
-
 const MemberTrackingItemRow: React.FC<{
-  memberTrackingItemId: { userId: number; trackingItemId: number };
-}> = ({ memberTrackingItemId }) => {
-  const { data: memberTrackingItem, isLoading } = useMemberTrackingItem(
-    memberTrackingItemId.userId,
-    memberTrackingItemId.trackingItemId
-  );
-
+  memberTrackingItem: MemberTrackingItemWithAll;
+}> = ({ memberTrackingItem }) => {
   return (
     <>
-      {isLoading ? <MemberTrackingRecordSkeleton /> : null}
       {memberTrackingItem
         ? memberTrackingItem.memberTrackingRecords.map((tr) => (
-            <RecordRow key={tr.id} trackingItem={memberTrackingItem.trackingItem} memberTrackingRecordId={tr.id} />
+            <RecordRow key={tr.id} trackingItem={memberTrackingItem.trackingItem} memberTrackingRecord={tr} />
           ))
         : null}
     </>
