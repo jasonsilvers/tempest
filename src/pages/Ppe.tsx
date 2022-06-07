@@ -90,6 +90,7 @@ const PpeItem = ({
             size="small"
             error={!!errors.name}
             fullWidth
+            placeholder="Enter Title"
             defaultValue={localPpeItem.name}
             inputProps={{ ...register('name'), 'aria-label': 'name' }}
             disabled={inFlight}
@@ -120,6 +121,7 @@ const PpeItem = ({
             size="small"
             fullWidth
             disabled={inFlight}
+            placeholder="Enter Description"
             multiline
             defaultValue={localPpeItem.providedDetails}
             error={!!errors.provided}
@@ -149,6 +151,7 @@ const PpeItem = ({
             fullWidth
             multiline
             defaultValue={localPpeItem.inUseDetails}
+            placeholder="Enter Description"
             error={!!errors.inUseDetails}
             inputProps={{ ...register('inUseDetails'), 'aria-label': 'inUseDetails' }}
             disabled={inFlight}
@@ -169,8 +172,9 @@ const PpeItem = ({
   );
 };
 
-const Ppe = () => {
+const PpePage = () => {
   const { user } = useUser<LoggedInUser>();
+
   const ppeQuery = usePpeItems(user?.id);
 
   const [ppeItems, setPpeItems] = useState<PersonalProtectionEquipmentItem[]>([]);
@@ -239,4 +243,4 @@ const Ppe = () => {
   );
 };
 
-export default withPageAuth(Ppe);
+export default withPageAuth(PpePage);

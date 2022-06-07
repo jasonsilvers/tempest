@@ -13,7 +13,7 @@ export const usePpeItems = (userId: number) => {
   return useQuery<PersonalProtectionEquipmentItem[]>(
     ppeQueryKeys.items(),
     async () => {
-      return axios.get<PPEItemsDTO>(EUri.PPE_ITEMS + `/?userId=${userId}`).then((result) => result.data.ppeItems);
+      return axios.get<PPEItemsDTO>(EUri.PPE_ITEMS + `?userId=${userId}`).then((result) => result.data.ppeItems);
     },
     { enabled: !!userId }
   );

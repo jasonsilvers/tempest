@@ -86,11 +86,11 @@ export const deleteOrganizationAction = async (
     throw new NotFoundError();
   }
 
-  if (organizationToDelete.children.length > 0) {
+  if (organizationToDelete?.children?.length > 0) {
     return res.status(409).json({ message: 'Unable to delete an organization with sub organizations' });
   }
 
-  if (organizationToDelete.users.length > 0) {
+  if (organizationToDelete?.users?.length > 0) {
     return res.status(409).json({ message: 'Unable to delete an organization with users associated' });
   }
 
