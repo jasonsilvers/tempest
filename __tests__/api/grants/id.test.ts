@@ -6,7 +6,7 @@ import { testNextApi } from '../../testutils/NextAPIUtils';
 import grantsHandler from '../../../src/pages/api/grants/[id]';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
-import { updateGrant } from '../../../src/repositories/grantsRepo';
+import { deleteGrant, updateGrant } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { adminJWT } from '../../testutils/mocks/mockJwt';
 
@@ -41,6 +41,19 @@ test('should update grant', async () => {
   expect(data).toStrictEqual({ grant: grants[0] });
 });
 
+test('should delete grant', async () => {
+  mockMethodAndReturn(deleteGrant, grants[0]);
+
+  const { status, data } = await testNextApi.delete(grantsHandler, {
+    customHeaders: { Authorization: `Bearer ${adminJWT}` },
+    urlId: '1',
+  });
+
+  expect(status).toBe(200);
+
+  expect(data).toStrictEqual({ message: 'ok' });
+});
+
 test('should return 403 if not admin', async () => {
   const { status } = await testNextApi.put(grantsHandler, { body: { firstName: 'bob', lastName: 'anderson' } });
 
@@ -48,7 +61,10 @@ test('should return 403 if not admin', async () => {
 });
 
 test('should return 405 if method not allowed', async () => {
-  const { status } = await testNextApi.post(grantsHandler, { withJwt: true, body: {} });
+  const { status } = await testNextApi.post(grantsHandler, {
+    customHeaders: { Authorization: `Bearer ${adminJWT}` },
+    body: {},
+  });
 
   expect(status).toBe(405);
 });

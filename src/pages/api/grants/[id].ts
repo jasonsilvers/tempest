@@ -1,7 +1,7 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
 import { MethodNotAllowedError, PermissionError, withErrorHandling } from '../../../middleware/withErrorHandling';
-import { updateGrant } from '../../../repositories/grantsRepo';
+import { deleteGrant, updateGrant } from '../../../repositories/grantsRepo';
 import { LoggedInUser } from '../../../repositories/userRepo';
 import { jwtParser } from '../../../utils/jwtUtils';
 
@@ -18,10 +18,6 @@ export const grantsApiHandler = async (req: ITempestOrganizationIdApiRequest<Log
     query: { id },
   } = req;
 
-  if (method !== 'PUT') {
-    throw new MethodNotAllowedError();
-  }
-
   const jwt = jwtParser(req);
 
   const isAdmin =
@@ -30,15 +26,22 @@ export const grantsApiHandler = async (req: ITempestOrganizationIdApiRequest<Log
   if (!isAdmin) {
     throw new PermissionError();
   }
+  const grantId = parseInt(id);
 
-  const bodyGrantId = parseInt(id);
+  if (method === 'PUT') {
+    delete body.id;
 
-  delete body.id;
+    const updatedGrant = await updateGrant(grantId, body);
 
-  const updatedGrant = await updateGrant(bodyGrantId, body);
+    return res.status(200).json({ grant: updatedGrant });
+  }
 
-  res.status(200);
-  res.json({ grant: updatedGrant });
+  if (method === 'DELETE') {
+    await deleteGrant(grantId);
+    return res.status(200).json({ message: 'ok' });
+  }
+
+  throw new MethodNotAllowedError();
 };
 
 export default withErrorHandling(grantsApiHandler);

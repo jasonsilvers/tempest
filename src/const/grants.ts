@@ -267,6 +267,58 @@ const trackingItemGrants: Grants[] = [
   },
 ];
 
+const ppeItemGrants: Grants[] = [
+  {
+    action: EAction.CREATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MEMBER,
+  },
+
+  {
+    action: EAction.READ_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MEMBER,
+  },
+  {
+    action: EAction.DELETE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MEMBER,
+  },
+  {
+    action: EAction.CREATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.READ_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.DELETE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.UPDATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.UPDATE_OWN,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MEMBER,
+  },
+];
+
 export const grants: Grants[] = [
   ...mattermostGrants,
   ...pageGrants,
@@ -276,4 +328,5 @@ export const grants: Grants[] = [
   ...organizationGrants,
   ...uploadGrants,
   ...trackingItemGrants,
+  ...ppeItemGrants,
 ];
