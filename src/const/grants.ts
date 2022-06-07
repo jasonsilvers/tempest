@@ -267,6 +267,16 @@ const trackingItemGrants: Grants[] = [
   },
 ];
 
+const resourceGrants: Grants[] = [
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.ADMIN_PAGE,
+    role: ERole.ADMIN,
+  },
+  // TODO: create grants for the rest of the CRUD operations
+];
+
 export const grants: Grants[] = [
   ...mattermostGrants,
   ...pageGrants,
@@ -276,4 +286,5 @@ export const grants: Grants[] = [
   ...organizationGrants,
   ...uploadGrants,
   ...trackingItemGrants,
+  ...resourceGrants,
 ];

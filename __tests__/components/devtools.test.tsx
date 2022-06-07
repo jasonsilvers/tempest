@@ -168,7 +168,7 @@ beforeEach(() => {
 afterEach(() => {
   server.resetHandlers();
 });
-// // Clean up after the tests are finished.
+// Clean up after the tests are finished.
 afterAll(() => server.close());
 test('should show list of users', async () => {
   const { getByText } = render(<Devtools />);

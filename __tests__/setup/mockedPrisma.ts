@@ -47,6 +47,9 @@ interface IMockedPrisma {
     update: jest.Mock;
     count: jest.Mock;
   };
+  resource: {
+    findMany: jest.Mock;
+  };
 }
 
 jest.mock(
@@ -97,6 +100,9 @@ jest.mock(
       delete: jest.fn(),
       update: jest.fn(),
       count: jest.fn(),
+    },
+    resource: {
+      findMany: jest.fn(),
     },
   })
 );
