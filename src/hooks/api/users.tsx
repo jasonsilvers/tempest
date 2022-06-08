@@ -60,10 +60,14 @@ const useUsers = () => {
 };
 
 const useMember = (id: number, initialMemberData: UserWithAll) => {
-  return useQuery<User & { role: Role; organization: Organization }>(
+  return useQuery<User & { role: Role; organization: Organization; reportingOrganization: Organization }>(
     usersQueryKeys.member(id),
     async () =>
-      axios.get<User & { role: Role; organization: Organization }>(EUri.USERS + `${id}`).then((result) => result.data),
+      axios
+        .get<User & { role: Role; organization: Organization; reportingOrganization: Organization }>(
+          EUri.USERS + `${id}`
+        )
+        .then((result) => result.data),
     { enabled: !!id, initialData: initialMemberData, placeholderData: initialMemberData }
   );
 };

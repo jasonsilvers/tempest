@@ -23,6 +23,7 @@ const userSchema = {
       email: Joi.string().email().optional().allow(null, ''),
       roleId: Joi.number().optional().allow(null, ''),
       organizationId: Joi.number().optional().allow(null, ''),
+      reportingOrganizationId: Joi.number().optional().allow(null, ''),
       tags: Joi.array().items(Joi.string()).optional().allow(null, ''),
       rank: Joi.string().optional().allow(null, ''),
       afsc: Joi.string().optional().allow(null, ''),
@@ -105,7 +106,10 @@ const putUserAction = async (
     finalOrganizationId = parsedOrganizationId;
   }
 
-  const preparedFilteredData = { ...filteredData, organizationId: finalOrganizationId };
+  const preparedFilteredData = {
+    ...filteredData,
+    organizationId: finalOrganizationId,
+  };
 
   const updatedUser = await updateUser(userIdParam, preparedFilteredData);
 

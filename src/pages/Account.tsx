@@ -22,6 +22,7 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
+import { ERole } from '../const/enums';
 import { ranks } from '../const/ranks';
 import { useOrgs } from '../hooks/api/organizations';
 import { useUpdateUser } from '../hooks/api/users';
@@ -67,6 +68,95 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
+
+const monitorFormSchema = Joi.object({
+  reportingOrganization: Joi.required(),
+});
+
+const MonitorForm = ({ user }: { user: LoggedInUser }) => {
+  const orgsQuery = useOrgs();
+  const snackbar = useSnackbar();
+  const userMutation = useUpdateUser();
+
+  const {
+    control,
+    reset,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: joiResolver(monitorFormSchema),
+    defaultValues: {
+      reportingOrganization: 'none',
+    },
+  });
+
+  useEffect(() => {
+    if (user.reportingOrganization) {
+      setValue('reportingOrganization', user.reportingOrganization.id.toString());
+    }
+  }, [user, setValue]);
+
+  const onSubmit = (data) => {
+    userMutation.mutate(
+      {
+        id: user.id,
+        reportingOrganizationId: data.reportingOrganization,
+      } as User,
+      {
+        onSuccess: () => {
+          snackbar.enqueueSnackbar('Profile Updated!', { variant: 'success' });
+        },
+      }
+    );
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div tw="flex p-7 content-center items-center space-x-12">
+        <div tw="w-1/4">
+          <Typography tw="text-gray-500">REPORTING ORGANIZATION</Typography>
+        </div>
+
+        <FormControl fullWidth error={!!errors.reportingOrganization}>
+          <Controller
+            name="reportingOrganization"
+            control={control}
+            render={({ field }) => (
+              <Select {...field} fullWidth size="small" error={!!errors.reportingOrganization}>
+                <MenuItem key="noneselected" value="none">
+                  No Org Selected
+                </MenuItem>
+                {orgsQuery?.data?.map((org) => {
+                  return (
+                    <MenuItem key={org.id} value={org.id}>
+                      {org.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            )}
+          />
+
+          <FormHelperText>{errors.reportingOrganization ? errors.reportingOrganization.message : null}</FormHelperText>
+        </FormControl>
+      </div>
+
+      <div tw="pb-7 pt-4 flex space-x-4 justify-center">
+        <Button variant="contained" color="secondary" type="submit">
+          Update
+        </Button>
+        {/* Send to the training record page */}
+        <Button
+          color="secondary"
+          onClick={() => reset({ reportingOrganization: user.reportingOrganizationId.toString() })}
+        >
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
+};
 
 const workFormSchema = Joi.object({
   organization: Joi.required(),
@@ -116,6 +206,86 @@ const WorkForm = ({ user }: { user: LoggedInUser }) => {
           snackbar.enqueueSnackbar('Profile Updated!', { variant: 'success' });
         },
       }
+    );
+
+    return (
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div tw="flex p-7 content-center items-center space-x-12">
+          <div tw="w-1/4">
+            <Typography tw="text-gray-500">ORGANIZATION</Typography>
+          </div>
+
+          <FormControl fullWidth error={!!errors.organization}>
+            <Controller
+              name="organization"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} fullWidth size="small" error={!!errors.organization}>
+                  <MenuItem key="noneselected" value="none">
+                    No Org Selected
+                  </MenuItem>
+                  {orgsQuery?.data?.map((org) => {
+                    return (
+                      <MenuItem key={org.id} value={org.id}>
+                        {org.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
+            />
+
+            <FormHelperText>{errors.organization ? errors.organization.message : null}</FormHelperText>
+          </FormControl>
+        </div>
+
+        <div tw="flex p-7 content-center items-center space-x-12">
+          <div tw="w-1/4">
+            <Typography tw="text-gray-500">DUTY TITLE</Typography>
+          </div>
+
+          <FormControl fullWidth error={!!errors.dutyTitle}>
+            <TextField
+              error={!!errors.dutyTitle}
+              fullWidth
+              size="small"
+              inputProps={{ ...register('dutyTitle'), 'aria-label': 'dutyTitle' }}
+            />
+            <FormHelperText>{errors.dutyTitle ? errors.dutyTitle.message : null}</FormHelperText>
+          </FormControl>
+        </div>
+
+        <div tw="flex p-7 content-center items-center space-x-12">
+          <div tw="w-1/4">
+            <Typography tw="text-gray-500">AFSC</Typography>
+          </div>
+
+          <FormControl fullWidth error={!!errors.afsc}>
+            <TextField
+              error={!!errors.afsc}
+              fullWidth
+              size="small"
+              inputProps={{ ...register('afsc'), 'aria-label': 'afsc' }}
+            />
+            <FormHelperText>{errors.afsc ? errors.afsc.message : null}</FormHelperText>
+          </FormControl>
+        </div>
+
+        <div tw="pb-7 pt-4 flex space-x-4 justify-center">
+          <Button variant="contained" color="secondary" type="submit">
+            Update
+          </Button>
+          {/* Send to the training record page */}
+          <Button
+            color="secondary"
+            onClick={() =>
+              reset({ organization: user.organizationId.toString(), dutyTitle: user.dutyTitle, afsc: user.afsc })
+            }
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
     );
   };
 
@@ -325,6 +495,7 @@ const PersonalForm = ({ user }: { user: LoggedInUser }) => {
 
 const AccountPage = () => {
   const { user, isLoading } = useUser<LoggedInUser>();
+
   const [tabValue, setTabValue] = React.useState(0);
   const theme = useTheme();
 
@@ -354,6 +525,7 @@ const AccountPage = () => {
           <Tabs value={tabValue} onChange={handleTabChange}>
             <StyledTab label="PERSONAL" {...a11yProps(0)} />
             <StyledTab label="WORK" {...a11yProps(0)} />
+            {user.role.name === ERole.MONITOR ? <StyledTab label="MONITOR" {...a11yProps(0)} /> : null}
           </Tabs>
         </div>
         <div tw="w-[720px] h-full border rounded-md">
@@ -363,6 +535,11 @@ const AccountPage = () => {
           <TabPanel value={tabValue} index={1}>
             <WorkForm user={user} />
           </TabPanel>
+          {user.role.name === ERole.MONITOR ? (
+            <TabPanel value={tabValue} index={2}>
+              <MonitorForm user={user} />
+            </TabPanel>
+          ) : null}
         </div>
       </div>
       <div tw="flex justify-center pt-20 text-gray-400">

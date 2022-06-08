@@ -32,6 +32,7 @@ async function addUserToDb(user: Partial<User>, organizationId: number, roleId: 
   return prisma.user.create({
     data: {
       ...user,
+      reportingOrganizationId: organizationId,
       organizationId,
       roleId,
     },
@@ -167,6 +168,7 @@ async function seedDev() {
     data: {
       ...user1,
       organizationId: organization1.id,
+      reportingOrganizationId: organization1.id,
       roleId: adminRole ? adminRole.id : 2,
     },
   });
@@ -194,6 +196,11 @@ async function seedDev() {
           id: organization1.id,
         },
       },
+      reportingOrganization: {
+        connect: {
+          id: organization1.id,
+        },
+      },
       role: {
         connect: {
           id: monitorRole ? monitorRole.id : 3,
@@ -210,6 +217,11 @@ async function seedDev() {
       organization: {
         connect: {
           id: organization2.id,
+        },
+      },
+      reportingOrganization: {
+        connect: {
+          id: organization1.id,
         },
       },
       role: {
