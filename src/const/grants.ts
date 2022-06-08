@@ -274,7 +274,18 @@ const resourceGrants: Grants[] = [
     resource: EResource.ADMIN_PAGE,
     role: ERole.ADMIN,
   },
-  // TODO: create grants for the rest of the CRUD operations
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.ADMIN_PAGE,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.DELETE_ANY,
+    attributes: '*',
+    resource: EResource.ADMIN_PAGE,
+    role: ERole.ADMIN,
+  },
 ];
 
 export const grants: Grants[] = [

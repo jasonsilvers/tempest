@@ -1,32 +1,58 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
+import Joi from 'joi';
 import { NextApiResponse } from 'next';
+import { EResource, ITempestApiError } from '../../../const/enums';
+import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
-import { getResource } from '../../../repositories/resourceRepo';
+import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+import { createResource, findResources } from '../../../repositories/resourceRepo';
 import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import { ResourceDTO } from '../../../types';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { getAc } from '../../../middleware/utils';
-import { EResource } from '../../../const/enums';
+import { Resource } from '.prisma/client';
+
+const resourcePostSchema = {
+  post: {
+    body: Joi.object({
+      id: Joi.number().optional(),
+      name: Joi.string().required(),
+    }),
+  },
+};
 
 const resourceHandler = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<ResourceDTO>
+  res: NextApiResponse<ResourceDTO | Resource | ITempestApiError>
 ) => {
-  if (req.method !== 'GET') {
-    throw new MethodNotAllowedError(req.method);
-  }
-
+  const { body, method } = req;
   const ac = await getAc();
 
-  const permission = ac.can(req.user.role.name).readAny(EResource.ADMIN_PAGE);
+  switch (method) {
+    case 'GET': {
+      const permission = ac.can(req.user.role.name).readAny(EResource.ADMIN_PAGE);
 
-  if (!permission.granted) {
-    throw new PermissionError();
+      if (!permission.granted) {
+        throw new PermissionError();
+      }
+      const resource = await findResources();
+
+      return res.status(200).json({ resource });
+    }
+
+    case 'POST': {
+      const permission = ac.can(req.user.role.name).createAny(EResource.ADMIN_PAGE);
+
+      if (!permission.granted) {
+        throw new PermissionError();
+      }
+
+      let newResource: Resource;
+      newResource = await createResource(body);
+      return res.status(200).json(newResource);
+    }
+    default: {
+      throw new MethodNotAllowedError(method);
+    }
   }
-
-  const resource = await getResource();
-
-  res.status(200).json({ resource });
 };
 
-export default withTempestHandlers(resourceHandler, findUserByEmail);
+export default withTempestHandlers(resourceHandler, findUserByEmail, resourcePostSchema);

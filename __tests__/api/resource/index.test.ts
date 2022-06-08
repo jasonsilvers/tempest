@@ -2,7 +2,8 @@ import { testNextApi } from '../../testutils/NextAPIUtils';
 import resourceHandler from '../../../src/pages/api/resource';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
-import { getResource } from '../../../src/repositories/resourceRepo';
+import { createResource, findResources } from '../../../src/repositories/resourceRepo';
+import { adminJWT, userJWT } from '../../testutils/mocks/mockJwt';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/resourceRepo.ts');
@@ -10,20 +11,8 @@ jest.mock('../../../src/repositories/resourceRepo.ts');
 const globalUserId = 1;
 
 const resource = [
-  { id: 1, name: 'authorityrecords' },
-  { id: 2, name: 'admin' },
-  { id: 3, name: 'dashboard' },
-  { id: 4, name: 'profile' },
-  { id: 5, name: 'mattermost' },
-  { id: 6, name: 'membertrackingrecord' },
-  { id: 7, name: 'membertrackingitem' },
-  { id: 8, name: 'organization' },
-  { id: 9, name: 'record' },
-  { id: 10, name: 'traineerecords' },
-  { id: 11, name: 'trackingitem' },
-  { id: 12, name: 'user' },
-  { id: 13, name: 'role' },
-  { id: 14, name: 'upload' },
+  { id: 1, name: 'testReource1' },
+  { id: 2, name: 'testResource2' },
 ];
 
 beforeEach(() => {
@@ -32,7 +21,7 @@ beforeEach(() => {
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
   });
-  mockMethodAndReturn(getResource, resource);
+  mockMethodAndReturn(findResources, resource);
 });
 
 afterEach(() => {
@@ -65,7 +54,39 @@ test('should return 403 if permissions are incorrect - GET', async () => {
 });
 
 test('should return 405 if method is not allow', async () => {
-  const { status } = await testNextApi.post(resourceHandler, { withJwt: true, body: {} });
+  const { status } = await testNextApi.put(resourceHandler, { withJwt: true, body: {} });
 
   expect(status).toBe(405);
+});
+
+test('should create resource', async () => {
+  mockMethodAndReturn(createResource, { name: 'testResource3' });
+  const { status, data } = await testNextApi.post(resourceHandler, {
+    customHeaders: { Authorization: `Bearer ${adminJWT}` },
+    body: { name: 'testResource3' },
+  });
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ name: 'testResource3' });
+});
+
+test('should not create if not admin', async () => {
+  mockMethodAndReturn(createResource, { name: 'testResource3' });
+  const { status } = await testNextApi.post(resourceHandler, {
+    customHeaders: { Authorization: `Bearer ${userJWT}` },
+    body: { name: 'testResource3' },
+  });
+
+  expect(status).toBe(200);
+});
+
+test('should return 403 if permissions are inncorrect - POST', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: globalUserId,
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  const { status } = await testNextApi.post(resourceHandler, { withJwt: true, body: { name: 'test' } });
+
+  expect(status).toBe(403);
 });

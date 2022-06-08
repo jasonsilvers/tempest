@@ -1,25 +1,31 @@
-import primsa from '../setup/mockedPrisma';
-import { getResource } from '../../src/repositories/resourceRepo';
+import prisma from '../setup/mockedPrisma';
+import { findResources, createResource, deleteResource } from '../../src/repositories/resourceRepo';
 
 const testResource = [
-  { id: 1, name: 'authorityrecords' },
-  { id: 2, name: 'admin' },
-  { id: 3, name: 'dashboard' },
-  { id: 4, name: 'profile' },
-  { id: 5, name: 'mattermost' },
-  { id: 6, name: 'membertrackingrecord' },
-  { id: 7, name: 'membertrackingitem' },
-  { id: 8, name: 'organization' },
-  { id: 9, name: 'record' },
-  { id: 10, name: 'traineerecords' },
-  { id: 11, name: 'trackingitem' },
-  { id: 12, name: 'user' },
-  { id: 13, name: 'role' },
-  { id: 14, name: 'upload' },
+  { id: 1, name: 'testResource1' },
+  { id: 2, name: 'testResource2' },
 ];
 
 test('shoud find resources', async () => {
-  primsa.resource.findMany.mockImplementation(() => testResource);
-  const result = await getResource();
+  prisma.resource.findMany.mockImplementation(() => testResource);
+  const result = await findResources();
   expect(result).toStrictEqual(testResource);
+});
+
+test('should create new resource', async () => {
+  const newObj = {
+    id: 3,
+    name: 'testResource3',
+  };
+  const spy = prisma.resource.create.mockImplementation(() => newObj);
+  const createdResourse = await createResource({ name: 'testResource3' });
+  expect(spy).toBeCalledTimes(1);
+  expect(createdResourse).toEqual(newObj);
+});
+
+test('should delete a resource', async () => {
+  const spy = prisma.resource.delete.mockImplementationOnce(() => testResource[0]);
+  const resource = await deleteResource(1);
+  expect(resource).toEqual(testResource[0]);
+  expect(spy).toBeCalledWith({ where: { id: 1 } });
 });
