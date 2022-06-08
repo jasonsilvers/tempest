@@ -87,6 +87,8 @@ describe('Member role', () => {
     //This tracking record is used in (should complete record and replace the old one)
     cy.addMemberTrackingRecord(trackingItemName, getToday(1));
     cy.findByRole('button', { name: 'signature_button' }).click();
+    cy.findByRole('alert').should('be.visible');
+
   });
   it('should not be able to delete record if signed by monitor - part 2', () => {
     cy.loginAsMember();
@@ -154,12 +156,12 @@ describe('Monitor role', () => {
         cy.focused().click();
       });
 
-    const trackingItemName = 'Fire Extinguisher';
+    const trackingItemName = 'Fire Safety';
 
     cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByRole('button', { name: 'signature_button' }).click();
     cy.findAllByRole('button', { name: /delete-tracking-record-/i }).should('not.be.disabled');
-    cy.findByTestId('DeleteIcon').click()
+    cy.findAllByTestId('DeleteIcon').click({multiple: true})
     cy.findByRole('alert').should('be.visible');
 
   });
