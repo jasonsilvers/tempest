@@ -127,10 +127,10 @@ const MonitorForm = ({ user }: { user: LoggedInUser }) => {
                 <MenuItem key="noneselected" value="none">
                   No Org Selected
                 </MenuItem>
-                {orgsQuery?.data?.map((org) => {
+                {orgsQuery?.data?.map((organization) => {
                   return (
-                    <MenuItem key={org.id} value={org.id}>
-                      {org.name}
+                    <MenuItem key={organization.id} value={organization.id}>
+                      {organization.name}
                     </MenuItem>
                   );
                 })}
