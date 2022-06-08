@@ -8,9 +8,12 @@ import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { createResource, findResources } from '../../../src/repositories/resourceRepo';
 import { adminJWT, userJWT } from '../../testutils/mocks/mockJwt';
+import { findGrants } from '../../../src/repositories/grantsRepo';
+import { grants } from '../../testutils/mocks/fixtures';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/resourceRepo.ts');
+jest.mock('../../../src/repositories/grantsRepo.ts');
 
 const globalUserId = 1;
 
@@ -25,7 +28,7 @@ beforeEach(() => {
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
   });
-  mockMethodAndReturn(findResources, resource);
+  mockMethodAndReturn(findGrants, grants);
 });
 
 afterEach(() => {
@@ -33,6 +36,7 @@ afterEach(() => {
 });
 
 test('should return resources', async () => {
+  mockMethodAndReturn(findResources, resource);
   const { status, data } = await testNextApi.get(resourceHandler);
 
   expect(status).toBe(200);
