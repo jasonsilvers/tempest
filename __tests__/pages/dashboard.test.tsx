@@ -250,11 +250,9 @@ it('should filter by name', async () => {
 });
 
 it('should filter by organization', async () => {
-  const { getByText, queryByText, getByLabelText } = render(<Dashboard />);
+  const { getByText, queryByText, getByLabelText, findByText } = render(<Dashboard />);
 
-  await waitForLoadingToFinish();
-
-  expect(getByText(/clark, sandra/i)).toBeInTheDocument();
+  expect(await findByText(/clark, sandra/i)).toBeInTheDocument();
   expect(getByText(/smith, joe/i)).toBeInTheDocument();
 
   const searchInput = getByLabelText(/organizations/i);

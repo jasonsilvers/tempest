@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import resourceHandler from '../../../src/pages/api/resource';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';

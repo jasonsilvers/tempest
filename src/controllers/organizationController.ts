@@ -2,7 +2,7 @@ import { Organization } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { Permission } from 'accesscontrol';
 import { NextApiResponse } from 'next';
-import { EResource, ITempestApiError } from '../const/enums';
+import { EResource, ITempestApiMessage } from '../const/enums';
 import { getAc } from '../middleware/utils';
 import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
 import { deleteOrganization, findOrganizationById, updateOrganization } from '../repositories/organizationRepo';
@@ -24,7 +24,7 @@ enum EOrganizationIdIncludes {
 
 export const getOrganizationAction = async (
   req: ITempestOrganizationIdApiRequest<LoggedInUser>,
-  res: NextApiResponse<Organization | ITempestApiError>
+  res: NextApiResponse<Organization | ITempestApiMessage>
 ) => {
   const {
     query: { id, include },
@@ -67,7 +67,7 @@ export const getOrganizationAction = async (
 
 export const deleteOrganizationAction = async (
   req: ITempestOrganizationIdApiRequest<LoggedInUser>,
-  res: NextApiResponse<Organization | ITempestApiError>
+  res: NextApiResponse<Organization | ITempestApiMessage>
 ) => {
   const { query, user } = req;
   const organizationId = query.id;
@@ -86,11 +86,11 @@ export const deleteOrganizationAction = async (
     throw new NotFoundError();
   }
 
-  if (organizationToDelete.children.length > 0) {
+  if (organizationToDelete?.children?.length > 0) {
     return res.status(409).json({ message: 'Unable to delete an organization with sub organizations' });
   }
 
-  if (organizationToDelete.users.length > 0) {
+  if (organizationToDelete?.users?.length > 0) {
     return res.status(409).json({ message: 'Unable to delete an organization with users associated' });
   }
 
@@ -101,7 +101,7 @@ export const deleteOrganizationAction = async (
 
 export const putOrganizationAction = async (
   req: ITempestOrganizationIdApiRequest<LoggedInUser>,
-  res: NextApiResponse<Organization | ITempestApiError>
+  res: NextApiResponse<Organization | ITempestApiMessage>
 ) => {
   const { query, body, user } = req;
   const organizationId = query.id;

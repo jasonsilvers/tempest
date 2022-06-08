@@ -1,10 +1,10 @@
-import { Grant } from '@prisma/client';
 import dayjs from 'dayjs';
 import 'whatwg-fetch';
 import { Devtools } from '../../src/components/Devtools';
+import { Logs } from '../../src/components/Devtools/Logs';
 import { OrganizationList } from '../../src/components/Devtools/OrganizationList';
+import { Users } from '../../src/components/Devtools/Users';
 import { ERole, EUri } from '../../src/const/enums';
-import { grants } from '../../src/const/grants';
 import { rest, server } from '../testutils/mocks/msw';
 import {
   fireEvent,
@@ -32,20 +32,6 @@ const users = [
     role: { id: 22, name: ERole.MEMBER },
   },
 ];
-
-type DbGrant = Grant & { id: number };
-
-const addIdToGrants = () => {
-  const grantsWithId: DbGrant[] = [];
-
-  for (let i = 0; i < grants.length; i++) {
-    const grantWithId = { ...grants[i], id: i };
-
-    grantsWithId.push(grantWithId);
-  }
-
-  return grantsWithId;
-};
 
 const getUsers = (userList = users) =>
   rest.get(EUri.USERS, (req, res, ctx) => {
@@ -168,7 +154,8 @@ beforeEach(() => {
 afterEach(() => {
   server.resetHandlers();
 });
-// Clean up after the tests are finished.
+
+// // Clean up after the tests are finished.
 afterAll(() => server.close());
 test('should show list of users', async () => {
   const { getByText } = render(<Devtools />);
@@ -178,7 +165,7 @@ test('should show list of users', async () => {
 });
 
 test('should update a users organization', async () => {
-  const { getByText, getAllByRole, findByText, queryByText } = render(<Devtools />);
+  const { getByText, getAllByRole, findByText, queryByText } = render(<Users />);
 
   await waitForElementToBeRemoved(() => getByText(/loading users/i));
 
@@ -202,7 +189,7 @@ test('should update a users organization', async () => {
   expect(newOrg).toBeInTheDocument();
 });
 test('should update a users role', async () => {
-  const { getByText, getAllByRole, findByText, queryByText } = render(<Devtools />);
+  const { getByText, getAllByRole, findByText, queryByText } = render(<Users />);
 
   await waitForElementToBeRemoved(() => getByText(/loading users/i));
 
@@ -226,7 +213,7 @@ test('should update a users role', async () => {
 });
 
 test('should delete user', async () => {
-  const { getByText, getByRole, queryByText } = render(<Devtools />);
+  const { getByText, getByRole, queryByText } = render(<Users />);
 
   await waitForLoadingToFinish();
 
@@ -258,14 +245,11 @@ test('should delete user', async () => {
 });
 
 test('should show logs', async () => {
-  const { findByRole, getByText } = render(<Devtools />);
-
-  const logTab = await findByRole('tab', { name: 'Log Data' });
-  fireEvent.click(logTab);
+  const screen = render(<Logs />);
 
   await waitForLoadingToFinish();
 
-  expect(getByText(/Successful Login/)).toBeInTheDocument();
+  expect(screen.getByText(/Successful Login/)).toBeInTheDocument();
 });
 
 test('should show logs and not error when name is null ', async () => {
@@ -300,10 +284,7 @@ test('should show logs and not error when name is null ', async () => {
     })
   );
 
-  const { findByRole, getByText } = render(<Devtools />);
-
-  const logTab = await findByRole('tab', { name: 'Log Data' });
-  fireEvent.click(logTab);
+  const { getByText } = render(<Logs />);
 
   await waitForLoadingToFinish();
 
@@ -440,51 +421,4 @@ test('should add new organization', async () => {
   fireEvent.click(createButton);
 
   await waitFor(() => screen.findByRole('alert'));
-});
-
-test('should show grants and allow edit', async () => {
-  server.use(
-    rest.get(EUri.PERMISSIONS, (req, res, ctx) => {
-      const dbGrants = addIdToGrants();
-      return res(ctx.status(200), ctx.json({ grants: dbGrants }));
-    })
-  );
-
-  const screen = render(<Devtools />);
-
-  const grantTab = await screen.findByRole('tab', { name: 'Grants' });
-  fireEvent.click(grantTab);
-
-  const matterMostCell = await screen.findByRole('cell', {
-    name: /mattermost/i,
-  });
-  fireEvent.doubleClick(matterMostCell);
-
-  const input = screen.getAllByRole('textbox');
-
-  fireEvent.change(input[0], { target: { value: 'test' } });
-
-  expect(
-    screen.getByRole('cell', {
-      name: /test/i,
-    })
-  ).toBeInTheDocument();
-
-  const profileCells = screen.getAllByRole('cell', {
-    name: /profile/i,
-  });
-
-  fireEvent.click(profileCells[0]);
-
-  const testCell = screen.getByRole('cell', {
-    name: /test/i,
-  });
-
-  fireEvent.doubleClick(testCell);
-
-  const input2 = screen.getAllByRole('textbox');
-
-  fireEvent.change(input2[0], { target: { value: 'mattermost' } });
-
-  fireEvent.click(profileCells[0]);
 });

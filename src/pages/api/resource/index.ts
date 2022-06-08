@@ -1,7 +1,7 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
-import { EResource, ITempestApiError } from '../../../const/enums';
+import { EResource, ITempestApiMessage } from '../../../const/enums';
 import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
@@ -21,7 +21,7 @@ const resourcePostSchema = {
 
 const resourceHandler = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<ResourceDTO | Resource | ITempestApiError>
+  res: NextApiResponse<ResourceDTO | Resource | ITempestApiMessage>
 ) => {
   const { body, method } = req;
   const ac = await getAc();
@@ -45,8 +45,7 @@ const resourceHandler = async (
         throw new PermissionError();
       }
 
-      let newResource: Resource;
-      newResource = await createResource(body);
+      const newResource = await createResource(body);
       return res.status(200).json(newResource);
     }
     default: {

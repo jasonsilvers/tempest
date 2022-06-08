@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import resourcesApiHandler from '../../../src/pages/api/resource/[id]';
 import { grants } from '../../testutils/mocks/fixtures';

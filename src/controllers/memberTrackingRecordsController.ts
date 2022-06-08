@@ -11,7 +11,7 @@ import {
   updateMemberTrackingRecord,
 } from '../repositories/memberTrackingRepo';
 import { LoggedInUser } from '../repositories/userRepo';
-import { EMtrVerb, EResource, ITempestApiError } from '../const/enums';
+import { EMtrVerb, EResource, ITempestApiMessage } from '../const/enums';
 
 const signTrainee = (userId: number, recordFromDb: MemberTrackingRecordWithUsers) => {
   if (userId === recordFromDb.authorityId) {
@@ -47,7 +47,7 @@ const checkPermission = async (user: LoggedInUser, traineeId: number) => {
 
 type MemberTrackingRecordsAction = (
   req: NextApiRequestWithAuthorization<LoggedInUser, MemberTrackingRecord>,
-  res: NextApiResponse<MemberTrackingRecord | ITempestApiError>
+  res: NextApiResponse<MemberTrackingRecord | ITempestApiMessage>
 ) => void;
 
 export const memberTrackingRecordPostSchema = {

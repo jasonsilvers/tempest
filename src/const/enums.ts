@@ -36,6 +36,7 @@ export enum EResource {
   USER = 'user',
   ROLE = 'role',
   UPLOAD = 'upload',
+  PPE_ITEM = 'ppeitem',
 }
 
 // All must begin and end in a slash
@@ -50,6 +51,7 @@ export enum EUri {
   ORGANIZATIONS = '/api/organizations/',
   LOGS = '/api/logs',
   RESOURCES = '/api/resource/',
+  PPE_ITEMS = 'api/ppeitems/',
 }
 
 export enum EAttribute {
@@ -91,7 +93,7 @@ export enum ECategories {
   ARCHIVED = 'Archived',
   TODO = 'To_Do',
 }
-export interface ITempestApiError {
+export interface ITempestApiMessage {
   message: string;
 }
 
