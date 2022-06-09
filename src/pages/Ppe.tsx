@@ -37,10 +37,10 @@ const PpeItem = ({
   const { mutate: updatePpeItem, isLoading: updateInFlight } = useUpdatePpeItem();
 
   const [localPpeItem] = useState(() => ppeItem);
+
   const {
     control,
     register,
-
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -83,7 +83,7 @@ const PpeItem = ({
 
   return (
     <form onChange={handleSubmit(debouncedChangeHandler)} ref={formRef}>
-      <div tw="grid grid-cols-12 gap-1 text-[14px] w-[1400px] p-2">
+      <div tw="grid grid-cols-12 gap-1 text-[14px] w-[1400px] p-5">
         <input {...register('id')} hidden defaultValue={localPpeItem.id} readOnly />
         <div tw="p-1 col-span-3 rounded-lg">
           <TextField

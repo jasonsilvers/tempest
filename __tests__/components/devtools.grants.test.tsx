@@ -44,6 +44,17 @@ beforeEach(() => {
     rest.get(EUri.PERMISSIONS, (req, res, ctx) => {
       const dbGrants = addIdToGrants();
       return res(ctx.status(200), ctx.json({ grants: dbGrants }));
+    }),
+    rest.get(EUri.RESOURCES, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          resources: [
+            { id: 1, name: 'admin' },
+            { id: 2, name: 'dashboard' },
+          ],
+        })
+      );
     })
   );
 });
@@ -139,7 +150,7 @@ test('should add a grant', async () => {
 
   fireEvent.mouseDown(resourceButton);
 
-  const resourceOptions = await screen.findAllByRole('option', { name: /mattermost/i });
+  const resourceOptions = await screen.findAllByRole('option', { name: 'admin' });
 
   fireEvent.click(resourceOptions[0]);
 

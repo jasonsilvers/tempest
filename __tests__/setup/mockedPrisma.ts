@@ -49,6 +49,11 @@ interface IMockedPrisma {
     update: jest.Mock;
     count: jest.Mock;
   };
+  resource: {
+    findMany: jest.Mock;
+    create: jest.Mock;
+    delete: jest.Mock;
+  };
   personalProtectionEquipmentItem: {
     findUnique: jest.Mock;
     findMany: jest.Mock;
@@ -108,6 +113,11 @@ jest.mock(
       delete: jest.fn(),
       update: jest.fn(),
       count: jest.fn(),
+    },
+    resource: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
     },
     personalProtectionEquipmentItem: {
       findUnique: jest.fn(),

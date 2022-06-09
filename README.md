@@ -80,7 +80,8 @@ afterEach(() => {
 
 ```ts
 server.use(
-  rest.get('/api/login', (req, res, ctx) => {
+  ('/api/login',
+  (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({ name: 'bob' }));
   })
 );
@@ -145,3 +146,10 @@ ANALYZE=true npm run build
 ```
 export GPG_TTY=$(tty)
 ```
+
+## Steps to take if tests are failling in pipeline and not in Dev
+
+1. Delete Node modules
+2. Stop database in docker
+3. run npm ci
+4. run npm run unit:test

@@ -1,4 +1,4 @@
-import { Role, Organization, TrackingItem, PersonalProtectionEquipmentItem } from '@prisma/client';
+import { Organization, PersonalProtectionEquipmentItem, Resource, Role, TrackingItem } from '@prisma/client';
 import { Grants } from '../repositories/grantsRepo';
 import { LogEventWithUser } from '../repositories/logRepo';
 import { UserWithAll } from '../repositories/userRepo';
@@ -31,4 +31,8 @@ export type TrackingItemsDTO = {
 
 export type LogEventDTO = {
   logEvents: LogEventWithUser[];
+};
+
+export type ResourcesDTO = {
+  resources: Resource[];
 };
