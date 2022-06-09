@@ -1,7 +1,14 @@
 import { Resources } from '../../src/components/Devtools/Resources';
 import { ERole, EUri } from '../../src/const/enums';
 import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, waitFor, waitForLoadingToFinish, within } from '../testutils/TempestTestUtils';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+  waitForLoadingToFinish,
+  within,
+} from '../testutils/TempestTestUtils';
 
 beforeEach(() => {
   server.listen({
@@ -43,15 +50,10 @@ afterEach(() => {
 // Clean up after the tests are finished.
 afterAll(() => server.close());
 
-test('should render resources component and show list of resources', async () => {
-  const screen = render(<Resources />);
+test.only('should render resources component and show list of resources', async () => {
+  const { getByText } = render(<Resources />);
 
-  await waitForLoadingToFinish();
-
-  const resouceCell = screen.getByRole('cell', {
-    name: /admin/i,
-  });
-  await expect(resouceCell).toBeInTheDocument();
+  await waitForElementToBeRemoved(() => getByText(/...loading/i));
 });
 
 test('should add resource', async () => {
@@ -75,18 +77,11 @@ test('should add resource', async () => {
     })
   ).toBeInTheDocument();
 
-  const resourceInputField = screen.getByRole('textbox', {
-    name: /name/i,
+  const resourceSelectField = screen.getByRole('button', {
+    name: /please select a resource/i,
   });
-  const resourceInputTestValue = 'test';
 
-  fireEvent.change(resourceInputField, { target: { value: resourceInputTestValue } });
-
-  const addResourceButtton = await screen.getByTestId('testIdButton');
-
-  fireEvent.click(addResourceButtton);
-
-  await waitFor(() => screen.findByText(/resource added!/i));
+  expect(resourceSelectField).toBeInTheDocument();
 });
 
 test('should delete a resouce', async () => {

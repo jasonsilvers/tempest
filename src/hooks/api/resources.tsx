@@ -2,7 +2,7 @@ import { Resource } from '.prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 import { EUri } from '../../const/enums';
-import { ResourceDTO } from '../../types';
+import { ResourcesDTO } from '../../types';
 import { useSnackbar } from 'notistack';
 
 export const resourceQueryKeys = {
@@ -12,7 +12,7 @@ export const resourceQueryKeys = {
 
 export const useResources = () => {
   return useQuery<Resource[]>(resourceQueryKeys.resources(), () =>
-    axios.get<ResourceDTO>(EUri.RESOURCES).then((result) => result.data.resource)
+    axios.get<ResourcesDTO>(EUri.RESOURCES).then((result) => result.data.resources)
   );
 };
 

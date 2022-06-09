@@ -1,14 +1,14 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
-import { EResource, ITempestApiError } from '../../../const/enums';
-import { getAc } from '../../../middleware/utils';
+import { ITempestApiError } from '../../../const/enums';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { createResource, findResources } from '../../../repositories/resourceRepo';
 import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { ResourceDTO } from '../../../types';
+import { ResourcesDTO } from '../../../types';
 import { Resource } from '.prisma/client';
+import { jwtParser } from '../../../utils/jwtUtils';
 
 const resourcePostSchema = {
   post: {
@@ -21,32 +21,35 @@ const resourcePostSchema = {
 
 const resourceHandler = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<ResourceDTO | Resource | ITempestApiError>
+  res: NextApiResponse<ResourcesDTO | Resource | ITempestApiError>
 ) => {
   const { body, method } = req;
-  const ac = await getAc();
 
   switch (method) {
     case 'GET': {
-      const permission = ac.can(req.user.role.name).readAny(EResource.ADMIN_PAGE);
+      const jwt = jwtParser(req);
+      const isAdmin =
+        jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
 
-      if (!permission.granted) {
+      if (!isAdmin) {
         throw new PermissionError();
       }
-      const resource = await findResources();
 
-      return res.status(200).json({ resource });
+      const resources = await findResources();
+
+      return res.status(200).json({ resources });
     }
 
     case 'POST': {
-      const permission = ac.can(req.user.role.name).createAny(EResource.ADMIN_PAGE);
+      const jwt = jwtParser(req);
+      const isAdmin =
+        jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
 
-      if (!permission.granted) {
+      if (!isAdmin) {
         throw new PermissionError();
       }
 
-      let newResource: Resource;
-      newResource = await createResource(body);
+      const newResource = await createResource(body);
       return res.status(200).json(newResource);
     }
     default: {

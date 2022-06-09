@@ -4,7 +4,7 @@ import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { deleteResource } from '../../../src/repositories/resourceRepo';
-import { adminJWT } from '../../testutils/mocks/mockJwt';
+import { adminJWT, userJWT } from '../../testutils/mocks/mockJwt';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 
 jest.mock('../../../src/repositories/userRepo.ts');
@@ -31,11 +31,6 @@ afterEach(() => {
 });
 // Test returning 403 status code should be returning 200 when successful
 test('should delete resource', async () => {
-  mockMethodAndReturn(findUserByEmail, {
-    id: globalUserId,
-    firstName: 'joe',
-    role: { id: '22', name: 'admin' },
-  });
   mockMethodAndReturn(deleteResource, resource[0]);
 
   const { status, data } = await testNextApi.delete(resourcesApiHandler, {
@@ -49,7 +44,9 @@ test('should delete resource', async () => {
 });
 
 test('should return 403 if not admin', async () => {
-  const { status } = await testNextApi.delete(resourcesApiHandler, { urlId: 1 });
+  const { status } = await testNextApi.get(resourcesApiHandler, {
+    customHeaders: { Authorization: `Bearer ${userJWT}` },
+  });
 
   expect(status).toBe(403);
 });

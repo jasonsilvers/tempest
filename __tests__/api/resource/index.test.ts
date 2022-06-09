@@ -4,16 +4,17 @@ import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { createResource, findResources } from '../../../src/repositories/resourceRepo';
 import { adminJWT, userJWT } from '../../testutils/mocks/mockJwt';
+import { findGrants } from '../../../src/repositories/grantsRepo';
+import { grants } from '../../testutils/mocks/fixtures';
+import { EResource } from '../../../src/const/enums';
 
 jest.mock('../../../src/repositories/userRepo.ts');
+jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/resourceRepo.ts');
 
 const globalUserId = 1;
 
-const resource = [
-  { id: 1, name: 'testReource1' },
-  { id: 2, name: 'testResource2' },
-];
+const resources = Object.values(EResource);
 
 beforeEach(() => {
   mockMethodAndReturn(findUserByEmail, {
@@ -21,7 +22,8 @@ beforeEach(() => {
     firstName: 'joe',
     role: { id: '22', name: 'admin' },
   });
-  mockMethodAndReturn(findResources, resource);
+  mockMethodAndReturn(findGrants, grants);
+  mockMethodAndReturn(findResources, resources);
 });
 
 afterEach(() => {
@@ -29,10 +31,12 @@ afterEach(() => {
 });
 
 test('should return resources', async () => {
-  const { status, data } = await testNextApi.get(resourceHandler);
+  const { status, data } = await testNextApi.get(resourceHandler, {
+    customHeaders: { Authorization: `Bearer ${adminJWT}` },
+  });
 
   expect(status).toBe(200);
-  expect(data).toStrictEqual({ resource });
+  expect(data).toStrictEqual({ resources });
 });
 
 test('should return 401 if not authorized', async () => {
@@ -76,17 +80,6 @@ test('should not create if not admin', async () => {
     customHeaders: { Authorization: `Bearer ${userJWT}` },
     body: { name: 'testResource3' },
   });
-
-  expect(status).toBe(200);
-});
-
-test('should return 403 if permissions are inncorrect - POST', async () => {
-  mockMethodAndReturn(findUserByEmail, {
-    id: globalUserId,
-    firstName: 'joe',
-    role: { id: '22', name: 'member' },
-  });
-  const { status } = await testNextApi.post(resourceHandler, { withJwt: true, body: { name: 'test' } });
 
   expect(status).toBe(403);
 });

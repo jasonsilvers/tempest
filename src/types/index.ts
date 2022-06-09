@@ -29,6 +29,6 @@ export type LogEventDTO = {
   logEvents: LogEventWithUser[];
 };
 
-export type ResourceDTO = {
-  resource: Resource[];
+export type ResourcesDTO = {
+  resources: Resource[];
 };

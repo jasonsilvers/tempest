@@ -1,31 +1,45 @@
-import { Button, Dialog, DialogContent, DialogTitle, FormControl, FormHelperText, TextField } from '@mui/material';
-import { DataGrid, GridActionsCellItem, GridColumns, GridToolbarContainer } from '@mui/x-data-grid';
+import { joiResolver } from '@hookform/resolvers/joi';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormHelperText,
+  MenuItem,
+  Select,
+} from '@mui/material';
+import { DataGrid, GridActionsCellItem, GridColumns, GridToolbarContainer, GridRowParams } from '@mui/x-data-grid';
+import Joi from 'joi';
 import { useSnackbar } from 'notistack';
 import { useMemo, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
-import { NewResource, useCreateResource, useDeleteResource, useResources } from '../../hooks/api/resources';
-import { joiResolver } from '@hookform/resolvers/joi';
-import Joi from 'joi';
-import { useForm } from 'react-hook-form';
 import { AddIcon, DeleteIcon } from '../../assets/Icons';
+import { EResource } from '../../const/enums';
+import { NewResource, useCreateResource, useDeleteResource, useResources } from '../../hooks/api/resources';
 
 const resourceFormSchema = Joi.object({
-  name: Joi.string().required(),
+  name: Joi.string()
+    .required()
+    .invalid(...['none']),
 });
+
+const resources = Object.values(EResource);
 
 const AddResourceDialog = ({ isOpen, setIsOpen }) => {
   const { mutate: createResource } = useCreateResource();
   const snackbar = useSnackbar();
 
   const {
-    register,
+    control,
     reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: joiResolver(resourceFormSchema),
     defaultValues: {
-      name: '',
+      name: 'none',
     },
   });
 
@@ -58,14 +72,24 @@ const AddResourceDialog = ({ isOpen, setIsOpen }) => {
         <form onSubmit={handleSubmit(onSubmit)} tw="flex flex-col space-y-5 pt-5">
           <FormHelperText>{errors.name ? errors.name.message : null}</FormHelperText>
           <FormControl fullWidth error={!!errors.name}>
-            <TextField
-              required
-              label="resource"
-              error={!!errors.name}
-              fullWidth
-              inputProps={{ ...register('name'), 'aria-label': 'name' }}
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} fullWidth size="small" error={!!errors.name}>
+                  <MenuItem key="noneselected" value="none">
+                    Please select a resource
+                  </MenuItem>
+                  {resources.map((resource) => {
+                    return (
+                      <MenuItem key={resource} value={resource}>
+                        {resource}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             />
-            <FormHelperText>{errors.name ? errors.name.message : null}</FormHelperText>
           </FormControl>
           <div>
             <Button variant="contained" color="secondary" type="submit" data-testid="testIdButton">
@@ -99,6 +123,26 @@ export const Resources = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: del } = useDeleteResource();
 
+  const deleteCellAction = (params: GridRowParams) => {
+    const disabled = params.row?._count?.grant > 0;
+
+    return [
+      // eslint-disable-next-line react/jsx-key
+      <GridActionsCellItem
+        icon={<DeleteIcon />}
+        label="Delete"
+        disabled={disabled}
+        onClick={() => {
+          del(params.row.id, {
+            onSuccess: () => {
+              enqueueSnackbar('Organization Deleted', { variant: 'success' });
+            },
+          });
+        }}
+      />,
+    ];
+  };
+
   const columns: GridColumns = useMemo(
     () => [
       { field: 'id', headerName: 'Id', flex: 1, editable: true },
@@ -107,22 +151,7 @@ export const Resources = () => {
         field: 'actions',
         type: 'actions',
         width: 150,
-        getActions: ({ id }: { id: number }) => {
-          return [
-            // eslint-disable-next-line react/jsx-key
-            <GridActionsCellItem
-              icon={<DeleteIcon />}
-              label="Delete"
-              onClick={() => {
-                del(id, {
-                  onSuccess: () => {
-                    enqueueSnackbar('Resource Deleted', { variant: 'success' });
-                  },
-                });
-              }}
-            />,
-          ];
-        },
+        getActions: deleteCellAction,
       },
     ],
     []
@@ -137,11 +166,11 @@ export const Resources = () => {
       <DataGrid
         rows={resourceQuery.data}
         columns={columns}
-        experimentalFeatures={{ newEditingApi: true }}
         disableVirtualization
         components={{
           Toolbar: GridToolbar,
         }}
+        disableSelectionOnClick={true}
       />
     </div>
   );
