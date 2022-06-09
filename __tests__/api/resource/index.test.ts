@@ -63,7 +63,10 @@ test('should return 403 if permissions are incorrect - GET', async () => {
 });
 
 test('should return 405 if method is not allow', async () => {
-  const { status } = await testNextApi.put(resourceHandler, { withJwt: true, body: {} });
+  const { status } = await testNextApi.put(resourceHandler, {
+    customHeaders: { Authorization: `Bearer ${adminJWT}` },
+    body: {},
+  });
 
   expect(status).toBe(405);
 });

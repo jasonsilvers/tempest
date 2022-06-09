@@ -4,15 +4,18 @@ import { rest, server } from '../testutils/mocks/msw';
 import {
   fireEvent,
   render,
+  userEvent,
   waitFor,
   waitForElementToBeRemoved,
   waitForLoadingToFinish,
   within,
 } from '../testutils/TempestTestUtils';
 
+import 'whatwg-fetch';
+
 beforeEach(() => {
   server.listen({
-    onUnhandledRequest: 'error',
+    onUnhandledRequest: 'warn',
   });
 
   server.use(
@@ -32,7 +35,7 @@ beforeEach(() => {
       return res(
         ctx.status(200),
         ctx.json({
-          resource: [
+          resources: [
             { id: 1, name: 'admin' },
             { id: 2, name: 'dashboard' },
           ],
@@ -50,10 +53,12 @@ afterEach(() => {
 // Clean up after the tests are finished.
 afterAll(() => server.close());
 
-test.only('should render resources component and show list of resources', async () => {
-  const { getByText } = render(<Resources />);
+test('should render resources component and show list of resources', async () => {
+  const screen = render(<Resources />);
 
-  await waitForElementToBeRemoved(() => getByText(/...loading/i));
+  await waitForLoadingToFinish();
+
+  expect(screen.getByText(/admin/i)).toBeInTheDocument();
 });
 
 test('should add resource', async () => {
@@ -71,17 +76,39 @@ test('should add resource', async () => {
 
   fireEvent.click(addNewButton);
 
+  userEvent.keyboard('{esc}');
+
+  await waitForElementToBeRemoved(() => screen.getByRole('dialog'));
+
+  fireEvent.click(addNewButton);
+
   expect(
     screen.getByRole('heading', {
       name: /create new resource/i,
     })
   ).toBeInTheDocument();
 
+  const addResourceButton = screen.getByRole('button', { name: 'Add' });
+
+  fireEvent.click(addResourceButton);
+
+  await screen.findByText(/"name" contains an invalid value/i);
+
   const resourceSelectField = screen.getByRole('button', {
     name: /please select a resource/i,
   });
 
   expect(resourceSelectField).toBeInTheDocument();
+
+  fireEvent.mouseDown(resourceSelectField);
+
+  const options = screen.getAllByRole('option');
+
+  fireEvent.click(options[1]);
+
+  fireEvent.click(addResourceButton);
+
+  await waitFor(() => screen.getByRole('alert'));
 });
 
 test('should delete a resouce', async () => {
@@ -102,5 +129,5 @@ test('should delete a resouce', async () => {
 
   fireEvent.click(deleteButton);
 
-  await waitFor(() => screen.getByText(/resource deleted/i));
+  await waitFor(() => screen.getByRole('alert'));
 });

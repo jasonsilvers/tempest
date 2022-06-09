@@ -37,7 +37,6 @@ export enum EResource {
   ROLE = 'role',
   UPLOAD = 'upload',
   PPE_ITEM = 'ppeitem',
-  TEST = 'test',
 }
 
 // All must begin and end in a slash

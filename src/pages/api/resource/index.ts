@@ -25,30 +25,22 @@ const resourceHandler = async (
 ) => {
   const { body, method } = req;
 
+  const jwt = jwtParser(req);
+  const isAdmin =
+    jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
+
+  if (!isAdmin) {
+    throw new PermissionError();
+  }
+
   switch (method) {
     case 'GET': {
-      const jwt = jwtParser(req);
-      const isAdmin =
-        jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
-
-      if (!isAdmin) {
-        throw new PermissionError();
-      }
-
       const resources = await findResources();
 
       return res.status(200).json({ resources });
     }
 
     case 'POST': {
-      const jwt = jwtParser(req);
-      const isAdmin =
-        jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
-
-      if (!isAdmin) {
-        throw new PermissionError();
-      }
-
       const newResource = await createResource(body);
       return res.status(200).json(newResource);
     }
