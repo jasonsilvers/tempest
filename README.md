@@ -40,6 +40,8 @@ Mock Service Worker (MSW) is a network api mock where we define what is returned
 
 #### Setting up MSW per test
 
+# SUPER IMPORTANT!! if you forget to close the server it will cause unrelated tests to FAIL!
+
 1. Add fetch polyfill
    - `import 'whatwg-fetch'`
 2. Add server and rest from ./testutils/mocks/msw
@@ -78,7 +80,8 @@ afterEach(() => {
 
 ```ts
 server.use(
-  rest.get('/api/login', (req, res, ctx) => {
+  ('/api/login',
+  (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({ name: 'bob' }));
   })
 );
@@ -143,3 +146,10 @@ ANALYZE=true npm run build
 ```
 export GPG_TTY=$(tty)
 ```
+
+## Steps to take if tests are failling in pipeline and not in Dev
+
+1. Delete Node modules
+2. Stop database in docker
+3. run npm ci
+4. run npm run unit:test

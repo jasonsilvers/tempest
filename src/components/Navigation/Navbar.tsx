@@ -93,6 +93,11 @@ const Navbar: React.FC = () => {
                 Training Record
               </div>
             </Link>
+            {/* <Link goToUrl={`/Ppe`} icon={<MasksIcon fontSize="medium" />}>
+              <div role="navigation" aria-label="ppe">
+                Personal Protection Equipment
+              </div>
+            </Link> */}
 
             <Link goToUrl={`/Account`} icon={<SettingsIcon fontSize="medium" />}>
               <div role="navigation" aria-label="account-settings">

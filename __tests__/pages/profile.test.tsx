@@ -17,11 +17,17 @@ jest.mock('next/dist/client/router', () => require('next-router-mock'));
 
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'bypass',
+    onUnhandledRequest: 'warn',
   });
   server.use(
     rest.get('/api/users/123', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(bobJones));
+    }),
+    rest.get('/api/users/321', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    }),
+    rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
     })
   );
 });
@@ -31,7 +37,6 @@ beforeEach(() => {
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
 afterEach(() => {
-  server.resetHandlers();
   jest.clearAllMocks();
 });
 // // Clean up after the tests are finished.
@@ -130,6 +135,9 @@ it('opens the dialog modal', async () => {
           },
         ])
       );
+    }),
+    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json([]));
     })
   );
 

@@ -3,7 +3,7 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { Permission } from 'accesscontrol';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
-import { EResource, ERole, ITempestApiError } from '../const/enums';
+import { EResource, ERole, ITempestApiMessage } from '../const/enums';
 import { getAc } from '../middleware/utils';
 import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
 import {
@@ -47,7 +47,7 @@ const setup = async (req: NextApiRequestWithAuthorization<LoggedInUser>) => {
 
 const getUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<User | ITempestApiError>
+  res: NextApiResponse<User | ITempestApiMessage>
 ) => {
   const { userIdParam, ac, userFromRequest } = await setup(req);
   let permission: Permission;
@@ -71,7 +71,7 @@ const getUserAction = async (
 
 const putUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<User | ITempestApiError>
+  res: NextApiResponse<User | ITempestApiMessage>
 ) => {
   const { userIdParam, ac, userFromRequest, body } = await setup(req);
 
@@ -114,7 +114,7 @@ const putUserAction = async (
 
 const deleteUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<User | ITempestApiError>
+  res: NextApiResponse<User | ITempestApiMessage>
 ) => {
   const { query, user } = req;
   const userId = query.id as string;

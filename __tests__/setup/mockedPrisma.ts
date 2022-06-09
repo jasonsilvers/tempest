@@ -32,6 +32,8 @@ interface IMockedPrisma {
   grant: {
     findMany: jest.Mock;
     update: jest.Mock;
+    create: jest.Mock;
+    delete: jest.Mock;
   };
   memberTrackingItem: {
     findUnique: jest.Mock;
@@ -51,6 +53,13 @@ interface IMockedPrisma {
     findMany: jest.Mock;
     create: jest.Mock;
     delete: jest.Mock;
+  };
+  personalProtectionEquipmentItem: {
+    findUnique: jest.Mock;
+    findMany: jest.Mock;
+    create: jest.Mock;
+    delete: jest.Mock;
+    update: jest.Mock;
   };
 }
 
@@ -88,6 +97,8 @@ jest.mock(
     grant: {
       findMany: jest.fn(),
       update: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
     },
     memberTrackingItem: {
       findUnique: jest.fn(),
@@ -107,6 +118,13 @@ jest.mock(
       findMany: jest.fn(),
       create: jest.fn(),
       delete: jest.fn(),
+    },
+    personalProtectionEquipmentItem: {
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
+      update: jest.fn(),
     },
   })
 );

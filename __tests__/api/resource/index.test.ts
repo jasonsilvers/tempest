@@ -1,3 +1,7 @@
+/*
+ * @jest-environment node
+ */
+
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import resourceHandler from '../../../src/pages/api/resource';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
@@ -11,6 +15,7 @@ import { EResource } from '../../../src/const/enums';
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/resourceRepo.ts');
+jest.mock('../../../src/repositories/grantsRepo.ts');
 
 const globalUserId = 1;
 

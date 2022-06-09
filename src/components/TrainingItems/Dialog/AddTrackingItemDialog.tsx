@@ -250,6 +250,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             if (trackingItemsThatMatch?.length !== 0) {
               setConfirmationIsOpen(true);
             } else {
+              //TODO: Refactor and remove as
               create(trackingItem as TrackingItem, {
                 onSuccess: () => {
                   handleClose();
