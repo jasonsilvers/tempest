@@ -37,6 +37,8 @@ USER appuser
 
 # Nextjs server
 FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/base-image/harden-nodejs14:14.16.0 AS application
+USER root
+RUN rm -rf /usr/local/lib/node_modules/npm 
 USER appuser
 WORKDIR /app
 
