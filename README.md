@@ -112,8 +112,9 @@ React Query is a library for fetching, caching and updating server data on the c
 
 1. Change .env.production database URL and replace localhost with host.docker.internal
 2. docker build .
-3. docker run _image_name_
+3. docker run -p 8081:8080 _image_name_
 4. Check file directory
+5. http://localhost:8081
 
 ```
 docker run -it image_name sh
