@@ -153,3 +153,12 @@ export GPG_TTY=$(tty)
 2. Stop database in docker
 3. run npm ci
 4. run npm run unit:test
+
+## NPM I
+
+Do an NPM ci locally so it doenst rewrite the package lock every time.
+
+when need to run force resolutions
+
+run npm i
+run npm run force-resolutions
