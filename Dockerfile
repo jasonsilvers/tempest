@@ -10,6 +10,8 @@ RUN npm prune --production
 
 # Nextjs server
 FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.14.0 AS application
+USER root
+RUN rm -rf /usr/local/lib/node_modules/npm 
 USER node
 WORKDIR /app
 
