@@ -1,45 +1,16 @@
-# Dependencies
-FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/ironbank/nodejs14:14.16.0 AS dependencies
-USER root
-RUN mkdir -p "${HOME}"/deps
-WORKDIR ${HOME}/deps
-ENV NODE_ENV=production
-COPY . .
-RUN rm -rf node_modules/public-encrypt/test/1024.priv
-RUN rm -rf node_modules/public-encrypt/test/ec.pass.priv
-RUN rm -rf node_modules/public-encrypt/test/ec.priv
-RUN rm -rf node_modules/public-encrypt/test/pass.1024.priv
-RUN rm -rf node_modules/public-encrypt/test/rsa.1024.priv
-RUN rm -rf node_modules/public-encrypt/test/rsa.2028.priv
-RUN rm -rf node_modules/public-encrypt/test/rsa.pass.priv
-RUN rm -rf node_modules/public-encrypt/test/test_key.pem
-RUN rm -rf node_modules/public-encrypt/test/test_rsa_privkey.pem
-RUN rm -rf node_modules/public-encrypt/test/test_rsa_privkey_encrypted.pem
-RUN rm -rf node_modules/npm/node_modules/node-gyp/test/fixtures/server.key
 
-# COPY package.json package-lock.json .npmrc ./
-# RUN npm ci --no-fund --no-audit 
-USER appuser
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.14.0  AS builder
+USER node
+WORKDIR /home/node
+COPY --chown=node:node . .
+RUN npx prisma generate --schema ./src/prisma/schema.prisma 
+RUN npm run build
+RUN npm prune --production
 
-# Build artifacts
-# ARG NEXT_PUBLIC_MAPBOX_TOKEN
-FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/ironbank/nodejs14:14.16.0 AS builder
-USER root
-RUN mkdir -p "${HOME}"/build
-WORKDIR ${HOME}/build
-ENV NODE_ENV=production
-
-COPY --from=dependencies /home/node/deps/node_modules ./node_modules
-COPY ./src package.json twin.d.ts tsconfig.json tailwind.config.js .babelrc.js next-env.d.ts ./
- 
-RUN npx prisma generate && npm run build:seed && npm run build
-USER appuser
 
 # Nextjs server
-FROM registry.il2.dso.mil/platform-one/devops/pipeline-templates/base-image/harden-nodejs14:14.16.0 AS application
-USER root
-RUN rm -rf /usr/local/lib/node_modules/npm 
-USER appuser
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.14.0 AS application
+USER node
 WORKDIR /app
 
 COPY ./public ./public
@@ -49,17 +20,14 @@ COPY twin.d.ts ./
 COPY tsconfig.json ./
 COPY package.json ./
 COPY .env.production .env
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/node_modules ./node_modules
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/.next ./.next
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/prisma/seed.js ./src/prisma/
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/const/grants.js ./src/const/
-COPY --chown=appuser:appuser --from=builder ${HOME}/build/const/enums.js ./src/const/
-COPY --chown=appuser:appuser  startup.sh timeout.js ./
+COPY --chown=node:node --from=builder /home/node/node_modules ./node_modules
+COPY --chown=node:node --from=builder /home/node/.next ./.next
+COPY --chown=node:node  startup.sh timeout.js ./
 
 ENV NODE_ENV=production
 ENV PORT 8080
 ENV NODE_PATH=.
 EXPOSE 8080
-USER appuser
+USER node
 # REQURIES PRISMA BE IN prod DEPEDENCIES
 CMD ["sh", "startup.sh"]
