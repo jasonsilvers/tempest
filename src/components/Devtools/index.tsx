@@ -5,6 +5,7 @@ import { Logs } from './Logs';
 import { OrganizationList } from './OrganizationList';
 import { Users } from './Users';
 import { Resources } from './Resources';
+import { Roles } from './Roles';
 import 'twin.macro';
 
 interface ITabPanelProps {
@@ -51,6 +52,7 @@ export const Devtools = () => {
           <Tab label="Grants" {...a11yProps(3)} />
           <Tab label="Organizations" {...a11yProps(3)} />
           <Tab label="Resources" {...a11yProps(4)} />
+          <Tab label="Roles" {...a11yProps(5)} />
         </Tabs>
       </div>
       <TabPanel value={value} index={0}>
@@ -67,6 +69,9 @@ export const Devtools = () => {
       </TabPanel>
       <TabPanel value={value} index={4}>
         <Resources />
+      </TabPanel>
+      <TabPanel value={value} index={5}>
+        <Roles />
       </TabPanel>
     </div>
   );

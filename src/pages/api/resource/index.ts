@@ -13,7 +13,6 @@ import { jwtParser } from '../../../utils/jwtUtils';
 const resourcePostSchema = {
   post: {
     body: Joi.object({
-      id: Joi.number().optional(),
       name: Joi.string().required(),
     }),
   },
