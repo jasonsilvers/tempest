@@ -32,6 +32,7 @@ model User {
   afsc                     String?
   dutyTitle                String?                           @map("duty_title")
   logEvent                 LogEvent[]
+  jobs                     Job[]
 
   @@map(name: "user")
 }
@@ -181,4 +182,32 @@ model LogEvent {
   message      String?
 
   @@map("log_event")
+}
+
+enum JobStatus {
+  WORKING
+  FAILED
+  COMPLETED
+  KILLED
+}
+
+model Job {
+  id          Int         @id @default(autoincrement())
+  message     String?
+  progress    Int?
+  status      JobStatus?
+  total       Int?
+  url         String?
+  startedBy   User?       @relation(fields: [startedById], references: [id])
+  startedById Int?
+  results     JobResult[]
+}
+
+model JobResult {
+  id      Int        @id @default(autoincrement())
+  action  String?
+  status  JobStatus?
+  success Boolean?
+  job     Job        @relation(fields: [jobId], references: [id])
+  jobId   Int
 }
