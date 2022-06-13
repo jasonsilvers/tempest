@@ -33,16 +33,9 @@
     "db:generate": "prisma generate --schema ./src/prisma/schema.prisma",
     "dcheck": "mkdir -p .dependency-check && dependency-check --project .next --scan package-lock.json --format 'ALL' --out .dependency-check && open ./.dependency-check/dependency-check-report.html",
     "prepare": "husky install",
-    "preinstall": "npx npm-force-resolutions"
+    "force-resolutions": "npx npm-force-resolutions"
   },
   "resolutions": {
-    "shell-quote": "1.7.3",
-    "node-fetch": "2.6.7",
-    "follow-redirects": "1.14.8",
-    "superjson": "1.9.1",
-    "minimist": "1.2.6",
-    "qs": "6.10.3",
-    "moment": "2.29.2",
     "dset": "3.1.2"
   },
   "dependencies": {

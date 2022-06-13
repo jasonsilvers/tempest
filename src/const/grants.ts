@@ -267,6 +267,27 @@ const trackingItemGrants: Grants[] = [
   },
 ];
 
+const resourceGrants: Grants[] = [
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.ADMIN_PAGE,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.ADMIN_PAGE,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.DELETE_ANY,
+    attributes: '*',
+    resource: EResource.ADMIN_PAGE,
+    role: ERole.ADMIN,
+  },
+];
+
 const ppeItemGrants: Grants[] = [
   {
     action: EAction.CREATE_OWN,
@@ -328,5 +349,6 @@ export const grants: Grants[] = [
   ...organizationGrants,
   ...uploadGrants,
   ...trackingItemGrants,
+  ...resourceGrants,
   ...ppeItemGrants,
 ];

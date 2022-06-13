@@ -9,7 +9,6 @@ export function removeInvalidGrantActions(grants: Grant[]) {
 
 export async function getAc() {
   const grants = await findGrants();
-
   let ac: AccessControl;
 
   if (grants) {

@@ -1,6 +1,6 @@
 import { NewGrant, useAddGrant, useDeleteGrant, useGrants, useUpdateGrant } from '../../hooks/api/grants';
 import { DataGrid, GridActionsCellItem, GridColumns, GridRowModel, GridToolbarContainer } from '@mui/x-data-grid';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grant } from '@prisma/client';
 import 'twin.macro';
 import {
@@ -20,6 +20,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { EAction, EResource, ERole } from '../../const/enums';
 import { useSnackbar } from 'notistack';
+import { useResources } from '../../hooks/api/resources';
+import { diffBetweenServerAndEnum } from './utils';
 
 const grantFormSchema = Joi.object({
   action: Joi.string()
@@ -40,7 +42,19 @@ const roles = Object.values(ERole);
 
 const AddGrantDialog = ({ isOpen, setIsOpen }) => {
   const { mutate: createGrant } = useAddGrant();
+  const resourceQuery = useResources();
+
   const snackbar = useSnackbar();
+
+  const [localResources, setLocalResources] = useState([]);
+
+  useEffect(() => {
+    if (resourceQuery.data?.length > 0) {
+      const diffBetweenLocalAndServerResources = diffBetweenServerAndEnum(resources, resourceQuery.data);
+
+      setLocalResources(diffBetweenLocalAndServerResources);
+    }
+  }, [resourceQuery.data]);
 
   const {
     control,
@@ -118,7 +132,7 @@ const AddGrantDialog = ({ isOpen, setIsOpen }) => {
                   <MenuItem key="noneselected" value="none">
                     Please select a resource
                   </MenuItem>
-                  {resources.map((resource) => {
+                  {localResources.map((resource) => {
                     return (
                       <MenuItem key={resource} value={resource}>
                         {resource}

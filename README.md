@@ -80,7 +80,8 @@ afterEach(() => {
 
 ```ts
 server.use(
-  rest.get('/api/login', (req, res, ctx) => {
+  ('/api/login',
+  (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({ name: 'bob' }));
   })
 );
@@ -111,8 +112,9 @@ React Query is a library for fetching, caching and updating server data on the c
 
 1. Change .env.production database URL and replace localhost with host.docker.internal
 2. docker build .
-3. docker run _image_name_
+3. docker run -p 8081:8080 _image_name_
 4. Check file directory
+5. http://localhost:8081
 
 ```
 docker run -it image_name sh
@@ -145,3 +147,19 @@ ANALYZE=true npm run build
 ```
 export GPG_TTY=$(tty)
 ```
+
+## Steps to take if tests are failling in pipeline and not in Dev
+
+1. Delete Node modules
+2. Stop database in docker
+3. run npm ci
+4. run npm run unit:test
+
+## NPM I
+
+Do an NPM ci locally so it doenst rewrite the package lock every time.
+
+when need to run force resolutions
+
+run npm i
+run npm run force-resolutions

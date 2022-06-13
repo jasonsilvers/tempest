@@ -50,6 +50,7 @@ export enum EUri {
   ROLES = '/api/roles/',
   ORGANIZATIONS = '/api/organizations/',
   LOGS = '/api/logs',
+  RESOURCES = '/api/resource/',
   PPE_ITEMS = 'api/ppeitems/',
 }
 
