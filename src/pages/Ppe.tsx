@@ -33,8 +33,8 @@ const PpeItem = ({
   removeAddedPpeItem: () => void;
 }) => {
   const { mutate: create, isLoading: creatingInFlight } = useCreatePpeItem();
-  const { mutate: deletePpeItem, isLoading: deleteInFlight } = useDeletePpeItem();
-  const { mutate: updatePpeItem, isLoading: updateInFlight } = useUpdatePpeItem();
+  const { mutate: deletePpeItem } = useDeletePpeItem();
+  const { mutate: updatePpeItem } = useUpdatePpeItem();
 
   const [localPpeItem] = useState(() => ppeItem);
 
@@ -69,7 +69,7 @@ const PpeItem = ({
     updatePpeItem({ ...data, userId });
   };
 
-  const debouncedChangeHandler = useCallback(debounce(handleChange, 500), []);
+  const debouncedChangeHandler = useCallback(debounce(handleChange, 1000), []);
 
   const handleDelete = (id: number) => {
     if (id === -1) {
@@ -78,8 +78,6 @@ const PpeItem = ({
     }
     deletePpeItem(id);
   };
-
-  const inFlight = creatingInFlight || deleteInFlight || updateInFlight;
 
   return (
     <form onChange={handleSubmit(debouncedChangeHandler)} ref={formRef}>
@@ -93,7 +91,6 @@ const PpeItem = ({
             placeholder="Enter Title"
             defaultValue={localPpeItem.name}
             inputProps={{ ...register('name'), 'aria-label': 'name' }}
-            disabled={inFlight}
             inputRef={ref}
           />
         </div>
@@ -108,7 +105,6 @@ const PpeItem = ({
                 checked={props.value}
                 color="secondary"
                 onChange={(e) => [props.onChange(e.target.checked), handleSubmit]}
-                disabled={inFlight}
                 {...props}
               />
             )}
@@ -120,7 +116,6 @@ const PpeItem = ({
           <TextField
             size="small"
             fullWidth
-            disabled={inFlight}
             placeholder="Enter Description"
             multiline
             defaultValue={localPpeItem.providedDetails}
@@ -139,7 +134,6 @@ const PpeItem = ({
                 checked={props.value}
                 color="secondary"
                 onChange={(e) => [props.onChange(e.target.checked), handleSubmit]}
-                disabled={inFlight}
                 {...props}
               />
             )}
@@ -154,7 +148,6 @@ const PpeItem = ({
             placeholder="Enter Description"
             error={!!errors.inUseDetails}
             inputProps={{ ...register('inUseDetails'), 'aria-label': 'inUseDetails' }}
-            disabled={inFlight}
           />
         </div>
         <div tw="p-1 rounded-lg ">
@@ -200,7 +193,9 @@ const PpePage = () => {
 
   useEffect(() => {
     if (ppeQuery.data?.length > 0) {
-      setPpeItems(ppeQuery.data);
+      const sortedPpeItems = ppeQuery.data.sort((a, b) => a.id - b.id);
+
+      setPpeItems(sortedPpeItems);
       return;
     }
 
