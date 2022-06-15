@@ -185,6 +185,7 @@ model LogEvent {
 }
 
 enum JobStatus {
+  QUEUED
   WORKING
   FAILED
   COMPLETED
@@ -192,22 +193,23 @@ enum JobStatus {
 }
 
 model Job {
-  id          Int         @id @default(autoincrement())
-  message     String?
-  progress    Int?
-  status      JobStatus?
-  total       Int?
-  url         String?
-  startedBy   User?       @relation(fields: [startedById], references: [id])
-  startedById Int?
-  results     JobResult[]
+  id                Int         @id @default(autoincrement())
+  message           String?
+  progress          Int?
+  status            JobStatus?
+  total             Int?
+  url               String?
+  startedBy         User?       @relation(fields: [startedById], references: [id])
+  startedById       Int?
+  avgProcessingTime Float?
+  results           JobResult[]
 }
 
 model JobResult {
   id      Int        @id @default(autoincrement())
-  action  String?
   status  JobStatus?
   success Boolean?
+  message String?
   job     Job        @relation(fields: [jobId], references: [id])
   jobId   Int
 }
