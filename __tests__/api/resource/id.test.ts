@@ -33,7 +33,7 @@ beforeEach(() => {
 afterEach(() => {
   jest.resetAllMocks();
 });
-// Test returning 403 status code should be returning 200 when successful
+
 test('should delete resource', async () => {
   mockMethodAndReturn(deleteResource, resource[0]);
 

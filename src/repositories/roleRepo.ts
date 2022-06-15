@@ -9,16 +9,16 @@ export async function getRoleByName(name: string) {
   });
 }
 
-export async function getRoles() {
+export function getRoles() {
   return prisma.role.findMany({ include: { _count: { select: { user: true } } } });
 }
 
-export async function createRole(newRole: Omit<Role, 'id'>) {
+export function createRole(newRole: Omit<Role, 'id'>) {
   return prisma.role.create({
     data: newRole,
   });
 }
 
-export async function deleteRole(roleId: number) {
+export function deleteRole(roleId: number) {
   return prisma.role.delete({ where: { id: roleId } });
 }
