@@ -34,7 +34,7 @@ const PpeItem = ({
 }) => {
   const { mutate: create, isLoading: creatingInFlight } = useCreatePpeItem();
   const { mutate: deletePpeItem, isLoading: deleteInFlight } = useDeletePpeItem();
-  const { mutate: updatePpeItem, isLoading: updateInFlight } = useUpdatePpeItem();
+  const { mutate: updatePpeItem } = useUpdatePpeItem();
 
   const [localPpeItem] = useState(() => ppeItem);
 
@@ -69,7 +69,7 @@ const PpeItem = ({
     updatePpeItem({ ...data, userId });
   };
 
-  const debouncedChangeHandler = useCallback(debounce(handleChange, 500), []);
+  const debouncedChangeHandler = useCallback(debounce(handleChange, 1000), []);
 
   const handleDelete = (id: number) => {
     if (id === -1) {
@@ -79,7 +79,7 @@ const PpeItem = ({
     deletePpeItem(id);
   };
 
-  const inFlight = creatingInFlight || deleteInFlight || updateInFlight;
+  const disabled = creatingInFlight || deleteInFlight;
 
   return (
     <form onChange={handleSubmit(debouncedChangeHandler)} ref={formRef}>
@@ -90,10 +90,10 @@ const PpeItem = ({
             size="small"
             error={!!errors.name}
             fullWidth
+            disabled={disabled}
             placeholder="Enter Title"
             defaultValue={localPpeItem.name}
             inputProps={{ ...register('name'), 'aria-label': 'name' }}
-            disabled={inFlight}
             inputRef={ref}
           />
         </div>
@@ -106,9 +106,9 @@ const PpeItem = ({
               <Checkbox
                 inputProps={{ 'aria-label': 'checkbox-provided' }}
                 checked={props.value}
+                disabled={disabled}
                 color="secondary"
                 onChange={(e) => [props.onChange(e.target.checked), handleSubmit]}
-                disabled={inFlight}
                 {...props}
               />
             )}
@@ -120,7 +120,7 @@ const PpeItem = ({
           <TextField
             size="small"
             fullWidth
-            disabled={inFlight}
+            disabled={disabled}
             placeholder="Enter Description"
             multiline
             defaultValue={localPpeItem.providedDetails}
@@ -137,9 +137,9 @@ const PpeItem = ({
               <Checkbox
                 inputProps={{ 'aria-label': 'checkbox-inuse' }}
                 checked={props.value}
+                disabled={disabled}
                 color="secondary"
                 onChange={(e) => [props.onChange(e.target.checked), handleSubmit]}
-                disabled={inFlight}
                 {...props}
               />
             )}
@@ -150,18 +150,18 @@ const PpeItem = ({
             size="small"
             fullWidth
             multiline
+            disabled={disabled}
             defaultValue={localPpeItem.inUseDetails}
             placeholder="Enter Description"
             error={!!errors.inUseDetails}
             inputProps={{ ...register('inUseDetails'), 'aria-label': 'inUseDetails' }}
-            disabled={inFlight}
           />
         </div>
         <div tw="p-1 rounded-lg ">
           <IconButton
             aria-label="delete"
             onClick={() => handleDelete(localPpeItem.id)}
-            disabled={creatingInFlight}
+            disabled={disabled}
             color="secondary"
           >
             <DeleteIcon />
@@ -200,7 +200,9 @@ const PpePage = () => {
 
   useEffect(() => {
     if (ppeQuery.data?.length > 0) {
-      setPpeItems(ppeQuery.data);
+      const sortedPpeItems = [...ppeQuery.data].sort((a, b) => a.id - b.id);
+
+      setPpeItems(sortedPpeItems);
       return;
     }
 
@@ -238,7 +240,7 @@ const PpePage = () => {
         <div tw="p-3 flex justify-center">
           <Fab
             color="secondary"
-            disabled={ppeItems?.some((ppeItem) => ppeItem.id === -1)}
+            disabled={ppeItems?.some((ppeItem) => ppeItem.id === -1) || ppeQuery.isFetching}
             size="medium"
             variant="circular"
             onClick={addPpeItem}
