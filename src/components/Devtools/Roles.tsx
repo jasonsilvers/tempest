@@ -16,32 +16,32 @@ import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
 import { AddIcon, DeleteIcon } from '../../assets/Icons';
-import { EResource } from '../../const/enums';
-import { NewResource, useCreateResource, useDeleteResource, useResources } from '../../hooks/api/resources';
+import { ERole } from '../../const/enums';
+import { useRoles, useCreateRole, useDeleteRole, NewRole } from '../../hooks/api/roles';
 import { diffBetweenEnumAndServer } from './utils';
 
-const resourceFormSchema = Joi.object({
+const rolesFormSchema = Joi.object({
   name: Joi.string()
     .required()
     .invalid(...['none']),
 });
 
-const resources = Object.values(EResource);
+const roles = Object.values(ERole);
 
-const AddResourceDialog = ({ isOpen, setIsOpen }) => {
-  const { mutate: createResource } = useCreateResource();
-  const resourceQuery = useResources();
+const AddRoleDialog = ({ isOpen, setIsOpen }) => {
+  const { mutate: createRole } = useCreateRole();
+  const rolesQuery = useRoles();
   const snackbar = useSnackbar();
 
-  const [localResources, setLocalResources] = useState([]);
+  const [localRoles, setLocalRoles] = useState([]);
 
   useEffect(() => {
-    if (resourceQuery.data?.length > 0) {
-      const diffBetweenLocalAndServerResources = diffBetweenEnumAndServer(resources, resourceQuery.data);
+    if (rolesQuery.data?.length > 0) {
+      const diffBetweenLocalAndServerResources = diffBetweenEnumAndServer(roles, rolesQuery.data);
 
-      setLocalResources(diffBetweenLocalAndServerResources);
+      setLocalRoles(diffBetweenLocalAndServerResources);
     }
-  }, [resourceQuery.data]);
+  }, [rolesQuery.data]);
 
   const {
     control,
@@ -49,7 +49,7 @@ const AddResourceDialog = ({ isOpen, setIsOpen }) => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: joiResolver(resourceFormSchema),
+    resolver: joiResolver(rolesFormSchema),
     defaultValues: {
       name: 'none',
     },
@@ -58,11 +58,10 @@ const AddResourceDialog = ({ isOpen, setIsOpen }) => {
   const resetValues = () => {
     reset({ name: 'none' });
   };
-
-  const onSubmit = (data: NewResource) => {
-    createResource(data, {
+  const onSubmit = (data: NewRole) => {
+    createRole(data, {
       onSuccess: () => {
-        snackbar.enqueueSnackbar('Resource Added!', { variant: 'success' });
+        snackbar.enqueueSnackbar('Role Added!', { variant: 'success' });
         resetValues();
         setIsOpen(false);
       },
@@ -79,7 +78,7 @@ const AddResourceDialog = ({ isOpen, setIsOpen }) => {
       fullWidth
       aria-labelledby="tracking-dialog"
     >
-      <DialogTitle>Create New Resource</DialogTitle>
+      <DialogTitle>Add New Role</DialogTitle>
       <DialogContent tw="min-height[220px]">
         <form onSubmit={handleSubmit(onSubmit)} tw="flex flex-col space-y-5 pt-5">
           <FormHelperText>{errors.name ? errors.name.message : null}</FormHelperText>
@@ -90,12 +89,12 @@ const AddResourceDialog = ({ isOpen, setIsOpen }) => {
               render={({ field }) => (
                 <Select {...field} fullWidth size="small" error={!!errors.name}>
                   <MenuItem key="noneselected" value="none">
-                    Please select a resource
+                    Please select a role
                   </MenuItem>
-                  {localResources.map((resource) => {
+                  {localRoles.map((role) => {
                     return (
-                      <MenuItem key={resource} value={resource}>
-                        {resource}
+                      <MenuItem key={role} value={role}>
+                        {role}
                       </MenuItem>
                     );
                   })}
@@ -123,20 +122,21 @@ const GridToolbar = () => {
   return (
     <GridToolbarContainer>
       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add Resource
+        Add Role
       </Button>
-      <AddResourceDialog isOpen={isOpen} setIsOpen={setIsOpen} />
+      <AddRoleDialog isOpen={isOpen} setIsOpen={setIsOpen} />
     </GridToolbarContainer>
   );
 };
 
-export const Resources = () => {
-  const resourceQuery = useResources();
+export const Roles = () => {
+  const roleQuery = useRoles();
+
   const { enqueueSnackbar } = useSnackbar();
-  const { mutate: del } = useDeleteResource();
+  const { mutate: del } = useDeleteRole();
 
   const deleteCellAction = (params: GridRowParams) => {
-    const disabled = params.row?._count?.grant > 0;
+    const disabled = params?.row?._count?.user > 0 || params?.row?.name === 'norole';
 
     return [
       // eslint-disable-next-line react/jsx-key
@@ -147,7 +147,7 @@ export const Resources = () => {
         onClick={() => {
           del(params.row.id, {
             onSuccess: () => {
-              enqueueSnackbar('Resource has been Deleted', { variant: 'success' });
+              enqueueSnackbar('Role has been Deleted', { variant: 'success' });
             },
           });
         }}
@@ -158,7 +158,7 @@ export const Resources = () => {
   const columns: GridColumns = useMemo(
     () => [
       { field: 'id', headerName: 'Id', flex: 1, editable: false },
-      { field: 'name', headerName: 'Name', flex: 1, editable: false },
+      { field: 'name', headerName: 'Roles', flex: 1, editable: false },
       {
         field: 'actions',
         type: 'actions',
@@ -169,16 +169,14 @@ export const Resources = () => {
     []
   );
 
-  if (resourceQuery.isLoading) {
-    return <div>...loading</div>;
+  if (roleQuery.isLoading) {
+    return <div>...Loading</div>;
   }
-
   return (
-    <div tw="h-[560px]">
+    <div tw="h-[400px]">
       <DataGrid
-        rows={resourceQuery?.data}
+        rows={roleQuery?.data}
         columns={columns}
-        disableVirtualization
         components={{
           Toolbar: GridToolbar,
         }}
