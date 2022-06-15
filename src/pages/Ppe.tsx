@@ -33,7 +33,7 @@ const PpeItem = ({
   removeAddedPpeItem: () => void;
 }) => {
   const { mutate: create, isLoading: creatingInFlight } = useCreatePpeItem();
-  const { mutate: deletePpeItem } = useDeletePpeItem();
+  const { mutate: deletePpeItem, isLoading: deleteInFlight } = useDeletePpeItem();
   const { mutate: updatePpeItem } = useUpdatePpeItem();
 
   const [localPpeItem] = useState(() => ppeItem);
@@ -79,6 +79,8 @@ const PpeItem = ({
     deletePpeItem(id);
   };
 
+  const disabled = creatingInFlight || deleteInFlight;
+
   return (
     <form onChange={handleSubmit(debouncedChangeHandler)} ref={formRef}>
       <div tw="grid grid-cols-12 gap-1 text-[14px] w-[1400px] p-5">
@@ -88,6 +90,7 @@ const PpeItem = ({
             size="small"
             error={!!errors.name}
             fullWidth
+            disabled={disabled}
             placeholder="Enter Title"
             defaultValue={localPpeItem.name}
             inputProps={{ ...register('name'), 'aria-label': 'name' }}
@@ -103,6 +106,7 @@ const PpeItem = ({
               <Checkbox
                 inputProps={{ 'aria-label': 'checkbox-provided' }}
                 checked={props.value}
+                disabled={disabled}
                 color="secondary"
                 onChange={(e) => [props.onChange(e.target.checked), handleSubmit]}
                 {...props}
@@ -116,6 +120,7 @@ const PpeItem = ({
           <TextField
             size="small"
             fullWidth
+            disabled={disabled}
             placeholder="Enter Description"
             multiline
             defaultValue={localPpeItem.providedDetails}
@@ -132,6 +137,7 @@ const PpeItem = ({
               <Checkbox
                 inputProps={{ 'aria-label': 'checkbox-inuse' }}
                 checked={props.value}
+                disabled={disabled}
                 color="secondary"
                 onChange={(e) => [props.onChange(e.target.checked), handleSubmit]}
                 {...props}
@@ -144,6 +150,7 @@ const PpeItem = ({
             size="small"
             fullWidth
             multiline
+            disabled={disabled}
             defaultValue={localPpeItem.inUseDetails}
             placeholder="Enter Description"
             error={!!errors.inUseDetails}
@@ -154,7 +161,7 @@ const PpeItem = ({
           <IconButton
             aria-label="delete"
             onClick={() => handleDelete(localPpeItem.id)}
-            disabled={creatingInFlight}
+            disabled={disabled}
             color="secondary"
           >
             <DeleteIcon />
@@ -193,7 +200,7 @@ const PpePage = () => {
 
   useEffect(() => {
     if (ppeQuery.data?.length > 0) {
-      const sortedPpeItems = ppeQuery.data.sort((a, b) => a.id - b.id);
+      const sortedPpeItems = [...ppeQuery.data].sort((a, b) => a.id - b.id);
 
       setPpeItems(sortedPpeItems);
       return;
@@ -233,7 +240,7 @@ const PpePage = () => {
         <div tw="p-3 flex justify-center">
           <Fab
             color="secondary"
-            disabled={ppeItems?.some((ppeItem) => ppeItem.id === -1)}
+            disabled={ppeItems?.some((ppeItem) => ppeItem.id === -1) || ppeQuery.isFetching}
             size="medium"
             variant="circular"
             onClick={addPpeItem}
