@@ -177,7 +177,7 @@ const testNextApi = {
       urlSlug,
       customHeaders = {},
     }: {
-      body: Record<string, unknown>;
+      body: unknown;
       withJwt?: boolean;
       urlId?: string | number;
       urlSlug?: string;

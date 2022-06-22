@@ -3,10 +3,10 @@ import dayjs from 'dayjs';
 import prisma from '../prisma/prisma';
 
 export const findJobById = (jobId: number) => {
-  return prisma.job.findUnique({ where: { id: jobId } });
+  return prisma.job.findUnique({ where: { id: jobId }, include: { results: { orderBy: { id: 'desc' } } } });
 };
 
-export const createJob = (total: number, userId: number) => {
+export const createJob = async (total: number, userId: number) => {
   return prisma.job.create({
     data: {
       message: `Started at ${dayjs().format('	ddd, MMM D, YYYY h:mm A')}`,
@@ -15,6 +15,7 @@ export const createJob = (total: number, userId: number) => {
       total,
       startedById: userId,
     },
+    include: { results: true },
   });
 };
 
@@ -45,6 +46,6 @@ export const updateJobResult = (jobResultId: number, data: Partial<JobResult>) =
   });
 };
 
-export const findJobResultsByJob = (jobId: number) => {
+export const findJobResultsByJobId = (jobId: number) => {
   return prisma.jobResult.findMany({ where: { jobId } });
 };

@@ -2,6 +2,7 @@ import { User } from '@prisma/client';
 import { P1_JWT } from '@tron/nextjs-auth-p1';
 import { EAction, EResource, ERole } from '../../../src/const/enums';
 import { grants as realGrants } from '../../../src/const/grants';
+import { LoggedInUser } from '../../../src/repositories/userRepo';
 
 const grants = [
   ...realGrants,
@@ -94,10 +95,10 @@ export const andrewMonitor = {
     shortName: 'org 1',
     parentId: 1,
   },
-} as unknown as User;
+} as unknown as LoggedInUser;
 
 export const joeAdmin = {
-  id: 321,
+  id: 456,
   firstName: 'joe',
   lastName: 'admin',
   role: {

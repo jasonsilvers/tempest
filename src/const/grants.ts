@@ -340,6 +340,15 @@ const ppeItemGrants: Grants[] = [
   },
 ];
 
+const jobGrants: Grants[] = [
+  {
+    action: EAction.READ_OWN,
+    attributes: '*',
+    resource: EResource.JOB,
+    role: ERole.MONITOR,
+  },
+];
+
 export const grants: Grants[] = [
   ...mattermostGrants,
   ...pageGrants,
@@ -351,4 +360,5 @@ export const grants: Grants[] = [
   ...trackingItemGrants,
   ...resourceGrants,
   ...ppeItemGrants,
+  ...jobGrants,
 ];

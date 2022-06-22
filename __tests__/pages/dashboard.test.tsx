@@ -258,8 +258,8 @@ it('should filter by organization', async () => {
   const searchInput = getByLabelText(/organizations/i);
 
   userEvent.type(searchInput, '15');
-  await waitForLoadingToFinish();
-  fireEvent.click(getByText('15th Medical Group'));
+
+  fireEvent.click(await findByText('15th Medical Group'));
 
   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
   expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();

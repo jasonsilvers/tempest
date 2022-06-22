@@ -4,6 +4,7 @@ import { EResource, ITempestApiMessage } from '../../../../const/enums';
 import { getAc } from '../../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
+import { createJob, createJobResults, findJobResultsByJobId } from '../../../../repositories/jobRepo';
 import { findUserByEmail, LoggedInUser } from '../../../../repositories/userRepo';
 import { BulkTrackingBodyItem, trackingCreate } from '../../../../utils/bulk';
 
@@ -33,16 +34,22 @@ const bulkTrackingCreateHandler = async (req: IExtendedNextApiRequest, res: Next
 
   const ac = await getAc();
 
-  const mtiPermission = ac.can(req.user.role.name).createAny(EResource.MEMBER_TRACKING_ITEM);
-  const mtrPermission = ac.can(req.user.role.name).createAny(EResource.MEMBER_TRACKING_RECORD);
+  const mtiPermission = ac?.can(req.user.role?.name).createAny(EResource.MEMBER_TRACKING_ITEM);
+  const mtrPermission = ac?.can(req.user.role?.name).createAny(EResource.MEMBER_TRACKING_RECORD);
 
   if (!mtiPermission.granted || !mtrPermission.granted) {
     throw new PermissionError();
   }
 
-  trackingCreate(req.user, body);
+  const job = await createJob(body.length, req.user.id);
+  await createJobResults(job.id, body.length);
+  const jobResults = await findJobResultsByJobId(job.id);
+  job.results = jobResults;
+  job.url = `/api/jobs/${job.id}`;
 
-  res.status(202).json({ message: 'ok' });
+  trackingCreate(req.user, body, job.id);
+
+  res.status(202).json(job);
 };
 
 export default withTempestHandlers(bulkTrackingCreateHandler, findUserByEmail, bulkTrackingCreateSchema);
