@@ -10,15 +10,22 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { DataGrid, GridActionsCellItem, GridColumns, GridRowParams, GridValueGetterParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridColumns,
+  GridRowModel,
+  GridRowParams,
+  GridValueGetterParams,
+} from '@mui/x-data-grid';
 import { Organization } from '@prisma/client';
 import Joi from 'joi';
 import { useSnackbar } from 'notistack';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Controller, FieldError, useForm } from 'react-hook-form';
 import 'twin.macro';
 import { AddIcon, Close, DeleteIcon } from '../../assets/Icons';
-import { useCreateOrg, useDeleteOrganization, useOrgs } from '../../hooks/api/organizations';
+import { useCreateOrg, useDeleteOrganization, useOrgs, useUpdateOrganization } from '../../hooks/api/organizations';
 import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay } from '../../lib/ui';
 
 const organizationSchema = Joi.object({
@@ -67,6 +74,7 @@ export const OrganizationList = () => {
   const { data: orgs, isLoading } = useOrgs();
   const createOrg = useCreateOrg();
   const deleteOrg = useDeleteOrganization();
+  const updateOrg = useUpdateOrganization();
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
   const [isSavingOrg, setIsSavingOrg] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -113,8 +121,8 @@ export const OrganizationList = () => {
   const columns: GridColumns<Organization> = useMemo(
     () => [
       { field: 'id', headerName: 'Id', flex: 1 },
-      { field: 'name', headerName: 'Name', flex: 1 },
-      { field: 'shortName', headerName: 'Short Name', flex: 1 },
+      { field: 'name', headerName: 'Name', flex: 1, editable: true },
+      { field: 'shortName', headerName: 'Short Name', flex: 1, editable: true },
       {
         field: 'parentId',
         headerName: 'Parent',
@@ -123,10 +131,11 @@ export const OrganizationList = () => {
           return orgs?.find((org) => org.id === params.value)?.name;
         },
       },
+
       {
         field: 'actions',
         type: 'actions',
-        width: 150,
+        width: 50,
         getActions: deleteCellAction,
       },
     ],
@@ -152,6 +161,15 @@ export const OrganizationList = () => {
     });
   };
 
+  const processRowUpdate = useCallback((updatedRow: GridRowModel<Organization>, oldRow: GridRowModel<Organization>) => {
+    const { id, name, shortName, parentId } = updatedRow;
+    if (oldRow.name !== name || oldRow.shortName !== shortName) {
+      const newRow = { id, name, shortName, parentId };
+      updateOrg.mutate(newRow);
+      return newRow;
+    }
+  }, []);
+
   if (isLoading) {
     return <div>...Loading</div>;
   }
@@ -159,7 +177,14 @@ export const OrganizationList = () => {
   return (
     <div>
       <div tw="h-[500px] pb-10">
-        <DataGrid rows={orgs} columns={columns} disableVirtualization disableSelectionOnClick />
+        <DataGrid
+          rows={orgs}
+          columns={columns}
+          disableVirtualization
+          disableSelectionOnClick
+          experimentalFeatures={{ newEditingApi: true }}
+          processRowUpdate={processRowUpdate}
+        />
       </div>
       <div tw="flex justify-center">
         <Fab color="secondary" onClick={() => setDialogIsOpen(true)}>
