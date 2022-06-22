@@ -331,10 +331,10 @@ export const MassAssignReview = ({
   usersQuery,
   trackingItemsQuery,
   selectedUserIds,
-  setSelectedUserIds,
+  // setSelectedUserIds,
   selectedTrackingItemIds,
-  setSelectedTrackingItemIds,
-}: MassAssignReviewProps) => {
+}: // setSelectedTrackingItemIds,
+MassAssignReviewProps) => {
   return (
     <div>
       {usersQuery.data
