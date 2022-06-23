@@ -2,7 +2,7 @@ import 'whatwg-fetch';
 import { OrganizationList } from '../../src/components/Devtools/OrganizationList';
 import { ERole, EUri } from '../../src/const/enums';
 import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, userEvent } from '../testutils/TempestTestUtils';
+import { fireEvent, render, userEvent, waitFor } from '../testutils/TempestTestUtils';
 
 beforeEach(() => {
   server.listen({
@@ -43,7 +43,7 @@ afterEach(() => {
 // // Clean up after the tests are finished.
 afterAll(() => server.close());
 
-test('should allow edit', async () => {
+test('should allow edit organization', async () => {
   const testOrg = { id: '2', name: 'test', shortName: 'org 2', parentId: null };
 
   server.use(
@@ -56,8 +56,6 @@ test('should allow edit', async () => {
   const organizationCell = await screen.findByRole('cell', {
     name: /organization 2/i,
   });
-
-  expect(organizationCell).toBeInTheDocument();
 
   fireEvent.doubleClick(organizationCell);
 
@@ -72,4 +70,14 @@ test('should allow edit', async () => {
       name: /test/i,
     })
   ).toBeInTheDocument();
+
+  await waitFor(() => screen.findByRole('alert'));
+
+  fireEvent.doubleClick(organizationCell);
+
+  fireEvent.change(input[0], { target: { value: '' } });
+
+  userEvent.keyboard('{Enter}');
+
+  await waitFor(() => screen.findByRole('alert'));
 });

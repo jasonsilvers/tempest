@@ -165,11 +165,19 @@ export const OrganizationList = () => {
     const { id, name, shortName, parentId } = updatedRow;
     if (oldRow.name !== name || oldRow.shortName !== shortName) {
       const newRow = { id, name, shortName, parentId };
-      updateOrg.mutate(newRow);
-      return newRow;
+      if (!name || !shortName) {
+        throw new Error('Organization names cannot be empty');
+      } else {
+        updateOrg.mutate(newRow);
+        console.log(newRow);
+        return newRow;
+      }
     }
   }, []);
 
+  const handleUpdateError = (e: Error) => {
+    enqueueSnackbar(e.message, { variant: 'error' });
+  };
   if (isLoading) {
     return <div>...Loading</div>;
   }
@@ -184,6 +192,7 @@ export const OrganizationList = () => {
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
           processRowUpdate={processRowUpdate}
+          onProcessRowUpdateError={handleUpdateError}
         />
       </div>
       <div tw="flex justify-center">
