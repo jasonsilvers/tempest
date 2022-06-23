@@ -167,11 +167,10 @@ export const OrganizationList = () => {
       const newRow = { id, name, shortName, parentId };
       if (!name || !shortName) {
         throw new Error('Organization names cannot be empty');
-      } else {
-        updateOrg.mutate(newRow);
-        console.log(newRow);
-        return newRow;
       }
+      updateOrg.mutate(newRow);
+      console.log(newRow);
+      return newRow;
     }
   }, []);
 
