@@ -169,7 +169,6 @@ export const OrganizationList = () => {
         throw new Error('Organization names cannot be empty');
       }
       updateOrg.mutate(newRow);
-      console.log(newRow);
       return newRow;
     }
   }, []);
