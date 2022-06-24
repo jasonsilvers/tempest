@@ -169,7 +169,7 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <main tw="flex flex-col space-y-8 pr-14 pb-8">
+    <main tw="flex flex-col space-y-8 pr-14 pb-8 w-[720px]">
       <Card tw="p-5">
         <Typography variant="h6">Member List</Typography>
         <div tw="py-8">

@@ -51,8 +51,8 @@ test('should createJobResults', async () => {
   await createJobResults(2, 2);
   expect(prisma.jobResult.createMany).toBeCalledWith({
     data: [
-      { jobId: 2, message: null, status: JobStatus.QUEUED, success: false },
-      { jobId: 2, message: null, status: JobStatus.QUEUED, success: false },
+      { jobId: 2, message: null, status: JobStatus.QUEUED, success: false, forTrackingItemId: null, forUserId: null },
+      { jobId: 2, message: null, status: JobStatus.QUEUED, success: false, forTrackingItemId: null, forUserId: null },
     ],
   });
 });

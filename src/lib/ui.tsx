@@ -1,6 +1,8 @@
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import {
+  Box,
   CircularProgress,
+  CircularProgressProps,
   Dialog as MuiDialog,
   DialogActions as MuiDialogActions,
   DialogContent as MuiDialogContent,
@@ -14,6 +16,7 @@ import {
   OutlinedInputProps,
   SelectChangeEvent,
   Tooltip,
+  Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import React, { CSSProperties } from 'react';
@@ -179,9 +182,32 @@ const TempestDatePicker = styled((props) => (
 
 const TempestDeleteIcon = tw(DeleteIcon)`text-xl`;
 
+function CircularProgressWithLabel(props: CircularProgressProps & { value: number }) {
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress size="90px" variant="determinate" {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography variant="body1" component="div" color="text.secondary">{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
+
 export {
   Card,
   TempestDrawer,
+  CircularProgressWithLabel,
   DialogTitle,
   DialogContent,
   DialogActions,

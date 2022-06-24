@@ -21,8 +21,10 @@ import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import EventIcon from '@mui/icons-material/Event';
 import MasksIcon from '@mui/icons-material/Masks';
+import ErrorIcon from '@mui/icons-material/Error';
 
 export {
+  ErrorIcon,
   MasksIcon,
   AddIcon,
   AssignmentIcon,

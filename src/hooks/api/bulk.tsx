@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { EUri } from '../../const/enums';
+import { JobWithResults } from '../../repositories/jobRepo';
 import { BulkTrackingBodyItem } from '../../utils/bulk';
 
 export const queryKeys = {
@@ -30,19 +31,22 @@ export const useAssignManyTrackingItemsToManyUsers = () => {
 export const useJob = (jobId: number) => {
   const snackbar = useSnackbar();
 
-  return useQuery<Job>(queryKeys.job(jobId), () => axios.get<Job>(EUri.JOBS + jobId).then((result) => result.data), {
-    enabled: !!jobId,
-    refetchInterval: (data) => {
-      console.log(data?.status);
-      if (data?.status === JobStatus.COMPLETED) {
-        return false;
-      }
+  return useQuery<JobWithResults>(
+    queryKeys.job(jobId),
+    () => axios.get<JobWithResults>(EUri.JOBS + jobId).then((result) => result.data),
+    {
+      enabled: !!jobId,
+      refetchInterval: (data) => {
+        if (data?.status === JobStatus.COMPLETED || data?.status === JobStatus.FAILED) {
+          return false;
+        }
 
-      return 1000;
-    },
+        return 1000;
+      },
 
-    onError: () => {
-      snackbar.enqueueSnackbar('Error assigning tracking items to users. Please try again!', { variant: 'error' });
-    },
-  });
+      onError: () => {
+        snackbar.enqueueSnackbar('Error assigning tracking items to users. Please try again!', { variant: 'error' });
+      },
+    }
+  );
 };

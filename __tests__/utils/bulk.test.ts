@@ -1,6 +1,6 @@
 import { JobStatus } from '@prisma/client';
 
-import { findJobById, findJobResultsByJobId, updateJobResult } from '../../src/repositories/jobRepo';
+import { findJobById, findJobResultsByJobId, updateJob, updateJobResult } from '../../src/repositories/jobRepo';
 import {
   createMemberTrackingItem,
   createMemberTrackingRecord,
@@ -58,15 +58,15 @@ const memberTrackingRecordFromDb = {
 test('job should fail if list of ids is empty', async () => {
   const jobResult = {
     status: JobStatus.FAILED,
-    success: false,
-    message: 'Requesting user did not return any users',
+    message: 'Unexpected Error occured, please try again Error: No users found',
   };
   mockMethodAndReturn(getAllUsersFromUsersOrgCascade, []);
+  mockMethodAndReturn(updateJob, testJob);
   mockMethodAndReturn(updateJobResult, jobResult);
 
   await trackingCreate(andrewMonitor, [], 1);
 
-  expect(updateJobResult).toHaveBeenCalledWith(1, jobResult);
+  expect(updateJob).toHaveBeenCalledWith(1, jobResult);
 });
 
 test('job result should fail if user is not allowed to create for member', async () => {
@@ -78,9 +78,9 @@ test('job result should fail if user is not allowed to create for member', async
     },
   ];
   const jobResult = {
+    message: 'Unable to update user due to permissions or not found. UserId - 4563',
     status: JobStatus.FAILED,
     success: false,
-    message: 'Unable to update user due to permissions or not found. UserId - 4563',
   };
   mockMethodAndReturn(getAllUsersFromUsersOrgCascade, [bobJones]);
   mockMethodAndReturn(updateJobResult, jobResult);
@@ -100,6 +100,7 @@ test('Bulk create should stop if job was killed', async () => {
       isActive: true,
     },
   ];
+
   const jobResult = {
     status: JobStatus.KILLED,
     success: false,
@@ -111,7 +112,8 @@ test('Bulk create should stop if job was killed', async () => {
 
   await trackingCreate(andrewMonitor, testBody, 1);
 
-  expect(updateJobResult).toHaveBeenCalledWith(1, jobResult);
+  expect(updateJobResult).toBeCalledTimes(2);
+  expect(updateJobResult).lastCalledWith(1, jobResult);
 });
 
 test('job result should fail if tracking item is not found', async () => {
@@ -137,7 +139,7 @@ test('job result should fail if tracking item is not found', async () => {
 
   await trackingCreate(andrewMonitor, testBody, 1);
 
-  expect(updateJobResult).toHaveBeenCalledWith(1, jobResult);
+  expect(updateJobResult).lastCalledWith(1, jobResult);
   expect(spyFindMemberTrackingItemByUserId).not.toHaveBeenCalled();
 });
 
@@ -164,7 +166,7 @@ test('should create member tracking item and member tracking record', async () =
 
   await trackingCreate(andrewMonitor, testBody, 1);
 
-  expect(updateJobResult).toHaveBeenCalledWith(1, jobResult);
+  expect(updateJobResult).lastCalledWith(1, jobResult);
 });
 
 test('should not create member tracking item and create member tracking record if they already exist', async () => {
@@ -194,7 +196,7 @@ test('should not create member tracking item and create member tracking record i
 
   await trackingCreate(andrewMonitor, testBody, 1);
 
-  expect(updateJobResult).toHaveBeenCalledWith(1, jobResult);
+  expect(updateJobResult).lastCalledWith(1, jobResult);
   expect(spyCreateMemberTrackingItem).not.toHaveBeenCalled();
   expect(spyCreateMemberTrackingRecord).not.toHaveBeenCalled();
 });
@@ -223,7 +225,7 @@ test('should catch error when creating mti or mtr', async () => {
 
   await trackingCreate(andrewMonitor, testBody, 1);
 
-  expect(updateJobResult).toHaveBeenCalledWith(1, jobResult);
+  expect(updateJobResult).lastCalledWith(1, jobResult);
 });
 
 test('should catch error when trying to get list of membersIds user can view', async () => {
@@ -239,6 +241,7 @@ test('should catch error when trying to get list of membersIds user can view', a
     status: JobStatus.COMPLETED,
     success: true,
     message: 'Updated',
+    userId: 123,
   };
 
   const jobResult2 = {
@@ -246,14 +249,17 @@ test('should catch error when trying to get list of membersIds user can view', a
     status: JobStatus.QUEUED,
     success: false,
     message: null,
+    userId: 123,
   };
 
   const updatedJobResult = {
     status: JobStatus.FAILED,
     success: false,
     message: 'Unexpected Error occured, please try again',
+    userId: 123,
   };
 
+  mockMethodAndReturn(updateJob, testJob);
   mockMethodAndReturn(updateJobResult, updatedJobResult);
   mockMethodAndReturn(getAllUsersFromUsersOrgCascade, [bobJones]);
 
@@ -268,5 +274,5 @@ test('should catch error when trying to get list of membersIds user can view', a
 
   await trackingCreate(andrewMonitor, testBody, 1);
 
-  expect(updateJobResult).toHaveBeenCalledWith(2, updatedJobResult);
+  expect(updateJob).toHaveBeenCalled();
 });

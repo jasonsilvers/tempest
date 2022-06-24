@@ -65,6 +65,24 @@ function userIsNotAllowedToCreateForMember(userIds: number[], item: BulkTracking
   return !userIds.includes(item.userId);
 }
 
+async function updateAllJobResults(jobId: number, status: JobStatus, message: string) {
+  const jobResults = await findJobResultsByJobId(jobId);
+
+  const queuedJobResults = jobResults?.filter((jobResult) => jobResult.status === JobStatus.QUEUED);
+
+  if (!queuedJobResults) {
+    return;
+  }
+
+  for (const jobResult of queuedJobResults) {
+    await updateJobResult(jobResult.id, {
+      status,
+      success: false,
+      message,
+    });
+  }
+}
+
 async function processItem(item: BulkTrackingBodyItem, jobId: number, index: number, userIds: number[]) {
   const start = performance.now();
   let duration: number;
@@ -74,8 +92,19 @@ async function processItem(item: BulkTrackingBodyItem, jobId: number, index: num
 
   const jobResult = job.results[index];
 
+  await updateJobResult(jobResult.id, {
+    forUserId: item.userId,
+    forTrackingItemId: item.trackingItemId,
+  });
+
   if (job.status === JobStatus.KILLED) {
-    await updateJobResult(jobResult.id, { status: JobStatus.KILLED, success: false, message: 'Job was killed' });
+    await updateJobResult(jobResult.id, {
+      status: JobStatus.KILLED,
+      success: false,
+      message: 'Job was killed',
+    });
+
+    await updateAllJobResults(job.id, JobStatus.KILLED, 'Job was killed');
     return;
   }
 
@@ -155,11 +184,7 @@ export const trackingCreate = async (reqUser: LoggedInUser, body: BulkTrackingBo
     const userIds = await listOfMemberIdsUserCanView(reqUser);
 
     if (userIds.length === 0) {
-      await updateJobResult(jobId, {
-        status: JobStatus.FAILED,
-        success: false,
-        message: 'Requesting user did not return any users',
-      });
+      throw new Error('No users found');
     }
 
     for (const [index, item] of body.entries()) {
@@ -168,18 +193,9 @@ export const trackingCreate = async (reqUser: LoggedInUser, body: BulkTrackingBo
   } catch (error) {
     await updateJob(jobId, {
       status: JobStatus.FAILED,
-      url: `/api/jobs/${jobId}`,
-      message: 'Unexpected Error occured, please try again',
+      message: 'Unexpected Error occured, please try again ' + error,
     });
 
-    const jobResults = await findJobResultsByJobId(jobId);
-    const queuedJobResults = jobResults.filter((jobResult) => jobResult.status === JobStatus.QUEUED);
-    for (const jobResult of queuedJobResults) {
-      await updateJobResult(jobResult.id, {
-        status: JobStatus.FAILED,
-        success: false,
-        message: 'Unexpected Error occured, please try again',
-      });
-    }
+    updateAllJobResults(jobId, JobStatus.FAILED, 'Unexpected Error occured, please try again');
   }
 };

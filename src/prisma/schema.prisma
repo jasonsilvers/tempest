@@ -33,6 +33,7 @@ model User {
   dutyTitle                String?                           @map("duty_title")
   logEvent                 LogEvent[]
   jobs                     Job[]
+  jobResults               JobResult[]
 
   @@map(name: "user")
 }
@@ -109,6 +110,7 @@ model TrackingItem {
   memberTrackingRecord MemberTrackingRecord[]
   templates            TemplateTrackingItem[]
 
+  JobResults         JobResult[]
   memberTrackingItem MemberTrackingItem[]
   @@map("training_record")
 }
@@ -206,10 +208,14 @@ model Job {
 }
 
 model JobResult {
-  id      Int        @id @default(autoincrement())
-  status  JobStatus?
-  success Boolean?
-  message String?
-  job     Job        @relation(fields: [jobId], references: [id])
-  jobId   Int
+  id                Int           @id @default(autoincrement())
+  status            JobStatus?
+  success           Boolean?
+  message           String?
+  forUser           User?         @relation(fields: [forUserId], references: [id])
+  forUserId         Int?
+  forTrackingItem   TrackingItem? @relation(fields: [forTrackingItemId], references: [id])
+  forTrackingItemId Int?
+  job               Job           @relation(fields: [jobId], references: [id])
+  jobId             Int
 }

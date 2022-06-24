@@ -1,9 +1,12 @@
-import { Job, JobResult, JobStatus } from '@prisma/client';
+import { Job, JobResult, JobStatus, Prisma } from '@prisma/client';
 import dayjs from 'dayjs';
 import prisma from '../prisma/prisma';
 
 export const findJobById = (jobId: number) => {
-  return prisma.job.findUnique({ where: { id: jobId }, include: { results: { orderBy: { id: 'desc' } } } });
+  return prisma.job.findUnique({
+    where: { id: jobId },
+    include: { results: { orderBy: { id: 'desc' }, include: { forUser: true, forTrackingItem: true } } },
+  });
 };
 
 export const createJob = async (total: number, userId: number) => {
@@ -32,6 +35,8 @@ export const createJobResults = (jobId: number, count: number) => {
       status: JobStatus.QUEUED,
       success: false,
       message: null,
+      forUserId: null,
+      forTrackingItemId: null,
     };
     data.push(newJobResult);
   }
@@ -49,3 +54,6 @@ export const updateJobResult = (jobResultId: number, data: Partial<JobResult>) =
 export const findJobResultsByJobId = (jobId: number) => {
   return prisma.jobResult.findMany({ where: { jobId } });
 };
+
+// required to infer the return type from the Prisma Client
+export type JobWithResults = Prisma.PromiseReturnType<typeof findJobById>;

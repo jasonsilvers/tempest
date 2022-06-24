@@ -21,6 +21,8 @@ CREATE TABLE "JobResult" (
     "status" "JobStatus",
     "success" BOOLEAN,
     "message" TEXT,
+    "forUserId" INTEGER,
+    "forTrackingItemId" INTEGER,
     "jobId" INTEGER NOT NULL,
 
     CONSTRAINT "JobResult_pkey" PRIMARY KEY ("id")
@@ -28,6 +30,12 @@ CREATE TABLE "JobResult" (
 
 -- AddForeignKey
 ALTER TABLE "Job" ADD CONSTRAINT "Job_startedById_fkey" FOREIGN KEY ("startedById") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "JobResult" ADD CONSTRAINT "JobResult_forUserId_fkey" FOREIGN KEY ("forUserId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "JobResult" ADD CONSTRAINT "JobResult_forTrackingItemId_fkey" FOREIGN KEY ("forTrackingItemId") REFERENCES "training_record"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "JobResult" ADD CONSTRAINT "JobResult_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "Job"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
