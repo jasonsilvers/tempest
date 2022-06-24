@@ -171,6 +171,7 @@ export const OrganizationList = () => {
       updateOrg.mutate(newRow);
       return newRow;
     }
+    return oldRow;
   }, []);
 
   const handleUpdateError = (e: Error) => {
