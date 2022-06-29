@@ -1,6 +1,6 @@
 import { JobStatus } from '@prisma/client';
 import { rest, server } from '../../testutils/mocks/msw';
-import { fireEvent, queryByText, render, userEvent, waitForElementToBeRemoved } from '../../testutils/TempestTestUtils';
+import { fireEvent, render, userEvent } from '../../testutils/TempestTestUtils';
 import { MassAssign } from '../../../src/components/Dashboard/MassAssign';
 import { UseQueryResult } from 'react-query';
 import { UserWithAll } from '../../../src/repositories/userRepo';
