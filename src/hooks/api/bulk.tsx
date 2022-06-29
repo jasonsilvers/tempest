@@ -17,8 +17,10 @@ export const useAssignManyTrackingItemsToManyUsers = () => {
   return useMutation<AxiosResponse<Job>, unknown, BulkTrackingBodyItem[]>(
     (bulkTrackingBody: BulkTrackingBodyItem[]) => axios.post<Job>(EUri.BULK_CREATE, bulkTrackingBody),
     {
-      onSettled: (response) => {
+      onSuccess: () => {
         snackbar.enqueueSnackbar('Job queued', { variant: 'success' });
+      },
+      onSettled: (response) => {
         queryClient.invalidateQueries(queryKeys.job(response.data.id));
       },
       onError: () => {
