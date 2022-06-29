@@ -1,5 +1,11 @@
-import { JobStatus, MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '@prisma/client';
-import { findJobById, findJobResultsByJobId, updateJob, updateJobResult } from '../repositories/jobRepo';
+import { JobResult, JobStatus, MemberTrackingItem, MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
+import {
+  findJobById,
+  findJobResultsByJobId,
+  JobWithResults,
+  updateJob,
+  updateJobResult,
+} from '../repositories/jobRepo';
 import {
   createMemberTrackingItem,
   createMemberTrackingRecord,
@@ -83,30 +89,18 @@ async function updateAllJobResults(jobId: number, status: JobStatus, message: st
   }
 }
 
-async function processItem(item: BulkTrackingBodyItem, jobId: number, index: number, userIds: number[]) {
+async function processItem(
+  item: BulkTrackingBodyItem,
+  job: JobWithResults,
+  jobResult: JobResult & {
+    forTrackingItem: TrackingItem;
+    forUser: User;
+  },
+  userIds: number[]
+) {
   const start = performance.now();
   let duration: number;
   const avgArray: number[] = [];
-
-  const job = await findJobById(jobId);
-
-  const jobResult = job.results[index];
-
-  await updateJobResult(jobResult.id, {
-    forUserId: item.userId,
-    forTrackingItemId: item.trackingItemId,
-  });
-
-  if (job.status === JobStatus.KILLED) {
-    await updateJobResult(jobResult.id, {
-      status: JobStatus.KILLED,
-      success: false,
-      message: 'Job was killed',
-    });
-
-    await updateAllJobResults(job.id, JobStatus.KILLED, 'Job was killed');
-    return;
-  }
 
   try {
     if (userIsNotAllowedToCreateForMember(userIds, item)) {
@@ -135,10 +129,6 @@ async function processItem(item: BulkTrackingBodyItem, jobId: number, index: num
       const newMemberTrackingRecord = {
         trackingItemId: memberTrackingItem.trackingItemId,
         traineeId: item.userId,
-        order:
-          memberTrackingItem.memberTrackingRecords === undefined
-            ? 1
-            : memberTrackingItem.memberTrackingRecords.length + 1,
       } as MemberTrackingRecord;
 
       await createMemberTrackingRecord(newMemberTrackingRecord);
@@ -188,7 +178,22 @@ export const trackingCreate = async (reqUser: LoggedInUser, body: BulkTrackingBo
     }
 
     for (const [index, item] of body.entries()) {
-      await processItem(item, jobId, index, userIds);
+      //Get lateest version of job to see if it was killed
+      const job = await findJobById(jobId);
+      const jobResult = job.results[index];
+
+      if (job.status === JobStatus.KILLED) {
+        await updateAllJobResults(job.id, JobStatus.KILLED, 'Job was killed');
+        break;
+      }
+
+      //Update job result ASAP in case there is an error
+      await updateJobResult(jobResult.id, {
+        forUserId: item.userId,
+        forTrackingItemId: item.trackingItemId,
+      });
+
+      await processItem(item, job, jobResult, userIds);
     }
   } catch (error) {
     await updateJob(jobId, {

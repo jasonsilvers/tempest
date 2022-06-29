@@ -52,8 +52,9 @@ export const updateJobResult = (jobResultId: number, data: Partial<JobResult>) =
 };
 
 export const findJobResultsByJobId = (jobId: number) => {
-  return prisma.jobResult.findMany({ where: { jobId } });
+  return prisma.jobResult.findMany({ where: { jobId }, include: { forTrackingItem: true, forUser: true } });
 };
 
 // required to infer the return type from the Prisma Client
 export type JobWithResults = Prisma.PromiseReturnType<typeof findJobById>;
+export type JobResults = Prisma.PromiseReturnType<typeof findJobResultsByJobId>;

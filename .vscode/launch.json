@@ -5,7 +5,8 @@
       "name": "Next.js: debug server-side",
       "type": "node-terminal",
       "request": "launch",
-      "command": "npm run dev"
+      "command": "npm run dev",
+      "skipFiles": ["${workspaceFolder}/node_modules/**/*.js", "${workspaceFolder}/lib/**/*.js"]
     },
     {
       "name": "Next.js: debug client-side",

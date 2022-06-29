@@ -146,7 +146,7 @@ export const MassAssignResultDialog = ({
 
   return (
     <Dialog
-      sx={{ paddingLeft: '7rem' }}
+      sx={{ paddingRight: '24rem' }}
       open={isOpen.open}
       onClose={handleClose}
       maxWidth="xs"

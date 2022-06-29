@@ -106,14 +106,32 @@ test('Bulk create should stop if job was killed', async () => {
     success: false,
     message: 'Job was killed',
   };
+
+  const jobResult1 = {
+    id: 1,
+    status: JobStatus.COMPLETED,
+    success: true,
+    message: 'Updated',
+    userId: 123,
+  };
+
+  const jobResult2 = {
+    id: 2,
+    status: JobStatus.QUEUED,
+    success: false,
+    message: null,
+    userId: 123,
+  };
+
   mockMethodAndReturn(getAllUsersFromUsersOrgCascade, [bobJones]);
   mockMethodAndReturn(updateJobResult, jobResult);
   mockMethodAndReturn(findJobById, { ...testJob, status: JobStatus.KILLED });
+  mockMethodAndReturn(findJobResultsByJobId, [jobResult1, jobResult2]);
 
   await trackingCreate(andrewMonitor, testBody, 1);
 
-  expect(updateJobResult).toBeCalledTimes(2);
-  expect(updateJobResult).lastCalledWith(1, jobResult);
+  expect(updateJobResult).toBeCalledTimes(1);
+  expect(updateJobResult).lastCalledWith(2, jobResult);
 });
 
 test('job result should fail if tracking item is not found', async () => {
