@@ -5,6 +5,8 @@ interface IMockedPrisma {
   role: {
     findMany: jest.Mock;
     findUnique: jest.Mock;
+    create: jest.Mock;
+    delete: jest.Mock;
   };
   user: {
     create: jest.Mock;
@@ -83,6 +85,8 @@ jest.mock(
     role: {
       findUnique: jest.fn(),
       findMany: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
     },
     user: {
       create: jest.fn(),

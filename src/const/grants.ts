@@ -271,19 +271,19 @@ const resourceGrants: Grants[] = [
   {
     action: EAction.READ_ANY,
     attributes: '*',
-    resource: EResource.ADMIN_PAGE,
+    resource: EResource.RESOURCE,
     role: ERole.ADMIN,
   },
   {
     action: EAction.CREATE_ANY,
     attributes: '*',
-    resource: EResource.ADMIN_PAGE,
+    resource: EResource.RESOURCE,
     role: ERole.ADMIN,
   },
   {
     action: EAction.DELETE_ANY,
     attributes: '*',
-    resource: EResource.ADMIN_PAGE,
+    resource: EResource.RESOURCE,
     role: ERole.ADMIN,
   },
 ];
@@ -349,6 +349,33 @@ const jobGrants: Grants[] = [
   },
 ];
 
+const rolesGrants: Grants[] = [
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.ROLE,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.ROLE,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.ROLE,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.DELETE_ANY,
+    attributes: '*',
+    resource: EResource.ROLE,
+    role: ERole.ADMIN,
+  },
+];
+
 export const grants: Grants[] = [
   ...mattermostGrants,
   ...pageGrants,
@@ -361,4 +388,5 @@ export const grants: Grants[] = [
   ...resourceGrants,
   ...ppeItemGrants,
   ...jobGrants,
+  ...rolesGrants,
 ];
