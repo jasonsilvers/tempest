@@ -60,12 +60,12 @@ const MassAssignResultInProgress = ({ job }: { job: Job }) => {
     return `${Math.floor(minDiff)} min ${Math.floor(secDiff % 60)} sec`;
   };
   return (
-    <>
+    <div tw="flex flex-col space-y-6 items-center justify-center">
       <CircularProgressWithLabel value={(job?.progress / job?.total) * 100} />
       <Typography variant="h6" color="secondary">
         Assigning Training...
       </Typography>
-      {job?.avgProcessingTime === 0 || !job ? (
+      {job?.avgProcessingTime === 0 || job?.avgProcessingTime === null || !job ? (
         <Typography variant="caption" tw="text-secondarytext">
           Calculating Estimated Time
         </Typography>
@@ -74,7 +74,7 @@ const MassAssignResultInProgress = ({ job }: { job: Job }) => {
           Estimated Time: {calculateTimeRemaining()}
         </Typography>
       )}
-    </>
+    </div>
   );
 };
 
@@ -83,7 +83,7 @@ type FailedResult = {
   user: UserWithAll;
 };
 
-const MassAssignResultDialog = ({
+export const MassAssignResultDialog = ({
   isOpen,
   setIsOpen,
   setSelectedUserIds,
@@ -101,6 +101,14 @@ const MassAssignResultDialog = ({
     setSelectedTrackingItemIds(retryRef.current.trackingItemIds);
     setIsOpen({ jobId: null, open: false });
     setCompleted({ ...completed, [2]: false });
+  };
+
+  const handleClose = () => {
+    setSelectedUserIds([]);
+    setSelectedTrackingItemIds([]);
+    setIsOpen({ jobId: null, open: false });
+    setCompleted({});
+    setStep(0);
   };
 
   useEffect(() => {
@@ -136,54 +144,53 @@ const MassAssignResultDialog = ({
     setFailedResults(resultObject);
   }, [jobQuery.data]);
 
-  console.log('retry', retryRef);
-
   return (
     <Dialog
       sx={{ paddingLeft: '7rem' }}
       open={isOpen.open}
-      onClose={() => {
-        setSelectedUserIds([]);
-        setSelectedTrackingItemIds([]);
-        setIsOpen({ jobId: null, open: false });
-        setCompleted({});
-        setStep(0);
-      }}
+      onClose={handleClose}
       maxWidth="xs"
       fullWidth
       aria-labelledby="result-dialog"
     >
-      <DialogContent tw="min-height[200px] flex flex-col justify-center items-center space-y-6 py-8">
+      <DialogContent tw="min-height[200px] flex flex-col space-y-6 py-8">
         {jobQuery.data?.status === JobStatus.WORKING ? <MassAssignResultInProgress job={jobQuery.data} /> : null}
         {jobQuery.data?.status === JobStatus.COMPLETED &&
         jobQuery.data?.results.every((result) => result.status === JobStatus.COMPLETED) ? (
-          <>
+          <div tw="flex flex-col justify-center items-center space-y-6">
             <Typography variant="h6" color="secondary">
               Success!
             </Typography>
             <Typography variant="caption" tw="text-secondarytext">
               The selected training has successfully been assigned!
             </Typography>
-            <Button variant="contained" color="secondary" onClick={() => setIsOpen({ jobId: null, open: false })}>
+            <Button variant="contained" color="secondary" onClick={handleClose}>
               Ok
             </Button>
-          </>
+          </div>
         ) : null}
         {jobQuery.data?.status === JobStatus.COMPLETED &&
         jobQuery.data?.results.some((result) => result.status === JobStatus.FAILED) ? (
           <>
-            <div tw="flex space-x-4 items-center">
+            <div tw="flex space-x-4 items-center justify-center">
               <ErrorIcon color="error" />
               <Typography variant="h6">Failed To Assign</Typography>
             </div>
-            <div tw="overflow-auto h-48">
+            <Typography variant="caption" tw="text-secondarytext">
+              A network error occured and training was not assigned to the following members:
+            </Typography>
+            <div tw="overflow-auto h-48 border rounded-md p-2">
               {failedResults &&
                 Object.values(failedResults).map((result) => (
-                  <div key={result.user.id}>
-                    {result.user.lastName}, {result.user.firstName}
-                    <div>
+                  <div key={result.user.id} tw="pb-1">
+                    <Typography variant="body1" color="red">
+                      {result.user.lastName}, {result.user.firstName}
+                    </Typography>
+                    <div tw="pl-10">
                       {result.trackingItems.map((ti) => (
-                        <div key={ti.id}>{ti.title}</div>
+                        <Typography variant="body1" color="lightcoral" key={ti.id}>
+                          {ti.title}
+                        </Typography>
                       ))}
                     </div>
                   </div>
@@ -199,10 +206,6 @@ const MassAssignResultDialog = ({
   );
 };
 
-type MassAssignProps = {
-  usersQuery: UseQueryResult<UserWithAll[]>;
-};
-
 type MassAssignSelectionTrackingItemsProps = {
   trackingItemsQuery: UseQueryResult<TrackingItem[], unknown>;
   selectedTrackingItemIds: number[];
@@ -215,6 +218,7 @@ const MassAssignSelectionTrackingItems = ({
   setSelectedTrackingItemIds,
 }: MassAssignSelectionTrackingItemsProps) => {
   const [page, setPage] = React.useState(0);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   const handleTrackingItemIdCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const trackingItemId = parseInt(event.target.id);
@@ -224,10 +228,10 @@ const MassAssignSelectionTrackingItems = ({
       return;
     }
 
-    const selectedTrackingITemIdsWIthoutTrackingItem = selectedTrackingItemIds.filter(
+    const selectedTrackingITemIdsWIthoutTrackingItemSelected = selectedTrackingItemIds.filter(
       (selectedTrackingItemId) => selectedTrackingItemId !== trackingItemId
     );
-    setSelectedTrackingItemIds(selectedTrackingITemIdsWIthoutTrackingItem);
+    setSelectedTrackingItemIds(selectedTrackingITemIdsWIthoutTrackingItemSelected);
   };
 
   const isTrackingItemChecked = (trackingItemId: number) => {
@@ -241,17 +245,17 @@ const MassAssignSelectionTrackingItems = ({
   return (
     <div tw="flex-auto flex-col space-x-2 items-center">
       <div tw="flex flex-row items-center pb-5">
-        {/* <div tw="w-1/3">
-          <Typography variant="subtitle1">Training(s)</Typography>
-        </div> */}
         <div tw="w-full pl-2">
           <TextField
             tw="bg-white rounded w-full"
             id="SearchBar"
             label="Search"
             size="small"
-            // value={dashboardState.nameFilter}
-            // onChange={(event) => dispatch({ type: 'filterByName', nameFilter: event.target.value })}
+            value={searchTerm}
+            onChange={(event) => {
+              setPage(0);
+              setSearchTerm(event.target.value);
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -263,7 +267,7 @@ const MassAssignSelectionTrackingItems = ({
         </div>
       </div>
 
-      <div tw="border rounded-md min-height[360px]">
+      <div tw="border rounded-md min-height[400px]">
         <div tw="flex flex-row items-center border-b px-2">
           <FormControlLabel
             control={
@@ -271,7 +275,7 @@ const MassAssignSelectionTrackingItems = ({
                 onChange={() => {
                   const allChecked = trackingItemsQuery.data?.every((ti) => isTrackingItemChecked(ti.id));
                   const tiIdsToAdd = trackingItemsQuery.data
-                    .filter((user) => !isTrackingItemChecked(user.id))
+                    ?.filter((user) => !isTrackingItemChecked(user.id))
                     .map((ti) => ti.id);
                   setSelectedTrackingItemIds(allChecked ? [] : [...selectedTrackingItemIds, ...tiIdsToAdd]);
                 }}
@@ -287,26 +291,35 @@ const MassAssignSelectionTrackingItems = ({
             }
           />
         </div>
-        {trackingItemsQuery?.data?.slice(page * 5, (page + 1) * 5).map((ti) => (
-          <div tw="flex flex-row items-center pb-4 p-2" key={ti.id}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  id={ti.id.toString()}
-                  onChange={handleTrackingItemIdCheckBoxChange}
-                  checked={isTrackingItemChecked(ti.id)}
-                  size="medium"
-                />
-              }
-              label={
-                <div tw="flex flex-row">
-                  <div tw="w-96 pr-6">{ti.title}</div>
-                  <div tw="w-24">{TrackingItemInterval[ti.interval]}</div>
-                </div>
-              }
-            />
-          </div>
-        ))}
+        {trackingItemsQuery?.data
+          ?.filter((ti) => {
+            if (searchTerm === '') {
+              return true;
+            }
+
+            return ti.title.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0;
+          })
+          .slice(page * 5, (page + 1) * 5)
+          .map((ti) => (
+            <div tw="flex flex-row items-center pb-4 p-2" key={ti.id}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    id={ti.id.toString()}
+                    onChange={handleTrackingItemIdCheckBoxChange}
+                    checked={isTrackingItemChecked(ti.id)}
+                    size="medium"
+                  />
+                }
+                label={
+                  <div tw="flex flex-row">
+                    <div tw="w-96 pr-6">{ti.title}</div>
+                    <div tw="w-24">{TrackingItemInterval[ti.interval]}</div>
+                  </div>
+                }
+              />
+            </div>
+          ))}
         <div tw="flex space-x-5 items-center px-2">
           <div tw="mr-auto">
             <Typography variant="subtitle1" color="secondary">
@@ -340,6 +353,7 @@ const MassAssignSelectionMembers = ({
   setSelectedUserIds,
 }: MassAssignSelectionMembersProps) => {
   const [page, setPage] = React.useState(0);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   const handleUserIdCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const userId = parseInt(event.target.id);
@@ -370,8 +384,11 @@ const MassAssignSelectionMembers = ({
             id="SearchBar"
             label="Search"
             size="small"
-            // value={dashboardState.nameFilter}
-            // onChange={(event) => dispatch({ type: 'filterByName', nameFilter: event.target.value })}
+            value={searchTerm}
+            onChange={(event) => {
+              setPage(0);
+              setSearchTerm(event.target.value);
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -383,7 +400,7 @@ const MassAssignSelectionMembers = ({
         </div>
       </div>
 
-      <div tw="border rounded-md min-height[360px]">
+      <div tw="border rounded-md min-height[400px]">
         <div tw="flex flex-row items-center border-b px-2">
           <FormControlLabel
             control={
@@ -405,28 +422,40 @@ const MassAssignSelectionMembers = ({
             }
           />
         </div>
-        {usersQuery?.data?.slice(page * 5, (page + 1) * 5).map((user) => (
-          <div tw="flex flex-row items-center pb-4 p-2" key={user.id}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  id={user.id.toString()}
-                  onChange={handleUserIdCheckBoxChange}
-                  checked={isUserChecked(user.id)}
-                  size="medium"
-                />
-              }
-              label={
-                <div tw="flex flex-row">
-                  <div tw="w-96 pr-6">
-                    {user.firstName} {user.lastName}
+        {usersQuery?.data
+          ?.filter((user) => {
+            if (searchTerm === '') {
+              return true;
+            }
+
+            return (
+              user.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0 ||
+              user.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0
+            );
+          })
+          .slice(page * 5, (page + 1) * 5)
+          .map((user) => (
+            <div tw="flex flex-row items-center pb-4 p-2" key={user.id}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    id={user.id.toString()}
+                    onChange={handleUserIdCheckBoxChange}
+                    checked={isUserChecked(user.id)}
+                    size="medium"
+                  />
+                }
+                label={
+                  <div tw="flex flex-row">
+                    <div tw="w-96 pr-6">
+                      {user.firstName} {user.lastName}
+                    </div>
+                    <div tw="w-24">{user.rank}</div>
                   </div>
-                  <div tw="w-24">{user.rank}</div>
-                </div>
-              }
-            />
-          </div>
-        ))}
+                }
+              />
+            </div>
+          ))}
         <div tw="flex space-x-5 items-center px-2">
           <div tw="mr-auto">
             <Typography variant="subtitle1" color="secondary">
@@ -496,7 +525,7 @@ export const MassAssignReview = ({
                 </div>
                 <div>
                   <IconButton
-                    aria-label={`delete-trackingItem-${userToAssign.id}`}
+                    aria-label={`delete-user-${userToAssign.id}`}
                     size="small"
                     onClick={() => removeUser(userToAssign.id)}
                     color="secondary"
@@ -541,6 +570,10 @@ export const MassAssignReview = ({
       </div>
     </div>
   );
+};
+
+type MassAssignProps = {
+  usersQuery: UseQueryResult<UserWithAll[]>;
 };
 
 const steps = ['Assign Training(s)', 'To Members(s)', 'Review'];
@@ -589,9 +622,6 @@ export const MassAssign = ({ usersQuery }: MassAssignProps) => {
     <>
       <Card tw="p-5">
         <div tw="pb-8 pt-4 flex">
-          {/* <div>
-            <Typography variant="h6">Assign Training</Typography>
-          </div> */}
           <div tw="ml-auto w-full px-8">
             <Stepper activeStep={step}>
               {steps.map((label, index) => {
@@ -627,6 +657,7 @@ export const MassAssign = ({ usersQuery }: MassAssignProps) => {
                 }}
                 disabled={selectedTrackingItemIds.length === 0}
                 tw="w-36"
+                aria-label="tracking-items-next-button"
               >
                 Next
               </Button>
@@ -650,6 +681,7 @@ export const MassAssign = ({ usersQuery }: MassAssignProps) => {
                   setCompleted({ ...completed, [1]: false });
                 }}
                 tw="w-36"
+                aria-label="users-back-button"
               >
                 Back
               </Button>
@@ -662,6 +694,7 @@ export const MassAssign = ({ usersQuery }: MassAssignProps) => {
                 }}
                 disabled={selectedUserIds.length === 0}
                 tw="w-36"
+                aria-label="users-next-button"
               >
                 Next
               </Button>
@@ -687,6 +720,7 @@ export const MassAssign = ({ usersQuery }: MassAssignProps) => {
                   setCompleted({ ...completed, [2]: false });
                 }}
                 tw="w-36"
+                aria-label="review-back-button"
               >
                 Back
               </Button>
@@ -696,6 +730,7 @@ export const MassAssign = ({ usersQuery }: MassAssignProps) => {
                 onClick={assignTrainingItemsToUsers}
                 disabled={disableButton()}
                 tw="w-36"
+                aria-label="review-assign-button"
               >
                 Assign
               </Button>

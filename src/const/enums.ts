@@ -52,9 +52,9 @@ export enum EUri {
   ORGANIZATIONS = '/api/organizations/',
   LOGS = '/api/logs',
   RESOURCES = '/api/resource/',
-  PPE_ITEMS = 'api/ppeitems/',
-  BULK_CREATE = 'api/bulk/tracking/create/',
-  JOBS = 'api/jobs/',
+  PPE_ITEMS = '/api/ppeitems/',
+  BULK_CREATE = '/api/bulk/tracking/create/',
+  JOBS = '/api/jobs/',
 }
 
 export enum EAttribute {
