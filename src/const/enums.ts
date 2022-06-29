@@ -37,6 +37,7 @@ export enum EResource {
   ROLE = 'role',
   UPLOAD = 'upload',
   PPE_ITEM = 'ppeitem',
+  JOB = 'job',
   RESOURCE = 'resource',
 }
 
@@ -52,7 +53,9 @@ export enum EUri {
   ORGANIZATIONS = '/api/organizations/',
   LOGS = '/api/logs',
   RESOURCES = '/api/resource/',
-  PPE_ITEMS = 'api/ppeitems/',
+  PPE_ITEMS = '/api/ppeitems/',
+  BULK_CREATE = '/api/bulk/tracking/create/',
+  JOBS = '/api/jobs/',
 }
 
 export enum EAttribute {

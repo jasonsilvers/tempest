@@ -164,13 +164,16 @@ export const createMemberTrackingItem = async (newMti: MemberTrackingItem) => {
   });
 };
 
-export const findMemberTrackingItemByUserId = async (userId: number) => {
-  return prisma.memberTrackingItem.findMany({
+export const findMemberTrackingItemByUserId = async (userId: number, trackingItemId: number) => {
+  return prisma.memberTrackingItem.findUnique({
     include: {
       memberTrackingRecords: true,
     },
     where: {
-      userId,
+      userId_trackingItemId: {
+        userId,
+        trackingItemId,
+      },
     },
   });
 };

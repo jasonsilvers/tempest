@@ -11,7 +11,7 @@
  */
 /*eslint-disable */
 // This can be any function
-export const mockMethodAndReturn = <E>(method: any, data: Partial<E>) => {
+export const mockMethodAndReturn = <E>(method: any, data: Partial<E> | null) => {
   try {
     method.mockResolvedValue(data);
   } catch (e) {

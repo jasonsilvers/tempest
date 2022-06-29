@@ -1,5 +1,10 @@
 import prisma from '../setup/mockedPrisma';
-import { createTrackingItem, deleteTrackingItem, getTrackingItems } from '../../src/repositories/trackingItemRepo';
+import {
+  createTrackingItem,
+  deleteTrackingItem,
+  findTrackingItemById,
+  getTrackingItems,
+} from '../../src/repositories/trackingItemRepo';
 import { TrackingItem } from '@prisma/client';
 
 const dummyTrackingItem = {
@@ -23,5 +28,11 @@ test('should deleteTrackingItem', async () => {
 test('should getTrackingItems', async () => {
   prisma.trackingItem.findMany.mockImplementationOnce(() => [{ ...dummyTrackingItem, id: 1 }]);
   const trackingItems = await getTrackingItems();
+  expect(trackingItems).toEqual([{ ...dummyTrackingItem, id: 1 }]);
+});
+
+test('should findTrackingItemById', async () => {
+  prisma.trackingItem.findUnique.mockImplementationOnce(() => [{ ...dummyTrackingItem, id: 1 }]);
+  const trackingItems = await findTrackingItemById(1);
   expect(trackingItems).toEqual([{ ...dummyTrackingItem, id: 1 }]);
 });
