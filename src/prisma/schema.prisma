@@ -107,7 +107,7 @@ model TrackingItem {
   interval             Int? //days
   memberTrackingRecord MemberTrackingRecord[]
   templates            TemplateTrackingItem[]
-
+  location              String?
   memberTrackingItem MemberTrackingItem[]
   @@map("training_record")
 }

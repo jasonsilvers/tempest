@@ -1,6 +1,7 @@
 import { Popover, Typography } from '@mui/material';
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import dayjs, { Dayjs } from 'dayjs';
+import Link from 'next/link';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
 import 'twin.macro';
@@ -49,7 +50,7 @@ const isFiltered = (categories: ECategories[], activeCategory: ECategories, stat
   return false;
 };
 
-const TrainingTitle = ({ title, description }) => {
+const TrainingTitle = ({ title, description, location }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -62,21 +63,29 @@ const TrainingTitle = ({ title, description }) => {
 
   const open = Boolean(anchorEl);
 
+  const LocationLink = () => {
+    return (
+      <Link href={location}>
+        <a>
+          {' '}
+          <Typography tw="text-center text-primary text-sm">{`Location: ${location}`}</Typography>
+        </a>
+      </Link>
+    );
+  };
   return (
     <div>
       <Typography
         aria-owns={open ? 'mouse-over-popover' : undefined}
         aria-haspopup="true"
         onMouseEnter={handlePopoverOpen}
-        onMouseLeave={handlePopoverClose}
+        // Popover Closes too fast need to refactor to keep the popover open so user can click on the location link
+        // onMouseLeave={handlePopoverClose}
       >
         {title}
       </Typography>
       <Popover
         id="mouse-over-popover"
-        sx={{
-          pointerEvents: 'none',
-        }}
         open={open}
         anchorEl={anchorEl}
         anchorOrigin={{
@@ -91,6 +100,7 @@ const TrainingTitle = ({ title, description }) => {
         disableRestoreFocus
       >
         <Typography sx={{ p: 1 }}>{description}</Typography>
+        <LocationLink />
       </Popover>
     </div>
   );
@@ -171,7 +181,11 @@ const RecordRow: React.FC<{
               <DynamicStatus />
             </div>
             <div tw="whitespace-nowrap overflow-ellipsis overflow-hidden pt-[2px] text-secondary underline">
-              <TrainingTitle title={trackingItem?.title} description={trackingItem?.description} />
+              <TrainingTitle
+                title={trackingItem?.title}
+                description={trackingItem?.description}
+                location={trackingItem?.location}
+              />
             </div>
           </div>
         </TableData>

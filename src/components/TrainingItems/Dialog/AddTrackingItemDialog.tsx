@@ -54,7 +54,7 @@ const AdjustedOutlinedInput: React.FC<OutlinedInputProps> = (props) => (
 
 const Bold = tw.div`font-bold bg-yellow-100`;
 
-const initialTrackingItemToAdd: TrackingItemToAdd = { title: '', description: '', interval: null };
+const initialTrackingItemToAdd: TrackingItemToAdd = { title: '', description: '', interval: null, location: '' };
 
 const resolveAttribute = (obj, key) => key.split('.').reduce((prev, curr) => prev?.[curr], obj);
 
@@ -111,6 +111,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
         title: '',
         description: '',
         interval: null,
+        location: '',
       } as TrackingItemToAdd);
     };
   }, [isOpen]);
@@ -139,7 +140,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       onClose={() => {
         handleClose();
       }}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
       aria-labelledby="tracking-dialog"
     >
@@ -157,29 +158,29 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       <DialogTitle>Create New Training</DialogTitle>
       <DialogContent tw="min-height[220px]">
         <p tw="text-xs pb-4">
-          Please create the training title, interval of training, and write a brief description of training.
+          Please create the training title, interval of training, location of training ,and write a brief description of
+          training.
         </p>
-
+        <div>
+          <FormControl fullWidth>
+            {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
+              <DialogContentText tw="text-red-400 flex">* Title</DialogContentText>
+            ) : (
+              <DialogContentText>Title</DialogContentText>
+            )}
+            <AdjustedOutlinedInput
+              name="title"
+              inputProps={{ 'aria-label': 'training-title-input' }}
+              value={trackingItem.title}
+              onChange={(e: ChangeEvent<{ name: string; value: string }>) => {
+                handleTrackingItemInput(e.target.name, e.target.value);
+                handleTrackingItemMatch(e);
+              }}
+            />
+          </FormControl>
+        </div>
         <div tw="flex mb-3 space-x-5">
-          <div tw="w-2/3">
-            <FormControl fullWidth>
-              {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
-                <DialogContentText tw="text-red-400 flex">* Title</DialogContentText>
-              ) : (
-                <DialogContentText>Title</DialogContentText>
-              )}
-              <AdjustedOutlinedInput
-                name="title"
-                inputProps={{ 'aria-label': 'training-title-input' }}
-                value={trackingItem.title}
-                onChange={(e: ChangeEvent<{ name: string; value: string }>) => {
-                  handleTrackingItemInput(e.target.name, e.target.value);
-                  handleTrackingItemMatch(e);
-                }}
-              />
-            </FormControl>
-          </div>
-          <div tw="w-1/3">
+          <div tw="w-1/2">
             {trackingItem.interval < 0 || trackingItem.interval === null ? (
               <DialogContentText tw="text-red-400">* Recurrence </DialogContentText>
             ) : (
@@ -192,10 +193,26 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
               }}
             />
           </div>
+          <div tw="w-1/2">
+            {trackingItem.location === '' ? (
+              <DialogContentText tw="text-red-400">* Location</DialogContentText>
+            ) : (
+              <DialogContentText>Location</DialogContentText>
+            )}
+            <AdjustedOutlinedInput
+              required
+              name="location"
+              inputProps={{ 'aria-label': 'training-location-input' }}
+              value={trackingItem.location}
+              onChange={(e: ChangeEvent<{ name: string; value: string }>) =>
+                handleTrackingItemInput(e.target.name, e.target.value)
+              }
+            />
+          </div>
         </div>
         <div>
           {trackingItem.description === '' ? (
-            <DialogContentText tw="text-red-400">* Description</DialogContentText>
+            <DialogContentText tw="text-red-400 flex">* Description</DialogContentText>
           ) : (
             <DialogContentText>Description</DialogContentText>
           )}
@@ -224,17 +241,21 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
               creating a duplicate training.
             </p>
             <TableRowHeader>
-              <TableData tw="w-1/3">Training Title</TableData>
+              <TableData tw="w-1/4">Training Title</TableData>
               <TableData tw="w-1/4 text-center">Interval (days)</TableData>
-              <TableData tw="w-1/3">Description</TableData>
+              <TableData tw="w-1/4">Location</TableData>
+              <TableData tw="w-1/4">Description</TableData>
             </TableRowHeader>
             {trackingItemsThatMatch?.map((hit) => (
               <TableRow key={hit.item.id}>
-                <TableData tw="text-sm w-1/3 overflow-ellipsis">
+                <TableData tw="text-sm w-1/4 overflow-ellipsis">
                   <FuseHighlight hit={hit} attribute={'title'} />
                 </TableData>
                 <TableData tw="text-sm w-1/4 text-center">{hit.item.interval}</TableData>
-                <TableData tw="text-sm w-1/3 overflow-ellipsis">
+                <TableData tw="text-sm w-1/4 overflow-hidden overflow-ellipsis">
+                  <FuseHighlight hit={hit} attribute={'location'} />
+                </TableData>
+                <TableData tw="text-sm w-1/4 whitespace-normal overflow-ellipsis">
                   <FuseHighlight hit={hit} attribute={'description'} />
                 </TableData>
               </TableRow>
@@ -243,7 +264,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
         </>
       ) : null}
 
-      <DialogActions>
+      <DialogActions tw="pr-6">
         <Button
           onClick={async () => {
             setIsSaving(true);
