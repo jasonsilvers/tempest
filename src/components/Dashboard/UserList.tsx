@@ -55,7 +55,7 @@ type UserListProps = {
 
 export const UserList = ({ usersQuery, dashboardState, loggedInUser }: UserListProps) => {
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
@@ -102,6 +102,7 @@ export const UserList = ({ usersQuery, dashboardState, loggedInUser }: UserListP
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[5, 10, 15, 20, 25]}
       />
     </>
   );
