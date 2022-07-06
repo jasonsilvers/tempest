@@ -267,7 +267,7 @@ const MassAssignSelectionTrackingItems = ({
         </div>
       </div>
 
-      <div tw="border rounded-md min-height[400px]">
+      <div tw="border rounded-md min-height[350px]">
         <div tw="flex flex-row items-center border-b px-2">
           <FormControlLabel
             control={
@@ -299,7 +299,7 @@ const MassAssignSelectionTrackingItems = ({
 
             return ti.title.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0;
           })
-          .slice(page * 5, (page + 1) * 5)
+          .slice(page * 4, (page + 1) * 4)
           .map((ti) => (
             <div tw="flex flex-row items-center pb-4 p-2" key={ti.id}>
               <FormControlLabel
@@ -333,7 +333,7 @@ const MassAssignSelectionTrackingItems = ({
             page={page}
             onPageChange={handleChangePage}
             rowsPerPageOptions={[10]}
-            rowsPerPage={5}
+            rowsPerPage={4}
           />
         </div>
       </div>
@@ -400,7 +400,7 @@ const MassAssignSelectionMembers = ({
         </div>
       </div>
 
-      <div tw="border rounded-md min-height[400px]">
+      <div tw="border rounded-md min-height[350px]">
         <div tw="flex flex-row items-center border-b px-2">
           <FormControlLabel
             control={
@@ -433,7 +433,7 @@ const MassAssignSelectionMembers = ({
               user.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0
             );
           })
-          .slice(page * 5, (page + 1) * 5)
+          .slice(page * 4, (page + 1) * 4)
           .map((user) => (
             <div tw="flex flex-row items-center pb-4 p-2" key={user.id}>
               <FormControlLabel
@@ -469,7 +469,7 @@ const MassAssignSelectionMembers = ({
             page={page}
             onPageChange={handleChangePage}
             rowsPerPageOptions={[10]}
-            rowsPerPage={5}
+            rowsPerPage={4}
           />
         </div>
       </div>
@@ -508,9 +508,39 @@ export const MassAssignReview = ({
     <div tw="flex flex-row space-x-5">
       <div tw="w-1/2 border rounded-md p-5">
         <Typography variant="subtitle1" tw="text-secondarytext pb-3 font-bold">
+          Selected Training(s)
+        </Typography>
+        <div tw="overflow-auto h-[328px]">
+          {trackingItemsQuery.data
+            .filter((ti) => selectedTrackingItemIds.find((selectedTi) => selectedTi === ti.id))
+            .map((trackingItemToAssign) => (
+              <div key={trackingItemToAssign.id} tw="flex">
+                <div tw="mr-auto flex flex-col space-y-1 pt-2">
+                  <Typography variant="body2">{trackingItemToAssign.title}</Typography>
+                  <Typography variant="body2" tw="text-disabledText">
+                    {TrackingItemInterval[trackingItemToAssign.interval]}
+                  </Typography>
+                </div>
+                <div>
+                  <IconButton
+                    aria-label={`delete-trackingItem-${trackingItemToAssign.id}`}
+                    size="small"
+                    onClick={() => removeTrackingItem(trackingItemToAssign.id)}
+                    color="secondary"
+                    tw="hover:bg-transparent"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+      <div tw="w-1/2 border rounded-md p-5">
+        <Typography variant="subtitle1" tw="text-secondarytext pb-3 font-bold">
           Selected Member(s)
         </Typography>
-        <div tw="overflow-auto h-[365px]">
+        <div tw="overflow-auto h-[328px]">
           {usersQuery.data
             .filter((user) => selectedUserIds.find((selectedUser) => selectedUser === user.id))
             .map((userToAssign) => (
@@ -528,36 +558,6 @@ export const MassAssignReview = ({
                     aria-label={`delete-user-${userToAssign.id}`}
                     size="small"
                     onClick={() => removeUser(userToAssign.id)}
-                    color="secondary"
-                    tw="hover:bg-transparent"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </div>
-              </div>
-            ))}
-        </div>
-      </div>
-      <div tw="w-1/2 border rounded-md p-5">
-        <Typography variant="subtitle1" tw="text-secondarytext pb-3 font-bold">
-          Selected Training(s)
-        </Typography>
-        <div tw="overflow-auto h-[365px]">
-          {trackingItemsQuery.data
-            .filter((ti) => selectedTrackingItemIds.find((selectedTi) => selectedTi === ti.id))
-            .map((trackingItemToAssign) => (
-              <div key={trackingItemToAssign.id} tw="flex">
-                <div tw="mr-auto flex flex-col space-y-1 pt-2">
-                  <Typography variant="body2">{trackingItemToAssign.title}</Typography>
-                  <Typography variant="body2" tw="text-disabledText">
-                    {TrackingItemInterval[trackingItemToAssign.interval]}
-                  </Typography>
-                </div>
-                <div>
-                  <IconButton
-                    aria-label={`delete-trackingItem-${trackingItemToAssign.id}`}
-                    size="small"
-                    onClick={() => removeTrackingItem(trackingItemToAssign.id)}
                     color="secondary"
                     tw="hover:bg-transparent"
                   >
