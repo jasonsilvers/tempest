@@ -26,10 +26,10 @@ describe('Member role', () => {
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
      cy.findByRole('button', {
-      name: /rows per page: 10/i
+      name: /rows per page: 5/i
     }).click()
     cy.findByRole('option', {
-      name: /100/i
+      name: /25/i
     }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
@@ -71,10 +71,10 @@ describe('Member role', () => {
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
      cy.findByRole('button', {
-      name: /rows per page: 10/i
+      name: /rows per page: 5/i
     }).click()
     cy.findByRole('option', {
-      name: /100/i
+      name: /25/i
     }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
@@ -116,10 +116,10 @@ describe('Monitor role', () => {
   it('should show training record for selected member', () => {
     cy.loginAsMonitor();
      cy.findByRole('button', {
-      name: /rows per page: 10/i
+      name: /rows per page: 5/i
     }).click()
     cy.findByRole('option', {
-      name: /100/i
+      name: /25/i
     }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
@@ -144,10 +144,10 @@ describe('Monitor role', () => {
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
     cy.findByRole('button', {
-      name: /rows per page: 10/i
+      name: /rows per page: 5/i
     }).click()
     cy.findByRole('option', {
-      name: /100/i
+      name: /25/i
     }).click()
     cy.findByText(/member, scarlet/i)
       .parent()
