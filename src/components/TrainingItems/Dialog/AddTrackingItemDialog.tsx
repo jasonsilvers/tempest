@@ -256,7 +256,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
         </>
       ) : null}
 
-      <DialogActions tw="pr-6">
+      <DialogActions>
         <Button
           onClick={async () => {
             setIsSaving(true);
