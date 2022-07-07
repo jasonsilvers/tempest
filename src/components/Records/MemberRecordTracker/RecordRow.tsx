@@ -1,10 +1,10 @@
-import { Popover, Typography } from '@mui/material';
+import { Typography, Modal, Box, IconButton } from '@mui/material';
 import { MemberTrackingRecord, TrackingItem, User } from '@prisma/client';
 import dayjs, { Dayjs } from 'dayjs';
-import Link from 'next/link';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
 import 'twin.macro';
+import { Close } from '../../../assets/Icons';
 import { ECategories, EMtrVerb } from '../../../const/enums';
 import { useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import ConditionalDateInput from '../../../lib/ConditionalDateInput';
@@ -50,58 +50,68 @@ const isFiltered = (categories: ECategories[], activeCategory: ECategories, stat
   return false;
 };
 
-const TrainingTitle = ({ title, description, location }) => {
+const TrainingTitle = ({ title, description, location, completedDate, recurrence }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-
-  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const date = dayjs(completedDate).format('MM/DD/YYYY');
+  const handleModalOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handlePopoverClose = () => {
+  const handleModalClose = () => {
     setAnchorEl(null);
   };
 
   const open = Boolean(anchorEl);
 
-  const LocationLink = () => {
-    return (
-      <Link href={location}>
-        <a>
-          {' '}
-          <Typography tw="text-center text-primary text-sm">{`Location: ${location}`}</Typography>
-        </a>
-      </Link>
-    );
+  const boxStyle = {
+    width: '828px',
+    height: '286px',
+    bgcolor: 'background.paper',
+    border: '1px solid #B8B8B8',
+    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.15)',
+    p: 4,
+    borderRadius: '15px',
   };
+
   return (
     <div>
       <Typography
+        tw="cursor-pointer"
         aria-owns={open ? 'mouse-over-popover' : undefined}
         aria-haspopup="true"
-        onMouseEnter={handlePopoverOpen}
-        // Popover Closes too fast need to refactor to keep the popover open so user can click on the location link
-        // onMouseLeave={handlePopoverClose}
+        onClick={handleModalOpen}
       >
         {title}
       </Typography>
-      <Popover
-        id="mouse-over-popover"
+      <Modal
         open={open}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-        onClose={handlePopoverClose}
-        disableRestoreFocus
+        onClose={handleModalClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
-        <Typography sx={{ p: 1 }}>{description}</Typography>
-        <LocationLink />
-      </Popover>
+        <Box sx={boxStyle}>
+          <IconButton onClick={handleModalClose} aria-label="dialog-close-button" color="secondary" tw="float-right">
+            <Close />
+          </IconButton>
+          <Typography id="modal-modal-title" variant="h5" component="h2">
+            {title}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2, fontSize: 14, color: '#00000099' }}>
+            Training Details
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2, fontSize: 14 }}>
+            {description ? description : 'None'}
+          </Typography>
+          <div tw="h-1/2 flex flex-row justify-around items-center">
+            <Typography tw="text-sm">{recurrence ? `Recurrence: ${recurrence}` : `Recurrence: N/A`} </Typography>
+            <Typography tw="text-sm">{location ? `Location: ${location}` : 'Location: None'}</Typography>
+            <Typography tw="text-sm">
+              {completedDate ? `Completed Date: ${date}` : `Completed Date: No Date`}
+            </Typography>
+          </div>
+        </Box>
+      </Modal>
     </div>
   );
 };
@@ -111,6 +121,7 @@ const RecordRow: React.FC<{
   trackingItem: TrackingItem;
 }> = ({ memberTrackingRecord, trackingItem }) => {
   const { activeCategory, categories } = useMemberItemTrackerContext();
+
   const completionDate = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -185,6 +196,8 @@ const RecordRow: React.FC<{
                 title={trackingItem?.title}
                 description={trackingItem?.description}
                 location={trackingItem?.location}
+                completedDate={memberTrackingRecord.completedDate}
+                recurrence={TrackingItemInterval[trackingItem?.interval]}
               />
             </div>
           </div>

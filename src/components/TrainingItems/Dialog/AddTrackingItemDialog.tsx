@@ -85,7 +85,7 @@ const alertIfDuplicate = (trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[
 };
 
 const formIsInValid = (trackingItem: TrackingItemToAdd): boolean => {
-  return !trackingItem.title || !trackingItem.description || trackingItem.interval < 0 ? true : false;
+  return !trackingItem.title || trackingItem.interval < 0 ? true : false;
 };
 
 const isDuplicate = (title: string, trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[]) => {
@@ -140,7 +140,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       onClose={() => {
         handleClose();
       }}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       aria-labelledby="tracking-dialog"
     >
@@ -194,13 +194,9 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             />
           </div>
           <div tw="w-1/2">
-            {trackingItem.location === '' ? (
-              <DialogContentText tw="text-red-400">* Location</DialogContentText>
-            ) : (
-              <DialogContentText>Location</DialogContentText>
-            )}
+            <DialogContentText>Location</DialogContentText>
+
             <AdjustedOutlinedInput
-              required
               name="location"
               inputProps={{ 'aria-label': 'training-location-input' }}
               value={trackingItem.location}
@@ -211,13 +207,9 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           </div>
         </div>
         <div>
-          {trackingItem.description === '' ? (
-            <DialogContentText tw="text-red-400 flex">* Description</DialogContentText>
-          ) : (
-            <DialogContentText>Description</DialogContentText>
-          )}
+          <DialogContentText>Description</DialogContentText>
+
           <AdjustedOutlinedInput
-            required
             name="description"
             inputProps={{ 'aria-label': 'training-description-input' }}
             value={trackingItem.description}
@@ -252,10 +244,10 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
                   <FuseHighlight hit={hit} attribute={'title'} />
                 </TableData>
                 <TableData tw="text-sm w-1/4 text-center">{hit.item.interval}</TableData>
-                <TableData tw="text-sm w-1/4 overflow-hidden overflow-ellipsis">
+                <TableData tw="text-sm w-1/4 whitespace-normal overflow-ellipsis">
                   <FuseHighlight hit={hit} attribute={'location'} />
                 </TableData>
-                <TableData tw="text-sm w-1/4 whitespace-normal overflow-ellipsis">
+                <TableData tw="text-sm w-1/4 whitespace-nowrap overflow-ellipsis">
                   <FuseHighlight hit={hit} attribute={'description'} />
                 </TableData>
               </TableRow>

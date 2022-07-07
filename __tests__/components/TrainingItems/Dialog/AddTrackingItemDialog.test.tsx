@@ -7,10 +7,22 @@ import { EUri } from '../../../../src/const/enums';
 
 const trackingItemsList = {
   trackingItems: [
-    { id: 1, title: 'Fire Extinguisher', description: 'This is a AF yearly requirment', interval: 365 },
-    { id: 2, title: 'Supervisor Safety Training', description: 'One time training for new supevisors', interval: 0 },
-    { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 60 },
-    { id: 4, title: 'Big Bug Safety', description: 'There are big bugs in Hawaii!  Be careful!', interval: 365 },
+    { id: 1, title: 'Fire Extinguisher', description: 'This is a AF yearly requirment', interval: 365, location: '' },
+    {
+      id: 2,
+      title: 'Supervisor Safety Training',
+      description: 'One time training for new supevisors',
+      interval: 0,
+      location: '',
+    },
+    { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 60, location: '' },
+    {
+      id: 4,
+      title: 'Big Bug Safety',
+      description: 'There are big bugs in Hawaii!  Be careful!',
+      interval: 365,
+      location: '',
+    },
   ],
 };
 
@@ -75,7 +87,12 @@ test('should add new training to list waiting to be added', async () => {
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          location: 'New training item location',
+        })
       );
     })
   );
@@ -87,19 +104,23 @@ test('should add new training to list waiting to be added', async () => {
 
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  const trainingLocationInput = getByRole('textbox', {
+    name: 'training-location-input',
+  });
   const trainingIntervalSelect = getByRole('button', {
     name: /recurrance-select/i,
   });
 
   const newTrainingItemTitle = 'New training item title';
   const newTrainingItemDescription = 'New training item description';
+  const newTrainingItemLocation = 'New training item location';
 
   fireEvent.change(trainingTitleInput, { target: { value: newTrainingItemTitle } });
-  fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
   fireEvent.mouseDown(trainingIntervalSelect);
-
   const options = getAllByRole('option');
   fireEvent.click(options[1]);
+  fireEvent.change(trainingLocationInput, { target: { value: newTrainingItemLocation } });
+  fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
 
   const createButton = getByRole('button', { name: /create/i });
   fireEvent.click(createButton);
@@ -112,7 +133,12 @@ test('should add training with zero interval', async () => {
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          location: 'New training itetm location',
+        })
       );
     })
   );
@@ -124,17 +150,21 @@ test('should add training with zero interval', async () => {
 
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  const trainingLocationInput = getByRole('textbox', {
+    name: /training-location-input/i,
+  });
   const trainingIntervalSelect = getByRole('button', {
     name: /recurrance-select/i,
   });
 
   const newTrainingItemTitle = 'New training item title';
   const newTrainingItemDescription = 'New training item description';
+  const newTrainingItemLocation = 'New training itetm location';
 
   fireEvent.change(trainingTitleInput, { target: { value: newTrainingItemTitle } });
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  fireEvent.change(trainingLocationInput, { target: { value: newTrainingItemLocation } });
   fireEvent.mouseDown(trainingIntervalSelect);
-
   const options = getAllByRole('option');
   fireEvent.click(options[5]);
 

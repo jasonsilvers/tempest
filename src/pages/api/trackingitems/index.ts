@@ -14,9 +14,9 @@ const trackingItemPostSchema = {
   post: {
     body: Joi.object({
       title: Joi.string().required(),
-      description: Joi.string().optional(),
-      interval: Joi.number().optional(),
-      location: Joi.string().optional(),
+      description: Joi.string().optional().allow(null, ''),
+      interval: Joi.number().required(),
+      location: Joi.string().optional().allow(null, ''),
     }),
   },
 };
@@ -45,7 +45,7 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedIn
         throw new PermissionError();
       }
 
-      let newItem: TrackingItem;
+      let newItem: Partial<TrackingItem>;
 
       try {
         newItem = await createTrackingItem(body);
