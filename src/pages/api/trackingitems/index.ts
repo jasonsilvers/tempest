@@ -45,7 +45,7 @@ const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedIn
         throw new PermissionError();
       }
 
-      let newItem: Partial<TrackingItem>;
+      let newItem: TrackingItem;
 
       try {
         newItem = await createTrackingItem(body);
