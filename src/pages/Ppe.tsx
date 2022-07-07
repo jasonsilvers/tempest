@@ -212,7 +212,7 @@ const PpePage = () => {
   }, [ppeQuery.data]);
 
   return (
-    <div tw="relative min-w-min max-width[1440px] pr-8">
+    <div tw="relative min-w-min max-width[1440px] p-5">
       <div tw="pb-5">
         <ProfileHeader member={user} />
       </div>

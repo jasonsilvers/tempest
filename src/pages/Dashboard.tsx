@@ -15,6 +15,7 @@ import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
 import { UserWithAll } from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
 import { getStatus } from '../utils/status';
+import { MassSign } from '../components/Dashboard/MassSign';
 
 const initialCounts: StatusCounts = {
   All: 0,
@@ -161,7 +162,7 @@ const DashboardPage: React.FC = () => {
   }, [usersQuery?.data]);
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <p tw="p-5">Loading...</p>;
   }
 
   if (!permission.granted) {
@@ -169,15 +170,24 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <main tw="flex flex-col space-y-8 pr-14 pb-8 w-[720px]">
-      <Card tw="p-5">
-        <Typography variant="h6">Member List</Typography>
-        <div tw="py-8">
-          <DashboardFilter dashboardState={dashboardState} dispatch={dispatch} />
-        </div>
-        <UserList usersQuery={usersQuery} dashboardState={dashboardState} loggedInUser={loggedInUser} />
-      </Card>
-      <MassAssign usersQuery={usersQuery} />
+    <main tw="grid grid-cols-12 gap-4 w-[1200px] p-5">
+      <div tw="col-span-8">
+        <Card tw="p-5">
+          <Typography variant="h6">Member List</Typography>
+          <div tw="py-8">
+            <DashboardFilter dashboardState={dashboardState} dispatch={dispatch} />
+          </div>
+          <UserList usersQuery={usersQuery} dashboardState={dashboardState} loggedInUser={loggedInUser} />
+        </Card>
+      </div>
+
+      <div tw="col-span-4 row-span-2">
+        <MassSign usersQuery={usersQuery} />
+      </div>
+
+      <div tw="col-span-8">
+        <MassAssign usersQuery={usersQuery} />
+      </div>
     </main>
   );
 };

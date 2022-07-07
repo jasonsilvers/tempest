@@ -337,38 +337,40 @@ const AccountPage = () => {
   }
 
   return (
-    <Card tw="p-8">
-      <div tw="flex flex-col items-center space-y-4">
-        <Avatar sx={{ height: 96, width: 96, bgcolor: theme.palette.secondary.main }}>
+    <div tw="p-5">
+      <Card tw="p-8">
+        <div tw="flex flex-col items-center space-y-4">
+          <Avatar sx={{ height: 96, width: 96, bgcolor: theme.palette.secondary.main }}>
+            <Typography variant="h4">
+              {user?.firstName.charAt(0)}
+              {user?.lastName.charAt(0)}
+            </Typography>
+          </Avatar>
           <Typography variant="h4">
-            {user?.firstName.charAt(0)}
-            {user?.lastName.charAt(0)}
+            {user?.firstName} {user?.lastName}
           </Typography>
-        </Avatar>
-        <Typography variant="h4">
-          {user?.firstName} {user?.lastName}
-        </Typography>
-      </div>
-      <div tw="flex flex-col items-center">
-        <div tw="p-10">
-          <Tabs value={tabValue} onChange={handleTabChange}>
-            <StyledTab label="PERSONAL" {...a11yProps(0)} />
-            <StyledTab label="WORK" {...a11yProps(0)} />
-          </Tabs>
         </div>
-        <div tw="w-[720px] h-full border rounded-md">
-          <TabPanel value={tabValue} index={0}>
-            <PersonalForm user={user} />
-          </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            <WorkForm user={user} />
-          </TabPanel>
+        <div tw="flex flex-col items-center">
+          <div tw="p-10">
+            <Tabs value={tabValue} onChange={handleTabChange}>
+              <StyledTab label="PERSONAL" {...a11yProps(0)} />
+              <StyledTab label="WORK" {...a11yProps(0)} />
+            </Tabs>
+          </div>
+          <div tw="w-[720px] h-full border rounded-md">
+            <TabPanel value={tabValue} index={0}>
+              <PersonalForm user={user} />
+            </TabPanel>
+            <TabPanel value={tabValue} index={1}>
+              <WorkForm user={user} />
+            </TabPanel>
+          </div>
         </div>
-      </div>
-      <div tw="flex justify-center pt-20 text-gray-400">
-        <Typography>Need monitor access? Please contact a Tron team member</Typography>
-      </div>
-    </Card>
+        <div tw="flex justify-center pt-20 text-gray-400">
+          <Typography>Need monitor access? Please contact a Tron team member</Typography>
+        </div>
+      </Card>
+    </div>
   );
 };
 
