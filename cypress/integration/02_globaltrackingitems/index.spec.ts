@@ -28,9 +28,11 @@ describe('Can view Global Tracking Items', () => {
 
     const newTrainingItemTitle = 'New training item title';
     const newTrainingItemDescription = 'New training item description';
+    const newTrainingItemLocation = 'New training item location'
 
     cy.findByRole('textbox', { name: 'training-title-input' }).type(newTrainingItemTitle);
     cy.findByRole('textbox', { name: 'training-description-input' }).type(newTrainingItemDescription);
+    cy.findByRole('textbox', { name: 'training-location-input' }).type(newTrainingItemLocation);
     cy.findByRole('button', {name: /recurrance-select/i,}).click();
 
     cy.findByRole('option', {name: /monthly/i}).click()
