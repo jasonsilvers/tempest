@@ -111,6 +111,7 @@ model TrackingItem {
   templates            TemplateTrackingItem[]
 
   JobResults         JobResult[]
+  location              String?
   memberTrackingItem MemberTrackingItem[]
   @@map("training_record")
 }

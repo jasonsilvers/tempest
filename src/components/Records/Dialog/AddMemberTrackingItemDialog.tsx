@@ -164,6 +164,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
               [selectedTrackingItem.id]: {
                 trackingItem: selectedTrackingItem,
                 completedDate: null,
+                location: selectedTrackingItem.location,
               },
             }));
           }}
@@ -191,9 +192,10 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
       <DialogTitle>Trainings to be Added</DialogTitle>
       <DialogContent>
         <TableRowHeader>
-          <TableData tw="w-1/3">Training Title</TableData>
+          <TableData tw="w-1/4">Training Title</TableData>
           <TableData tw="w-1/5 text-center">Recurrence</TableData>
-          <TableData>Date Completed</TableData>
+          <TableData tw="w-1/5 text-center">Location</TableData>
+          <TableData tw="text-center">Date Completed</TableData>
           <div></div>
         </TableRowHeader>
         {Object.keys(memberTrackingItemsToAdd).length === 0 ? <div>Nothing to add</div> : null}
@@ -202,9 +204,12 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
 
           return (
             <TableRow key={memberTrackingItemToAdd.trackingItem.id}>
-              <TableData tw="text-sm w-1/3">{memberTrackingItemToAdd.trackingItem.title}</TableData>
+              <TableData tw="text-sm w-1/4">{memberTrackingItemToAdd.trackingItem.title}</TableData>
               <TableData tw="text-sm w-1/5 text-center">
                 {TrackingItemInterval[memberTrackingItemToAdd.trackingItem.interval]}
+              </TableData>
+              <TableData tw="text-sm w-1/5 text-center truncate">
+                {memberTrackingItemToAdd.trackingItem.location}
               </TableData>
               <TableData>
                 <TempestDatePicker
