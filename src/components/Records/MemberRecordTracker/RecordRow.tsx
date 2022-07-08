@@ -91,23 +91,56 @@ const TrainingTitle = ({ title, description, location, completedDate, recurrence
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
         <Box sx={boxStyle}>
-          <IconButton onClick={handleModalClose} aria-label="dialog-close-button" color="secondary" tw="float-right">
+          <IconButton
+            onClick={handleModalClose}
+            aria-label="dialog-close-button"
+            color="secondary"
+            tw="float-right justify-center"
+          >
             <Close />
           </IconButton>
           <Typography id="modal-modal-title" variant="h5" component="h2">
             {title}
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2, fontSize: 14, color: '#00000099' }}>
-            Training Details
+            Training Description
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2, fontSize: 14 }}>
             {description ? description : 'None'}
           </Typography>
-          <div tw="h-1/2 flex flex-row justify-around items-center">
-            <Typography tw="text-sm">{recurrence ? `Recurrence: ${recurrence}` : `Recurrence: N/A`} </Typography>
-            <Typography tw="text-sm">{location ? `Location: ${location}` : 'Location: None'}</Typography>
+          <div tw="h-2/5 flex flex-row justify-around items-center gap-6">
             <Typography tw="text-sm">
-              {completedDate ? `Completed Date: ${date}` : `Completed Date: No Date`}
+              {recurrence ? (
+                <span>
+                  <b>Recurrence:</b> {`${recurrence}`}
+                </span>
+              ) : (
+                <span>
+                  <b>Recurrence:</b> N/A{' '}
+                </span>
+              )}
+            </Typography>
+            <Typography tw="text-sm">
+              {location ? (
+                <span>
+                  <b>Location:</b> {`${location}`}
+                </span>
+              ) : (
+                <span>
+                  <b>Location:</b> None
+                </span>
+              )}
+            </Typography>
+            <Typography tw="text-sm">
+              {completedDate ? (
+                <span>
+                  <b>Completed Date:</b> {`${date}`}
+                </span>
+              ) : (
+                <span>
+                  <b>Completed Date:</b> No Date
+                </span>
+              )}
             </Typography>
           </div>
         </Box>
