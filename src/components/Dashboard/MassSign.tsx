@@ -1,6 +1,6 @@
 import { Button, Card, InputAdornment, TextField, Typography } from '@mui/material';
 import { useQueryClient, UseQueryResult } from 'react-query';
-import { UserWithAll } from '../../repositories/userRepo';
+import { LoggedInUser, UserWithAll } from '../../repositories/userRepo';
 import 'twin.macro';
 import React, { useEffect } from 'react';
 import { SearchIcon } from '../../assets/Icons';
@@ -10,12 +10,14 @@ import { EMtrVerb } from '../../const/enums';
 import { MemberTrackingRecord, TrackingItem } from '@prisma/client';
 import { useSnackbar } from 'notistack';
 import { usersQueryKeys } from '../../hooks/api/users';
+import { useUser } from '@tron/nextjs-auth-p1';
 
 type MassSignProps = {
   usersQuery: UseQueryResult<UserWithAll[]>;
 };
 
 export const MassSign = ({ usersQuery }: MassSignProps) => {
+  const { user: loggedInUser } = useUser<LoggedInUser>();
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: signAuthorityFor } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_AUTHORITY);
   const queryClient = useQueryClient();
@@ -24,11 +26,13 @@ export const MassSign = ({ usersQuery }: MassSignProps) => {
   const [userList, setUserList] = React.useState<UserWithAll[]>([]);
 
   useEffect(() => {
-    const userListWithRecordsToSign = usersQuery.data?.filter((user) =>
-      user.memberTrackingItems.some((mti) =>
-        mti.memberTrackingRecords.some((mtr) => mtr.authoritySignedDate === null && mtr.completedDate !== null)
+    const userListWithRecordsToSign = usersQuery.data
+      ?.filter((user) =>
+        user.memberTrackingItems.some((mti) =>
+          mti.memberTrackingRecords.some((mtr) => mtr.authoritySignedDate === null && mtr.completedDate !== null)
+        )
       )
-    );
+      .filter((user2) => user2.id !== loggedInUser?.id);
 
     setUserList(userListWithRecordsToSign);
   }, [usersQuery.data]);
