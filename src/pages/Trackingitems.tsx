@@ -137,7 +137,13 @@ const TrackingItems = () => {
         headerName: 'Description',
         field: 'description',
         renderCell: renderCellExpand,
-        flex: 1,
+        flex: 0.8,
+      },
+      {
+        headerName: 'Location',
+        field: 'location',
+        renderCell: renderCellExpand,
+        flex: 0.8,
       },
       {
         field: 'actions',

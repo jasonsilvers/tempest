@@ -14,8 +14,9 @@ const trackingItemPostSchema = {
   post: {
     body: Joi.object({
       title: Joi.string().required(),
-      description: Joi.string().optional(),
-      interval: Joi.number().optional(),
+      description: Joi.string().optional().allow(null, ''),
+      interval: Joi.number().required(),
+      location: Joi.string().optional().allow(null, ''),
     }),
   },
 };
