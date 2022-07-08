@@ -105,17 +105,19 @@ export const MassSign = ({ usersQuery }: MassSignProps) => {
                 )
                 .map((mti) => (
                   <div key={`${mti.trackingItemId}${mti.userId}`} tw="px-5 py-2">
-                    {mti.memberTrackingRecords.map((mtr) => (
-                      <div key={mtr.id} tw="flex items-center w-full">
-                        <div tw="mr-auto flex w-full">
-                          <div tw="w-2/3">{mti.trackingItem.title}</div>
-                          <div tw="w-1/3">{dayjs(mtr.completedDate).format('MM/DD/YY')}</div>
+                    {mti.memberTrackingRecords
+                      ?.filter((mtr) => mtr.authoritySignedDate === null)
+                      .map((mtr) => (
+                        <div key={mtr.id} tw="flex items-center w-full">
+                          <div tw="mr-auto flex w-full">
+                            <div tw="w-2/3">{mti.trackingItem.title}</div>
+                            <div tw="w-1/3">{dayjs(mtr.completedDate).format('MM/DD/YY')}</div>
+                          </div>
+                          <Button onClick={() => handleSign(mtr)} variant="outlined" color="secondary">
+                            Sign
+                          </Button>
                         </div>
-                        <Button onClick={() => handleSign(mtr)} variant="outlined" color="secondary">
-                          Sign
-                        </Button>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 ))}
             </div>
