@@ -247,9 +247,7 @@ test('should delete user', async () => {
 test('should show logs', async () => {
   const screen = render(<Logs />);
 
-  await waitForLoadingToFinish();
-
-  expect(screen.getByText(/Successful Login/)).toBeInTheDocument();
+  expect(await screen.findByText(/Successful Login/)).toBeInTheDocument();
 });
 
 test('should show logs and not error when name is null ', async () => {
@@ -284,11 +282,8 @@ test('should show logs and not error when name is null ', async () => {
     })
   );
 
-  const { getByText } = render(<Logs />);
-
-  await waitForLoadingToFinish();
-
-  expect(getByText(/joe smith/i)).toBeInTheDocument();
+  const screen = render(<Logs />);
+  expect(await screen.findByText(/joe smith/i)).toBeInTheDocument();
 });
 
 test('should show organizations', async () => {

@@ -16,6 +16,7 @@ const TabAndTableContainer = tw.div`flex flex-col `;
 const MemberItemTracker: React.FC<{
   userId: number;
   variant: EMtrVariant;
+  children?: React.ReactNode;
 }> = ({ userId, variant, children }) => {
   const TabAndTableRef: LegacyRef<HTMLDivElement> = useRef();
 

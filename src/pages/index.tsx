@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useRouter } from 'next/router';
 import { LoggedInUser } from '../repositories/userRepo';
@@ -12,31 +12,33 @@ import { fetchMemberTrackingItems } from '../hooks/api/users';
 import { mtiQueryKeys } from '../hooks/api/memberTrackingItem';
 
 function Home() {
-  const { user, isLoading } = useUser<LoggedInUser>();
+  const userQuery = useUser<LoggedInUser>();
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  if (!user && !isLoading) {
-    router.push('/Unauthenticated');
-  }
+  useEffect(() => {
+    if (!userQuery.user && !userQuery.isLoading) {
+      router.push('/Unauthenticated');
+    }
 
-  if (user && !user.organizationId) {
-    router.push('/Welcome');
-  }
+    if (userQuery.user && !userQuery.user.organizationId) {
+      router.push('/Welcome');
+    }
 
-  if (user && user.role?.name === ERole.MEMBER && user.organizationId) {
-    queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(user.id, EMtrVariant.IN_PROGRESS), () =>
-      fetchMemberTrackingItems(user.id, EMtrVariant.IN_PROGRESS)
-    );
-    queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(user.id, EMtrVariant.COMPLETED), () =>
-      fetchMemberTrackingItems(user.id, EMtrVariant.COMPLETED)
-    );
-    router.push(`/Profile/${user.id}`);
-  }
+    if (userQuery.user && userQuery.user.role?.name === ERole.MEMBER && userQuery.user.organizationId) {
+      queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(userQuery.user.id, EMtrVariant.IN_PROGRESS), () =>
+        fetchMemberTrackingItems(userQuery.user.id, EMtrVariant.IN_PROGRESS)
+      );
+      queryClient.prefetchQuery(mtiQueryKeys.memberTrackingItems(userQuery.user.id, EMtrVariant.COMPLETED), () =>
+        fetchMemberTrackingItems(userQuery.user.id, EMtrVariant.COMPLETED)
+      );
+      router.push(`/Profile/${userQuery.user.id}`);
+    }
 
-  if (user && user.role?.name !== ERole.MEMBER && user.organizationId) {
-    router.push('/Dashboard');
-  }
+    if (userQuery.user && userQuery.user.role?.name !== ERole.MEMBER && userQuery.user.organizationId) {
+      router.push('/Dashboard');
+    }
+  }, [userQuery]);
 
   return (
     <div>
@@ -45,7 +47,7 @@ function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {isLoading ? <AuthenticatingApp /> : null}
+      {userQuery.isLoading ? <AuthenticatingApp /> : null}
     </div>
   );
 }

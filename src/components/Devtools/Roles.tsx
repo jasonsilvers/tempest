@@ -131,7 +131,6 @@ const GridToolbar = () => {
 
 export const Roles = () => {
   const roleQuery = useRoles();
-
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: del } = useDeleteRole();
 

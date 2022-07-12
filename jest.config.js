@@ -39,4 +39,5 @@ module.exports = {
       '<rootDir>/__tests__/utils/__mocks__/fileMock.js',
   },
   setupFilesAfterEnv: ['./__tests__/setup/jest.setup.ts'],
+  resolver: '<rootDir>/__tests__/setup/resolver.js',
 };

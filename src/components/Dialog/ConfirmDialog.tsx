@@ -6,6 +6,7 @@ interface IConfirmDialogProps {
   handleNo: () => void;
   handleYes: () => void;
   open: boolean;
+  children?: React.ReactNode;
 }
 
 const ConfirmDialog: React.FC<IConfirmDialogProps> = ({ children, open, handleNo, handleYes }) => {
