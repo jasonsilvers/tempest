@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems } from '../hooks/api/trackingItem';
+import React, { useCallback, useMemo, useState } from 'react';
+import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems, useUpdateTrackingItem } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import { Box, Popper, Paper, Typography, Fab } from '@mui/material';
@@ -10,9 +10,10 @@ import { getTrackingItems } from '../repositories/trackingItemRepo';
 
 import tw from 'twin.macro';
 import { AddIcon, DeleteIcon } from '../assets/Icons';
-import { DataGrid, GridActionsCellItem, GridRenderCellParams, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridRenderCellParams, GridRowModel, GridToolbar } from '@mui/x-data-grid';
 import { useSnackbar } from 'notistack';
 import { TrackingItemInterval } from '../utils/daysToString';
+import { TrackingItem } from '@prisma/client';
 
 const H1 = tw.h1`text-2xl mb-2`;
 interface IGridCellExpandProps {
@@ -112,6 +113,7 @@ const TrackingItems = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const { user, permissionCheck, isLoading } = usePermissions();
   const { mutate: del } = useDeleteTrackingItem();
+  const updateTrackingItem = useUpdateTrackingItem();
   const { enqueueSnackbar } = useSnackbar();
 
   const canDeleteTrackingItem = permissionCheck(user?.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
@@ -175,6 +177,14 @@ const TrackingItems = () => {
     [canDeleteTrackingItem]
   );
 
+  const processRowUpdate = useCallback((newRow: GridRowModel<TrackingItem>, oldRow: GridRowModel<TrackingItem>) => {
+    if (oldRow.location !== newRow.location) {
+      updateTrackingItem.mutate(newRow);
+      return newRow;
+    }
+    return oldRow;
+  }, []);
+
   if (isLoading) {
     return <div>...loading</div>;
   }
@@ -210,6 +220,8 @@ const TrackingItems = () => {
             autoHeight
             columns={columns}
             rows={trackingItems}
+            experimentalFeatures={{ newEditingApi: true }}
+            processRowUpdate={processRowUpdate}
             disableVirtualization
             components={{ Toolbar: GridToolbar }}
           />
