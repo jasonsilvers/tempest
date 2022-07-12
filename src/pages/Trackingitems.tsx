@@ -144,6 +144,7 @@ const TrackingItems = () => {
         field: 'location',
         renderCell: renderCellExpand,
         flex: 0.8,
+        editable: true,
       },
       {
         field: 'actions',
