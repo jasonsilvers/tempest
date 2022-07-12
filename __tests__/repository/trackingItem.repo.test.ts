@@ -4,10 +4,12 @@ import {
   deleteTrackingItem,
   findTrackingItemById,
   getTrackingItems,
+  updateTrackingItem,
 } from '../../src/repositories/trackingItemRepo';
 import { TrackingItem } from '@prisma/client';
 
 const dummyTrackingItem = {
+  id: 1,
   description: 'dummy description',
   interval: 365,
   title: 'dummy title',
@@ -35,4 +37,13 @@ test('should findTrackingItemById', async () => {
   prisma.trackingItem.findUnique.mockImplementationOnce(() => [{ ...dummyTrackingItem, id: 1 }]);
   const trackingItems = await findTrackingItemById(1);
   expect(trackingItems).toEqual([{ ...dummyTrackingItem, id: 1 }]);
+});
+
+test('should update Tracking Item location', async () => {
+  const spy = prisma.trackingItem.update.mockImplementationOnce(() => {
+    return { ...dummyTrackingItem, location: 'new location' };
+  });
+  const updatedTrackingItem = await updateTrackingItem(1, { location: 'new location' });
+  expect(updatedTrackingItem).toEqual({ ...dummyTrackingItem, location: 'new location' });
+  expect(spy).toBeCalledWith({ where: { id: 1 }, data: { location: 'new location' } });
 });

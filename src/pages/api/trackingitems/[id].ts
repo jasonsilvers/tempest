@@ -29,10 +29,9 @@ async function trackingItemHandler(
     if (!permission.granted) {
       throw new PermissionError();
     }
-    const filteredData = permission.filter(body);
 
-    const updatedTrackingItem = await updateTrackingItem(trackingItemIdParam, filteredData);
-    res.status(200).json(updatedTrackingItem);
+    const updatedTrackingItem = await updateTrackingItem(trackingItemIdParam, body);
+    return res.status(200).json(updatedTrackingItem);
   }
 
   if (method === 'DELETE') {
