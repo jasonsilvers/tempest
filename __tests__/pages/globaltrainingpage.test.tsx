@@ -2,6 +2,7 @@ import TrackingItemPage, { getServerSideProps } from '../../src/pages/Trackingit
 import {
   fireEvent,
   render,
+  userEvent,
   waitFor,
   waitForElementToBeRemoved,
   waitForLoadingToFinish,
@@ -17,6 +18,7 @@ import { getTrackingItems } from '../../src/repositories/trackingItemRepo';
 
 import { TrackingItemsDTO } from '../../src/types';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
+import React from 'react';
 
 jest.mock('../../src/repositories/trackingItemRepo.ts');
 
@@ -51,6 +53,7 @@ beforeEach(() => {
               id: 1,
               interval: 365,
               title: 'test title',
+              location: 'location',
             },
           ],
         })
@@ -154,4 +157,33 @@ test('should do serverside rending and return list of tracking items', async () 
   const value = await getServerSideProps();
 
   expect(value.props.dehydratedState.queries[0].state.data).toStrictEqual([trackingItemFromDb]);
+});
+
+test('should allow edit location', async () => {
+  const testOrg = { id: '2', title: 'test', description: 'training', interval: 365, location: 'test location' };
+
+  server.use(
+    rest.put(EUri.TRACKING_ITEMS + '2', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json({ testOrg }));
+    })
+  );
+  const screen = render(<TrackingItemPage />);
+
+  const locationCell = await screen.findByRole('cell', {
+    name: /location/i,
+  });
+
+  fireEvent.doubleClick(locationCell);
+
+  const input = screen.getAllByRole('textbox');
+
+  fireEvent.change(input[0], { target: { value: 'test location' } });
+
+  userEvent.keyboard('{Enter}');
+
+  expect(
+    screen.getByRole('cell', {
+      name: /test location/i,
+    })
+  ).toBeInTheDocument();
 });

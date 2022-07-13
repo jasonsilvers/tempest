@@ -26,6 +26,7 @@ interface IMockedPrisma {
     findMany: jest.Mock;
     delete: jest.Mock;
     create: jest.Mock;
+    update: jest.Mock;
     findUnique: jest.Mock;
   };
   logEvent: {
@@ -106,6 +107,7 @@ jest.mock(
       findMany: jest.fn(),
       delete: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
       findUnique: jest.fn(),
     },
     logEvent: {

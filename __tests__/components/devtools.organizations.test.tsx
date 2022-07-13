@@ -1,3 +1,4 @@
+import React from 'react';
 import 'whatwg-fetch';
 import { OrganizationList } from '../../src/components/Devtools/OrganizationList';
 import { ERole, EUri } from '../../src/const/enums';

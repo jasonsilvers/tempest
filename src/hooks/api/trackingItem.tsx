@@ -44,4 +44,33 @@ const useDeleteTrackingItem = () => {
   );
 };
 
-export { useTrackingItems, useDeleteTrackingItem, useAddTrackingItem };
+type PartialTrackingItem = {
+  id: number;
+  location: string;
+};
+const useUpdateTrackingItem = () => {
+  const queryClient = useQueryClient();
+  const snackbar = useSnackbar();
+
+  return useMutation<TrackingItem, unknown, PartialTrackingItem>(
+    (updatedTrackingItem: PartialTrackingItem) =>
+      axios
+        .put<TrackingItem>(EUri.TRACKING_ITEMS + updatedTrackingItem.id, updatedTrackingItem)
+        .then((response) => response.data),
+    {
+      onSuccess: () => {
+        snackbar.enqueueSnackbar('Updated Tracking Item', { variant: 'success' });
+      },
+
+      onError: () => {
+        snackbar.enqueueSnackbar('Error updating Tracking Item. Please try again!', { variant: 'error' });
+      },
+
+      onSettled: () => {
+        queryClient.invalidateQueries(tiQueryKeys.trackingItems());
+      },
+    }
+  );
+};
+
+export { useTrackingItems, useDeleteTrackingItem, useAddTrackingItem, useUpdateTrackingItem };
