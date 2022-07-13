@@ -8,7 +8,7 @@ import { grants } from '../../testutils/mocks/fixtures';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import { deleteTrackingItem } from '../../../src/repositories/trackingItemRepo';
+import { deleteTrackingItem, updateTrackingItem } from '../../../src/repositories/trackingItemRepo';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo');
@@ -23,6 +23,10 @@ beforeEach(() => {
     role: { id: '22', name: 'admin' },
   });
   mockMethodAndReturn(findGrants, grants);
+});
+
+afterEach(() => {
+  jest.resetAllMocks();
 });
 
 const item = {
@@ -71,4 +75,26 @@ test('should return 403 if incorrect permission - DELETE', async () => {
   const { status } = await testNextApi.delete(trackingItemQueryHandler, { urlId: '/1' });
 
   expect(status).toBe(403);
+});
+
+test('should return correct status for put', async () => {
+  const expectedReturnData = { ...item, location: 'share drive' };
+
+  mockMethodAndReturn(updateTrackingItem, expectedReturnData);
+  const { status, data } = await testNextApi.put(trackingItemQueryHandler, {
+    urlId: 2,
+    body: { id: 2, location: 'share drive' },
+  });
+  expect(status).toBe(200);
+  expect(data).toStrictEqual(expectedReturnData);
+});
+
+test('should not allow invalid PUT schema', async () => {
+  mockMethodAndReturn(updateTrackingItem, item);
+  const { status } = await testNextApi.put(trackingItemQueryHandler, {
+    urlId: 2,
+    body: { id: 2, title: 'Brand new title', location: 'share drive' },
+  });
+
+  expect(status).toBe(400);
 });

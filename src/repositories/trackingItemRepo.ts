@@ -14,6 +14,9 @@ export async function createTrackingItem(newTrackingItem: TrackingItem) {
     data: newTrackingItem,
   });
 }
+export async function updateTrackingItem(trackingItemId: number, trackingItem: Partial<TrackingItem>) {
+  return prisma.trackingItem.update({ where: { id: trackingItemId }, data: trackingItem });
+}
 
 export async function deleteTrackingItem(trackingItemId: number) {
   return prisma.trackingItem.delete({
