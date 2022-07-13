@@ -77,14 +77,24 @@ test('should return 403 if incorrect permission - DELETE', async () => {
   expect(status).toBe(403);
 });
 
-test('should return correct status for update', async () => {
+test('should return correct status for put', async () => {
   const expectedReturnData = { ...item, location: 'share drive' };
 
   mockMethodAndReturn(updateTrackingItem, expectedReturnData);
   const { status, data } = await testNextApi.put(trackingItemQueryHandler, {
     urlId: 2,
-    body: { location: 'share drive' },
+    body: { id: 2, location: 'share drive' },
   });
   expect(status).toBe(200);
   expect(data).toStrictEqual(expectedReturnData);
+});
+
+test('should not allow invalid PUT schema', async () => {
+  mockMethodAndReturn(updateTrackingItem, item);
+  const { status } = await testNextApi.put(trackingItemQueryHandler, {
+    urlId: 2,
+    body: { id: 2, title: 'Brand new title', location: 'share drive' },
+  });
+
+  expect(status).toBe(400);
 });

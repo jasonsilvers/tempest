@@ -9,10 +9,11 @@ import { EResource } from '../../../const/enums';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import Joi from 'joi';
 
-const trackingItemPutSchema = {
-  post: {
+const trackingItemSchema = {
+  put: {
     body: Joi.object({
-      location: Joi.string().required(),
+      id: Joi.number().required(),
+      location: Joi.string().required().allow(null, ''),
     }),
   },
 };
@@ -51,4 +52,4 @@ async function trackingItemHandler(
   throw new MethodNotAllowedError(method);
 }
 
-export default withTempestHandlers(trackingItemHandler, returnUser, trackingItemPutSchema);
+export default withTempestHandlers(trackingItemHandler, returnUser, trackingItemSchema);

@@ -178,11 +178,13 @@ const TrackingItems = () => {
   );
 
   const processRowUpdate = useCallback((newRow: GridRowModel<TrackingItem>, oldRow: GridRowModel<TrackingItem>) => {
+    const { id, location } = newRow;
     if (oldRow.location !== newRow.location) {
-      updateTrackingItem.mutate(newRow);
-      return newRow;
+      const newLocation = { id, location };
+      updateTrackingItem.mutate(newLocation);
+      return newLocation;
     }
-    return oldRow;
+    return oldRow.location;
   }, []);
 
   if (isLoading) {
