@@ -44,10 +44,7 @@ const useDeleteTrackingItem = () => {
   );
 };
 
-type PartialTrackingItem = {
-  id: number;
-  location: string;
-};
+type PartialTrackingItem = Partial<TrackingItem>;
 const useUpdateTrackingItem = () => {
   const queryClient = useQueryClient();
   const snackbar = useSnackbar();

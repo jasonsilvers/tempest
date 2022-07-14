@@ -1,20 +1,20 @@
+import { Box, Fab, MenuItem, Paper, Popper, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { DataGrid, GridActionsCellItem, GridRenderCellParams, GridRowModel, GridToolbar } from '@mui/x-data-grid';
+import { Organization, TrackingItem } from '@prisma/client';
+import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems, useUpdateTrackingItem } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
-import { Box, Popper, Paper, Typography, Fab, Select, SelectChangeEvent, MenuItem } from '@mui/material';
-import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
-import { usePermissions } from '../hooks/usePermissions';
-import { EFuncAction, EResource } from '../const/enums';
-import { getTrackingItems } from '../repositories/trackingItemRepo';
-
 import 'twin.macro';
 import { AddIcon, DeleteIcon } from '../assets/Icons';
-import { DataGrid, GridActionsCellItem, GridRenderCellParams, GridRowModel, GridToolbar } from '@mui/x-data-grid';
-import { useSnackbar } from 'notistack';
-import { TrackingItemInterval } from '../utils/daysToString';
-import { Organization, OrganizationType, TrackingItem } from '@prisma/client';
+import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
+import { EFuncAction, EResource } from '../const/enums';
 import { useOrgs } from '../hooks/api/organizations';
+import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems, useUpdateTrackingItem } from '../hooks/api/trackingItem';
+import { usePermissions } from '../hooks/usePermissions';
+import { getTrackingItems } from '../repositories/trackingItemRepo';
+import { TrackingItemInterval } from '../utils/daysToString';
+import { determineMonitorCatalogs } from '../utils/determineMonitorCatalogs';
 interface IGridCellExpandProps {
   value: string;
   width: number;
@@ -122,30 +122,8 @@ const TrackingItems = () => {
   const canCreateTrackingItem = permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM);
 
   useEffect(() => {
-    const orgsUserCanAddTrackingItems: Organization[] = [];
-
-    const findOrgsWithCatalog = (orgBranch: Organization[]) => {
-      if (orgBranch === null || orgBranch?.length === 0) {
-        return;
-      }
-
-      for (const organization of orgBranch) {
-        if (organization.types.includes(OrganizationType.CATALOG)) {
-          orgsUserCanAddTrackingItems.push(organization);
-        }
-        const newBranch = orgsFromServer.filter((orgFromServer) => orgFromServer.parentId === organization.id);
-        findOrgsWithCatalog(newBranch);
-      }
-    };
-
     if (orgsFromServer?.length > 0) {
-      const usersOrg = orgsFromServer?.find((orgFromServer) => orgFromServer.id === user?.organizationId);
-
-      if (usersOrg?.types?.includes(OrganizationType.CATALOG)) {
-        orgsUserCanAddTrackingItems.push(usersOrg);
-      }
-      const usersOrgTree = orgsFromServer?.filter((orgFromServer) => orgFromServer.parentId === usersOrg?.id);
-      findOrgsWithCatalog(usersOrgTree);
+      const orgsUserCanAddTrackingItems = determineMonitorCatalogs(user, orgsFromServer);
 
       setCatalogs(orgsUserCanAddTrackingItems);
     }

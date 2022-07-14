@@ -18,7 +18,7 @@ import {
   GridRowParams,
   GridValueGetterParams,
 } from '@mui/x-data-grid';
-import { Organization } from '@prisma/client';
+import { Organization, OrganizationType } from '@prisma/client';
 import Joi from 'joi';
 import { useSnackbar } from 'notistack';
 import { useCallback, useMemo, useState } from 'react';
@@ -117,7 +117,7 @@ export const OrganizationList = () => {
       />,
     ];
   };
-
+  const orgCatalogValue = Object.values(OrganizationType);
   const columns: GridColumns<Organization> = useMemo(
     () => [
       { field: 'id', headerName: 'Id', flex: 1 },
@@ -131,7 +131,14 @@ export const OrganizationList = () => {
           return orgs?.find((org) => org.id === params.value)?.name;
         },
       },
-
+      {
+        field: 'types',
+        headerName: 'Org Catalog',
+        flex: 1,
+        editable: true,
+        type: 'singleSelect',
+        valueOptions: orgCatalogValue,
+      },
       {
         field: 'actions',
         type: 'actions',
@@ -162,10 +169,10 @@ export const OrganizationList = () => {
   };
 
   const processRowUpdate = useCallback((updatedRow: GridRowModel<Organization>, oldRow: GridRowModel<Organization>) => {
-    const { id, name, shortName, parentId } = updatedRow;
-    if (oldRow.name !== name || oldRow.shortName !== shortName) {
+    const { id, name, shortName, types } = updatedRow;
+    if (oldRow.name !== name || oldRow.shortName !== shortName || oldRow.types !== types) {
       //TODO: CLEAN THIS UP BEFORE RELEASE
-      const newRow = { id, name, shortName, parentId } as Organization;
+      const newRow = { id, name, shortName, types };
       if (!name || !shortName) {
         throw new Error('Organization names cannot be empty');
       }

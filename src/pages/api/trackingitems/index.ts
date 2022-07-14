@@ -17,6 +17,7 @@ const trackingItemPostSchema = {
       description: Joi.string().optional().allow(null, ''),
       interval: Joi.number().required(),
       location: Joi.string().optional().allow(null, ''),
+      organizationId: Joi.number().optional().allow(null, 0),
     }),
   },
 };

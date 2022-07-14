@@ -11,12 +11,24 @@ import {
 import { Close } from '../../../assets/Icons';
 import tw from 'twin.macro';
 import { useAddTrackingItem, useTrackingItems } from '../../../hooks/api/trackingItem';
-import { TrackingItem } from '@prisma/client';
+import { Organization, TrackingItem } from '@prisma/client';
 import Fuse from 'fuse.js';
 import ConfirmDialog from '../../Dialog/ConfirmDialog';
 import { useSnackbar } from 'notistack';
 import { RecurrenceSelect } from '../../RecurrenceSelect';
-import { OutlinedInput, IconButton, FormControl, DialogContentText, Button, Typography } from '@mui/material';
+import {
+  OutlinedInput,
+  IconButton,
+  FormControl,
+  DialogContentText,
+  Button,
+  Typography,
+  Select,
+  MenuItem,
+} from '@mui/material';
+import { determineMonitorCatalogs } from '../../../utils/determineMonitorCatalogs';
+import { useOrgs } from '../../../hooks/api/organizations';
+import { usePermissions } from '../../../hooks/usePermissions';
 
 const fuseOptions: Fuse.IFuseOptions<TrackingItem> = {
   isCaseSensitive: false,
@@ -106,6 +118,10 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   const [formIsInvalid, setFormIsInvalid] = useState(true);
   const [confirmationIsOpen, setConfirmationIsOpen] = useState(false);
   const [trackingItem, setTrackingItem] = useState<TrackingItemToAdd>(initialTrackingItemToAdd);
+  const [selectedCatalog, setSelectedCatalog] = useState<number>(0);
+  const [catalogs, setCatalogs] = useState<Organization[]>([]);
+  const { data: orgsFromServer } = useOrgs();
+  const { user } = usePermissions();
   const { enqueueSnackbar } = useSnackbar();
 
   const fuse = useMemo(() => new Fuse(trackingItems ? trackingItems : [], fuseOptions), [trackingItems]);
@@ -118,6 +134,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
         description: '',
         interval: null,
         location: '',
+        organizationId: null,
       } as TrackingItemToAdd);
     };
   }, [isOpen]);
@@ -130,6 +147,14 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
     }
   }, [trackingItem]);
 
+  useEffect(() => {
+    if (orgsFromServer?.length > 0) {
+      const orgsUserCanAddTrackingItems = determineMonitorCatalogs(user, orgsFromServer);
+
+      setCatalogs(orgsUserCanAddTrackingItems);
+    }
+  }, [orgsFromServer, user]);
+
   const handleTrackingItemMatch = (e: ChangeEvent<{ value: string }>) => {
     const results = fuse.search(e.target.value.trimEnd());
 
@@ -138,6 +163,10 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   const handleTrackingItemInput = (inputName: string, value: string | number) => {
     setTrackingItem((state) => ({ ...state, [inputName]: value }));
+  };
+
+  const handleCatalogChange = (event: SelectChangeEvent) => {
+    setSelectedCatalog(parseInt(event.target.value));
   };
 
   return (
@@ -168,6 +197,26 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           training.
         </p>
         <div>
+          <div>
+            <Select
+              tw="bg-white w-full"
+              labelId="add-tracking-item-catalog-select"
+              id="add-tracking-item-catalog-select"
+              value={selectedCatalog.toString()}
+              onChange={(event: SelectChangeEvent) => {
+                handleCatalogChange(event);
+                handleTrackingItemInput('organizationId', parseInt(event.target.value));
+              }}
+            >
+              <MenuItem disabled defaultValue={'Select Global or Organizational Catalog'}></MenuItem>
+              <MenuItem value={0}>Global Training Catalog</MenuItem>
+              {catalogs.map((catalog) => (
+                <MenuItem key={catalog.id} value={catalog.id}>
+                  {catalog.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </div>
           <FormControl fullWidth>
             {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
               <DialogContentText tw="text-red-400 flex">* Title</DialogContentText>
@@ -277,6 +326,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
                 },
                 onSettled: () => {
                   setIsSaving(false);
+                  setSelectedCatalog(0);
                 },
               });
             }

@@ -63,7 +63,7 @@ beforeEach(() => {
               id: 1,
               interval: 365,
               title: 'test title',
-              location: 'location',
+              location: 'testLocation',
               organizationId: null,
             },
           ],
@@ -176,7 +176,7 @@ test('should allow edit location', async () => {
     title: 'test',
     description: 'training',
     interval: 365,
-    location: 'location',
+    location: 'trainingLocation',
     organizationId: null,
   };
 
@@ -188,20 +188,20 @@ test('should allow edit location', async () => {
   const screen = render(<TrackingItemPage />);
 
   const locationCell = await screen.findByRole('cell', {
-    name: /location/i,
+    name: /testLocation/i,
   });
 
   fireEvent.doubleClick(locationCell);
 
   const input = screen.getAllByRole('textbox');
 
-  fireEvent.change(input[0], { target: { value: 'test location' } });
+  fireEvent.change(input[0], { target: { value: 'trainingLocation' } });
 
   userEvent.keyboard('{Enter}');
 
-  // expect(
-  //   screen.getByRole('cell', {
-  //     name: /test location/i,
-  //   })
-  // ).toBeInTheDocument();
+  expect(
+    screen.getByRole('cell', {
+      name: /testLocation/i,
+    })
+  ).toBeInTheDocument();
 });
