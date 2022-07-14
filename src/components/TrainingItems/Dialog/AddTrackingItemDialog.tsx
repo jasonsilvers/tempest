@@ -54,7 +54,13 @@ const AdjustedOutlinedInput: React.FC<OutlinedInputProps> = (props) => (
 
 const Bold = tw.div`font-bold bg-yellow-100`;
 
-const initialTrackingItemToAdd: TrackingItemToAdd = { title: '', description: '', interval: null, location: '' };
+const initialTrackingItemToAdd: TrackingItemToAdd = {
+  title: '',
+  description: '',
+  interval: null,
+  location: '',
+  organizationId: null,
+};
 
 const resolveAttribute = (obj, key) => key.split('.').reduce((prev, curr) => prev?.[curr], obj);
 

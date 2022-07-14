@@ -88,16 +88,24 @@ model MemberTrackingItem {
   @@map("member_tracking_item")
 }
 
+enum OrganizationType {
+  CATALOG
+  TEST
+}
+
 model Organization {
-  id        Int            @id @default(autoincrement())
-  name      String         @map("org_name")
-  shortName String         @map("org_short_name")
+  id            Int                @id @default(autoincrement())
+  name          String             @map("org_name")
+  shortName     String             @map("org_short_name")
   //Self reference
-  parent    Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
-  parentId  Int?           @map("parent_id")
-  children  Organization[] @relation(name: "ParentChildren")
-  users     User[]
-  templates Template[]
+  parent        Organization?      @relation(name: "ParentChildren", fields: [parentId], references: [id])
+  parentId      Int?               @map("parent_id")
+  children      Organization[]     @relation(name: "ParentChildren")
+  users         User[]
+  templates     Template[]
+  trackingItems TrackingItem[]
+  types         OrganizationType[]
+
 
   @@map("organization")
 }
@@ -107,11 +115,13 @@ model TrackingItem {
   title                String                 @unique
   description          String
   interval             Int? //days
+  organzation          Organization?          @relation(fields: [organizationId], references: [id])
+  organizationId       Int?
   memberTrackingRecord MemberTrackingRecord[]
   templates            TemplateTrackingItem[]
 
   JobResults         JobResult[]
-  location              String?
+  location           String?
   memberTrackingItem MemberTrackingItem[]
   @@map("training_record")
 }

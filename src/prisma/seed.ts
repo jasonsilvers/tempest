@@ -1,4 +1,4 @@
-import { Grant, PrismaClient, User } from '@prisma/client';
+import { Grant, OrganizationType, PrismaClient, User } from '@prisma/client';
 import { EAction, EResource, ERole } from '../const/enums';
 import { grants } from '../const/grants';
 const casual = require('casual');
@@ -43,13 +43,14 @@ async function createRandomUser(organizationId: number, roleId: number) {
   return addUserToDb(newUser, organizationId, roleId);
 }
 
-async function createOrganization(name: string, shortName: string, parentId?: number) {
+async function createOrganization(name: string, shortName: string, parentId?: number, type?: OrganizationType) {
   const connection = parentId ? { parent: { connect: { id: parentId } } } : null;
 
   return prisma.organization.create({
     data: {
       name,
       shortName,
+      types: [type],
       ...connection,
     },
   });
@@ -69,7 +70,7 @@ async function addPPEItem(userId: number) {
 }
 
 async function createOrganizationStructure() {
-  const mdg = await createOrganization('15th Medical Group', '15th MDG');
+  const mdg = await createOrganization('15th Medical Group', '15th MDG', null, 'CATALOG');
   const omrs = await createOrganization('15 Operation Medical Readiness Squadron', '15 OMRS', mdg.id);
   const hcos = await createOrganization('15 Healthcare Operation Squadron', '15 HCOS', mdg.id);
   const execStaff = await createOrganization('15th Medical Group Executive Staff', '15th MDG Exc Staff', mdg.id);

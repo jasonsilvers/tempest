@@ -1,21 +1,20 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems, useUpdateTrackingItem } from '../hooks/api/trackingItem';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
-import { Box, Popper, Paper, Typography, Fab } from '@mui/material';
+import { Box, Popper, Paper, Typography, Fab, Select, SelectChangeEvent, MenuItem } from '@mui/material';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { usePermissions } from '../hooks/usePermissions';
 import { EFuncAction, EResource } from '../const/enums';
 import { getTrackingItems } from '../repositories/trackingItemRepo';
 
-import tw from 'twin.macro';
+import 'twin.macro';
 import { AddIcon, DeleteIcon } from '../assets/Icons';
 import { DataGrid, GridActionsCellItem, GridRenderCellParams, GridRowModel, GridToolbar } from '@mui/x-data-grid';
 import { useSnackbar } from 'notistack';
 import { TrackingItemInterval } from '../utils/daysToString';
-import { TrackingItem } from '@prisma/client';
-
-const H1 = tw.h1`text-2xl mb-2`;
+import { Organization, OrganizationType, TrackingItem } from '@prisma/client';
+import { useOrgs } from '../hooks/api/organizations';
 interface IGridCellExpandProps {
   value: string;
   width: number;
@@ -110,7 +109,10 @@ function renderCellExpand(params: GridRenderCellParams<string>) {
 
 const TrackingItems = () => {
   const { data: trackingItems } = useTrackingItems();
+  const { data: orgsFromServer } = useOrgs();
   const [openDialog, setOpenDialog] = useState(false);
+  const [selectedCatalog, setSelectedCatalog] = useState<number>(0);
+  const [catalogs, setCatalogs] = useState<Organization[]>([]);
   const { user, permissionCheck, isLoading } = usePermissions();
   const { mutate: del } = useDeleteTrackingItem();
   const updateTrackingItem = useUpdateTrackingItem();
@@ -118,6 +120,36 @@ const TrackingItems = () => {
 
   const canDeleteTrackingItem = permissionCheck(user?.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
   const canCreateTrackingItem = permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM);
+
+  useEffect(() => {
+    const orgsUserCanAddTrackingItems: Organization[] = [];
+
+    const findOrgsWithCatalog = (orgBranch: Organization[]) => {
+      if (orgBranch === null || orgBranch?.length === 0) {
+        return;
+      }
+
+      for (const organization of orgBranch) {
+        if (organization.types.includes(OrganizationType.CATALOG)) {
+          orgsUserCanAddTrackingItems.push(organization);
+        }
+        const newBranch = orgsFromServer.filter((orgFromServer) => orgFromServer.parentId === organization.id);
+        findOrgsWithCatalog(newBranch);
+      }
+    };
+
+    if (orgsFromServer?.length > 0) {
+      const usersOrg = orgsFromServer?.find((orgFromServer) => orgFromServer.id === user?.organizationId);
+
+      if (usersOrg?.types?.includes(OrganizationType.CATALOG)) {
+        orgsUserCanAddTrackingItems.push(usersOrg);
+      }
+      const usersOrgTree = orgsFromServer?.filter((orgFromServer) => orgFromServer.parentId === usersOrg?.id);
+      findOrgsWithCatalog(usersOrgTree);
+
+      setCatalogs(orgsUserCanAddTrackingItems);
+    }
+  }, [orgsFromServer, user]);
 
   const columns = useMemo(
     () => [
@@ -191,10 +223,27 @@ const TrackingItems = () => {
     return <div>...loading</div>;
   }
 
+  const handleCatalogChange = (event: SelectChangeEvent) => {
+    setSelectedCatalog(parseInt(event.target.value));
+  };
+
   return (
     <div tw="flex flex-col max-width[1440px] min-width[800px] p-5">
       <div tw="flex items-center pb-10">
-        <H1>Global Training Catalog</H1>
+        <Select
+          tw="bg-white w-56"
+          labelId="tracking-item-catalog-select"
+          id="tracking-item-catalog-select"
+          value={selectedCatalog.toString()}
+          onChange={handleCatalogChange}
+        >
+          <MenuItem value={0}>Global Training Catalog</MenuItem>
+          {catalogs.map((catalog) => (
+            <MenuItem key={catalog.id} value={catalog.id}>
+              {catalog.name}
+            </MenuItem>
+          ))}
+        </Select>
         <div tw="flex ml-auto">
           {canCreateTrackingItem?.granted ? (
             <Fab
@@ -221,7 +270,13 @@ const TrackingItems = () => {
             disableColumnSelector
             autoHeight
             columns={columns}
-            rows={trackingItems}
+            rows={trackingItems.filter((ti) => {
+              if (ti.organizationId === null && selectedCatalog === 0) {
+                return true;
+              }
+
+              return ti.organizationId === selectedCatalog;
+            })}
             experimentalFeatures={{ newEditingApi: true }}
             processRowUpdate={processRowUpdate}
             disableVirtualization

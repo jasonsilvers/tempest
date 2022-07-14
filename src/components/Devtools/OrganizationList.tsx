@@ -164,7 +164,8 @@ export const OrganizationList = () => {
   const processRowUpdate = useCallback((updatedRow: GridRowModel<Organization>, oldRow: GridRowModel<Organization>) => {
     const { id, name, shortName, parentId } = updatedRow;
     if (oldRow.name !== name || oldRow.shortName !== shortName) {
-      const newRow = { id, name, shortName, parentId };
+      //TODO: CLEAN THIS UP BEFORE RELEASE
+      const newRow = { id, name, shortName, parentId } as Organization;
       if (!name || !shortName) {
         throw new Error('Organization names cannot be empty');
       }
