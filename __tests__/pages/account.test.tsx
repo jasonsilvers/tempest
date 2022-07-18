@@ -44,7 +44,7 @@ it('should update personal fields', async () => {
     name: /lastname/i,
   });
 
-  const rankSelect = screen.getByRole('button', {
+  const rankSelect = await screen.findByRole('button', {
     name: 'TSgt/E-6',
   });
   const submit = screen.getByRole('button', {

@@ -527,7 +527,7 @@ test('mass assign result should close dialog and reset form', async () => {
 
   expect(await screen.findByText(/failed to assign/i)).toBeInTheDocument();
 
-  userEvent.keyboard('{esc}');
+  userEvent.keyboard('{Escape}');
 
   await screen.findByText(/assign training/i);
   expect(screen.queryByText(/failed to assign/i)).not.toBeInTheDocument();

@@ -8,6 +8,7 @@ interface ILinkProps {
   goToUrl?: string;
   className?: string;
   icon?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const StyledHeader = tw.a`mb-6 uppercase text-4xl`;

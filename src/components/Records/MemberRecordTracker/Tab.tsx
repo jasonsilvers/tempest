@@ -8,6 +8,7 @@ import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerCon
 const Container = tw.div`flex items-center whitespace-nowrap pb-5`;
 export interface ITabProps {
   category: ECategories;
+  children?: React.ReactNode;
 }
 
 const Tab: React.FC<ITabProps> = ({ children, category }) => {

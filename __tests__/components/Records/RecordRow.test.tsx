@@ -27,6 +27,7 @@ const trackingItemWithAnnualInterval: TrackingItem = {
   id: 1,
   interval: 365,
   title: 'Item Title',
+  location: 'this is the location',
 };
 
 const mtr1 = {
@@ -141,7 +142,7 @@ test('should change completion date', async () => {
 
   const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
   userEvent.type(datePicker, date);
-  const chosenDate = screen.getByRole('button', { name: date }); // choose any date that the calender shows
+  const chosenDate = await screen.findByRole('button', { name: date }); // choose any date that the calender shows
   fireEvent.click(chosenDate);
 
   const naDiv = screen.getByText(/n\/a/i);
@@ -184,7 +185,7 @@ test('should alert user that signatures will be removed', async () => {
 
   const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
   userEvent.type(datePicker, date);
-  const chosenDate = screen.getByRole('button', { name: date }); // choose any date that the calender shows
+  const chosenDate = await screen.findByRole('button', { name: date }); // choose any date that the calender shows
   fireEvent.click(chosenDate);
 
   const naDiv = screen.getByText(/n\/a/i);
@@ -218,7 +219,6 @@ test('should not fire mutation if completion date did not change and was empty',
 
   const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
   fireEvent.click(datePicker);
-  userEvent.type(datePicker, '');
 
   const intervalDiv = screen.getByText(/annual/i);
 

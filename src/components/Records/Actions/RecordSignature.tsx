@@ -41,7 +41,7 @@ export const determineActionOnRecord = (
   return action;
 };
 
-const AwaitingSignature: React.FC = ({ children }) => (
+const AwaitingSignature: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
   <TableData tw="text-xs mr-3">
     <DisabledButton tw="h-8" disabled>
       {children ?? 'Awaiting Signature'}
@@ -49,7 +49,7 @@ const AwaitingSignature: React.FC = ({ children }) => (
   </TableData>
 );
 
-const AwaitingSignatureSecondary: React.FC = ({ children }) => (
+const AwaitingSignatureSecondary: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
   <TableData tw="text-xs mr-3">
     <DisabledButton tw="h-8 text-secondary border-secondary" disabled>
       {children ?? 'Awaiting Signature'}

@@ -101,7 +101,7 @@ it('should not show breadcrumbs if member', async () => {
 it('should show breadcrumbs if monitor and not on own profile', async () => {
   server.use(
     rest.get('/api/users/123', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(andrewMonitor));
+      return res(ctx.status(200), ctx.json(bobJones));
     }),
     rest.get(EUri.LOGIN, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
@@ -117,12 +117,16 @@ it('should show breadcrumbs if monitor and not on own profile', async () => {
   });
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 
-  await waitFor(() => expect(getByText(/monitor/i)).toBeInTheDocument());
+  await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
   expect(queryByText(/dashboard/i)).toBeInTheDocument();
 });
 
-it('opens the dialog modal', async () => {
+it('opens the add new training dialog modal', async () => {
   server.use(
+    rest.get('/api/users/123', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(bobJones));
+    }),
+
     rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
@@ -144,21 +148,19 @@ it('opens the dialog modal', async () => {
   singletonRouter.push({
     query: { id: 123 },
   });
-  const { getByText, queryByText, getByRole } = rtlRender(<Profile initialMemberData={bobJones} />, {
+  const screen = rtlRender(<Profile initialMemberData={bobJones} />, {
     wrapper: function withWrapper(props) {
       return <Wrapper {...props} />;
     },
   });
-  await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
+  expect(await screen.findByText(/jones/i)).toBeInTheDocument();
+  fireEvent.click(screen.getByText(/add/i));
 
-  await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
-  fireEvent.click(getByText(/add/i));
-
-  await waitFor(() => expect(getByText(/add new training/i)).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText(/add new training/i)).toBeInTheDocument());
 
   // handle close modal by clicking off the modal
-  fireEvent.click(getByRole('button', { name: /dialog-close-button/i }));
-  expect(queryByText(/add new training/i)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: /dialog-close-button/i }));
+  expect(screen.queryByText(/add new training/i)).not.toBeInTheDocument();
 });
 
 test('should do serverside rending and return user', async () => {

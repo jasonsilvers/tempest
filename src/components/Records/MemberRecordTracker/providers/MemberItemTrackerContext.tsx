@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { ECategories } from '../../../../const/enums';
 import { MemberItemTrackerContext } from './useMemberItemTrackerContext';
 
-export const MemberItemTrackerContextProvider: React.FC<{ categories: ECategories[] }> = ({ children, categories }) => {
+export const MemberItemTrackerContextProvider: React.FC<{ categories: ECategories[]; children?: React.ReactNode }> = ({
+  children,
+  categories,
+}) => {
   const [activeCategory, setActiveCategory] = useState(ECategories.ALL);
 
   return (

@@ -53,8 +53,7 @@ afterAll(() => server.close());
 
 test('should render component with list of roles', async () => {
   const screen = render(<Roles />);
-  await waitForLoadingToFinish();
-  expect(screen.getByText(/norole/i)).toBeInTheDocument();
+  expect(await screen.findByText(/norole/i)).toBeInTheDocument();
 });
 
 test('should add a role', async () => {
@@ -63,6 +62,8 @@ test('should add a role', async () => {
       return res(ctx.status(200), ctx.json({ name: 'anotherRole' }));
     })
   );
+
+  const user = userEvent.setup();
 
   const screen = render(<Roles />);
 
@@ -73,7 +74,7 @@ test('should add a role', async () => {
 
   fireEvent.click(addNewRoleButton);
 
-  userEvent.keyboard('{esc}');
+  await user.keyboard('{Escape}');
 
   await waitForElementToBeRemoved(() => screen.getByRole('dialog'));
 

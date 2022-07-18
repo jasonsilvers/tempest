@@ -184,14 +184,14 @@ test('should show duplicates', async () => {
     })
   );
 
-  const { getByRole, queryByText } = render(<Container />);
+  const screen = render(<Container />);
 
-  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
-  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
-  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+  const trainingTitleInput = screen.getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = screen.getByRole('textbox', { name: 'training-description-input' });
 
   const newTrainingItemTitle = 'Big';
   const newTrainingItemDescription = 'New training item description';
@@ -199,14 +199,14 @@ test('should show duplicates', async () => {
   userEvent.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
 
-  expect(queryByText(/Bug Safety/i)).toBeInTheDocument();
+  expect(await screen.findByText(/Bug Safety/i)).toBeInTheDocument();
 
-  const createButton = getByRole('button', { name: /create/i });
+  const createButton = screen.getByRole('button', { name: /create/i });
   fireEvent.click(createButton);
 
-  expect(queryByText(/this is a potential duplicate/i)).toBeInTheDocument();
+  expect(screen.queryByText(/this is a potential duplicate/i)).toBeInTheDocument();
 
-  fireEvent.click(getByRole('button', { name: 'No' }));
+  fireEvent.click(screen.getByRole('button', { name: 'No' }));
 });
 
 test('should tell user they cannot add a duplicate', async () => {
@@ -219,25 +219,27 @@ test('should tell user they cannot add a duplicate', async () => {
     })
   );
 
-  const { getByRole, queryByText } = render(<Container />);
+  const user = userEvent.setup();
 
-  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  const screen = render(<Container />);
+
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
-  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
-  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+  const trainingTitleInput = screen.getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = screen.getByRole('textbox', { name: 'training-description-input' });
 
   const newTrainingItemTitle = 'Big Bug Safety';
   const newTrainingItemDescription = 'New training item description';
 
-  userEvent.type(trainingTitleInput, newTrainingItemTitle);
+  await user.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
 
-  expect(queryByText(/unable to add/i)).toBeInTheDocument();
+  expect(await screen.findByText(/unable to add/i)).toBeInTheDocument();
 });
 
-test('should tell user they cannot add a duplicate', async () => {
+test('should tell user this might be a duplicate but allow them to create it if its similiar but not exactly the same', async () => {
   server.use(
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
@@ -247,27 +249,29 @@ test('should tell user they cannot add a duplicate', async () => {
     })
   );
 
-  const { getByRole, queryByText, getByText } = render(<Container />);
+  const user = userEvent.setup();
 
-  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  const screen = render(<Container />);
+
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
-  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
-  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+  const trainingTitleInput = screen.getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = screen.getByRole('textbox', { name: 'training-description-input' });
 
   const newTrainingItemTitle = 'Big Bug';
   const newTrainingItemDescription = 'New training item description';
 
-  userEvent.type(trainingTitleInput, newTrainingItemTitle);
+  await user.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
 
-  const createButton = getByRole('button', { name: /create/i });
+  const createButton = screen.getByRole('button', { name: /create/i });
   fireEvent.click(createButton);
 
-  expect(queryByText(/this is a potential duplicate/i)).toBeInTheDocument();
+  expect(await screen.findByText(/this is a potential duplicate/i)).toBeInTheDocument();
 
-  fireEvent.click(getByRole('button', { name: 'Yes' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Yes' }));
 
-  await waitForElementToBeRemoved(() => getByText(/create new training/i));
+  await waitForElementToBeRemoved(() => screen.getByText(/create new training/i));
 });
