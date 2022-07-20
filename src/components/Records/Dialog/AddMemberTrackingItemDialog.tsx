@@ -1,19 +1,23 @@
 import { Autocomplete, Box, Button, CircularProgress, IconButton, TextField } from '@mui/material';
 import { MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '@prisma/client';
 import { useSnackbar } from 'notistack';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from 'react-query';
 import tw from 'twin.macro';
 import { Close, DeleteIcon } from '../../../assets/Icons';
 import { EMtrVariant } from '../../../const/enums';
 import { mtiQueryKeys, useCreateMemberTrackingItemAndRecord } from '../../../hooks/api/memberTrackingItem';
 import { useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
+import { useOrgs } from '../../../hooks/api/organizations';
 import { useTrackingItems } from '../../../hooks/api/trackingItem';
 import { useMemberTrackingItemsForUser } from '../../../hooks/api/users';
+import { usePermissions } from '../../../hooks/usePermissions';
 import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay, TempestDatePicker } from '../../../lib/ui';
 import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
 import { TrackingItemInterval } from '../../../utils/daysToString';
+import { determineCatalogView, getTrackingItemsForCatalog } from '../../../utils/determineCatalogView';
 import { memberTrackingRecordIsComplete } from '../../../utils/status';
+
 const dayjs = require('dayjs');
 
 type IMemberTrackingItemsToAdd = {
@@ -45,8 +49,15 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   const [memberTrackingItemsToAdd, setMemberTrackingItemsToAdd] = useState<IMemberTrackingItemsToAdd>([]);
   const [trackingItemOptions, setTrackingItemOptions] = useState<TrackingItem[]>([]);
   const { enqueueSnackbar } = useSnackbar();
-
+  const { user } = usePermissions();
+  const { data: orgsFromServer } = useOrgs();
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const userCatalogOrgTree = determineCatalogView(user, orgsFromServer);
+    const catalogForTrackingItems = getTrackingItemsForCatalog(trackingItemOptions, userCatalogOrgTree);
+    setTrackingItemOptions(catalogForTrackingItems);
+  }, [user]);
 
   useMemo(() => {
     const memberTrackingItemQueries = queryClient.getQueriesData<MemberTrackingItemWithAll>(

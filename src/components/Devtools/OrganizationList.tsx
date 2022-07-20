@@ -18,7 +18,7 @@ import {
   GridRowParams,
   GridValueGetterParams,
 } from '@mui/x-data-grid';
-import { Organization, OrganizationType } from '@prisma/client';
+import { Organization, OrganizationType,  } from '@prisma/client';
 import Joi from 'joi';
 import { useSnackbar } from 'notistack';
 import { useCallback, useMemo, useState } from 'react';
@@ -133,11 +133,11 @@ export const OrganizationList = () => {
       },
       {
         field: 'types',
-        headerName: 'Org Catalog',
+        headerName: 'Type',
         flex: 1,
         editable: true,
         type: 'singleSelect',
-        valueOptions: orgCatalogValue,
+        valueOptions: orgCatalogValue
       },
       {
         field: 'actions',
@@ -274,8 +274,6 @@ export const OrganizationList = () => {
           <DialogActions>
             <Button
               type="submit"
-              // onClick={}
-
               size="medium"
               color="secondary"
               variant="contained"

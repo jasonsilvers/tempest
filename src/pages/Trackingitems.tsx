@@ -124,7 +124,6 @@ const TrackingItems = () => {
   useEffect(() => {
     if (orgsFromServer?.length > 0) {
       const orgsUserCanAddTrackingItems = determineMonitorCatalogs(user, orgsFromServer);
-
       setCatalogs(orgsUserCanAddTrackingItems);
     }
   }, [orgsFromServer, user]);

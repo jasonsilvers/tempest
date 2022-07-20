@@ -90,7 +90,6 @@ model MemberTrackingItem {
 
 enum OrganizationType {
   CATALOG
-  NONE 
 }
 
 model Organization {

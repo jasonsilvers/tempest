@@ -118,7 +118,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   const [formIsInvalid, setFormIsInvalid] = useState(true);
   const [confirmationIsOpen, setConfirmationIsOpen] = useState(false);
   const [trackingItem, setTrackingItem] = useState<TrackingItemToAdd>(initialTrackingItemToAdd);
-  const [selectedCatalog, setSelectedCatalog] = useState<number>(0);
+  const [selectedCatalog, setSelectedCatalog] = useState<number | null>(0);
   const [catalogs, setCatalogs] = useState<Organization[]>([]);
   const { data: orgsFromServer } = useOrgs();
   const { user } = usePermissions();
@@ -208,7 +208,6 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
                 handleTrackingItemInput('organizationId', parseInt(event.target.value));
               }}
             >
-              <MenuItem disabled defaultValue={'Select Global or Organizational Catalog'}></MenuItem>
               <MenuItem value={0}>Global Training Catalog</MenuItem>
               {catalogs.map((catalog) => (
                 <MenuItem key={catalog.id} value={catalog.id}>
@@ -354,6 +353,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             },
             onSettled: () => {
               setIsSaving(false);
+              setSelectedCatalog(0);
             },
           });
           setConfirmationIsOpen(false);
