@@ -10,8 +10,8 @@ export const determineCatalogView = (user: LoggedInUser, orgsFromServer: Organiz
     if (node?.parentId) {
       orgsFromServer?.forEach((orgFromServer) => {
         if (node?.parentId === orgFromServer.id) {
-          findParentOrgs(orgFromServer);
           orgsUsersCanViewTrackingItems.push(orgFromServer);
+          findParentOrgs(orgFromServer);
         }
       });
     }

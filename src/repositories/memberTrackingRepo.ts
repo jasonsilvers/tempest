@@ -1,7 +1,8 @@
-import { MemberTrackingItem, MemberTrackingRecord, Prisma } from '.prisma/client';
+import { MemberTrackingItem, MemberTrackingRecord, Prisma, Organization } from '.prisma/client';
 import prisma from '../prisma/prisma';
 import { ECategories } from '../const/enums';
 import { filterObject } from '../utils/filterObject';
+import { getOrganizationHierachy } from '../repositories/organizationRepo';
 
 export const updateMemberTrackingRecord = async (id: number, memberTrackingRecord: MemberTrackingRecord) => {
   return prisma.memberTrackingRecord.update({
@@ -224,3 +225,23 @@ export type MemberTrackingItemWithMTRStatus = MemberTrackingItemWithAll & {
     [ECategories.ARCHIVED]: number;
   };
 };
+
+export async function getTrackingItemsfromMemberOrgTree(organizationId: number) {
+  let parentOrganizations: Organization[];
+
+  try {
+    parentOrganizations = await getOrganizationHierachy(organizationId);
+  } catch (e) {
+    throw new Error('There was an error getting organization tree');
+  }
+
+  const organizationIds = parentOrganizations.map((org) => org.parentId);
+
+  return prisma.trackingItem.findMany({
+    where: {
+      organizationId: {
+        in: organizationIds,
+      },
+    },
+  });
+}

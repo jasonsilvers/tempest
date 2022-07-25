@@ -56,3 +56,28 @@ export async function getOrganizationTree(organizationId: number) {
       ) SELECT * from orgs`
   );
 }
+
+export async function getOrganizationHierachy(organizationId: number) {
+  return prisma.$queryRaw<Organization[]>(
+    Prisma.sql`with recursive orgParent as (
+      select
+        *
+      from organization
+      where
+        id =${organizationId}
+
+      union
+
+      select
+        organization.*
+      from organization
+      join orgParent on orgParent.parent_id = organization.id
+    )
+
+    select
+      *
+    from orgParent 
+    order by
+      id;`
+  );
+}
