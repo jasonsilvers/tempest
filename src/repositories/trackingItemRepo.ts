@@ -5,6 +5,13 @@ export async function getTrackingItems() {
   return prisma.trackingItem.findMany({ orderBy: { title: 'asc' } });
 }
 
+export async function getGlobalTrackingItemsAndThoseByOrgId(orgIds: number[]) {
+  return prisma.trackingItem.findMany({
+    orderBy: { title: 'asc' },
+    where: { OR: [{ organizationId: { in: orgIds } }, { organizationId: null }] },
+  });
+}
+
 export async function findTrackingItemById(id: number) {
   return prisma.trackingItem.findUnique({ where: { id } });
 }

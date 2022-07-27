@@ -19,8 +19,9 @@ const findOrgsWithCatalog = (
   }
 };
 
-export const determineMonitorCatalogs = (user: LoggedInUser, orgsFromServer: Organization[]) => {
+export const determineOrgsWithCatalogs = (user: LoggedInUser, orgsFromServer: Organization[]) => {
   const orgsUserCanAddTrackingItems: Organization[] = [];
+
   const usersOrg = orgsFromServer?.find((orgFromServer) => orgFromServer.id === user?.organizationId);
 
   if (usersOrg?.types?.includes(OrganizationType.CATALOG)) {

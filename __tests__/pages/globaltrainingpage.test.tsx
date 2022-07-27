@@ -12,7 +12,7 @@ import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';
 import { ERole, EUri } from '../../src/const/enums';
 import { LoggedInUser } from '../../src/repositories/userRepo';
-import { bobJones } from '../testutils/mocks/fixtures';
+import { bobJones, andrewMonitor } from '../testutils/mocks/fixtures';
 import { getTrackingItems } from '../../src/repositories/trackingItemRepo';
 
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
@@ -38,15 +38,17 @@ beforeEach(() => {
   server.use(
     // return a user with the right permissions
     rest.get(EUri.LOGIN, (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 0, name: ERole.MONITOR } } as LoggedInUser));
+      return res(ctx.status(200), ctx.json(andrewMonitor));
     }),
     rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
           organizations: [
-            { id: '1', name: '15th Medical group', shortName: '15th mdg', parentId: null },
-            { id: '2', name: 'organization 2', shortName: 'org 2', parentId: null },
+            { id: 1, name: '15th Medical group', shortName: '15th mdg', parentId: null, types: ['CATALOG'] },
+            { id: 2, name: 'organization 2', shortName: 'org 2', parentId: 1, types: [] },
+            { id: 3, name: 'organization 3', shortName: 'org 3', parentId: 2, types: ['CATALOG'] },
+            { id: 4, name: 'organization 4', shortName: 'org 4', parentId: 3, types: [] },
           ],
         })
       );
@@ -94,6 +96,24 @@ it('renders the Tracking Item page', async () => {
   expect(getByText(/global training/i)).toBeInTheDocument();
   await waitFor(() => getByText(/test title/i));
   expect(getByText(/test title/i)).toBeInTheDocument();
+});
+
+it('monitor should not be able to create training item if no orgs have catalog type', async () => {
+  server.use(
+    // return a user with the right permissions
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json({ ...andrewMonitor, organizationId: 4 }));
+    })
+  );
+
+  const screen = render(<TrackingItemPage />);
+  await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+  expect(
+    screen.queryByRole('button', {
+      name: /create/i,
+    })
+  ).not.toBeInTheDocument();
 });
 
 it('renders the tracking item page as admin and deletes trackingItem', async () => {
@@ -147,6 +167,57 @@ it('renders the tracking item page as user with out delete permissions', async (
   expect(queryByRole('button', { name: /delete/i })).toBeFalsy();
 });
 
+test('monitors should see global training items and all training items of their org and children orgs', async () => {
+  server.use(
+    rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          trackingItems: [
+            {
+              description: 'test description',
+              id: 1,
+              interval: 365,
+              title: 'test title',
+              location: 'testLocation',
+              organizationId: null,
+            },
+            {
+              description: 'test description 2',
+              id: 1,
+              interval: 365,
+              title: 'test title 2',
+              location: 'testLocation 2',
+              organizationId: 3,
+            },
+          ],
+        })
+      );
+    }),
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      //has organization id of 1
+      return res(ctx.status(200), ctx.json({ ...andrewMonitor, organizationId: 3 }));
+    })
+  );
+
+  const screen = render(<TrackingItemPage />);
+
+  await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+  expect(await screen.findByText(/test title/i)).toBeInTheDocument();
+  expect(screen.queryByText(/test title 2/i)).not.toBeInTheDocument();
+
+  const catalogDropdown = screen.getByRole('button', {
+    name: /global training catalog/i,
+  });
+
+  fireEvent.mouseDown(catalogDropdown);
+
+  fireEvent.click(screen.getByRole('option', { name: /organization 3/i }));
+
+  expect(screen.queryByText('test title')).not.toBeInTheDocument();
+  expect(screen.queryByText(/test title 2/i)).toBeInTheDocument();
+});
+
 test('should open then close the dialog box', async () => {
   const { getByText, getByRole, queryByText } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
@@ -159,7 +230,7 @@ test('should open then close the dialog box', async () => {
   fireEvent.click(button);
   expect(getByText(/Please create the training title/i)).toBeInTheDocument();
   fireEvent.click(getByRole('button', { name: /dialog-close-button/i }));
-  await waitForElementToBeRemoved(() => queryByText(/Please create the training title/i));
+
   expect(queryByText(/Please create the training title/i)).toBeFalsy();
 });
 

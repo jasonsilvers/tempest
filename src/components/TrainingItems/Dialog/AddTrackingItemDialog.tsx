@@ -26,9 +26,11 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
-import { determineMonitorCatalogs } from '../../../utils/determineMonitorCatalogs';
+import { determineOrgsWithCatalogs } from '../../../utils/determineOrgsWithCatalogs';
 import { useOrgs } from '../../../hooks/api/organizations';
-import { usePermissions } from '../../../hooks/usePermissions';
+import { useUser } from '@tron/nextjs-auth-p1';
+import { LoggedInUser } from '../../../repositories/userRepo';
+import { ERole } from '../../../const/enums';
 
 const fuseOptions: Fuse.IFuseOptions<TrackingItem> = {
   isCaseSensitive: false,
@@ -111,20 +113,33 @@ const isDuplicate = (title: string, trackingItemsThatMatch: Fuse.FuseResult<Trac
 };
 
 const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClose, isOpen }) => {
+  const { user: loggedInUser, isLoading: isUserLoading } = useUser<LoggedInUser>();
   const { mutate: create } = useAddTrackingItem();
   const [isSaving, setIsSaving] = useState(false);
   const { data: trackingItems, isLoading } = useTrackingItems();
   const [trackingItemsThatMatch, setTrackingItemsThatMatch] = useState<Fuse.FuseResult<TrackingItem>[]>(null);
   const [formIsInvalid, setFormIsInvalid] = useState(true);
   const [confirmationIsOpen, setConfirmationIsOpen] = useState(false);
+  const [selectedCatalog, setSelectedCatalog] = useState<string | null>('');
   const [trackingItem, setTrackingItem] = useState<TrackingItemToAdd>(initialTrackingItemToAdd);
-  const [selectedCatalog, setSelectedCatalog] = useState<number | null>(0);
   const [catalogs, setCatalogs] = useState<Organization[]>([]);
   const { data: orgsFromServer } = useOrgs();
-  const { user } = usePermissions();
   const { enqueueSnackbar } = useSnackbar();
 
+  const isAdmin = loggedInUser?.role?.name === ERole.ADMIN;
   const fuse = useMemo(() => new Fuse(trackingItems ? trackingItems : [], fuseOptions), [trackingItems]);
+
+  const determineSelectedCatalog = () => {
+    if (catalogs.length > 0 && loggedInUser?.role?.name !== ERole.ADMIN) {
+      return catalogs[0].id.toString();
+    }
+    return '0';
+  };
+
+  useEffect(() => {
+    const determinedSelectedCatalog = determineSelectedCatalog();
+    setSelectedCatalog(determinedSelectedCatalog);
+  }, [loggedInUser, catalogs]);
 
   useEffect(() => {
     return () => {
@@ -149,11 +164,15 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   useEffect(() => {
     if (orgsFromServer?.length > 0) {
-      const orgsUserCanAddTrackingItems = determineMonitorCatalogs(user, orgsFromServer);
+      const orgsUserCanAddTrackingItems = determineOrgsWithCatalogs(loggedInUser, orgsFromServer);
 
       setCatalogs(orgsUserCanAddTrackingItems);
     }
-  }, [orgsFromServer, user]);
+  }, [orgsFromServer, loggedInUser]);
+
+  const addGlobalSelectIfAdmin = () => {
+    return isAdmin ? <MenuItem value={0}>Global Training Catalog</MenuItem> : null;
+  };
 
   const handleTrackingItemMatch = (e: ChangeEvent<{ value: string }>) => {
     const results = fuse.search(e.target.value.trimEnd());
@@ -166,7 +185,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   };
 
   const handleCatalogChange = (event: SelectChangeEvent) => {
-    setSelectedCatalog(parseInt(event.target.value));
+    setSelectedCatalog(event.target.value);
   };
 
   return (
@@ -179,7 +198,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       fullWidth
       aria-labelledby="tracking-dialog"
     >
-      <ShowLoadingOverlay showLoading={isLoading || isSaving} />
+      <ShowLoadingOverlay showLoading={isLoading || isSaving || isUserLoading} />
       <DialogActions>
         <IconButton
           onClick={handleClose}
@@ -197,30 +216,34 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           training.
         </p>
         <div>
-          <div>
-            <Select
-              tw="bg-white w-full"
-              labelId="add-tracking-item-catalog-select"
-              id="add-tracking-item-catalog-select"
-              value={selectedCatalog.toString()}
-              onChange={(event: SelectChangeEvent) => {
-                handleCatalogChange(event);
-                handleTrackingItemInput('organizationId', parseInt(event.target.value));
-              }}
-            >
-              <MenuItem value={0}>Global Training Catalog</MenuItem>
-              {catalogs.map((catalog) => (
-                <MenuItem key={catalog.id} value={catalog.id}>
-                  {catalog.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </div>
-          <FormControl fullWidth>
-            {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
-              <DialogContentText tw="text-red-400 flex">* Title</DialogContentText>
+          <div tw="pb-5">
+            {loggedInUser && catalogs.length > 0 ? (
+              <Select
+                tw="bg-white w-full"
+                labelId="add-tracking-item-catalog-select"
+                id="add-tracking-item-catalog-select"
+                value={selectedCatalog?.toString()}
+                onChange={(event: SelectChangeEvent) => {
+                  handleCatalogChange(event);
+                  handleTrackingItemInput('organizationId', parseInt(event.target.value));
+                }}
+              >
+                {addGlobalSelectIfAdmin()}
+                {catalogs.map((catalog) => (
+                  <MenuItem key={catalog.id} value={catalog.id}>
+                    {catalog.name}
+                  </MenuItem>
+                ))}
+              </Select>
             ) : (
-              <DialogContentText>Title</DialogContentText>
+              <div>Test</div>
+            )}
+          </div>
+          <FormControl fullWidth tw="pb-5">
+            {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
+              <DialogContentText tw="text-red-400 flex">* Training Title</DialogContentText>
+            ) : (
+              <DialogContentText>Training Title</DialogContentText>
             )}
             <AdjustedOutlinedInput
               name="title"
@@ -233,7 +256,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             />
           </FormControl>
         </div>
-        <div tw="flex mb-3 space-x-5">
+        <div tw="flex space-x-5 pb-5">
           <div tw="w-1/2">
             {trackingItem.interval < 0 || trackingItem.interval === null ? (
               <DialogContentText tw="text-red-400">* Recurrence </DialogContentText>
@@ -317,15 +340,17 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             if (trackingItemsThatMatch?.length !== 0) {
               setConfirmationIsOpen(true);
             } else {
+              const newTrackingItem = { ...trackingItem, organizationId: parseInt(selectedCatalog) };
               //TODO: Refactor and remove as
-              create(trackingItem as TrackingItem, {
+              create(newTrackingItem as TrackingItem, {
                 onSuccess: () => {
                   handleClose();
                   enqueueSnackbar('Tracking Item Added!', { variant: 'success' });
                 },
                 onSettled: () => {
                   setIsSaving(false);
-                  setSelectedCatalog(0);
+                  const determinedSelectedCatalog = determineSelectedCatalog();
+                  setSelectedCatalog(determinedSelectedCatalog);
                 },
               });
             }
@@ -353,7 +378,8 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             },
             onSettled: () => {
               setIsSaving(false);
-              setSelectedCatalog(0);
+              const determinedSelectedCatalog = determineSelectedCatalog();
+              setSelectedCatalog(determinedSelectedCatalog);
             },
           });
           setConfirmationIsOpen(false);

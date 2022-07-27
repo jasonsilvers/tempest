@@ -13,6 +13,18 @@ const grants = [
     resource: EResource.PROFILE_PAGE,
     role: 'norole',
   },
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.ADMIN,
+  },
 ];
 
 export const explodedJwt: P1_JWT = {
@@ -70,10 +82,10 @@ export const bobJones = {
   dutyTitle: 'Chief',
   organizationId: 1,
   organization: {
-    id: 2,
+    id: 1,
     name: 'test org 1',
     shortName: 'org 1',
-    parentId: 1,
+    parentId: null,
   },
 } as unknown as User;
 
@@ -91,10 +103,10 @@ export const andrewMonitor = {
   dutyTitle: 'Chief',
   organizationId: 1,
   organization: {
-    id: 2,
+    id: 1,
     name: 'test org 1',
     shortName: 'org 1',
-    parentId: 1,
+    parentId: null,
   },
 } as unknown as LoggedInUser;
 
@@ -112,10 +124,10 @@ export const joeAdmin = {
   dutyTitle: 'Chief',
   organizationId: 1,
   organization: {
-    id: 2,
+    id: 1,
     name: 'test org 1',
     shortName: 'org 1',
-    parentId: 1,
+    parentId: null,
   },
 } as unknown as User;
 

@@ -39,10 +39,10 @@ describe('Can view Global Tracking Items', () => {
 
     cy.findByRole('button', { name: /create/i }).click();
 
-    cy.findByText(newTrainingItemTitle).should('exist');
-    
-    cy.contains('Monthly').should('exist');
+    cy.findByRole('button', {name: /global training catalog/i}).click()
+    cy.findByRole('option', {name: /15th medical group/i}).click()
    
+    cy.contains('Monthly').should('exist');
     cy.findByText(newTrainingItemDescription).should('exist');
   });
 });

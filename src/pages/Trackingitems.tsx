@@ -14,7 +14,7 @@ import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems, useUpdateTracking
 import { usePermissions } from '../hooks/usePermissions';
 import { getTrackingItems } from '../repositories/trackingItemRepo';
 import { TrackingItemInterval } from '../utils/daysToString';
-import { determineMonitorCatalogs } from '../utils/determineMonitorCatalogs';
+import { determineOrgsWithCatalogs } from '../utils/determineOrgsWithCatalogs';
 interface IGridCellExpandProps {
   value: string;
   width: number;
@@ -112,19 +112,22 @@ const TrackingItems = () => {
   const { data: orgsFromServer } = useOrgs();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCatalog, setSelectedCatalog] = useState<number>(0);
-  const [catalogs, setCatalogs] = useState<Organization[]>([]);
+  const [orgsWithCatalogs, setOrgsWithCatalogs] = useState<Organization[]>([]);
   const { user, permissionCheck, isLoading } = usePermissions();
   const { mutate: del } = useDeleteTrackingItem();
   const updateTrackingItem = useUpdateTrackingItem();
   const { enqueueSnackbar } = useSnackbar();
 
   const canDeleteTrackingItem = permissionCheck(user?.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
-  const canCreateTrackingItem = permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM);
+  const canCreateTrackingItem =
+    permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM)?.granted &&
+    orgsWithCatalogs?.length > 0;
 
   useEffect(() => {
     if (orgsFromServer?.length > 0) {
-      const orgsUserCanAddTrackingItems = determineMonitorCatalogs(user, orgsFromServer);
-      setCatalogs(orgsUserCanAddTrackingItems);
+      const returnedOrgsWithCatalogs = determineOrgsWithCatalogs(user, orgsFromServer);
+
+      setOrgsWithCatalogs(returnedOrgsWithCatalogs);
     }
   }, [orgsFromServer, user]);
 
@@ -213,16 +216,17 @@ const TrackingItems = () => {
           id="tracking-item-catalog-select"
           value={selectedCatalog.toString()}
           onChange={handleCatalogChange}
+          size="small"
         >
           <MenuItem value={0}>Global Training Catalog</MenuItem>
-          {catalogs.map((catalog) => (
+          {orgsWithCatalogs.map((catalog) => (
             <MenuItem key={catalog.id} value={catalog.id}>
               {catalog.name}
             </MenuItem>
           ))}
         </Select>
         <div tw="flex ml-auto">
-          {canCreateTrackingItem?.granted ? (
+          {canCreateTrackingItem ? (
             <Fab
               color="secondary"
               size="medium"
@@ -247,7 +251,9 @@ const TrackingItems = () => {
             disableColumnSelector
             autoHeight
             columns={columns}
+            //Uses the select organizationsWithCatalog to filter list of data
             rows={trackingItems.filter((ti) => {
+              //Global catalog items will have organization id of null but also check that the selected calot is set to the global catalog which is the first one in the list
               if (ti.organizationId === null && selectedCatalog === 0) {
                 return true;
               }
@@ -261,7 +267,7 @@ const TrackingItems = () => {
           />
         )}
       </div>
-      <AddTrackingItemDialog isOpen={openDialog} handleClose={() => setOpenDialog(false)}></AddTrackingItemDialog>
+      {openDialog && <AddTrackingItemDialog isOpen={openDialog} handleClose={() => setOpenDialog(false)} />}
     </div>
   );
 };
