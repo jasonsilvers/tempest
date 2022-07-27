@@ -12,6 +12,7 @@ import {
 } from '../testutils/TempestTestUtils';
 
 import 'whatwg-fetch';
+import React from 'react';
 
 beforeEach(() => {
   server.listen({
