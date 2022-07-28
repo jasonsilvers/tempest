@@ -40,7 +40,8 @@ export async function getOrganizationAndDown(organizationId: number) {
       SELECT 
         id,
         org_name,
-        org_short_name
+        org_short_name,
+        types
       FROM 
         organization
       where 
@@ -49,7 +50,8 @@ export async function getOrganizationAndDown(organizationId: number) {
         SELECT
           o.id,
           o.org_name,
-          o.org_short_name
+          o.org_short_name,
+          o.types
         FROM
           organization o
         JOIN orgs ON orgs.id = o.parent_id

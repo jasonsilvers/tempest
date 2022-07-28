@@ -226,10 +226,46 @@ test('should return 403 if monitor tries to create training item in org that isn
 });
 
 test('should return 403 if monitor tries to create  training item in org they dont have access to', async () => {
+  const getOrganizationAndDownSpy = mockMethodAndReturn(getOrganizationAndDown, [
+    {
+      id: 2,
+      org_name: '15th Medical Group',
+      org_short_name: '15th MDG',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+    {
+      id: 3,
+      org_name: 'Force Support Squardron',
+      org_short_name: 'FSS',
+      parent_id: null,
+      types: [],
+    },
+  ]);
+
+  const getOrganizationAndUpSpy = mockMethodAndReturn(getOrganizationAndUp, [
+    {
+      id: 1,
+      org_name: '15th Wing',
+      org_short_name: '15th Wg',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+    {
+      id: 2,
+      org_name: '15th Medical Group',
+      org_short_name: '15th MDG',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+  ]);
   const createTrackingItemSpy = mockMethodAndReturn(createTrackingItem, { ...newTrackingItem, id: newTrackingItemId });
   const { status } = await testNextApi.post(trackingItemHandler, {
     body: { ...newTrackingItem, organizationId: 5 },
   });
+
+  expect(getOrganizationAndDownSpy).toBeCalled();
+  expect(getOrganizationAndUpSpy).not.toBeCalled();
 
   expect(createTrackingItemSpy).not.toBeCalled();
 

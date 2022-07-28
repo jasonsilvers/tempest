@@ -16,11 +16,24 @@ describe('Can view Global Tracking Items', () => {
   it('should navigate to Global Training Catalog and show a list', () => {
     cy.url().should('include', '/Trackingitems');
 
-    cy.findByText(/fire extinguisher/i).should('exist');
-    cy.findByText(/supervisor safety training/i).should('exist');
-    cy.findByText(/fire safety/i).should('exist');
-    cy.findByText(/big bug safety/i).should('exist');
-    cy.findByText(/keyboard warrior training/i).should('exist');
+    cy.findByText(/global - fire extinguisher/i).should('exist');
+    cy.findByText(/global - supervisor safety training/i).should('exist');
+    cy.findByText(/global - fire safety/i).should('exist');
+    cy.findByText(/global - keyboard warrior training/i).should('exist');
+    cy.findByText(/pharmacy - big bug safety/i).should('not.exist');
+
+    cy.findByRole('button', {name: /global training catalog/i}).click()
+    cy.findByRole('option', {name: /15th medical group/i}).click()
+    cy.findByText(/global/i).should('not.exist');
+    cy.findByText(/mdg - shoom too fast/i).should('exist');
+
+    cy.findByRole('button', {name: /15th medical group/i}).click()
+    cy.findByRole('option', {name: /pharmacy/i}).click()
+    cy.findByText(/global/i).should('not.exist');
+    cy.findByText(/pharmacy/i).should('not.exist');
+    cy.findByText(/pharmacy - big bug safety/i).should('exist');
+
+
   });
 
   it('should create new training item', () => {

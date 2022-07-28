@@ -104,7 +104,7 @@ async function createOrganizationStructure() {
 }
 
 async function seedDev() {
-  const [organization1, organization2, organization3, pharmacy, lrs] = await createOrganizationStructure();
+  const [mdg, omrs, execStaff, pharmacy, lrs] = await createOrganizationStructure();
 
   await prisma.trackingItem.createMany({
     data: [
@@ -119,10 +119,16 @@ async function seedDev() {
         interval: 0,
       },
       {
-        title: 'LRS - Supervisor Safety Training',
+        title: 'LRS - Check your gloves',
         description: 'One time training for new supevisors',
         interval: 0,
         organizationId: lrs.id,
+      },
+      {
+        title: 'MDG - shoom too fast',
+        description: 'One time training for new supevisors',
+        interval: 0,
+        organizationId: mdg.id,
       },
     ],
   });
@@ -175,18 +181,18 @@ async function seedDev() {
   await prisma.user.create({
     data: {
       ...user1,
-      organizationId: organization1.id,
+      organizationId: mdg.id,
       roleId: adminRole ? adminRole.id : 2,
     },
   });
 
   for (let i = 0; i <= 20; i++) {
-    await createRandomUser(organization1.id, memberRole ? memberRole.id : 2);
+    await createRandomUser(mdg.id, memberRole ? memberRole.id : 2);
   }
 
   const user2 = createUser('Sam', 'Member', 'sam.member@gmail.com');
 
-  const createdUser2 = await addUserToDb(user2, organization3.id, memberRole ? memberRole.id : 2);
+  const createdUser2 = await addUserToDb(user2, execStaff.id, memberRole ? memberRole.id : 2);
 
   await addPPEItem(createdUser2.id);
   await addPPEItem(createdUser2.id);
@@ -200,7 +206,7 @@ async function seedDev() {
       ...user3,
       organization: {
         connect: {
-          id: organization1.id,
+          id: mdg.id,
         },
       },
       role: {
@@ -218,7 +224,7 @@ async function seedDev() {
       ...user4,
       organization: {
         connect: {
-          id: organization2.id,
+          id: omrs.id,
         },
       },
       role: {

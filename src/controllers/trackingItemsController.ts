@@ -67,10 +67,10 @@ export const postTrackingItemAction = async (
     throw new PermissionError('You are not authorized to create training items in the global catalog');
   }
 
-  const orgs = await getOrganizationAndUp(req.user.organizationId);
+  const orgs = await getOrganizationAndDown(req.user.organizationId);
   const orgToAddTrainingItemTo = orgs.find((org) => org.id === body.organizationId);
 
-  if (!orgToAddTrainingItemTo?.types.includes('CATALOG') && req.user.role.name !== ERole.ADMIN) {
+  if (!orgToAddTrainingItemTo?.types?.includes('CATALOG') && req.user.role.name !== ERole.ADMIN) {
     throw new PermissionError('You are not authorized to create a training item in that organization');
   }
 
