@@ -6,6 +6,7 @@ import { Grant } from '@prisma/client';
 import { Grants } from '../../src/components/Devtools/Grants';
 
 import 'whatwg-fetch';
+import React from 'react';
 
 type DbGrant = Grant & { id: number };
 
