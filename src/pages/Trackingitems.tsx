@@ -189,6 +189,17 @@ const TrackingItems = () => {
     [canDeleteTrackingItem]
   );
 
+  const filterRows = () => {
+    return trackingItems.filter((ti) => {
+      //Global catalog items will have organization id of null but also check that the selected calot is set to the global catalog which is the first one in the list
+      if (ti.organizationId === null && selectedCatalog === 0) {
+        return true;
+      }
+
+      return ti.organizationId === selectedCatalog;
+    });
+  };
+
   const processRowUpdate = useCallback((newRow: GridRowModel<TrackingItem>, oldRow: GridRowModel<TrackingItem>) => {
     const { id, location } = newRow;
     if (oldRow.location !== newRow.location) {
@@ -252,14 +263,7 @@ const TrackingItems = () => {
             autoHeight
             columns={columns}
             //Uses the select organizationsWithCatalog to filter list of data
-            rows={trackingItems.filter((ti) => {
-              //Global catalog items will have organization id of null but also check that the selected calot is set to the global catalog which is the first one in the list
-              if (ti.organizationId === null && selectedCatalog === 0) {
-                return true;
-              }
-
-              return ti.organizationId === selectedCatalog;
-            })}
+            rows={filterRows()}
             experimentalFeatures={{ newEditingApi: true }}
             processRowUpdate={processRowUpdate}
             disableVirtualization

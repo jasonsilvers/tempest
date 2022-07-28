@@ -136,6 +136,10 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
     return '0';
   };
 
+  const determineIfSelectCatalogIsShown = () => {
+    return loggedInUser && catalogs.length > 0;
+  };
+
   useEffect(() => {
     const determinedSelectedCatalog = determineSelectedCatalog();
     setSelectedCatalog(determinedSelectedCatalog);
@@ -157,9 +161,9 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   useEffect(() => {
     if (formIsInValid(trackingItem)) {
       setFormIsInvalid(true);
-    } else {
-      setFormIsInvalid(false);
+      return;
     }
+    setFormIsInvalid(false);
   }, [trackingItem]);
 
   useEffect(() => {
@@ -186,6 +190,29 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   const handleCatalogChange = (event: SelectChangeEvent) => {
     setSelectedCatalog(event.target.value);
+  };
+
+  const handleOnSettled = () => {
+    setIsSaving(false);
+    const determinedSelectedCatalog = determineSelectedCatalog();
+    setSelectedCatalog(determinedSelectedCatalog);
+  };
+
+  const handleSave = () => {
+    setIsSaving(true);
+    if (trackingItemsThatMatch?.length !== 0) {
+      setConfirmationIsOpen(true);
+    } else {
+      const newTrackingItem = { ...trackingItem, organizationId: parseInt(selectedCatalog) };
+
+      create(newTrackingItem, {
+        onSuccess: () => {
+          handleClose();
+          enqueueSnackbar('Tracking Item Added!', { variant: 'success' });
+        },
+        onSettled: handleOnSettled,
+      });
+    }
   };
 
   return (
@@ -217,7 +244,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
         </p>
         <div>
           <div tw="pb-5">
-            {loggedInUser && catalogs.length > 0 ? (
+            {determineIfSelectCatalogIsShown() ? (
               <Select
                 tw="bg-white w-full"
                 labelId="add-tracking-item-catalog-select"
@@ -335,26 +362,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
       <DialogActions>
         <Button
-          onClick={async () => {
-            setIsSaving(true);
-            if (trackingItemsThatMatch?.length !== 0) {
-              setConfirmationIsOpen(true);
-            } else {
-              const newTrackingItem = { ...trackingItem, organizationId: parseInt(selectedCatalog) };
-              //TODO: Refactor and remove as
-              create(newTrackingItem as TrackingItem, {
-                onSuccess: () => {
-                  handleClose();
-                  enqueueSnackbar('Tracking Item Added!', { variant: 'success' });
-                },
-                onSettled: () => {
-                  setIsSaving(false);
-                  const determinedSelectedCatalog = determineSelectedCatalog();
-                  setSelectedCatalog(determinedSelectedCatalog);
-                },
-              });
-            }
-          }}
+          onClick={handleSave}
           disabled={formIsInvalid || trackingItemsThatMatch?.some((ti) => +ti.score.toFixed(6) === 0)}
           size="medium"
           color="secondary"
@@ -376,11 +384,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
               enqueueSnackbar('Tracking Item Added!', { variant: 'success' });
               handleClose();
             },
-            onSettled: () => {
-              setIsSaving(false);
-              const determinedSelectedCatalog = determineSelectedCatalog();
-              setSelectedCatalog(determinedSelectedCatalog);
-            },
+            onSettled: handleOnSettled,
           });
           setConfirmationIsOpen(false);
         }}
