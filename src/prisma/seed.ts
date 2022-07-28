@@ -71,6 +71,7 @@ async function addPPEItem(userId: number) {
 
 async function createOrganizationStructure() {
   const mdg = await createOrganization('15th Medical Group', '15th MDG', null, 'CATALOG');
+  const lrs = await createOrganization('LRS', 'LRS', null, 'CATALOG');
   const omrs = await createOrganization('15 Operation Medical Readiness Squadron', '15 OMRS', mdg.id);
   const hcos = await createOrganization('15 Healthcare Operation Squadron', '15 HCOS', mdg.id);
   const execStaff = await createOrganization('15th Medical Group Executive Staff', '15th MDG Exc Staff', mdg.id);
@@ -90,7 +91,7 @@ async function createOrganizationStructure() {
   await createOrganization('Ohana Clinic', 'Ohana Clinic', hcos.id);
 
   //MDSS Flights
-  await createOrganization('Pharmacy', 'Pharmacy', mdss.id);
+  const pharmacy = await createOrganization('Pharmacy', 'Pharmacy', mdss.id, 'CATALOG');
   await createOrganization('Diagnostics and Therapeutics ', 'D&T', mdss.id);
   await createOrganization('Readiness', 'Readiness', mdss.id);
   await createOrganization('Medical Logistics', 'Medical Logistics', mdss.id);
@@ -99,30 +100,36 @@ async function createOrganizationStructure() {
   await createOrganization('Information Systems Flight', 'Information Systems Flight', mdss.id);
   await createOrganization('Faculty Managers', 'Faculty Managers', mdss.id);
 
-  return [mdg, omrs, execStaff];
+  return [mdg, omrs, execStaff, pharmacy, lrs];
 }
 
 async function seedDev() {
-  const [organization1, organization2, organization3] = await createOrganizationStructure();
+  const [organization1, organization2, organization3, pharmacy, lrs] = await createOrganizationStructure();
 
   await prisma.trackingItem.createMany({
     data: [
       {
-        title: 'Fire Extinguisher',
+        title: 'GLOBAL - Fire Extinguisher',
         description: 'This is a AF yearly requirment',
         interval: 365,
       },
       {
-        title: 'Supervisor Safety Training',
+        title: 'GLOBAL - Supervisor Safety Training',
         description: 'One time training for new supevisors',
         interval: 0,
+      },
+      {
+        title: 'LRS - Supervisor Safety Training',
+        description: 'One time training for new supevisors',
+        interval: 0,
+        organizationId: lrs.id,
       },
     ],
   });
 
   const trackingItem1 = await prisma.trackingItem.create({
     data: {
-      title: 'Fire Safety',
+      title: 'GLOBAL - Fire Safety',
       description: 'How to be SAFE when using Fire',
       interval: 90,
     },
@@ -130,15 +137,16 @@ async function seedDev() {
 
   const trackingItem2 = await prisma.trackingItem.create({
     data: {
-      title: 'Big Bug Safety',
+      title: 'PHARMACY - Big Bug Safety',
       description: 'There are big bugs in Hawaii!  Be careful!',
       interval: 365,
+      organizationId: pharmacy.id,
     },
   });
 
   const trackingItem3 = await prisma.trackingItem.create({
     data: {
-      title: 'Keyboard Warrior Training',
+      title: 'GLOBAL - Keyboard Warrior Training',
       description: 'How to be a true keyboard warrior via writing code',
       interval: 180,
     },
