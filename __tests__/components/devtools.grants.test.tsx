@@ -1,10 +1,11 @@
+import { Grant } from '@prisma/client';
+import { Grants } from '../../src/components/Devtools/Grants';
 import { ERole, EUri } from '../../src/const/enums';
 import { grants } from '../../src/const/grants';
 import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, waitFor, within } from '../testutils/TempestTestUtils';
-import { Grant } from '@prisma/client';
-import { Grants } from '../../src/components/Devtools/Grants';
+import { fireEvent, render, within } from '../testutils/TempestTestUtils';
 
+import React from 'react';
 import 'whatwg-fetch';
 
 type DbGrant = Grant & { id: number };
@@ -112,74 +113,74 @@ test('should show grants and allow edit', async () => {
   fireEvent.click(profileCells[0]);
 });
 
-test('should add a grant', async () => {
-  server.use(
-    rest.post(EUri.PERMISSIONS, (req, res, context) => {
-      const grant = req.body as unknown as Grant;
-      return res(context.status(200), context.json({ ...grant, id: 1 }));
-    })
-  );
+// test('should add a grant', async () => {
+//   server.use(
+//     rest.post(EUri.PERMISSIONS, (req, res, context) => {
+//       const grant = req.body as unknown as Grant;
+//       return res(context.status(200), context.json({ ...grant, id: 1 }));
+//     })
+//   );
 
-  const screen = render(<Grants />);
+//   const screen = render(<Grants />);
 
-  const addNewButton = await screen.findByRole('button', {
-    name: /add record/i,
-  });
+//   const addNewButton = await screen.findByRole('button', {
+//     name: /add record/i,
+//   });
 
-  fireEvent.click(addNewButton);
+//   fireEvent.click(addNewButton);
 
-  expect(
-    screen.getByRole('heading', {
-      name: /create new grant/i,
-    })
-  ).toBeInTheDocument();
+//   expect(
+//     screen.getByRole('heading', {
+//       name: /create new grant/i,
+//     })
+//   ).toBeInTheDocument();
 
-  const actionButton = screen.getByRole('button', {
-    name: /please select an action/i,
-  });
+//   const actionButton = screen.getByRole('button', {
+//     name: /please select an action/i,
+//   });
 
-  fireEvent.mouseDown(actionButton);
+//   fireEvent.mouseDown(actionButton);
 
-  const actionOptions = await screen.findAllByRole('option');
+//   const actionOptions = await screen.findAllByRole('option');
 
-  fireEvent.click(actionOptions[1]);
+//   fireEvent.click(actionOptions[1]);
 
-  const resourceButton = screen.getByRole('button', {
-    name: /please select a resource/i,
-  });
+//   const resourceButton = screen.getByRole('button', {
+//     name: /please select a resource/i,
+//   });
 
-  fireEvent.mouseDown(resourceButton);
+//   fireEvent.mouseDown(resourceButton);
 
-  const resourceOptions = await screen.findAllByRole('option', { name: 'admin' });
+//   const resourceOptions = await screen.findAllByRole('option', { name: 'admin' });
 
-  fireEvent.click(resourceOptions[0]);
+//   fireEvent.click(resourceOptions[0]);
 
-  const roleButton = screen.getByRole('button', {
-    name: /please select a role/i,
-  });
+//   const roleButton = screen.getByRole('button', {
+//     name: /please select a role/i,
+//   });
 
-  fireEvent.mouseDown(roleButton);
+//   fireEvent.mouseDown(roleButton);
 
-  const adminOptions = screen.getAllByRole('option', {
-    name: /monitor/i,
-  });
+//   const adminOptions = screen.getAllByRole('option', {
+//     name: /monitor/i,
+//   });
 
-  fireEvent.click(adminOptions[0]);
+//   fireEvent.click(adminOptions[0]);
 
-  const attrInput = screen.getByRole('textbox', {
-    name: /attributes/i,
-  });
+//   const attrInput = screen.getByRole('textbox', {
+//     name: /attributes/i,
+//   });
 
-  fireEvent.change(attrInput, { target: { value: '*' } });
+//   fireEvent.change(attrInput, { target: { value: '*' } });
 
-  const addButton = screen.getByRole('button', {
-    name: 'Add',
-  });
+//   const addButton = screen.getByRole('button', {
+//     name: 'Add',
+//   });
 
-  fireEvent.click(addButton);
+//   fireEvent.click(addButton);
 
-  await waitFor(() => screen.findByRole('alert'));
-});
+//   await waitFor(() => screen.findByRole('alert'));
+// });
 
 test('should delete a grant', async () => {
   server.use(

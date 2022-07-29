@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import React from 'react';
 import 'whatwg-fetch';
 import { Devtools } from '../../src/components/Devtools';
 import { Logs } from '../../src/components/Devtools/Logs';

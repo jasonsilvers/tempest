@@ -18,8 +18,8 @@ const useTrackingItems = () => {
 const useAddTrackingItem = () => {
   const queryClient = useQueryClient();
   const snackbar = useSnackbar();
-  return useMutation<AxiosResponse<TrackingItem>, unknown, TrackingItem>(
-    (newTrackingItem: TrackingItem) => axios.post<TrackingItem>(EUri.TRACKING_ITEMS, newTrackingItem),
+  return useMutation<AxiosResponse<TrackingItem>, unknown, Partial<TrackingItem>>(
+    (newTrackingItem: Partial<TrackingItem>) => axios.post<TrackingItem>(EUri.TRACKING_ITEMS, newTrackingItem),
     {
       onError: () => {
         snackbar.enqueueSnackbar('Error adding TrackingItem. Please try again!', { variant: 'error' });
