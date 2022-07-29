@@ -1,5 +1,5 @@
 import { Grant } from '@prisma/client';
-import { Grants } from '../../src/components/Devtools/Grants';
+import { AddGrantDialog, Grants } from '../../src/components/Devtools/Grants';
 import { ERole, EUri } from '../../src/const/enums';
 import { grants } from '../../src/const/grants';
 import { rest, server } from '../testutils/mocks/msw';
@@ -123,15 +123,16 @@ test('should add a grant', async () => {
     })
   );
 
-  const screen = render(<Grants />);
+  const screen = render(
+    <AddGrantDialog
+      isOpen={true}
+      setIsOpen={() => {
+        jest.fn();
+      }}
+    />
+  );
 
   await waitForLoadingToFinish();
-
-  const addNewButton = await screen.findByRole('button', {
-    name: /add record/i,
-  });
-
-  fireEvent.click(addNewButton);
 
   expect(
     screen.getByRole('heading', {
