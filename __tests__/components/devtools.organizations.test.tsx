@@ -3,7 +3,7 @@ import 'whatwg-fetch';
 import { OrganizationList } from '../../src/components/Devtools/OrganizationList';
 import { ERole, EUri } from '../../src/const/enums';
 import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, userEvent, waitFor } from '../testutils/TempestTestUtils';
+import { fireEvent, render, userEvent, waitFor, waitForLoadingToFinish } from '../testutils/TempestTestUtils';
 
 beforeEach(() => {
   server.listen({
@@ -53,6 +53,8 @@ test('should allow edit organization', async () => {
     })
   );
   const screen = render(<OrganizationList />);
+
+  await waitForLoadingToFinish();
 
   const organizationCell = await screen.findByRole('cell', {
     name: /organization 2/i,
