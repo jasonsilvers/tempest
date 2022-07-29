@@ -12,6 +12,7 @@ import {
 } from '../testutils/TempestTestUtils';
 
 import 'whatwg-fetch';
+import React from 'react';
 
 beforeEach(() => {
   server.listen({
@@ -56,6 +57,7 @@ afterAll(() => server.close());
 test('should render resources component and show list of resources', async () => {
   const screen = render(<Resources />);
 
+  await waitForLoadingToFinish();
   expect(await screen.findByText(/admin/i)).toBeInTheDocument();
 });
 

@@ -3,7 +3,7 @@ import { Grants } from '../../src/components/Devtools/Grants';
 import { ERole, EUri } from '../../src/const/enums';
 import { grants } from '../../src/const/grants';
 import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, within } from '../testutils/TempestTestUtils';
+import { fireEvent, render, waitFor, waitForLoadingToFinish, within } from '../testutils/TempestTestUtils';
 
 import React from 'react';
 import 'whatwg-fetch';
@@ -79,6 +79,8 @@ test('should show grants and allow edit', async () => {
 
   const screen = render(<Grants />);
 
+  await waitForLoadingToFinish();
+
   const matterMostCell = await screen.findByRole('cell', {
     name: /mattermost/i,
   });
@@ -113,74 +115,76 @@ test('should show grants and allow edit', async () => {
   fireEvent.click(profileCells[0]);
 });
 
-// test('should add a grant', async () => {
-//   server.use(
-//     rest.post(EUri.PERMISSIONS, (req, res, context) => {
-//       const grant = req.body as unknown as Grant;
-//       return res(context.status(200), context.json({ ...grant, id: 1 }));
-//     })
-//   );
+test('should add a grant', async () => {
+  server.use(
+    rest.post(EUri.PERMISSIONS, (req, res, context) => {
+      const grant = req.body as unknown as Grant;
+      return res(context.status(200), context.json({ ...grant, id: 1 }));
+    })
+  );
 
-//   const screen = render(<Grants />);
+  const screen = render(<Grants />);
 
-//   const addNewButton = await screen.findByRole('button', {
-//     name: /add record/i,
-//   });
+  await waitForLoadingToFinish();
 
-//   fireEvent.click(addNewButton);
+  const addNewButton = await screen.findByRole('button', {
+    name: /add record/i,
+  });
 
-//   expect(
-//     screen.getByRole('heading', {
-//       name: /create new grant/i,
-//     })
-//   ).toBeInTheDocument();
+  fireEvent.click(addNewButton);
 
-//   const actionButton = screen.getByRole('button', {
-//     name: /please select an action/i,
-//   });
+  expect(
+    screen.getByRole('heading', {
+      name: /create new grant/i,
+    })
+  ).toBeInTheDocument();
 
-//   fireEvent.mouseDown(actionButton);
+  const actionButton = screen.getByRole('button', {
+    name: /please select an action/i,
+  });
 
-//   const actionOptions = await screen.findAllByRole('option');
+  fireEvent.mouseDown(actionButton);
 
-//   fireEvent.click(actionOptions[1]);
+  const actionOptions = await screen.findAllByRole('option');
 
-//   const resourceButton = screen.getByRole('button', {
-//     name: /please select a resource/i,
-//   });
+  fireEvent.click(actionOptions[1]);
 
-//   fireEvent.mouseDown(resourceButton);
+  const resourceButton = screen.getByRole('button', {
+    name: /please select a resource/i,
+  });
 
-//   const resourceOptions = await screen.findAllByRole('option', { name: 'admin' });
+  fireEvent.mouseDown(resourceButton);
 
-//   fireEvent.click(resourceOptions[0]);
+  const resourceOptions = await screen.findAllByRole('option', { name: 'admin' });
 
-//   const roleButton = screen.getByRole('button', {
-//     name: /please select a role/i,
-//   });
+  fireEvent.click(resourceOptions[0]);
 
-//   fireEvent.mouseDown(roleButton);
+  const roleButton = screen.getByRole('button', {
+    name: /please select a role/i,
+  });
 
-//   const adminOptions = screen.getAllByRole('option', {
-//     name: /monitor/i,
-//   });
+  fireEvent.mouseDown(roleButton);
 
-//   fireEvent.click(adminOptions[0]);
+  const adminOptions = screen.getAllByRole('option', {
+    name: /monitor/i,
+  });
 
-//   const attrInput = screen.getByRole('textbox', {
-//     name: /attributes/i,
-//   });
+  fireEvent.click(adminOptions[0]);
 
-//   fireEvent.change(attrInput, { target: { value: '*' } });
+  const attrInput = screen.getByRole('textbox', {
+    name: /attributes/i,
+  });
 
-//   const addButton = screen.getByRole('button', {
-//     name: 'Add',
-//   });
+  fireEvent.change(attrInput, { target: { value: '*' } });
 
-//   fireEvent.click(addButton);
+  const addButton = screen.getByRole('button', {
+    name: 'Add',
+  });
 
-//   await waitFor(() => screen.findByRole('alert'));
-// });
+  fireEvent.click(addButton);
+
+  await waitFor(() => screen.findByRole('alert'));
+});
 
 test('should delete a grant', async () => {
   server.use(
