@@ -46,7 +46,7 @@ afterAll(() => server.close());
 
 test('should show organizations', async () => {
   const screen = render(<OrganizationList />);
-
+  await waitForLoadingToFinish();
   expect(await screen.findByText(/15th mdg/i)).toBeInTheDocument();
 });
 

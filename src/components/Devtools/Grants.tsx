@@ -86,6 +86,10 @@ const AddGrantDialog = ({ isOpen, setIsOpen }) => {
     });
   };
 
+  if (resourceQuery.isLoading) {
+    return <div>...Loading</div>;
+  }
+
   return (
     <Dialog
       open={isOpen}

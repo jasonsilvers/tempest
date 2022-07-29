@@ -41,7 +41,7 @@ const Logs = () => {
   );
 
   if (logEventQuery?.isLoading) {
-    return <div>...loading</div>;
+    return <div>...Loading</div>;
   }
 
   return (

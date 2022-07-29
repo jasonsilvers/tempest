@@ -3,7 +3,7 @@ import 'whatwg-fetch';
 import { Logs } from '../../src/components/Devtools/Logs';
 import { ERole, EUri } from '../../src/const/enums';
 import { rest, server } from '../testutils/mocks/msw';
-import { render } from '../testutils/TempestTestUtils';
+import { render, waitForLoadingToFinish } from '../testutils/TempestTestUtils';
 
 // Establish API mocking before tests.
 beforeEach(() => {
@@ -67,7 +67,7 @@ afterAll(() => server.close());
 
 test('should show logs', async () => {
   const screen = render(<Logs />);
-
+  await waitForLoadingToFinish();
   expect(await screen.findByText(/Successful Login/)).toBeInTheDocument();
 });
 
