@@ -1,7 +1,7 @@
 import { Organization, Prisma, Role, User } from '@prisma/client';
 import { EMtrVariant, EUserResources } from '../const/enums';
 import prisma from '../prisma/prisma';
-import { getOrganizationTree } from './organizationRepo';
+import { getOrganizationAndDown } from './organizationRepo';
 
 const dayjs = require('dayjs');
 
@@ -176,7 +176,7 @@ export const getAllUsersFromUsersOrgCascade = async (organizationId: number) => 
   let organizations: Organization[];
 
   try {
-    organizations = await getOrganizationTree(organizationId);
+    organizations = await getOrganizationAndDown(organizationId);
   } catch (e) {
     throw new Error('There was an error getting organization tree');
   }

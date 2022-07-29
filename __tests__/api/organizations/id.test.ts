@@ -196,7 +196,7 @@ test('should return 403 if not allowed to update organization', async () => {
 
   const { status } = await testNextApi.put(organizationsIdApiHandler, {
     urlId: '2',
-    body: { shortName: 'testUpdate' },
+    body: { id: 2, shortName: 'testUpdate' },
   });
 
   expect(status).toBe(403);
@@ -213,7 +213,7 @@ test('should update organization', async () => {
 
   const { status, data } = await testNextApi.put(organizationsIdApiHandler, {
     urlId: 2,
-    body: { shortName: 'testUpdate' },
+    body: { id: 2, shortName: 'testUpdate' },
   });
 
   expect(status).toBe(200);

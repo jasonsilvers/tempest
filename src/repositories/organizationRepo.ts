@@ -32,14 +32,16 @@ export async function updateOrganization(organizationId: number, organization: P
   return prisma.organization.update({ where: { id: organizationId }, data: organization });
 }
 
-export async function getOrganizationTree(organizationId: number) {
+//Users org and down
+export async function getOrganizationAndDown(organizationId: number) {
   return prisma.$queryRaw<Organization[]>(
     Prisma.sql`
     WITH RECURSIVE orgs AS (
       SELECT 
         id,
         org_name,
-        org_short_name
+        org_short_name,
+        types
       FROM 
         organization
       where 
@@ -48,11 +50,38 @@ export async function getOrganizationTree(organizationId: number) {
         SELECT
           o.id,
           o.org_name,
-          o.org_short_name
+          o.org_short_name,
+          o.types
         FROM
           organization o
         JOIN orgs ON orgs.id = o.parent_id
       
       ) SELECT * from orgs`
+  );
+}
+
+//Users org and up
+export async function getOrganizationAndUp(organizationId: number) {
+  return prisma.$queryRaw<Organization[]>(
+    Prisma.sql`with recursive orgParent as (
+      select
+        *
+      from organization
+      where
+        id =${organizationId}
+
+      union
+
+      select
+        organization.*
+      from organization
+      join orgParent on orgParent.parent_id = organization.id
+    )
+
+    select
+      *
+    from orgParent 
+    order by
+      id;`
   );
 }

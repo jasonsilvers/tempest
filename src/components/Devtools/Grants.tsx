@@ -40,7 +40,7 @@ const actions = Object.values(EAction);
 const resources = Object.values(EResource);
 const roles = Object.values(ERole);
 
-const AddGrantDialog = ({ isOpen, setIsOpen }) => {
+export const AddGrantDialog = ({ isOpen, setIsOpen }) => {
   const { mutate: createGrant } = useAddGrant();
   const resourceQuery = useResources();
 
@@ -85,6 +85,10 @@ const AddGrantDialog = ({ isOpen, setIsOpen }) => {
       },
     });
   };
+
+  if (resourceQuery.isLoading) {
+    return <div>...Loading</div>;
+  }
 
   return (
     <Dialog

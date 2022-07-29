@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import { NextApiResponse } from 'next';
 import {
   deleteOrganizationAction,
@@ -8,6 +9,17 @@ import {
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
+
+const organizationPutSchema = {
+  put: {
+    body: Joi.object({
+      id: Joi.number().required(),
+      name: Joi.string().optional(),
+      shortName: Joi.string().optional(),
+      types: Joi.any(),
+    }),
+  },
+};
 
 export const organizationIdApiHandler = async (
   req: ITempestOrganizationIdApiRequest<LoggedInUser>,
@@ -31,4 +43,4 @@ export const organizationIdApiHandler = async (
   }
 };
 
-export default withTempestHandlers(organizationIdApiHandler, findUserByEmail);
+export default withTempestHandlers(organizationIdApiHandler, findUserByEmail, organizationPutSchema);

@@ -14,6 +14,7 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay, Temp
 import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
 import { TrackingItemInterval } from '../../../utils/daysToString';
 import { memberTrackingRecordIsComplete } from '../../../utils/status';
+
 const dayjs = require('dayjs');
 
 type IMemberTrackingItemsToAdd = {
@@ -45,7 +46,6 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
   const [memberTrackingItemsToAdd, setMemberTrackingItemsToAdd] = useState<IMemberTrackingItemsToAdd>([]);
   const [trackingItemOptions, setTrackingItemOptions] = useState<TrackingItem[]>([]);
   const { enqueueSnackbar } = useSnackbar();
-
   const [isSaving, setIsSaving] = useState(false);
 
   useMemo(() => {

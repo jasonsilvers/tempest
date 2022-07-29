@@ -4,7 +4,8 @@ import {
   deleteOrganization,
   findOrganizationById,
   findOrganizations,
-  getOrganizationTree,
+  getOrganizationAndDown,
+  getOrganizationAndUp,
   updateOrganization,
 } from '../../src/repositories/organizationRepo';
 
@@ -47,7 +48,14 @@ test('should findOrganizationById', async () => {
 
 test('should return organization and all child organizations', async () => {
   const spy = prisma.$queryRaw.mockImplementationOnce(() => testOrganizations);
-  const organizations = await getOrganizationTree(2);
+  const organizations = await getOrganizationAndDown(2);
+  expect(organizations).toEqual(testOrganizations);
+  expect(spy).toBeCalledTimes(1);
+});
+
+test('should return organization and all parent organizations', async () => {
+  const spy = prisma.$queryRaw.mockImplementationOnce(() => testOrganizations);
+  const organizations = await getOrganizationAndUp(2);
   expect(organizations).toEqual(testOrganizations);
   expect(spy).toBeCalledTimes(1);
 });

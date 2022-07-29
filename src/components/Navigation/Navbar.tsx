@@ -48,7 +48,7 @@ const AdminNavigation = ({ canViewDashboard, canCreateGlobalTrackingItem, canVie
       {canCreateGlobalTrackingItem ? (
         <Link goToUrl="/Trackingitems" icon={<AssignmentIcon fontSize="medium" />}>
           <div role="navigation" aria-label="global-training-catalog">
-            Global Training Catalog
+            Training Catalog
           </div>
         </Link>
       ) : null}

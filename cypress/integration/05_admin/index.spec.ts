@@ -42,4 +42,17 @@ describe('Can use admin features', () => {
 
     
   });
+
+  it.only('should be able to change org catalog type', () => {
+    /* Want to test changing an org catalog type
+
+    **/
+    cy.url().should('include', '/Dashboard') 
+    cy.findByRole('navigation', { name: /admin/i }).click();
+    cy.findByRole('tab', { name: /organizations/i }).click();
+
+    cy.get('[data-id="3"] > [data-field="types"]').dblclick().type('{enter}', {force: true})
+    
+  })
+
 });

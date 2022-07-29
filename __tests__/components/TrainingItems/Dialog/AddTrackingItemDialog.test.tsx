@@ -4,6 +4,7 @@ import { AddTrackingItemDialog } from '../../../../src/components/TrainingItems/
 import { server, rest } from '../../../testutils/mocks/msw';
 import 'whatwg-fetch';
 import { EUri } from '../../../../src/const/enums';
+import { andrewMonitor, joeAdmin } from '../../../testutils/mocks/fixtures';
 
 const trackingItemsList = {
   trackingItems: [
@@ -29,13 +30,26 @@ const trackingItemsList = {
 // Establish API mocking before tests.
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'bypass',
+    onUnhandledRequest: 'warn',
   });
 });
 beforeEach(() => {
   server.use(
     rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(trackingItemsList));
+    }),
+    rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          organizations: [
+            { id: 1, name: '15th Medical group', shortName: '15th mdg', parentId: null, types: ['CATALOG'] },
+            { id: 2, name: 'organization 2', shortName: 'org 2', parentId: 1, types: [] },
+            { id: 3, name: 'organization 3', shortName: 'org 3', parentId: 2, types: ['CATALOG'] },
+            { id: 4, name: 'organization 4', shortName: 'org 4', parentId: 3, types: [] },
+          ],
+        })
+      );
     })
   );
 });
@@ -274,4 +288,44 @@ test('should tell user this might be a duplicate but allow them to create it if 
   fireEvent.click(screen.getByRole('button', { name: 'Yes' }));
 
   await waitForElementToBeRemoved(() => screen.getByText(/create new training/i));
+});
+
+test('only admins can add items to global training catalog', async () => {
+  server.use(
+    rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+      );
+    }),
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    })
+  );
+
+  const screen = render(<Container />);
+
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
+  fireEvent.click(openDialogButton);
+
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+
+  expect(await screen.findByText(/15th medical group/i)).toBeInTheDocument();
+});
+
+test('admins should be able to add items to the global training catalog', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(joeAdmin));
+    })
+  );
+
+  const screen = render(<Container />);
+
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
+  fireEvent.click(openDialogButton);
+
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+
+  expect(await screen.findByText(/global training catalog/i)).toBeInTheDocument();
 });
