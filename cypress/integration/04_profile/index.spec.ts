@@ -7,12 +7,20 @@ describe('Member role', () => {
     cy.findAllByText(/nothing to show/i).should('have.length', 1);
   });
 
-  it('should add new training and be able to sign', () => {
+  it.only('should add new training and be able to sign', () => {
     cy.loginAsMember();
 
     const trackingItemName = 'GLOBAL - Fire Extinguisher';
-    cy.addMemberTrackingRecord(trackingItemName, getToday());
+    cy.findByRole('button', { name: /add/i, timeout: 10000 }).click();
 
+    cy.wait(10000);
+
+    //Make sure member can only see items that are in org and above
+    cy.findByRole('combobox').type('PHARMACY');
+    cy.findByText(/no options/i).should('exist')
+    cy.get('[data-testid="CloseIcon"]').click()
+
+    cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).click();

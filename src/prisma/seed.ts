@@ -130,6 +130,12 @@ async function seedDev() {
         interval: 0,
         organizationId: mdg.id,
       },
+      {
+        title: 'PHARMACY - Paper cuts',
+        description: 'No paper cuts',
+        interval: 0,
+        organizationId: pharmacy.id,
+      },
     ],
   });
 
