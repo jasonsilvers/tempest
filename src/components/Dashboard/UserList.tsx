@@ -97,7 +97,7 @@ export const UserList = ({ usersQuery, dashboardState, loggedInUser }: UserListP
       </UserTable>
       <TablePagination
         component="div"
-        count={dashboardState.filteredUserList ? dashboardState.filteredUserList.length : 0}
+        count={dashboardState?.filteredUserList ? dashboardState?.filteredUserList?.length : 0}
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}

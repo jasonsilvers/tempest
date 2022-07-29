@@ -40,13 +40,13 @@ const Logs = () => {
     []
   );
 
-  if (logEventQuery.isLoading) {
+  if (logEventQuery?.isLoading) {
     return <div>...loading</div>;
   }
 
   return (
     <div tw="flex h-96">
-      <DataGrid columns={columns} rows={logEventQuery.data} />
+      <DataGrid columns={columns} rows={logEventQuery?.data} />
     </div>
   );
 };
