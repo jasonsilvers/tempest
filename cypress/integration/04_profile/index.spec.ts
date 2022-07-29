@@ -10,7 +10,7 @@ describe('Member role', () => {
   it('should add new training and be able to sign', () => {
     cy.loginAsMember();
 
-    const trackingItemName = 'Fire Extinguisher';
+    const trackingItemName = 'GLOBAL - Fire Extinguisher';
     cy.addMemberTrackingRecord(trackingItemName, getToday());
 
     cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
@@ -37,7 +37,7 @@ describe('Member role', () => {
         cy.findByRole('button', { name: /member-popup-menu/i }).click();
         cy.focused().click();
       });
-    const trackingItemName = 'Fire Extinguisher';
+    const trackingItemName = 'GLOBAL - Fire Extinguisher';
 
     cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByRole('button', { name: 'signature_button' }).click();
@@ -59,7 +59,7 @@ describe('Member role', () => {
 
   it('should be able to delete record', () => {
     cy.loginAsMember();
-    const trackingItemName = 'Fire Extinguisher';
+    const trackingItemName = 'GLOBAL - Fire Extinguisher';
 
     cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByText(/fire extinguisher/i).should('be.visible');
@@ -82,7 +82,7 @@ describe('Member role', () => {
         cy.findByRole('button', { name: 'member-popup-menu' }).click();
         cy.focused().click();
       });
-    const trackingItemName = 'Fire Extinguisher';
+    const trackingItemName = 'GLOBAL - Fire Extinguisher';
 
     //This tracking record is used in (should complete record and replace the old one)
     cy.addMemberTrackingRecord(trackingItemName, getToday(1));
@@ -128,7 +128,7 @@ describe('Monitor role', () => {
         cy.focused().click();
       });
 
-    const trackingItemName = 'Fire Extinguisher';
+    const trackingItemName = 'GLOBAL - Fire Extinguisher';
 
     cy.addMemberTrackingRecord(trackingItemName, getToday());
 
@@ -156,7 +156,7 @@ describe('Monitor role', () => {
         cy.focused().click();
       });
 
-    const trackingItemName = 'Fire Safety';
+    const trackingItemName = 'GLOBAL - Fire Safety';
 
     cy.addMemberTrackingRecord(trackingItemName, getToday());
     cy.findByRole('button', { name: 'signature_button' }).click();
