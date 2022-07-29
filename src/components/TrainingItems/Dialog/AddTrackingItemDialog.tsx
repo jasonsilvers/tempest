@@ -176,6 +176,13 @@ const SelectCatalog = ({
   );
 };
 
+const determineSelectedCatalog = (catalogs: Organization[], loggedInUser: LoggedInUser) => {
+  if (catalogs.length > 0 && loggedInUser?.role?.name !== ERole.ADMIN) {
+    return catalogs[0].id.toString();
+  }
+  return '0';
+};
+
 const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClose, isOpen }) => {
   const { user: loggedInUser, isLoading: isUserLoading } = useUser<LoggedInUser>();
   const { mutate: create } = useAddTrackingItem();
@@ -192,15 +199,8 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   const fuse = useMemo(() => new Fuse(trackingItems ? trackingItems : [], fuseOptions), [trackingItems]);
 
-  const determineSelectedCatalog = () => {
-    if (catalogs.length > 0 && loggedInUser?.role?.name !== ERole.ADMIN) {
-      return catalogs[0].id.toString();
-    }
-    return '0';
-  };
-
   useEffect(() => {
-    const determinedSelectedCatalog = determineSelectedCatalog();
+    const determinedSelectedCatalog = determineSelectedCatalog(catalogs, loggedInUser);
     setSelectedCatalog(determinedSelectedCatalog);
   }, [loggedInUser, catalogs]);
 
@@ -241,7 +241,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   const handleOnSettled = () => {
     setIsSaving(false);
-    const determinedSelectedCatalog = determineSelectedCatalog();
+    const determinedSelectedCatalog = determineSelectedCatalog(catalogs, loggedInUser);
     setSelectedCatalog(determinedSelectedCatalog);
   };
 
@@ -249,17 +249,21 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
     setIsSaving(true);
     if (trackingItemsThatMatch?.length !== 0) {
       setConfirmationIsOpen(true);
-    } else {
-      const newTrackingItem = { ...trackingItem, organizationId: parseInt(selectedCatalog) };
-
-      create(newTrackingItem, {
-        onSuccess: () => {
-          handleClose();
-          enqueueSnackbar('Tracking Item Added!', { variant: 'success' });
-        },
-        onSettled: handleOnSettled,
-      });
+      return;
     }
+    const newTrackingItem = { ...trackingItem, organizationId: parseInt(selectedCatalog) };
+
+    create(newTrackingItem, {
+      onSuccess: () => {
+        handleClose();
+        enqueueSnackbar('Tracking Item Added!', { variant: 'success' });
+      },
+      onSettled: handleOnSettled,
+    });
+  };
+
+  const disableSaveButton = () => {
+    return formIsInvalid || trackingItemsThatMatch?.some((ti) => +ti.score.toFixed(6) === 0);
   };
 
   return (
@@ -392,13 +396,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       ) : null}
 
       <DialogActions>
-        <Button
-          onClick={handleSave}
-          disabled={formIsInvalid || trackingItemsThatMatch?.some((ti) => +ti.score.toFixed(6) === 0)}
-          size="medium"
-          color="secondary"
-          variant="contained"
-        >
+        <Button onClick={handleSave} disabled={disableSaveButton()} size="medium" color="secondary" variant="contained">
           Create
         </Button>
       </DialogActions>
