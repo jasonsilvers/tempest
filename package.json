@@ -12,7 +12,7 @@
     "start": "next start",
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "test": "jest --watchAll --maxWorkers=50%",
-    "test:unit": "prisma generate --schema ./src/prisma/schema.prisma && jest --runInBand --max_old_space_size=8192",
+    "test:unit": "prisma generate --schema ./src/prisma/schema.prisma && jest --max_old_space_size=8192",
     "pre-commit": "pretty-quick --staged",
     "cypress:open": "cypress open --config-file cypress/config/development.json",
     "cypress:run": "npm run db:reset && cypress run --config-file cypress/config/development.json",
