@@ -179,6 +179,7 @@ export const Roles = () => {
         components={{
           Toolbar: GridToolbar,
         }}
+        disableVirtualization
       />
     </div>
   );
