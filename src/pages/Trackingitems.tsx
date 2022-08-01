@@ -271,7 +271,13 @@ const TrackingItems = () => {
           />
         )}
       </div>
-      {openDialog && <AddTrackingItemDialog isOpen={openDialog} handleClose={() => setOpenDialog(false)} />}
+      {openDialog && (
+        <AddTrackingItemDialog
+          isOpen={openDialog}
+          handleClose={() => setOpenDialog(false)}
+          defaultCatalog={selectedCatalog.toString()}
+        />
+      )}
     </div>
   );
 };

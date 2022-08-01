@@ -74,7 +74,11 @@ const Container = () => {
       >
         Open Dialog
       </button>
-      <AddTrackingItemDialog isOpen={openDialog} handleClose={() => setOpenDialog(false)}></AddTrackingItemDialog>
+      <AddTrackingItemDialog
+        isOpen={openDialog}
+        handleClose={() => setOpenDialog(false)}
+        defaultCatalog={'0'}
+      ></AddTrackingItemDialog>
     </div>
   );
 };
