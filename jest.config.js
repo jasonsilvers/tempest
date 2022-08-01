@@ -3,6 +3,7 @@ const { defaults } = require('jest-config');
 
 module.exports = {
   ...defaults,
+  testTimeout: 20000,
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: [
     '<rootDir>/cypress/',

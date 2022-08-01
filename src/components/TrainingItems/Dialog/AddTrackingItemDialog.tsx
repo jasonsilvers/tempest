@@ -43,11 +43,6 @@ const fuseOptions: Fuse.IFuseOptions<TrackingItem> = {
   keys: ['title'],
 };
 
-type AddTrackingItemDialogProps = {
-  handleClose: () => void;
-  isOpen: boolean;
-};
-
 const ShowLoadingOverlay = ({ showLoading }: { showLoading: boolean }) => {
   if (showLoading) {
     return <LoadingOverlay />;
@@ -176,14 +171,24 @@ const SelectCatalog = ({
   );
 };
 
-const determineSelectedCatalog = (catalogs: Organization[], loggedInUser: LoggedInUser) => {
-  if (catalogs.length > 0 && loggedInUser?.role?.name !== ERole.ADMIN) {
+const determineSelectedCatalog = (catalogs: Organization[], loggedInUser: LoggedInUser, defaultCatalog: string) => {
+  if (defaultCatalog !== '0') {
+    return defaultCatalog;
+  }
+
+  if (catalogs.length > 0 && loggedInUser?.role?.name !== ERole.ADMIN && defaultCatalog === '0') {
     return catalogs[0].id.toString();
   }
   return '0';
 };
 
-const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClose, isOpen }) => {
+type AddTrackingItemDialogProps = {
+  handleClose: () => void;
+  isOpen: boolean;
+  defaultCatalog?: string;
+};
+
+const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClose, isOpen, defaultCatalog = '' }) => {
   const { user: loggedInUser, isLoading: isUserLoading } = useUser<LoggedInUser>();
   const { mutate: create } = useAddTrackingItem();
   const [isSaving, setIsSaving] = useState(false);
@@ -191,7 +196,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   const [trackingItemsThatMatch, setTrackingItemsThatMatch] = useState<Fuse.FuseResult<TrackingItem>[]>(null);
   const [formIsInvalid, setFormIsInvalid] = useState(true);
   const [confirmationIsOpen, setConfirmationIsOpen] = useState(false);
-  const [selectedCatalog, setSelectedCatalog] = useState<string | null>('');
+  const [selectedCatalog, setSelectedCatalog] = useState<string | null>(defaultCatalog.toString());
   const [trackingItem, setTrackingItem] = useState<TrackingItemToAdd>(initialTrackingItemToAdd);
   const [catalogs, setCatalogs] = useState<Organization[]>([]);
   const { data: orgsFromServer } = useOrgs();
@@ -200,7 +205,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   const fuse = useMemo(() => new Fuse(trackingItems ? trackingItems : [], fuseOptions), [trackingItems]);
 
   useEffect(() => {
-    const determinedSelectedCatalog = determineSelectedCatalog(catalogs, loggedInUser);
+    const determinedSelectedCatalog = determineSelectedCatalog(catalogs, loggedInUser, defaultCatalog);
     setSelectedCatalog(determinedSelectedCatalog);
   }, [loggedInUser, catalogs]);
 
@@ -241,7 +246,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   const handleOnSettled = () => {
     setIsSaving(false);
-    const determinedSelectedCatalog = determineSelectedCatalog(catalogs, loggedInUser);
+    const determinedSelectedCatalog = determineSelectedCatalog(catalogs, loggedInUser, defaultCatalog);
     setSelectedCatalog(determinedSelectedCatalog);
   };
 

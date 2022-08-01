@@ -4,7 +4,7 @@ import { configure } from '@testing-library/react';
 
 global.console = {
   ...console,
-  log: jest.fn(),
+  // log: jest.fn(),
   error: jest.fn(),
   warn: jest.fn(),
   info: jest.fn(),
