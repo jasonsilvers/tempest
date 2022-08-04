@@ -70,24 +70,25 @@ const ConditionalDateInput: React.FC<IConditionalDateInput> = ({ memberTrackingR
 
   if (!!memberTrackingRecord.authoritySignedDate && !!memberTrackingRecord.traineeSignedDate) {
     return <CompletedDate>{dayjs(dateValue).format('MMM D, YYYY')}</CompletedDate>;
-  } else
-    return (
-      <>
-        <TempestDatePicker
-          onChange={handleCompletionDateChange}
-          inputVariant="outlined"
-          disableFuture
-          autoOk
-          value={dateValue ? dayjs(dateValue).format('MMM DD, YYYY') : null}
-        />
-        <ConfirmDialog open={modalState.open} handleNo={handleNoClearSignatures} handleYes={handleYesClearSignatures}>
-          <DialogTitle>Proceed?</DialogTitle>
-          <DialogContent>
-            Changing the completion date will clear all signatures present. Are you sure you want to continue?
-          </DialogContent>
-        </ConfirmDialog>
-      </>
-    );
+  }
+
+  return (
+    <>
+      <TempestDatePicker
+        onChange={handleCompletionDateChange}
+        inputVariant="outlined"
+        disableFuture
+        autoOk
+        value={dateValue ? dayjs(dateValue).format('MMM DD, YYYY') : null}
+      />
+      <ConfirmDialog open={modalState.open} handleNo={handleNoClearSignatures} handleYes={handleYesClearSignatures}>
+        <DialogTitle>Proceed?</DialogTitle>
+        <DialogContent>
+          Changing the completion date will clear all signatures present. Are you sure you want to continue?
+        </DialogContent>
+      </ConfirmDialog>
+    </>
+  );
 };
 
 export default ConditionalDateInput;
