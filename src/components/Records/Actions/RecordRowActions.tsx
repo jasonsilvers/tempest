@@ -27,10 +27,14 @@ export const determineActionOnRecord = (
   loggedInUser: User
 ): DeterminedActionOnRecord => {
   let action: DeterminedActionOnRecord;
+
+  //Check if the record is signed
   if (!memberTrackingRecord[signatureType]) {
+    //If it's not signed and the signee is a monitor and it's not their record allow signature
     if (signee === 'authority' && loggedInUser?.id !== memberTrackingRecord.traineeId) {
       action = 'authorityCanSign';
     }
+
     if (signee === 'trainee' && loggedInUser?.id === memberTrackingRecord.traineeId) {
       action = 'traineeCanSign';
     }
@@ -80,12 +84,6 @@ const getAllowedActions = (
   >,
   enqueueSnackbar: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
 ) => {
-  // fail back if the signatureOwner:User is false
-  // would indicate data is still fetching
-  if (!loggedInUser) {
-    return 'Fetching Data...';
-  }
-
   const handleSign = () => {
     signRecordFor(
       { memberTrackingRecord, userId: memberTrackingRecord.traineeId },
@@ -116,6 +114,7 @@ const getAllowedActions = (
   }
   // if signature date is true and signature owner is true
   // render signature based on the signature owner and date
+
   if (determinedAction === 'completed') {
     return (
       <TableData>

@@ -8,7 +8,7 @@ import { MemberItemTrackerContextProvider } from '../../../src/components/Record
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 import RecordRow from '../../../src/components/Records/MemberRecordTracker/RecordRow';
 import { ECategorie, EMtrVariant, EUri } from '../../../src/const/enums';
-import { joeAdmin } from '../../testutils/mocks/fixtures';
+import { andrewMonitor, joeAdmin, bobJones } from '../../testutils/mocks/fixtures';
 import { rest, server } from '../../testutils/mocks/msw';
 import { fireEvent, render, userEvent, waitFor, waitForLoadingToFinish } from '../../testutils/TempestTestUtils';
 
@@ -43,10 +43,23 @@ const mtr1 = {
   trackingItem: trackingItemWithAnnualInterval,
 } as MemberTrackingRecord & { trackingItem: TrackingItem; trainee: User; authority: User };
 
+const mtr1WithCompleteDate = {
+  authorityId: null,
+  id: 1,
+  authoritySignedDate: null,
+  completedDate: new Date(),
+  createdAt: null,
+  order: 0,
+  trackingItemId: 1,
+  traineeId: 1,
+  traineeSignedDate: null,
+  trackingItem: trackingItemWithAnnualInterval,
+} as MemberTrackingRecord & { trackingItem: TrackingItem; trainee: User; authority: User };
+
 // Establish API mocking before tests.
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'bypass',
+    onUnhandledRequest: 'warn',
   });
 
   // add window.matchMedia
@@ -307,6 +320,12 @@ test('should not render if the item status does not match active category', asyn
 });
 
 test('should not show delete button on completed record if monitor or member', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.ALL,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
+  }));
   const date = new Date();
   const screen = render(
     <RecordRowActions
@@ -323,6 +342,12 @@ test('should not show delete button on completed record if monitor or member', a
 });
 
 test('should show delete button on completed record if admin', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.DONE,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
+  }));
   server.use(
     rest.get(EUri.LOGIN, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(joeAdmin));
@@ -342,4 +367,252 @@ test('should show delete button on completed record if admin', async () => {
   await waitForLoadingToFinish();
 
   expect(screen.queryByTestId('DeleteIcon')).toBeInTheDocument();
+});
+
+test('should show awaiting signature when disabled', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.DONE,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
+  }));
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    })
+  );
+
+  const date = new Date();
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={date}
+      traineeSignedDate={date}
+      memberTrackingRecord={{ ...mtr1, traineeSignedDate: date, authoritySignedDate: date }}
+      disabled={true}
+    />
+  );
+
+  const awaitingSignDisabledButtons = await screen.findAllByText(/awaiting signature/i);
+
+  expect(awaitingSignDisabledButtons.length).toEqual(2);
+});
+
+test('should show awaiting signature for member', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.DONE,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
+  }));
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    })
+  );
+
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={null}
+      traineeSignedDate={null}
+      memberTrackingRecord={{
+        ...mtr1WithCompleteDate,
+        authorityId: andrewMonitor?.id,
+        traineeSignedDate: null,
+        authoritySignedDate: null,
+      }}
+      disabled={false}
+    />
+  );
+
+  await waitForLoadingToFinish();
+  expect(await screen.findByText(/awaiting signature/i)).toBeInTheDocument();
+});
+
+test('should show awaiting signature for monitor', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.DONE,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
+  }));
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(bobJones));
+    })
+  );
+
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={null}
+      traineeSignedDate={null}
+      memberTrackingRecord={{
+        ...mtr1WithCompleteDate,
+        traineeId: bobJones.id,
+        traineeSignedDate: null,
+        authoritySignedDate: null,
+      }}
+      disabled={false}
+    />
+  );
+
+  await waitForLoadingToFinish();
+  expect(await screen.findByText(/awaiting signature/i)).toBeInTheDocument();
+});
+
+test('should show awaiting signature for monitor', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.DONE,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
+  }));
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(bobJones));
+    })
+  );
+
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={null}
+      traineeSignedDate={null}
+      memberTrackingRecord={{
+        ...mtr1WithCompleteDate,
+        traineeId: bobJones.id,
+        traineeSignedDate: null,
+        authoritySignedDate: null,
+      }}
+      disabled={false}
+    />
+  );
+
+  await waitForLoadingToFinish();
+  expect(await screen.findByText(/awaiting signature/i)).toBeInTheDocument();
+});
+
+test('should show signedOn for monitor', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.DONE,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
+  }));
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(bobJones));
+    })
+  );
+
+  const date = new Date();
+
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={date}
+      traineeSignedDate={null}
+      memberTrackingRecord={{
+        ...mtr1WithCompleteDate,
+        traineeId: bobJones.id,
+        traineeSignedDate: null,
+        authoritySignedDate: date,
+        authority: andrewMonitor,
+      }}
+      disabled={false}
+    />
+  );
+
+  await waitForLoadingToFinish();
+
+  expect(await screen.findByText(/signed on/i)).toBeInTheDocument();
+});
+
+test('Archive actions - on archive screen', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.ALL,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.ARCHIVED,
+  }));
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    })
+  );
+
+  const date = new Date();
+
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={date}
+      traineeSignedDate={date}
+      memberTrackingRecord={{
+        ...mtr1WithCompleteDate,
+        traineeId: bobJones.id,
+        traineeSignedDate: date,
+        authoritySignedDate: date,
+        authority: andrewMonitor,
+      }}
+      disabled={false}
+    />
+  );
+
+  await waitForLoadingToFinish();
+
+  expect(await screen.findByRole('button', { name: /UNARCHIVE/i })).toBeInTheDocument();
+});
+
+test('Archive actions - on completed screen', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.ALL,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.COMPLETED,
+  }));
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    }),
+
+    rest.put('*', (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          ...mtr1,
+          status: 'INACTIVE',
+        })
+      );
+    })
+  );
+
+  const date = new Date();
+
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={date}
+      traineeSignedDate={date}
+      memberTrackingRecord={{
+        ...mtr1WithCompleteDate,
+        traineeId: bobJones.id,
+        traineeSignedDate: date,
+        authoritySignedDate: date,
+        authority: andrewMonitor,
+      }}
+      disabled={false}
+    />
+  );
+
+  await waitForLoadingToFinish();
+
+  expect(
+    await screen.findByRole('button', {
+      name: /archive-tracking-record/i,
+    })
+  ).toBeInTheDocument();
+
+  const archiveButton = await screen.findByRole('button', {
+    name: /archive-tracking-record/i,
+  });
+
+  fireEvent.click(archiveButton);
+
+  await waitFor(() => screen.findByRole('alert'));
 });
