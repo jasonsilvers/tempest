@@ -1,5 +1,5 @@
 import { Autocomplete, Box, Button, CircularProgress, IconButton, TextField } from '@mui/material';
-import { MemberTrackingItem, MemberTrackingRecord, TrackingItem } from '@prisma/client';
+import { MemberTrackingItem, MemberTrackingItemStatus, MemberTrackingRecord, TrackingItem } from '@prisma/client';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
 import { useQueryClient } from 'react-query';
@@ -57,18 +57,25 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
       .flatMap((mtiq) => mtiq[1])
       .flatMap((mti) => mti?.memberTrackingRecords);
 
-    const trackingItemsList = trackingItemsQuery.data?.filter(
-      (trackingItem) =>
-        !memberTrackingRecords?.find(
-          (mtr) =>
-            mtr?.trackingItemId === trackingItem.id &&
-            !memberTrackingRecordIsComplete(mtr) &&
-            mtr.traineeId === forMemberId
-        )
-    );
+    const trackingItemsList = trackingItemsQuery.data
+      ?.filter(
+        (trackingItem) =>
+          !memberTrackingRecords?.find(
+            (mtr) =>
+              mtr?.trackingItemId === trackingItem.id &&
+              !memberTrackingRecordIsComplete(mtr) &&
+              mtr.traineeId === forMemberId
+          )
+      )
+      .filter(
+        (trackingItem) =>
+          !memberTrackingItemsQuery?.data.find(
+            (mti) => mti.status === MemberTrackingItemStatus.INACTIVE && mti.trackingItemId === trackingItem.id
+          )
+      );
 
     setTrackingItemOptions(trackingItemsList ?? []);
-  }, [trackingItemsQuery.data]);
+  }, [trackingItemsQuery.data, memberTrackingItemsQuery.data]);
 
   const addMemberTrackingItems = () => {
     setIsSaving(true);
@@ -97,7 +104,6 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
         const newMemberTrackingItem = {
           trackingItemId: memberTrackingItemToAdd.trackingItem.id,
           userId: forMemberId,
-          isActive: true,
         } as MemberTrackingItem;
 
         addMemberTrackingItemAndRecord.mutate(

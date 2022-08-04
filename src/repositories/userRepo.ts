@@ -1,4 +1,4 @@
-import { Organization, Prisma, Role, User } from '@prisma/client';
+import { MemberTrackingItemStatus, Organization, Prisma, Role, User } from '@prisma/client';
 import { EMtrVariant, EUserResources } from '../const/enums';
 import prisma from '../prisma/prisma';
 import { getOrganizationAndDown } from './organizationRepo';
@@ -69,9 +69,12 @@ export const findUserByIdWithMemberTrackingItems = async (
     whereVariant = whereInProgressVariant;
   }
 
-  if (variant === EMtrVariant.COMPLETED) {
+  if (variant === EMtrVariant.COMPLETED || variant === EMtrVariant.ARCHIVED) {
     whereVariant = whereCompletedVariant;
   }
+
+  const statusWhere =
+    variant !== EMtrVariant.ARCHIVED ? MemberTrackingItemStatus.ACTIVE : MemberTrackingItemStatus.INACTIVE;
 
   return prisma.user.findUnique({
     where: {
@@ -81,6 +84,12 @@ export const findUserByIdWithMemberTrackingItems = async (
       memberTrackingItems:
         resource === EUserResources.MEMBER_TRACKING_ITEMS
           ? {
+              where:
+                variant === EMtrVariant.ALL
+                  ? {}
+                  : {
+                      status: statusWhere,
+                    },
               include: {
                 trackingItem: true,
                 memberTrackingRecords: {

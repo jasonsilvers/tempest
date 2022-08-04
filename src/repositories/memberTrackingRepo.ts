@@ -1,6 +1,6 @@
 import { MemberTrackingItem, MemberTrackingRecord, Prisma } from '.prisma/client';
 import prisma from '../prisma/prisma';
-import { ECategories } from '../const/enums';
+import { ECategorie } from '../const/enums';
 import { filterObject } from '../utils/filterObject';
 
 export const updateMemberTrackingRecord = async (id: number, memberTrackingRecord: MemberTrackingRecord) => {
@@ -216,11 +216,11 @@ export const countMemberTrackingRecordsForMemberTrackingItem = (trackingItemId: 
 
 export type MemberTrackingItemWithMTRStatus = MemberTrackingItemWithAll & {
   status: {
-    [ECategories.OVERDUE]: number;
-    [ECategories.DONE]: number;
-    [ECategories.SIGNATURE_REQUIRED]: number;
-    [ECategories.UPCOMING]: number;
-    [ECategories.TODO]: number;
-    [ECategories.ARCHIVED]: number;
+    [ECategorie.OVERDUE]: number;
+    [ECategorie.DONE]: number;
+    [ECategorie.SIGNATURE_REQUIRED]: number;
+    [ECategorie.UPCOMING]: number;
+    [ECategorie.TODO]: number;
+    [ECategorie.ARCHIVED]: number;
   };
 };

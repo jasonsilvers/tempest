@@ -5,14 +5,14 @@ import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
 import 'twin.macro';
 import { Close } from '../../../assets/Icons';
-import { ECategories, EMtrVerb } from '../../../const/enums';
+import { ECategorie, EMtrVariant, EMtrVerb } from '../../../const/enums';
 import { useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import ConditionalDateInput from '../../../lib/ConditionalDateInput';
 import { DialogContent, DialogTitle } from '../../../lib/ui';
 import { TrackingItemInterval } from '../../../utils/daysToString';
 import { getCategory } from '../../../utils/status';
 import ConfirmDialog from '../../Dialog/ConfirmDialog';
-import { RecordRowActions } from '../Actions/RecordSignature';
+import { RecordRowActions } from '../Actions/RecordRowActions';
 import { TableData, TableRow, TokenObj } from '../TwinMacro/Twin';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
 
@@ -26,28 +26,44 @@ const DueDate = ({ completedDate, interval }: { completedDate: Date; interval: n
 
 export type RecordWithTrackingItem = MemberTrackingRecord & {
   trackingItem: TrackingItem;
-  status?: ECategories;
+  status?: ECategorie;
   authority: User;
 };
 
-const isFiltered = (categories: ECategories[], activeCategory: ECategories, status: ECategories) => {
-  // fallback case to ensure the activeCategory is in the category array
-  if (!categories.includes(activeCategory)) {
+const filterRecordRowByCategory = (categories: ECategorie[], activeCategory: ECategorie, status: ECategorie) => {
+  if (activeCategory === ECategorie.ALL) {
+    return false;
+  }
+
+  if (!categories?.includes(activeCategory)) {
     return true;
   }
 
-  // Filter statuses
-  if (!categories.includes(status)) {
+  if (!categories?.includes(status)) {
     return true;
   }
-  // display all filter
-  if (activeCategory !== ECategories.ALL) {
-    if (activeCategory !== status) {
-      return true;
-    }
+
+  if (activeCategory !== status) {
+    return true;
   }
 
   return false;
+};
+
+const filterRecordRowByVariant = (variant: EMtrVariant) => {
+  if (variant === EMtrVariant.COMPLETED || variant === EMtrVariant.ARCHIVED) {
+    return false;
+  }
+
+  if (variant === EMtrVariant.IN_PROGRESS) {
+    return false;
+  }
+
+  if (variant === EMtrVariant.ALL) {
+    return false;
+  }
+
+  return true;
 };
 
 const TrainingTitle = ({ title, description, location, completedDate, recurrence }) => {
@@ -153,7 +169,7 @@ const RecordRow: React.FC<{
   memberTrackingRecord: MemberTrackingRecord & { trackingItem: TrackingItem; trainee: User; authority: User };
   trackingItem: TrackingItem;
 }> = ({ memberTrackingRecord, trackingItem }) => {
-  const { activeCategory, categories } = useMemberItemTrackerContext();
+  const { activeCategory, categories, variant } = useMemberItemTrackerContext();
 
   const completionDate = useUpdateMemberTrackingRecord(EMtrVerb.UPDATE_COMPLETION);
 
@@ -188,12 +204,12 @@ const RecordRow: React.FC<{
     );
   };
 
-  const handleYes = () => {
+  const handleYesClearSignatures = () => {
     handleMutation();
     setModalState({ open: false, date: null });
   };
 
-  const handleNo = () => {
+  const handleNoClearSignatures = () => {
     setModalState({ open: false, date: null });
   };
 
@@ -211,11 +227,16 @@ const RecordRow: React.FC<{
       handleMutation(date);
     }
   };
-  if (isFiltered(categories, activeCategory, status)) {
+
+  if (filterRecordRowByCategory(categories, activeCategory, status)) {
     return null;
   }
 
-  const DynamicStatus = TokenObj[status];
+  if (filterRecordRowByVariant(variant)) {
+    return null;
+  }
+
+  const DynamicStatus = variant === EMtrVariant.ARCHIVED ? TokenObj['Archived'] : TokenObj[status];
   return (
     <>
       <TableRow>
@@ -248,6 +269,7 @@ const RecordRow: React.FC<{
             <DueDate completedDate={memberTrackingRecord.completedDate} interval={trackingItem.interval} />
           </TableData>
         </div>
+
         <RecordRowActions
           memberTrackingRecord={memberTrackingRecord}
           authoritySignedDate={memberTrackingRecord.authoritySignedDate}
@@ -255,7 +277,7 @@ const RecordRow: React.FC<{
           disabled={!memberTrackingRecord.completedDate}
         />
       </TableRow>
-      <ConfirmDialog open={modalState.open} handleNo={handleNo} handleYes={handleYes}>
+      <ConfirmDialog open={modalState.open} handleNo={handleNoClearSignatures} handleYes={handleYesClearSignatures}>
         <DialogTitle>Proceed?</DialogTitle>
         <DialogContent>
           Changing the completion date will clear all signatures present. Are you sure you want to continue?

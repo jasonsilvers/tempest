@@ -22,8 +22,10 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import EventIcon from '@mui/icons-material/Event';
 import MasksIcon from '@mui/icons-material/Masks';
 import ErrorIcon from '@mui/icons-material/Error';
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 export {
+  ArchiveIcon,
   ErrorIcon,
   MasksIcon,
   AddIcon,

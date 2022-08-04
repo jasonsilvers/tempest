@@ -1,10 +1,11 @@
 import { createContext, useContext } from 'react';
-import { ECategories } from '../../../../const/enums';
+import { ECategorie, EMtrVariant } from '../../../../const/enums';
 
 interface IMemberTrackerContextState {
-  activeCategory: ECategories;
-  categories: ECategories[];
-  setActiveCategory: (activeCategory: ECategories) => void;
+  activeCategory: ECategorie;
+  categories: ECategorie[];
+  variant: EMtrVariant;
+  setActiveCategory: (activeCategory: ECategorie) => void;
 }
 
 export const MemberItemTrackerContext = createContext<IMemberTrackerContextState>(null);

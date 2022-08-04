@@ -73,7 +73,7 @@ const memberTrackingItemGrants: Grants[] = [
   },
   {
     action: EAction.UPDATE_ANY,
-    attributes: 'isActive',
+    attributes: 'status',
     resource: EResource.MEMBER_TRACKING_ITEM,
     role: ERole.MONITOR,
   },

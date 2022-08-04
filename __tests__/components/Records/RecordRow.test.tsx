@@ -3,11 +3,11 @@ import { MemberTrackingRecord, TrackingItem, User } from '.prisma/client';
 import dayjs from 'dayjs';
 import React from 'react';
 import 'whatwg-fetch';
-import { RecordRowActions } from '../../../src/components/Records/Actions/RecordSignature';
+import { RecordRowActions } from '../../../src/components/Records/Actions/RecordRowActions';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 import RecordRow from '../../../src/components/Records/MemberRecordTracker/RecordRow';
-import { ECategories, EUri } from '../../../src/const/enums';
+import { ECategorie, EMtrVariant, EUri } from '../../../src/const/enums';
 import { joeAdmin } from '../../testutils/mocks/fixtures';
 import { rest, server } from '../../testutils/mocks/msw';
 import { fireEvent, render, userEvent, waitFor, waitForLoadingToFinish } from '../../testutils/TempestTestUtils';
@@ -80,9 +80,10 @@ afterAll(() => {
 
 test('should render default case', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.ALL,
-    categories: [ECategories.ALL, ECategories.TODO],
+    activeCategory: ECategorie.ALL,
+    categories: [ECategorie.ALL, ECategorie.TODO],
     setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
   }));
 
   const { getByText } = render(<RecordRow memberTrackingRecord={mtr1} trackingItem={trackingItemWithAnnualInterval} />);
@@ -92,9 +93,10 @@ test('should render default case', async () => {
 
 test('should show N/A if interval is zero', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.SIGNATURE_REQUIRED,
-    categories: [ECategories.ALL, ECategories.TODO, ECategories.SIGNATURE_REQUIRED],
+    activeCategory: ECategorie.SIGNATURE_REQUIRED,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.SIGNATURE_REQUIRED],
     setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
   }));
 
   const screen = render(
@@ -112,9 +114,10 @@ test('should show N/A if interval is zero', async () => {
 
 test('should change completion date', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.ALL,
-    categories: [ECategories.ALL, ECategories.TODO, ECategories.SIGNATURE_REQUIRED],
+    activeCategory: ECategorie.ALL,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.SIGNATURE_REQUIRED],
     setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
   }));
 
   server.use(
@@ -154,9 +157,10 @@ test('should change completion date', async () => {
 
 test('should alert user that signatures will be removed', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.ALL,
-    categories: [ECategories.ALL, ECategories.TODO, ECategories.SIGNATURE_REQUIRED],
+    activeCategory: ECategorie.ALL,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.SIGNATURE_REQUIRED],
     setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
   }));
 
   server.use(
@@ -203,9 +207,10 @@ test('should alert user that signatures will be removed', async () => {
 
 test('should not fire mutation if completion date did not change and was empty', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.ALL,
-    categories: [ECategories.ALL, ECategories.TODO, ECategories.SIGNATURE_REQUIRED],
+    activeCategory: ECategorie.ALL,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.SIGNATURE_REQUIRED],
     setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
   }));
 
   const screen = render(
@@ -227,9 +232,10 @@ test('should not fire mutation if completion date did not change and was empty',
 
 test('should not fire mutation if completion date did not change', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.ALL,
-    categories: [ECategories.ALL, ECategories.TODO, ECategories.SIGNATURE_REQUIRED],
+    activeCategory: ECategorie.ALL,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.SIGNATURE_REQUIRED],
     setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
   }));
 
   const date = getToday();
@@ -255,9 +261,10 @@ test('should not fire mutation if completion date did not change', async () => {
 
 test('should not render if the category list does not include the active category', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.DONE,
-    categories: [ECategories.TODO],
+    activeCategory: ECategorie.DONE,
+    categories: [ECategorie.TODO],
     setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
   }));
 
   const { queryByText } = render(
@@ -268,13 +275,14 @@ test('should not render if the category list does not include the active categor
 
 test('should not render if the status is not in the category list', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.DONE,
-    categories: [ECategories.DONE],
+    activeCategory: ECategorie.DONE,
+    categories: [ECategorie.DONE],
     setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
   }));
 
   const { queryByText } = render(
-    <MemberItemTrackerContextProvider categories={[ECategories.ALL]}>
+    <MemberItemTrackerContextProvider categories={[ECategorie.ALL]} variant={EMtrVariant.IN_PROGRESS}>
       <RecordRow memberTrackingRecord={mtr1} trackingItem={trackingItemWithAnnualInterval} />
     </MemberItemTrackerContextProvider>
   );
@@ -284,9 +292,10 @@ test('should not render if the status is not in the category list', async () => 
 
 test('should not render if the item status does not match active category', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
-    activeCategory: ECategories.DONE,
-    categories: [ECategories.ALL, ECategories.TODO, ECategories.DONE],
+    activeCategory: ECategorie.DONE,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
     setActiveCategory: jest.fn(),
+    variant: EMtrVariant.IN_PROGRESS,
   }));
 
   const { queryByText } = render(

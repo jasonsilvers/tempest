@@ -1,5 +1,5 @@
 import tw from 'twin.macro';
-import { ECategories } from '../../../const/enums';
+import { ECategorie } from '../../../const/enums';
 
 export const TableData = tw.div`text-secondarytext mx-3`;
 export const TableRow = tw.div`text-black border-b text-sm flex max-width[1440px] min-width[1040px] height[45px] py-3 items-center`;
@@ -13,9 +13,9 @@ export const All = Token;
 export const Awaiting_Signature = tw(Token)`background-color[#e98c00]`;
 export const Upcoming = tw(Token)`background-color[#FAC50A]`;
 export const To_Do = tw(Token)`background-color[#e98c00]`;
-export const Archived = tw(Token)`bg-black`;
+export const Archived = tw(Token)`bg-gray-400`;
 // For Dynamic Tokens in the Record Row
-export const TokenObj: { [K in ECategories]: typeof Token } = {
+export const TokenObj: { [K in ECategorie]: typeof Token } = {
   Overdue,
   Done,
   All,

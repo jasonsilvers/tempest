@@ -1,7 +1,7 @@
 import { MemberTrackingItem } from '.prisma/client';
 import axios from 'axios';
 import { useMutation, useQueryClient } from 'react-query';
-import { EMtrVariant } from '../../const/enums';
+import { EMtrVariant, EUri } from '../../const/enums';
 
 export const MEMBER_TRACKING_ITEM_RESOURCE = 'membertrackingitems';
 
@@ -27,10 +27,27 @@ const useCreateMemberTrackingItemAndRecord = () => {
         })
         .then((result) => result.data),
     {
-      onSuccess: (data) => {
+      onSettled: (data) => {
         queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.IN_PROGRESS));
       },
     }
+  );
+};
+
+export const useUpdateMemberTrackingItem = () => {
+  return useMutation<
+    MemberTrackingItem,
+    unknown,
+    { updatedMemberTrackingItem: Partial<MemberTrackingItem>; trackingItemId: number; userId: number }
+  >(({ updatedMemberTrackingItem, trackingItemId, userId }) =>
+    axios
+      .put(EUri.MEMBER_TRACKING_ITEMS, updatedMemberTrackingItem, {
+        params: {
+          trackingItemId,
+          userId,
+        },
+      })
+      .then((response) => response.data)
   );
 };
 
