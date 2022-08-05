@@ -94,7 +94,7 @@ export const MassSign = ({ usersQuery }: MassSignProps) => {
         })
         .map((user) => (
           <div key={user.id}>
-            <div tw="bg-gray-200 px-5 py-2 font-bold">
+            <div tw="bg-gray-200 px-5 py-2 font-medium">
               <Link href={`/Profile/${user.id}`}>
                 <a tw="underline text-primary cursor-pointer">
                   {user.rank} {user.firstName} {user.lastName}
