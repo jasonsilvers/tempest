@@ -250,9 +250,10 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
     setSelectedCatalog(determinedSelectedCatalog);
   };
 
-  const handleSave = () => {
+  const handleSave = (isConfirmed = false) => {
+    console.log('calle dhandle save');
     setIsSaving(true);
-    if (trackingItemsThatMatch?.length !== 0) {
+    if (trackingItemsThatMatch?.length !== 0 && !isConfirmed) {
       setConfirmationIsOpen(true);
       return;
     }
@@ -269,6 +270,10 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   const disableSaveButton = () => {
     return formIsInvalid || trackingItemsThatMatch?.some((ti) => +ti.score.toFixed(6) === 0);
+  };
+
+  const getSelectedCatalogName = () => {
+    return orgsFromServer.find((org) => org.id.toString() === selectedCatalog).name;
   };
 
   return (
@@ -373,8 +378,8 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
               Similiar Training Items
             </Typography>
             <p tw="text-sm text-gray-400 pb-5">
-              The following trainings already exist within the Global Training Catalog. Please ensure you are not
-              creating a duplicate training.
+              {`The following trainings already exist either within the Global Training Catalog or ${getSelectedCatalogName()} . Please ensure you are not
+              creating a duplicate training.`}
             </p>
             <TableRowHeader>
               <TableData tw="w-1/4">Training Title</TableData>
@@ -401,7 +406,13 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
       ) : null}
 
       <DialogActions>
-        <Button onClick={handleSave} disabled={disableSaveButton()} size="medium" color="secondary" variant="contained">
+        <Button
+          onClick={() => handleSave()}
+          disabled={disableSaveButton()}
+          size="medium"
+          color="secondary"
+          variant="contained"
+        >
           Create
         </Button>
       </DialogActions>
@@ -412,14 +423,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           setConfirmationIsOpen(false);
         }}
         handleYes={() => {
-          setIsSaving(true);
-          create(trackingItem as TrackingItem, {
-            onSuccess: () => {
-              enqueueSnackbar('Tracking Item Added!', { variant: 'success' });
-              handleClose();
-            },
-            onSettled: handleOnSettled,
-          });
+          handleSave(true);
           setConfirmationIsOpen(false);
         }}
       >
