@@ -227,13 +227,15 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   };
 
   const handleSave = (isConfirmed = false) => {
-    console.log('calle dhandle save');
     setIsSaving(true);
     if (trackingItemsThatMatch?.length !== 0 && !isConfirmed) {
       setConfirmationIsOpen(true);
       return;
     }
-    const newTrackingItem = { ...trackingItem, organizationId: parseInt(selectedCatalog) };
+    const newTrackingItem = {
+      ...trackingItem,
+      organizationId: selectedCatalog !== '0' ? parseInt(selectedCatalog) : null,
+    };
 
     create(newTrackingItem, {
       onSuccess: () => {
