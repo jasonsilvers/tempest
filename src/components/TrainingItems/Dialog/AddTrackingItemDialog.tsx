@@ -61,36 +61,12 @@ const AdjustedOutlinedInput: React.FC<OutlinedInputProps> = (props) => (
   <OutlinedInput margin="dense" fullWidth {...props} />
 );
 
-const Bold = tw.div`font-bold bg-yellow-100`;
-
 const initialTrackingItemToAdd: TrackingItemToAdd = {
   title: '',
   description: '',
   interval: null,
   location: '',
   organizationId: null,
-};
-
-const resolveAttribute = (obj, key) => key.split('.').reduce((prev, curr) => prev?.[curr], obj);
-
-const highlight = (value: string, indices: readonly Fuse.RangeTuple[] = [], i = 1): JSX.Element => {
-  const pair = indices[indices.length - i];
-  return !pair ? (
-    <p>{value}</p>
-  ) : (
-    <div tw="flex">
-      {highlight(value.substring(0, pair[0]), indices, i + 1)}
-      <Bold>{value.substring(pair[0], pair[1] + 1)}</Bold>
-      {value.substring(pair[1] + 1)}
-    </div>
-  );
-};
-
-const FuseHighlight = ({ hit, attribute }: { hit: Fuse.FuseResult<TrackingItem>; attribute: string }): JSX.Element => {
-  const matches = typeof hit.item === 'string' ? hit.matches?.[0] : hit.matches?.find((m) => m.key === attribute);
-  const fallback = typeof hit.item === 'string' ? hit.item : resolveAttribute(hit.item, attribute);
-
-  return highlight(matches?.value || fallback, matches?.indices);
 };
 
 const alertIfDuplicate = (trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[]) => {
@@ -389,16 +365,10 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
             </TableRowHeader>
             {trackingItemsThatMatch?.map((hit) => (
               <TableRow key={hit.item.id}>
-                <TableData tw="text-sm w-1/4 overflow-ellipsis">
-                  <FuseHighlight hit={hit} attribute={'title'} />
-                </TableData>
+                <TableData tw="text-sm w-1/4 overflow-ellipsis">{hit.item.title}</TableData>
                 <TableData tw="text-sm w-1/4 text-center">{hit.item.interval}</TableData>
-                <TableData tw="text-sm w-1/4 whitespace-normal overflow-ellipsis">
-                  <FuseHighlight hit={hit} attribute={'location'} />
-                </TableData>
-                <TableData tw="text-sm w-1/4 whitespace-nowrap overflow-ellipsis">
-                  <FuseHighlight hit={hit} attribute={'description'} />
-                </TableData>
+                <TableData tw="text-sm w-1/4 whitespace-normal overflow-ellipsis">{hit.item.location}</TableData>
+                <TableData tw="text-sm w-1/4 whitespace-nowrap overflow-ellipsis">{hit.item.description}</TableData>
               </TableRow>
             ))}
           </DialogContent>
