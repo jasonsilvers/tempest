@@ -76,7 +76,9 @@ const alertIfDuplicate = (trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[
 };
 
 const formIsInValid = (trackingItem: TrackingItemToAdd): boolean => {
-  return !trackingItem.title || trackingItem.interval < 0 ? true : false;
+  const test = !trackingItem.title || trackingItem.interval < 0 || trackingItem.interval === null ? true : false;
+
+  return test;
 };
 
 const isDuplicate = (title: string, trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[]) => {
@@ -158,6 +160,89 @@ const determineSelectedCatalog = (catalogs: Organization[], loggedInUser: Logged
   return '0';
 };
 
+const RecurrenceTitle: React.FC<{ trackingItem: TrackingItemToAdd }> = ({ trackingItem }) => {
+  return (
+    <>
+      {trackingItem.interval < 0 || trackingItem.interval === null ? (
+        <DialogContentText tw="text-red-400">* Recurrence </DialogContentText>
+      ) : (
+        <DialogContentText>Recurrence</DialogContentText>
+      )}
+    </>
+  );
+};
+
+const TrackingItemTitle: React.FC<{
+  trackingItem: TrackingItemToAdd;
+  trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[];
+}> = ({ trackingItem, trackingItemsThatMatch }) => {
+  return (
+    <>
+      {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
+        <DialogContentText tw="text-red-400 flex">* Training Title</DialogContentText>
+      ) : (
+        <DialogContentText>Training Title</DialogContentText>
+      )}
+    </>
+  );
+};
+
+const TrackingItemsThatMatchWarning: React.FC<{
+  orgsFromServer: Organization[];
+  selectedCatalog: string;
+}> = ({ orgsFromServer, selectedCatalog }) => {
+  const selectgedCatalogName = orgsFromServer.find((org) => org.id.toString() === selectedCatalog.toString())?.name;
+
+  return (
+    <>
+      {selectedCatalog.toString() !== '0' ? (
+        <p tw="text-sm text-gray-400 pb-5">
+          {`The following trainings already exist within the Global Training Catalog or ${selectgedCatalogName} . Please ensure you are not
+              creating a duplicate training.`}
+        </p>
+      ) : (
+        <p tw="text-sm text-gray-400 pb-5">
+          {`The following trainings already exist within the Global Training Catalog. Please ensure you are not
+              creating a duplicate training.`}
+        </p>
+      )}
+    </>
+  );
+};
+
+const TrackingItemMatches: React.FC<{
+  orgsFromServer: Organization[];
+  selectedCatalog: string;
+  trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[];
+}> = ({ orgsFromServer, selectedCatalog, trackingItemsThatMatch }) => {
+  return (
+    <>
+      {trackingItemsThatMatch?.length > 0 ? (
+        <>
+          <DialogContent>
+            <Typography tw="pb-4" variant="h5">
+              Similiar Training Items
+            </Typography>
+            <TrackingItemsThatMatchWarning orgsFromServer={orgsFromServer} selectedCatalog={selectedCatalog} />
+            <TableRowHeader>
+              <TableData tw="w-1/4">Training Title</TableData>
+              <TableData tw="w-1/4 text-center">Interval (days)</TableData>
+              <TableData tw="w-1/2">Description</TableData>
+            </TableRowHeader>
+            {trackingItemsThatMatch?.map((hit) => (
+              <TableRow tw="w-[450] overflow-ellipsis" key={hit.item.id}>
+                <TableData tw="text-xs w-1/4 overflow-ellipsis">{hit.item.title}</TableData>
+                <TableData tw="text-xs w-1/4 text-center">{hit.item.interval}</TableData>
+                <TableData tw="text-xs w-1/2 overflow-ellipsis">{hit.item.description}</TableData>
+              </TableRow>
+            ))}
+          </DialogContent>
+        </>
+      ) : null}
+    </>
+  );
+};
+
 type AddTrackingItemDialogProps = {
   handleClose: () => void;
   isOpen: boolean;
@@ -227,13 +312,15 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   };
 
   const handleSave = (isConfirmed = false) => {
-    console.log('calle dhandle save');
     setIsSaving(true);
     if (trackingItemsThatMatch?.length !== 0 && !isConfirmed) {
       setConfirmationIsOpen(true);
       return;
     }
-    const newTrackingItem = { ...trackingItem, organizationId: parseInt(selectedCatalog) };
+    const newTrackingItem = {
+      ...trackingItem,
+      organizationId: selectedCatalog !== '0' ? parseInt(selectedCatalog) : null,
+    };
 
     create(newTrackingItem, {
       onSuccess: () => {
@@ -246,10 +333,6 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
   const disableSaveButton = () => {
     return formIsInvalid || trackingItemsThatMatch?.some((ti) => +ti.score.toFixed(6) === 0);
-  };
-
-  const getSelectedCatalogName = () => {
-    return orgsFromServer.find((org) => org.id.toString() === selectedCatalog).name;
   };
 
   return (
@@ -288,11 +371,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
           setTrackingItem={setTrackingItem}
         />
         <FormControl fullWidth tw="pb-5">
-          {isDuplicate(trackingItem.title, trackingItemsThatMatch) ? (
-            <DialogContentText tw="text-red-400 flex">* Training Title</DialogContentText>
-          ) : (
-            <DialogContentText>Training Title</DialogContentText>
-          )}
+          <TrackingItemTitle trackingItem={trackingItem} trackingItemsThatMatch={trackingItemsThatMatch} />
           <AdjustedOutlinedInput
             name="title"
             inputProps={{ 'aria-label': 'training-title-input' }}
@@ -306,11 +385,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
 
         <div tw="flex space-x-5 pb-5">
           <div tw="w-1/2">
-            {trackingItem.interval < 0 || trackingItem.interval === null ? (
-              <DialogContentText tw="text-red-400">* Recurrence </DialogContentText>
-            ) : (
-              <DialogContentText>Recurrence</DialogContentText>
-            )}
+            <RecurrenceTitle trackingItem={trackingItem} />
             <RecurrenceSelect
               value={trackingItem.interval?.toString()}
               handleChange={(event: SelectChangeEvent) => {
@@ -347,33 +422,11 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
         <div tw="pt-2 text-sm text-red-400">{alertIfDuplicate(trackingItemsThatMatch)}</div>
       </DialogContent>
 
-      {trackingItemsThatMatch?.length > 0 ? (
-        <>
-          <DialogContent>
-            <Typography tw="pb-4" variant="h5">
-              Similiar Training Items
-            </Typography>
-            <p tw="text-sm text-gray-400 pb-5">
-              {`The following trainings already exist either within the Global Training Catalog or ${getSelectedCatalogName()} . Please ensure you are not
-              creating a duplicate training.`}
-            </p>
-            <TableRowHeader>
-              <TableData tw="w-1/4">Training Title</TableData>
-              <TableData tw="w-1/4 text-center">Interval (days)</TableData>
-              <TableData tw="w-1/4">Location</TableData>
-              <TableData tw="w-1/4">Description</TableData>
-            </TableRowHeader>
-            {trackingItemsThatMatch?.map((hit) => (
-              <TableRow key={hit.item.id}>
-                <TableData tw="text-sm w-1/4 overflow-ellipsis">{hit.item.title}</TableData>
-                <TableData tw="text-sm w-1/4 text-center">{hit.item.interval}</TableData>
-                <TableData tw="text-sm w-1/4 whitespace-normal overflow-ellipsis">{hit.item.location}</TableData>
-                <TableData tw="text-sm w-1/4 whitespace-nowrap overflow-ellipsis">{hit.item.description}</TableData>
-              </TableRow>
-            ))}
-          </DialogContent>
-        </>
-      ) : null}
+      <TrackingItemMatches
+        orgsFromServer={orgsFromServer}
+        selectedCatalog={selectedCatalog}
+        trackingItemsThatMatch={trackingItemsThatMatch}
+      />
 
       <DialogActions>
         <Button

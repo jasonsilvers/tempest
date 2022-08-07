@@ -210,12 +210,18 @@ test('should show duplicates', async () => {
   await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
   const trainingTitleInput = screen.getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = screen.getByRole('textbox', { name: 'training-description-input' });
+  const trainingIntervalSelect = screen.getByRole('button', {
+    name: /recurrance-select/i,
+  });
 
   const newTrainingItemTitle = 'Big';
   const newTrainingItemDescription = 'New training item description';
 
   userEvent.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  fireEvent.mouseDown(trainingIntervalSelect);
+  const options = screen.getAllByRole('option');
+  fireEvent.click(options[0]);
 
   expect(await screen.findByText(/Bug Safety/i)).toBeInTheDocument();
 
@@ -277,12 +283,18 @@ test('should tell user this might be a duplicate but allow them to create it if 
   await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
   const trainingTitleInput = screen.getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = screen.getByRole('textbox', { name: 'training-description-input' });
+  const trainingIntervalSelect = screen.getByRole('button', {
+    name: /recurrance-select/i,
+  });
 
   const newTrainingItemTitle = 'Big Bug';
   const newTrainingItemDescription = 'New training item description';
 
   await user.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  fireEvent.mouseDown(trainingIntervalSelect);
+  const options = screen.getAllByRole('option');
+  fireEvent.click(options[0]);
 
   const createButton = screen.getByRole('button', { name: /create/i });
   fireEvent.click(createButton);
