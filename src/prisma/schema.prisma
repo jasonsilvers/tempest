@@ -113,6 +113,10 @@ model Organization {
 
   @@map("organization")
 }
+enum TrackingItemStatus {
+  ACTIVE
+  INACTIVE
+}
 
 model TrackingItem {
   id                   Int                    @id @default(autoincrement())
@@ -123,7 +127,7 @@ model TrackingItem {
   organizationId       Int?
   memberTrackingRecord MemberTrackingRecord[]
   templates            TemplateTrackingItem[]
-
+  status               TrackingItemStatus    @default(ACTIVE)
   JobResults         JobResult[]
   location           String?
   memberTrackingItem MemberTrackingItem[]

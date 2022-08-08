@@ -8,13 +8,13 @@ import { Resources } from './Resources';
 import { Roles } from './Roles';
 import 'twin.macro';
 
-interface ITabPanelProps {
+export interface ITabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
 }
 
-const TabPanel = (props: ITabPanelProps) => {
+export const TabPanel = (props: ITabPanelProps) => {
   const { children, value, index } = props;
 
   return (
@@ -29,7 +29,7 @@ const TabPanel = (props: ITabPanelProps) => {
   );
 };
 
-const a11yProps = (index: number) => {
+export const a11yProps = (index: number) => {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,

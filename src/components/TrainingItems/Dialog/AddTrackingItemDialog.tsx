@@ -51,7 +51,7 @@ const ShowLoadingOverlay = ({ showLoading }: { showLoading: boolean }) => {
   return null;
 };
 
-type TrackingItemToAdd = Omit<TrackingItem, 'id'>;
+type TrackingItemToAdd = Omit<TrackingItem, 'id' | 'status'>;
 
 const TableRowHeader = tw.div`text-gray-400 text-sm flex items-center flex-wrap min-width[450px] border-solid border-b border-gray-200`;
 const TableRow = tw.div`py-2 text-sm flex items-center flex-wrap min-width[450px] border-solid border-b border-gray-200`;

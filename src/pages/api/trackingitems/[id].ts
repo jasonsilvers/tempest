@@ -13,7 +13,8 @@ const trackingItemSchema = {
   put: {
     body: Joi.object({
       id: Joi.number().required(),
-      location: Joi.string().required().allow(null, ''),
+      location: Joi.string().optional().allow(null, ''),
+      status: Joi.string().optional(),
     }),
   },
 };
