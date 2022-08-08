@@ -267,7 +267,7 @@ const trackingItemGrants: Grants[] = [
   },
   {
     action: EAction.UPDATE_ANY,
-    attributes: '*',
+    attributes: 'location, description',
     resource: EResource.TRACKING_ITEM,
     role: ERole.MONITOR,
   },
