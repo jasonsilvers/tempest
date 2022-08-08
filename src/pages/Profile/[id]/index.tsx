@@ -12,11 +12,12 @@ import Tab from '../../../components/Records/MemberRecordTracker/Tab';
 import { ProfileHeader } from '../../../components/Profile/ProfileHeader';
 import { useMember } from '../../../hooks/api/users';
 import { BreadCrumbs } from '../../../components/Breadcrumbs';
-import { AddIcon } from '../../../assets/Icons';
-import { Card, Fab, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { AddIcon, ArchiveIcon } from '../../../assets/Icons';
+import { Button, Card, Fab, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 
 const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
   const {
+    push,
     query: { id },
   } = useRouter();
 
@@ -50,7 +51,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
     <div tw="relative min-w-min max-width[1440px] p-5">
       {canViewDashboard.granted && !isOnOwnProfile ? (
         <div tw="pb-10">
-          <BreadCrumbs />
+          <BreadCrumbs text="Training Record" />
         </div>
       ) : null}
       <div tw="pb-5">
@@ -87,7 +88,11 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
           </MemberItemTracker>
         ) : null}
 
-        <div tw="absolute top-6 right-6">
+        <div tw="absolute top-6 right-6 flex space-x-10">
+          <Button color="secondary" size="medium" variant="outlined" onClick={() => push(`/Profile/${userId}/Archive`)}>
+            <ArchiveIcon sx={{ mr: 1 }} />
+            View Archive
+          </Button>
           <Fab
             color="secondary"
             size="medium"
