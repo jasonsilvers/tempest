@@ -10,6 +10,7 @@ import Archive, { getServerSideProps } from '../../src/pages/Profile/[id]/Archiv
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import { findUserById } from '../../src/repositories/userRepo';
 import { GetServerSidePropsContext } from 'next';
+import { EUri } from '../../src/const/enums';
 
 jest.mock('../../src/repositories/userRepo');
 jest.mock('next/router', () => require('next-router-mock'));
@@ -26,7 +27,7 @@ beforeAll(() => {
     rest.get('/api/users/321', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
     }),
-    rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
+    rest.get('/api/users/123/membertrackingitems/archived', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
     })
   );
@@ -42,7 +43,7 @@ afterEach(() => {
 // // Clean up after the tests are finished.
 afterAll(() => server.close());
 
-it('renders the profile page with loading profile text', async () => {
+it('renders the profile page', async () => {
   singletonRouter.push({
     query: { id: 123 },
   });
@@ -53,6 +54,59 @@ it('renders the profile page with loading profile text', async () => {
     },
   });
   await waitFor(() => expect(screen.getByText(/bob jones/i)).toBeInTheDocument());
+});
+
+it('renders the profile page with bad permissions', async () => {
+  singletonRouter.push({
+    query: { id: 321 },
+  });
+  const { getByText } = rtlRender(<Archive />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+  await waitFor(() => expect(getByText(/loading archive page/i)).toBeInTheDocument());
+
+  await waitFor(() => getByText(/permission to view/i));
+});
+
+it('should not show breadcrumbs if member', async () => {
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+
+  const { getByText, queryByText } = rtlRender(<Archive initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+  await waitFor(() => expect(getByText(/loading archive page/i)).toBeInTheDocument());
+
+  await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
+  expect(queryByText(/dashboard/i)).not.toBeInTheDocument();
+});
+
+it('should show breadcrumbs if monitor and not on own profile', async () => {
+  server.use(
+    rest.get('/api/users/123', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(bobJones));
+    }),
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    })
+  );
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+  const { getByText, queryByText } = rtlRender(<Archive initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+  await waitFor(() => expect(getByText(/loading archive page/i)).toBeInTheDocument());
+
+  await waitFor(() => expect(getByText(/jones/i)).toBeInTheDocument());
+  expect(queryByText(/dashboard/i)).toBeInTheDocument();
 });
 
 test('should do serverside rending and return user', async () => {

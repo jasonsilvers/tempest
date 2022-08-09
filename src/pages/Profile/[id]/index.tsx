@@ -50,8 +50,13 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   return (
     <div tw="relative min-w-min max-width[1440px] p-5">
       {canViewDashboard.granted && !isOnOwnProfile ? (
-        <div tw="pb-10">
+        <div tw="pb-10 flex items-center">
           <BreadCrumbs text="Training Record" />
+          <div tw="mr-auto"></div>
+          <Button color="secondary" size="medium" onClick={() => push(`/Profile/${userId}/Archive`)}>
+            <ArchiveIcon sx={{ mr: 1 }} />
+            View Archive
+          </Button>
         </div>
       ) : null}
       <div tw="pb-5">
@@ -89,10 +94,6 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
         ) : null}
 
         <div tw="absolute top-6 right-6 flex space-x-10">
-          <Button color="secondary" size="medium" variant="outlined" onClick={() => push(`/Profile/${userId}/Archive`)}>
-            <ArchiveIcon sx={{ mr: 1 }} />
-            View Archive
-          </Button>
           <Fab
             color="secondary"
             size="medium"
