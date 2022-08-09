@@ -2,22 +2,33 @@
 import { MemberTrackingRecord, TrackingItem, User } from '.prisma/client';
 import dayjs from 'dayjs';
 import React from 'react';
+import { QueryClient } from 'react-query';
 import 'whatwg-fetch';
 import { RecordRowActions } from '../../../src/components/Records/Actions/RecordRowActions';
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 import RecordRow from '../../../src/components/Records/MemberRecordTracker/RecordRow';
 import { ECategorie, EMtrVariant, EUri } from '../../../src/const/enums';
+import { mtiQueryKeys } from '../../../src/hooks/api/memberTrackingItem';
 import { andrewMonitor, joeAdmin, bobJones } from '../../testutils/mocks/fixtures';
 import { rest, server } from '../../testutils/mocks/msw';
-import { fireEvent, render, userEvent, waitFor, waitForLoadingToFinish } from '../../testutils/TempestTestUtils';
+import {
+  createWrapper,
+  fireEvent,
+  render,
+  rtlRender,
+  userEvent,
+  waitFor,
+  waitForElementToBeRemoved,
+  waitForLoadingToFinish,
+} from '../../testutils/TempestTestUtils';
 
 export function getToday(minus = 0) {
-  const date = new Date();
+  const newDate = new Date();
 
-  const monthShort = date.toLocaleString('default', { month: 'short' });
-  const day = date.getDate() - minus;
-  const year = date.getFullYear();
+  const monthShort = newDate.toLocaleString('default', { month: 'short' });
+  const day = newDate.getDate() - minus;
+  const year = newDate.getFullYear();
 
   return `${monthShort} ${day}, ${year}`;
 }
@@ -28,6 +39,7 @@ const trackingItemWithAnnualInterval: TrackingItem = {
   interval: 365,
   title: 'Item Title',
   location: 'this is the location',
+  status: 'ACTIVE',
 };
 
 const mtr1 = {
@@ -55,6 +67,14 @@ const mtr1WithCompleteDate = {
   traineeSignedDate: null,
   trackingItem: trackingItemWithAnnualInterval,
 } as MemberTrackingRecord & { trackingItem: TrackingItem; trainee: User; authority: User };
+
+const memberTrackingItem = {
+  createdAt: '2022-08-08T22:49:12.670Z',
+  status: 'ACTIVE',
+  trackingItem: trackingItemWithAnnualInterval,
+  trackingItemId: 1,
+  userId: 123,
+};
 
 // Establish API mocking before tests.
 beforeAll(() => {
@@ -154,11 +174,11 @@ test('should change completion date', async () => {
     />
   );
 
-  const date = getToday();
+  const todayDate = getToday();
 
   const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
-  userEvent.type(datePicker, date);
-  const chosenDate = await screen.findByRole('button', { name: date }); // choose any date that the calender shows
+  userEvent.type(datePicker, todayDate);
+  const chosenDate = await screen.findByRole('button', { name: todayDate }); // choose any date that the calender shows
   fireEvent.click(chosenDate);
 
   const naDiv = screen.getByText(/n\/a/i);
@@ -554,7 +574,7 @@ test('should show signedOn for monitor', async () => {
     })
   );
 
-  const date = new Date();
+  const date = getToday();
 
   const screen = render(
     <RecordRowActions
@@ -576,7 +596,7 @@ test('should show signedOn for monitor', async () => {
   expect(await screen.findByText(/signed on/i)).toBeInTheDocument();
 });
 
-test('Archive actions - on archive screen', async () => {
+test('Archive actions - on archive screen - should disable UNARCHIVE if tracking item is INACTIVE', async () => {
   jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
     activeCategory: ECategorie.ALL,
     categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
@@ -591,7 +611,15 @@ test('Archive actions - on archive screen', async () => {
 
   const date = new Date();
 
-  const screen = render(
+  const queryClient = new QueryClient();
+
+  queryClient.setQueryData(mtiQueryKeys.memberTrackingItems(memberTrackingItem.userId, EMtrVariant.ARCHIVED), [
+    { ...memberTrackingItem, trackingItem: { ...memberTrackingItem.trackingItem, status: 'INACTIVE' } },
+  ]);
+
+  const Wrapper = createWrapper(queryClient);
+
+  const screen = rtlRender(
     <RecordRowActions
       authoritySignedDate={date}
       traineeSignedDate={date}
@@ -603,12 +631,26 @@ test('Archive actions - on archive screen', async () => {
         authority: andrewMonitor,
       }}
       disabled={false}
-    />
+    />,
+    {
+      wrapper: function withWrapper(props) {
+        return <Wrapper {...props} />;
+      },
+    }
   );
 
   await waitForLoadingToFinish();
+  expect(await screen.findByTestId('LockIcon')).toBeInTheDocument();
 
-  expect(await screen.findByRole('button', { name: /UNARCHIVE/i })).toBeInTheDocument();
+  const unarchiveText = screen.getByText(/unarchive/i);
+
+  fireEvent.mouseEnter(unarchiveText);
+
+  expect(await screen.findByText(/this item is no longer a requirement/i)).toBeInTheDocument();
+
+  fireEvent.mouseLeave(unarchiveText);
+
+  await waitForElementToBeRemoved(() => screen.getByText(/this item is no longer a requirement/i));
 });
 
 test('Archive actions - on completed screen', async () => {
@@ -693,7 +735,15 @@ test('Archive actions - on archive screen', async () => {
 
   const date = new Date();
 
-  const screen = render(
+  const queryClient = new QueryClient();
+
+  queryClient.setQueryData(mtiQueryKeys.memberTrackingItems(memberTrackingItem.userId, EMtrVariant.ARCHIVED), [
+    memberTrackingItem,
+  ]);
+
+  const Wrapper = createWrapper(queryClient);
+
+  const screen = rtlRender(
     <RecordRowActions
       authoritySignedDate={date}
       traineeSignedDate={date}
@@ -705,7 +755,12 @@ test('Archive actions - on archive screen', async () => {
         authority: andrewMonitor,
       }}
       disabled={false}
-    />
+    />,
+    {
+      wrapper: function withWrapper(props) {
+        return <Wrapper {...props} />;
+      },
+    }
   );
 
   await waitForLoadingToFinish();

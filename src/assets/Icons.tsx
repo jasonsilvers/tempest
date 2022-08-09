@@ -23,8 +23,10 @@ import EventIcon from '@mui/icons-material/Event';
 import MasksIcon from '@mui/icons-material/Masks';
 import ErrorIcon from '@mui/icons-material/Error';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import LockIcon from '@mui/icons-material/Lock';
 
 export {
+  LockIcon,
   ArchiveIcon,
   ErrorIcon,
   MasksIcon,

@@ -1,16 +1,17 @@
-import { Button, IconButton, Zoom } from '@mui/material';
-import { MemberTrackingItemStatus, MemberTrackingRecord, User } from '@prisma/client';
+import { Button, Fade, IconButton, Paper, Popper, Typography, Zoom } from '@mui/material';
+import { MemberTrackingItemStatus, MemberTrackingRecord, TrackingItemStatus, User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
-import React from 'react';
+import React, { useState } from 'react';
 import { UseMutateFunction, useQueryClient } from 'react-query';
 import 'twin.macro';
-import { ArchiveIcon, DoneAllIcon } from '../../../assets/Icons';
+import { ArchiveIcon, DoneAllIcon, LockIcon } from '../../../assets/Icons';
 import { EFuncAction, EMtrVariant, EMtrVerb, EResource, ERole } from '../../../const/enums';
 import { mtiQueryKeys, useUpdateMemberTrackingItem } from '../../../hooks/api/memberTrackingItem';
 import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { LoadingSpinner, TempestDeleteIcon, TempestToolTip } from '../../../lib/ui';
+import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
 import setDomRole from '../../../utils/setDomRole';
 import { useMemberItemTrackerContext } from '../MemberRecordTracker/providers/useMemberItemTrackerContext';
@@ -142,6 +143,96 @@ const getAllowedActions = (
   );
 };
 
+const UnArchiveActions: React.FC<{
+  memberTrackingRecord: MemberTrackingRecord & { trainee: User; authority: User };
+}> = ({ memberTrackingRecord }) => {
+  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLSpanElement | null>(null);
+  const { mutate: updateMemberTrackingItem } = useUpdateMemberTrackingItem();
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+  const memberTrackingItems = queryClient.getQueriesData<MemberTrackingItemWithAll[]>(
+    mtiQueryKeys.memberTrackingItems(memberTrackingRecord.traineeId, EMtrVariant.ARCHIVED)
+  )[0][1];
+
+  const memberTrackingItem = memberTrackingItems.find(
+    (mti) => mti.trackingItemId === memberTrackingRecord.trackingItemId
+  );
+
+  const unarchiveRecord = () => {
+    updateMemberTrackingItem(
+      {
+        updatedMemberTrackingItem: { status: MemberTrackingItemStatus.ACTIVE },
+        trackingItemId: memberTrackingRecord.trackingItemId,
+        userId: memberTrackingRecord.traineeId,
+      },
+      {
+        onSuccess: () => {
+          enqueueSnackbar('Record successfully unarchived', { variant: 'success' });
+        },
+        onError: () => {
+          console.log('error with unarchiving');
+        },
+        onSettled: (data) => {
+          queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.ARCHIVED));
+        },
+      }
+    );
+  };
+
+  if (memberTrackingItem.trackingItem.status === TrackingItemStatus.INACTIVE) {
+    return (
+      <div tw="flex items-center space-x-1">
+        <LockIcon color="disabled" fontSize="small" />
+        <Typography
+          variant="body2"
+          sx={{ color: '#DADADA' }}
+          onMouseEnter={(event) => {
+            setOpen(true);
+            setAnchorEl(event.currentTarget);
+          }}
+          onMouseLeave={() => {
+            setOpen(false);
+            setAnchorEl(null);
+          }}
+        >
+          UNARCHIVE
+        </Typography>
+        <Popper
+          id={`unarchive-popper-${memberTrackingRecord.id}`}
+          open={open}
+          anchorEl={anchorEl}
+          placement={'left-start'}
+          transition
+        >
+          {({ TransitionProps }) => (
+            <Fade {...TransitionProps} timeout={350}>
+              <Paper elevation={4} sx={{ bgcolor: 'white', p: 2, width: 250, textAlign: 'center' }}>
+                {memberTrackingItem.trackingItem.organizationId === null ? (
+                  <Typography tw="text-secondarytext">
+                    This item is no longer a requirement and has been archived by a <strong>Monitor</strong> in the
+                    <strong> Global Training Catalog.</strong>
+                  </Typography>
+                ) : (
+                  <Typography tw="text-secondarytext">
+                    This item is no longer a requirement and has been archived by a <strong>Training Monitor</strong>.
+                  </Typography>
+                )}
+              </Paper>
+            </Fade>
+          )}
+        </Popper>
+      </div>
+    );
+  }
+
+  return (
+    <Button color="secondary" onClick={unarchiveRecord}>
+      Unarchive
+    </Button>
+  );
+};
+
 const ArchiveActions: React.FC<{
   isMonitor: boolean;
   memberTrackingRecord: MemberTrackingRecord & { trainee: User; authority: User };
@@ -150,6 +241,27 @@ const ArchiveActions: React.FC<{
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const { variant } = useMemberItemTrackerContext();
+
+  const archiveRecord = () => {
+    updateMemberTrackingItem(
+      {
+        updatedMemberTrackingItem: { status: MemberTrackingItemStatus.INACTIVE },
+        trackingItemId: memberTrackingRecord.trackingItemId,
+        userId: memberTrackingRecord.traineeId,
+      },
+      {
+        onSuccess: () => {
+          enqueueSnackbar('Record successfully archived', { variant: 'success' });
+        },
+        onError: () => {
+          console.log('error with archiving');
+        },
+        onSettled: (data) => {
+          queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.COMPLETED));
+        },
+      }
+    );
+  };
 
   if (!isMonitor) {
     return null;
@@ -162,55 +274,13 @@ const ArchiveActions: React.FC<{
           aria-label={`archive-tracking-record-${memberTrackingRecord.id}`}
           size="small"
           color="secondary"
-          onClick={() =>
-            updateMemberTrackingItem(
-              {
-                updatedMemberTrackingItem: { status: MemberTrackingItemStatus.INACTIVE },
-                trackingItemId: memberTrackingRecord.trackingItemId,
-                userId: memberTrackingRecord.traineeId,
-              },
-              {
-                onSuccess: () => {
-                  enqueueSnackbar('Record successfully archived', { variant: 'success' });
-                },
-                onError: () => {
-                  console.log('error with archiving');
-                },
-                onSettled: (data) => {
-                  queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.COMPLETED));
-                },
-              }
-            )
-          }
+          onClick={archiveRecord}
           tw="hover:bg-transparent"
         >
           <ArchiveIcon />
         </IconButton>
       ) : (
-        <Button
-          onClick={() =>
-            updateMemberTrackingItem(
-              {
-                updatedMemberTrackingItem: { status: MemberTrackingItemStatus.ACTIVE },
-                trackingItemId: memberTrackingRecord.trackingItemId,
-                userId: memberTrackingRecord.traineeId,
-              },
-              {
-                onSuccess: () => {
-                  enqueueSnackbar('Record successfully unarchived', { variant: 'success' });
-                },
-                onError: () => {
-                  console.log('error with unarchiving');
-                },
-                onSettled: (data) => {
-                  queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.ARCHIVED));
-                },
-              }
-            )
-          }
-        >
-          UNARCHIVE
-        </Button>
+        <UnArchiveActions memberTrackingRecord={memberTrackingRecord} />
       )}
     </>
   );
