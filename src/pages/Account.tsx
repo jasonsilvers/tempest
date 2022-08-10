@@ -19,7 +19,7 @@ import { User } from '@prisma/client';
 import { useUser, withPageAuth } from '@tron/nextjs-auth-p1';
 import Joi from 'joi';
 import { useSnackbar } from 'notistack';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
 import { ranks } from '../const/ranks';
@@ -82,26 +82,16 @@ const WorkForm = ({ user }: { user: LoggedInUser }) => {
     control,
     register,
     reset,
-    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: joiResolver(workFormSchema),
     defaultValues: {
-      organization: 'none',
-      dutyTitle: '',
-      afsc: '',
+      organization: user.organization.id.toString(),
+      dutyTitle: user.dutyTitle,
+      afsc: user.afsc,
     },
   });
-
-  useEffect(() => {
-    if (user.organization) {
-      setValue('organization', user.organization.id.toString());
-    }
-
-    setValue('dutyTitle', user.dutyTitle);
-    setValue('afsc', user.afsc);
-  }, [user, setValue]);
 
   const onSubmit = (data) => {
     userMutation.mutate(
@@ -212,24 +202,17 @@ const PersonalForm = ({ user }: { user: LoggedInUser }) => {
   const {
     control,
     register,
-    setValue,
     reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: joiResolver(personalFormSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      rankSelect: '',
+      firstName: user.firstName,
+      lastName: user.lastName,
+      rankSelect: user.rank,
     },
   });
-
-  useEffect(() => {
-    setValue('firstName', user.firstName);
-    setValue('lastName', user.lastName);
-    setValue('rankSelect', user.rank);
-  }, [user, setValue]);
 
   const onSubmit = (data) => {
     userMutation.mutate(

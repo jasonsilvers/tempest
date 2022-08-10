@@ -76,9 +76,7 @@ const alertIfDuplicate = (trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[
 };
 
 const formIsInValid = (trackingItem: TrackingItemToAdd): boolean => {
-  const test = !trackingItem.title || trackingItem.interval < 0 || trackingItem.interval === null ? true : false;
-
-  return test;
+  return !trackingItem.title || trackingItem.interval < 0 || trackingItem.interval === null ? true : false;
 };
 
 const isDuplicate = (title: string, trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[]) => {
