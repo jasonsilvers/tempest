@@ -90,7 +90,7 @@ afterEach(() => {
 /**
  * Render tests
  */
-it('renders the Tracking Item page', async () => {
+it.only('renders the Tracking Item page', async () => {
   const { getByText } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
