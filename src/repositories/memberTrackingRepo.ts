@@ -10,6 +10,16 @@ export const updateMemberTrackingRecord = async (id: number, memberTrackingRecor
   });
 };
 
+export const updateManyMemberTrackingItemsByTrackingItemId = async (
+  trackingItemId: number,
+  memberTrackingItem: Partial<MemberTrackingItem>
+) => {
+  return prisma.memberTrackingItem.updateMany({
+    where: { trackingItemId },
+    data: { ...memberTrackingItem },
+  });
+};
+
 export const deleteMemberTrackingRecord = async (id: number) => {
   return prisma.memberTrackingRecord.delete({
     where: {

@@ -2,7 +2,7 @@ import { TrackingItem } from '@prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { EUri } from '../../const/enums';
+import { EUri, ETrackingItemVerb } from '../../const/enums';
 import { TrackingItemsDTO } from '../../types';
 
 export const tiQueryKeys = {
@@ -44,13 +44,12 @@ const useDeleteTrackingItem = () => {
   );
 };
 
-type PartialTrackingItem = Partial<TrackingItem>;
 const useUpdateTrackingItem = () => {
   const queryClient = useQueryClient();
   const snackbar = useSnackbar();
 
-  return useMutation<TrackingItem, unknown, PartialTrackingItem>(
-    (updatedTrackingItem: PartialTrackingItem) =>
+  return useMutation<TrackingItem, unknown, Partial<TrackingItem>>(
+    (updatedTrackingItem: Partial<TrackingItem>) =>
       axios
         .put<TrackingItem>(EUri.TRACKING_ITEMS + updatedTrackingItem.id, updatedTrackingItem)
         .then((response) => response.data),
@@ -70,4 +69,24 @@ const useUpdateTrackingItem = () => {
   );
 };
 
-export { useTrackingItems, useDeleteTrackingItem, useAddTrackingItem, useUpdateTrackingItem };
+const useUpdateTrackingItemStatus = (variant: ETrackingItemVerb) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<TrackingItem, unknown, number>(
+    (trackingItemId: number) =>
+      axios.post<TrackingItem>(`${EUri.TRACKING_ITEMS}${trackingItemId}/${variant}`).then((response) => response.data),
+    {
+      onSettled: () => {
+        queryClient.invalidateQueries(tiQueryKeys.trackingItems());
+      },
+    }
+  );
+};
+
+export {
+  useTrackingItems,
+  useDeleteTrackingItem,
+  useAddTrackingItem,
+  useUpdateTrackingItem,
+  useUpdateTrackingItemStatus,
+};

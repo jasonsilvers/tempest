@@ -14,6 +14,11 @@ export enum EMtrVerb {
   UPDATE_COMPLETION = 'update_completion',
 }
 
+export enum ETrackingItemVerb {
+  ARCHIVE = 'archive',
+  UNARCHIVE = 'unarchive',
+}
+
 export enum ERole {
   ADMIN = 'admin',
   MEMBER = 'member',
