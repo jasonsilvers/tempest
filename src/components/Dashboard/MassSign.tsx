@@ -2,7 +2,6 @@ import { Button, Card, InputAdornment, TextField, Typography } from '@mui/materi
 import { MemberTrackingRecord, TrackingItem } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import dayjs from 'dayjs';
-import Link from 'next/link';
 import { useSnackbar } from 'notistack';
 import React, { useMemo } from 'react';
 import { useQueryClient, UseQueryResult } from 'react-query';
@@ -11,6 +10,7 @@ import { SearchIcon } from '../../assets/Icons';
 import { EMtrVerb } from '../../const/enums';
 import { useUpdateMemberTrackingRecord } from '../../hooks/api/memberTrackingRecord';
 import { usersQueryKeys } from '../../hooks/api/users';
+import { useRouter } from 'next/router';
 import { LoggedInUser, UserWithAll } from '../../repositories/userRepo';
 
 type MassSignProps = {
@@ -23,7 +23,7 @@ export const MassSign = ({ usersQuery }: MassSignProps) => {
   const { mutate: signAuthorityFor } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_AUTHORITY);
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = React.useState('');
-
+  const router = useRouter();
   const userListWithRecordsToSign = useMemo(() => {
     return usersQuery.data
       ?.filter((user) =>
@@ -91,11 +91,9 @@ export const MassSign = ({ usersQuery }: MassSignProps) => {
         .map((user) => (
           <div key={user.id}>
             <div tw="bg-gray-200 px-5 py-2 font-medium">
-              <Link href={`/Profile/${user.id}`}>
-                <a tw="underline text-primary cursor-pointer">
-                  {user.rank} {user.firstName} {user.lastName}
-                </a>
-              </Link>
+              <span tw="underline text-primary cursor-pointer" onClick={() => router.push(`/Profile/${user.id}`)}>
+                {user.rank} {user.firstName} {user.lastName}
+              </span>
             </div>
             <div>
               {user.memberTrackingItems

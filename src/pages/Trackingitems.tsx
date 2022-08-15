@@ -1,37 +1,20 @@
-import {
-  Box,
-  Fab,
-  MenuItem,
-  Paper,
-  Popper,
-  Select,
-  SelectChangeEvent,
-  Tab,
-  Tabs,
-  Typography,
-  DialogContent,
-  DialogTitle,
-  DialogActions,
-  Button,
-  DialogContentText,
-} from '@mui/material';
-import { DataGrid, GridActionsCellItem, GridRenderCellParams, GridRowModel, GridToolbar } from '@mui/x-data-grid';
-import { Organization, TrackingItem } from '@prisma/client';
-import { useSnackbar } from 'notistack';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Fab, MenuItem, Paper, Popper, Select, SelectChangeEvent, Tab, Tabs, Typography } from '@mui/material';
+import { GridRenderCellParams, GridRowModel, GridToolbar } from '@mui/x-data-grid';
+import { Organization, TrackingItem, TrackingItemStatus } from '@prisma/client';
+import React, { useCallback, useEffect, useState } from 'react';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import 'twin.macro';
 import { a11yProps, TabPanel } from '../../src/components/Devtools/index';
-import { AddIcon, ArchiveIcon, DeleteIcon, MoreHorizIcon } from '../assets/Icons';
-import ConfirmDialog from '../components/Dialog/ConfirmDialog';
+import { AddIcon } from '../assets/Icons';
+import { ActiveItems } from '../components/TrainingItems/ActiveItems';
+import { ArchivedItems } from '../components/TrainingItems/ArchivedItems';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { EFuncAction, EResource } from '../const/enums';
 import { useOrgs } from '../hooks/api/organizations';
-import { tiQueryKeys, useDeleteTrackingItem, useTrackingItems, useUpdateTrackingItem } from '../hooks/api/trackingItem';
+import { tiQueryKeys, useTrackingItems, useUpdateTrackingItem } from '../hooks/api/trackingItem';
 import { usePermissions } from '../hooks/usePermissions';
 import { getTrackingItems } from '../repositories/trackingItemRepo';
-import { TrackingItemInterval } from '../utils/daysToString';
 import { determineOrgsWithCatalogs } from '../utils/determineOrgsWithCatalogs';
 
 interface IGridCellExpandProps {
@@ -128,7 +111,7 @@ function renderCellExpand(params: GridRenderCellParams<string>) {
 
 const filterRows = (trackingItems: TrackingItem[], selectedCatalog: number) => {
   return trackingItems.filter((ti) => {
-    //Global catalog items will have organization id of null but also check that the selected calot is set to the global catalog which is the first one in the list
+    //Global catalog items will have organization id of null but also check that the selected catalog is set to the global catalog which is the first one in the list
     if (ti.organizationId === null && selectedCatalog === 0) {
       return true;
     }
@@ -143,17 +126,12 @@ const TrackingItems = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCatalog, setSelectedCatalog] = useState<number>(0);
   const [orgsWithCatalogs, setOrgsWithCatalogs] = useState<Organization[]>([]);
-  const [deleteConfirmationIsOpen, setDeleteConfirmationIsOpen] = useState(false);
-  const [archiveConfirmationIsOpen, setArchiveConfirmationIsOpen] = useState(false);
-  const [unarchiveConfirmationIsOpen, setUnarchiveConfirmationIsOpen] = useState(false);
-  // const [inactiveTrackingItems, setInactiveTrackingItems] = useState<TrackingItem[]>([])
   const [tabValue, setTabValue] = useState<number>(0);
   const { user, permissionCheck, isLoading } = usePermissions();
-  const { mutate: del } = useDeleteTrackingItem();
-  const { mutate: updateTrackingItem } = useUpdateTrackingItem();
-  const { enqueueSnackbar } = useSnackbar();
+  const updateTrackingItem = useUpdateTrackingItem();
+  const activeTrackingItems = trackingItems.filter((ti) => ti.status === TrackingItemStatus.ACTIVE);
+  const inactiveTrackingItems = trackingItems.filter((ti) => ti.status === TrackingItemStatus.INACTIVE);
 
-  const canDeleteTrackingItem = permissionCheck(user?.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
   const canCreateTrackingItem =
     permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM)?.granted &&
     orgsWithCatalogs?.length > 0;
@@ -166,209 +144,11 @@ const TrackingItems = () => {
     }
   }, [orgsFromServer, user]);
 
-  const deleteTrackingItem = (trackingItemId: number) => {
-    del(trackingItemId, {
-      onSuccess: () => {
-        enqueueSnackbar('Training Deleted', { variant: 'success' });
-      },
-    });
-  };
-
-  const columns = useMemo(
-    () => [
-      {
-        headerName: 'Title',
-        field: 'title',
-        renderCell: renderCellExpand,
-        flex: 0.8,
-      },
-      {
-        headerName: 'Recurrence',
-        field: 'interval',
-        valueFormatter: ({ value }) => {
-          return TrackingItemInterval[value];
-        },
-        width: 150,
-      },
-      {
-        headerName: 'Description',
-        field: 'description',
-        renderCell: renderCellExpand,
-        flex: 0.8,
-      },
-      {
-        headerName: 'Location',
-        field: 'location',
-        renderCell: renderCellExpand,
-        flex: 0.8,
-        editable: true,
-      },
-      {
-        field: 'actions',
-        type: 'actions',
-        width: 150,
-        getActions: ({ id }) => {
-          if (!canDeleteTrackingItem?.granted) {
-            return [];
-          }
-
-          return [
-            // eslint-disable-next-line react/jsx-key
-            <GridActionsCellItem
-              icon={<DeleteIcon tw="text-secondary" />}
-              label="Delete"
-              showInMenu
-              onClick={() => {
-                setDeleteConfirmationIsOpen(true);
-              }}
-            />,
-            <GridActionsCellItem
-              key="archive"
-              icon={<ArchiveIcon tw="text-secondary" />}
-              label="Archive"
-              showInMenu
-              onClick={() => setArchiveConfirmationIsOpen(true)}
-            />,
-
-            <ConfirmDialog
-              key="deleteDialog"
-              open={deleteConfirmationIsOpen}
-              handleNo={() => {
-                setDeleteConfirmationIsOpen(false);
-              }}
-              handleYes={() => {
-                deleteTrackingItem(id);
-                setDeleteConfirmationIsOpen(false);
-              }}
-            >
-              <DialogTitle tw="text-primary text-center font-semibold">Warning!</DialogTitle>
-              <DialogContent>
-                <DialogContentText>
-                  {' '}
-                  Are you sure you want to permantently delete this training item? Once deleted it cannot be recovered.
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button tw="hover:bg-primary hover:text-white" variant="outlined" color="primary">
-                  No
-                </Button>
-                <Button tw="hover:bg-primary hover:text-white" variant="outlined" color="primary">
-                  Yes
-                </Button>
-              </DialogActions>
-            </ConfirmDialog>,
-            <ConfirmDialog
-              key="archvieDialog"
-              open={archiveConfirmationIsOpen}
-              handleNo={() => {
-                setArchiveConfirmationIsOpen(false);
-              }}
-              handleYes={() => {
-                console.table(id);
-                setArchiveConfirmationIsOpen(false);
-              }}
-            >
-              <DialogContent>
-                <DialogContentText>
-                  {' '}
-                  Are you sure you would like to send this training item to Archived?
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button tw="hover:bg-primary hover:text-white" variant="outlined" color="primary">
-                  No
-                </Button>
-                <Button tw="hover:bg-primary hover:text-white" variant="outlined" color="primary">
-                  Yes
-                </Button>
-              </DialogActions>
-            </ConfirmDialog>,
-          ];
-        },
-      },
-    ],
-    [canDeleteTrackingItem]
-  );
-
-  const archiveColumns = useMemo(
-    () => [
-      {
-        headerName: 'Title',
-        field: 'title',
-        renderCell: renderCellExpand,
-        flex: 0.8,
-      },
-      {
-        headerName: 'Recurrence',
-        field: 'interval',
-        valueFormatter: ({ value }) => {
-          return TrackingItemInterval[value];
-        },
-        width: 150,
-      },
-      {
-        headerName: 'Description',
-        field: 'description',
-        renderCell: renderCellExpand,
-        flex: 0.8,
-      },
-      {
-        headerName: 'Location',
-        field: 'location',
-        renderCell: renderCellExpand,
-        flex: 0.8,
-        editable: true,
-      },
-      {
-        field: 'actions',
-        type: 'actions',
-        width: 150,
-        getActions: () => {
-          if (!canDeleteTrackingItem?.granted) {
-            return [];
-          }
-
-          return [
-            // eslint-disable-next-line react/jsx-key
-            <GridActionsCellItem
-              icon={<ArchiveIcon />}
-              label="UNARCHIVE"
-              onClick={() => setUnarchiveConfirmationIsOpen(true)}
-            />,
-            <ConfirmDialog
-              key="archvieDialog"
-              open={unarchiveConfirmationIsOpen}
-              handleNo={() => {
-                setUnarchiveConfirmationIsOpen(false);
-              }}
-              handleYes={() => {
-                setUnarchiveConfirmationIsOpen(false);
-              }}
-            >
-              <DialogContent>
-                <DialogContentText> Are you sure you would like to Unarchive this training item?</DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button tw="hover:bg-primary hover:text-white" variant="outlined" color="primary">
-                  No
-                </Button>
-                <Button tw="hover:bg-primary hover:text-white" variant="outlined" color="primary">
-                  Yes
-                </Button>
-              </DialogActions>
-            </ConfirmDialog>,
-          ];
-        },
-      },
-    ],
-    [canDeleteTrackingItem]
-  );
-
   const processRowUpdate = useCallback((newRow: GridRowModel<TrackingItem>, oldRow: GridRowModel<TrackingItem>) => {
     const { id, location } = newRow;
     if (oldRow.location !== newRow.location) {
       const newLocation = { id, location };
-      updateTrackingItem(newLocation);
+      updateTrackingItem.mutate(newLocation);
       return newLocation;
     }
     return oldRow.location;
@@ -377,7 +157,8 @@ const TrackingItems = () => {
   if (isLoading) {
     return <div>...loading</div>;
   }
-
+  console.table(activeTrackingItems);
+  console.table(inactiveTrackingItems);
   const handleCatalogChange = (event: SelectChangeEvent) => {
     setSelectedCatalog(parseInt(event.target.value));
   };
@@ -428,39 +209,28 @@ const TrackingItems = () => {
           </Tabs>
         </div>
         <TabPanel value={tabValue} index={0}>
-          {trackingItems.length === 0 ? (
+          {activeTrackingItems.length === 0 ? (
             <div tw="p-5">No Records</div>
           ) : (
             //disableVirtualization is for testing!! It won't render the actions without it. Need to workout a way to remove and still be able to test
-            <DataGrid
-              disableSelectionOnClick
-              disableColumnSelector
-              autoHeight
-              columns={columns}
-              //Uses the select organizationsWithCatalog to filter list of data
-              rows={filterRows(trackingItems, selectedCatalog)}
-              experimentalFeatures={{ newEditingApi: true }}
+            <ActiveItems
+              rows={filterRows(activeTrackingItems, selectedCatalog)}
               processRowUpdate={processRowUpdate}
-              disableVirtualization
-              components={{ Toolbar: GridToolbar, MoreActionsIcon: MoreHorizIcon }}
+              components={{ Toolbar: GridToolbar }}
+              renderCellExpand={renderCellExpand}
             />
           )}
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
-          {trackingItems.length === 0 ? (
+          {inactiveTrackingItems.length === 0 ? (
             <div tw="p-5">No Records</div>
           ) : (
             //disableVirtualization is for testing!! It won't render the actions without it. Need to workout a way to remove and still be able to test
-            <DataGrid
-              disableSelectionOnClick
-              disableColumnSelector
-              autoHeight
-              columns={archiveColumns}
-              //Uses the select organizationsWithCatalog to filter list of data
-              rows={trackingItems}
-              experimentalFeatures={{ newEditingApi: true }}
+            <ArchivedItems
+              rows={filterRows(inactiveTrackingItems, selectedCatalog)}
               processRowUpdate={processRowUpdate}
-              disableVirtualization
+              components={{ Toolbar: GridToolbar }}
+              renderCellExpand={renderCellExpand}
             />
           )}
         </TabPanel>

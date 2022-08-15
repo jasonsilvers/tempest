@@ -69,7 +69,7 @@ const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = 
       )
       .filter(
         (trackingItem) =>
-          !memberTrackingItemsQuery?.data.find(
+          !memberTrackingItemsQuery?.data?.find(
             (mti) => mti.status === MemberTrackingItemStatus.INACTIVE && mti.trackingItemId === trackingItem.id
           )
       );

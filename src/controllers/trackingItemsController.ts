@@ -1,17 +1,12 @@
-import { TrackingItem, TrackingItemStatus } from '@prisma/client';
+import { TrackingItem } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
 import { EResource, ERole, ITempestApiMessage } from '../const/enums';
 import { getAc } from '../middleware/utils';
-import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
+import { PermissionError } from '../middleware/withErrorHandling';
 import { getOrganizationAndDown, getOrganizationAndUp } from '../repositories/organizationRepo';
-import {
-  createTrackingItem,
-  findTrackingItemById,
-  getGlobalTrackingItemsAndThoseByOrgId,
-  updateTrackingItem,
-} from '../repositories/trackingItemRepo';
+import { createTrackingItem, getGlobalTrackingItemsAndThoseByOrgId } from '../repositories/trackingItemRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { TrackingItemsDTO } from '../types';
 
@@ -94,52 +89,4 @@ export const postTrackingItemAction = async (
   }
 
   return res.status(200).json(newItem);
-};
-
-const archiveTrackingItem = (_trackingItemId: string | number, recordFromDb: TrackingItem) => {
-  return {
-    ...recordFromDb,
-    status: TrackingItemStatus.INACTIVE,
-  } as TrackingItem;
-};
-
-const unarchiveTrackingItem = (_trackingItemId: string | number, recordFromDb: TrackingItem) => {
-  return {
-    ...recordFromDb,
-    status: TrackingItemStatus.ACTIVE,
-  } as TrackingItem;
-};
-
-export const postUpdateTrackingItemAction = async (
-  req: NextApiRequestWithAuthorization<LoggedInUser>,
-  res: NextApiResponse<TrackingItem | ITempestApiMessage>
-) => {
-  // put destructured req object back
-
-  const recordFromDb = await findTrackingItemById(1);
-
-  if (!recordFromDb) {
-    throw new NotFoundError();
-  }
-  const ac = await getAc();
-  const permission = ac.can(req.user.role.name).updateAny(EResource.TRACKING_ITEM);
-
-  if (!permission.granted) {
-    throw new PermissionError();
-  }
-
-  let updatedTrackingItem: TrackingItem;
-
-  if (TrackingItemStatus.INACTIVE) {
-    updatedTrackingItem = archiveTrackingItem(1, recordFromDb);
-  }
-
-  if (TrackingItemStatus.ACTIVE) {
-    updatedTrackingItem = unarchiveTrackingItem(1, recordFromDb);
-  }
-
-  const filteredTrackingItem = permission.filter(updatedTrackingItem);
-  const updatedTrackingItemFromDb = await updateTrackingItem(1, filteredTrackingItem);
-
-  res.status(200).json(updatedTrackingItemFromDb);
 };
