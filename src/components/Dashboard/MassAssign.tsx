@@ -448,7 +448,7 @@ const MassAssignSelectionMembers = ({
                 label={
                   <div tw="flex flex-row">
                     <div tw="w-96 pr-6">
-                      {user.firstName} {user.lastName}
+                      {user.lastName}, {user.firstName}
                     </div>
                     <div tw="w-24">{user.rank}</div>
                   </div>
@@ -547,7 +547,7 @@ export const MassAssignReview = ({
               <div key={userToAssign.id} tw="flex">
                 <div tw="mr-auto flex flex-col space-y-1 pt-2">
                   <Typography variant="body2">
-                    {userToAssign.firstName} {userToAssign.lastName}
+                    {userToAssign.lastName}, {userToAssign.firstName}
                   </Typography>
                   <Typography variant="body2" tw="text-disabledText">
                     {userToAssign.rank}
