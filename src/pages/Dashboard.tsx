@@ -181,7 +181,7 @@ const DashboardPage: React.FC = () => {
         </Card>
       </div>
 
-      <div tw="col-span-4 row-span-4">
+      <div tw="col-span-4 row-span-4 pb-8">
         <MassSign usersQuery={usersQuery} />
       </div>
 

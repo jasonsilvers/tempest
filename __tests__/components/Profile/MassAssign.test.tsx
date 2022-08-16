@@ -292,7 +292,7 @@ test('should check all in tracking item select and filter', async () => {
 
   expect(fireSafetyCheckBox).not.toBeChecked();
 
-  const searchBox = screen.getByRole('textbox');
+  const searchBox = screen.getByRole('textbox', { name: /search/i });
 
   fireEvent.change(searchBox, { target: { value: 'big' } });
 
@@ -334,7 +334,7 @@ test('should check all in user item select and filter', async () => {
 
   expect(edmondCheckBox).not.toBeChecked();
 
-  const searchBox = screen.getByRole('textbox');
+  const searchBox = screen.getByRole('textbox', { name: /search/i });
 
   fireEvent.change(searchBox, { target: { value: 'joe' } });
 
