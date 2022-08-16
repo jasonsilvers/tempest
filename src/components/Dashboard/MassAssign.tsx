@@ -218,6 +218,7 @@ const MassAssignSelectionTrackingItems = ({
   setSelectedTrackingItemIds,
 }: MassAssignSelectionTrackingItemsProps) => {
   const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [searchTerm, setSearchTerm] = React.useState('');
 
   const handleTrackingItemIdCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -240,6 +241,11 @@ const MassAssignSelectionTrackingItems = ({
 
   const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   return (
@@ -299,7 +305,7 @@ const MassAssignSelectionTrackingItems = ({
 
             return ti.title.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0;
           })
-          .slice(page * 4, (page + 1) * 4)
+          .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
           .map((ti) => (
             <div tw="flex flex-row items-center pb-4 p-2" key={ti.id}>
               <FormControlLabel
@@ -332,8 +338,9 @@ const MassAssignSelectionTrackingItems = ({
             count={trackingItemsQuery.data ? trackingItemsQuery.data.length : 0}
             page={page}
             onPageChange={handleChangePage}
-            rowsPerPageOptions={[10]}
-            rowsPerPage={4}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 15, 20, 25]}
+            rowsPerPage={rowsPerPage}
           />
         </div>
       </div>
@@ -353,6 +360,7 @@ const MassAssignSelectionMembers = ({
   setSelectedUserIds,
 }: MassAssignSelectionMembersProps) => {
   const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [searchTerm, setSearchTerm] = React.useState('');
 
   const handleUserIdCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -373,6 +381,11 @@ const MassAssignSelectionMembers = ({
 
   const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   return (
@@ -433,7 +446,7 @@ const MassAssignSelectionMembers = ({
               user.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0
             );
           })
-          .slice(page * 4, (page + 1) * 4)
+          .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
           .map((user) => (
             <div tw="flex flex-row items-center pb-4 p-2" key={user.id}>
               <FormControlLabel
@@ -468,8 +481,9 @@ const MassAssignSelectionMembers = ({
             count={usersQuery.data ? usersQuery.data.length : 0}
             page={page}
             onPageChange={handleChangePage}
-            rowsPerPageOptions={[10]}
-            rowsPerPage={4}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 15, 20, 25]}
+            rowsPerPage={rowsPerPage}
           />
         </div>
       </div>

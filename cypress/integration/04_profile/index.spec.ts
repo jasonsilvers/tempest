@@ -33,9 +33,9 @@ describe('Member role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
-     cy.findByRole('button', {
+    cy.findAllByRole('button', {
       name: /rows per page: 5/i
-    }).click()
+    }).first().click()
     cy.findByRole('option', {
       name: /25/i
     }).click()
@@ -78,9 +78,9 @@ describe('Member role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
-     cy.findByRole('button', {
+    cy.findAllByRole('button', {
       name: /rows per page: 5/i
-    }).click()
+    }).first().click()
     cy.findByRole('option', {
       name: /25/i
     }).click()
@@ -123,9 +123,9 @@ describe('Member role', () => {
 describe('Monitor role', () => {
   it('should show training record for selected member', () => {
     cy.loginAsMonitor();
-     cy.findByRole('button', {
+    cy.findAllByRole('button', {
       name: /rows per page: 5/i
-    }).click()
+    }).first().click()
     cy.findByRole('option', {
       name: /25/i
     }).click()
@@ -151,9 +151,9 @@ describe('Monitor role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
-    cy.findByRole('button', {
+    cy.findAllByRole('button', {
       name: /rows per page: 5/i
-    }).click()
+    }).first().click()
     cy.findByRole('option', {
       name: /25/i
     }).click()

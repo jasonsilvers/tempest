@@ -12,9 +12,9 @@ describe('Can view Global Tracking Items', () => {
 
   it('should show list of users in organization', () => {
 
-    cy.findByRole('button', {
+    cy.findAllByRole('button', {
       name: /rows per page: 5/i
-    }).click()
+    }).first().click()
     cy.findByRole('option', {
       name: /25/i
     }).click()

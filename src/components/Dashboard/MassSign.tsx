@@ -57,7 +57,7 @@ export const MassSign = ({ usersQuery }: MassSignProps) => {
   };
 
   return (
-    <Card tw="flex flex-col h-[1118px] overflow-auto">
+    <Card tw="flex flex-col h-full overflow-auto">
       <div tw="p-5">
         <Typography variant="h6">Sign Training</Typography>
       </div>
