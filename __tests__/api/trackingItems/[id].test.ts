@@ -70,7 +70,7 @@ test('should return 403 if incorrect permission - DELETE', async () => {
   mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
-    role: { id: '22', name: 'monitor' },
+    role: { id: '22', name: 'member' },
   });
   const { status } = await testNextApi.delete(trackingItemQueryHandler, { urlId: '/1' });
 

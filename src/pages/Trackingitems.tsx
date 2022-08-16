@@ -129,8 +129,12 @@ const TrackingItems = () => {
   const [tabValue, setTabValue] = useState<number>(0);
   const { user, permissionCheck, isLoading } = usePermissions();
   const updateTrackingItem = useUpdateTrackingItem();
-  const activeTrackingItems = trackingItems.filter((ti) => ti.status === TrackingItemStatus.ACTIVE);
-  const inactiveTrackingItems = trackingItems.filter((ti) => ti.status === TrackingItemStatus.INACTIVE);
+  const activeTrackingItems = trackingItems
+    ? trackingItems.filter((ti) => ti.status === TrackingItemStatus.ACTIVE)
+    : [];
+  const inactiveTrackingItems = trackingItems
+    ? trackingItems.filter((ti) => ti.status === TrackingItemStatus.INACTIVE)
+    : [];
 
   const canCreateTrackingItem =
     permissionCheck(user?.role.name, EFuncAction.CREATE_ANY, EResource.TRACKING_ITEM)?.granted &&
@@ -157,8 +161,7 @@ const TrackingItems = () => {
   if (isLoading) {
     return <div>...loading</div>;
   }
-  console.table(activeTrackingItems);
-  console.table(inactiveTrackingItems);
+
   const handleCatalogChange = (event: SelectChangeEvent) => {
     setSelectedCatalog(parseInt(event.target.value));
   };

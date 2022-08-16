@@ -267,7 +267,7 @@ const trackingItemGrants: Grants[] = [
   },
   {
     action: EAction.UPDATE_ANY,
-    attributes: 'location, description',
+    attributes: '*',
     resource: EResource.TRACKING_ITEM,
     role: ERole.MONITOR,
   },
@@ -276,6 +276,12 @@ const trackingItemGrants: Grants[] = [
     attributes: '*',
     resource: EResource.TRACKING_ITEM,
     role: ERole.ADMIN,
+  },
+  {
+    action: EAction.DELETE_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.MONITOR,
   },
 ];
 

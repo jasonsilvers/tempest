@@ -30,7 +30,7 @@ const trackingItemFromDb = {
 
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'error',
+    onUnhandledRequest: 'warn',
   });
 });
 
@@ -64,14 +64,38 @@ beforeEach(() => {
               description: 'test description',
               id: 1,
               interval: 365,
-              title: 'test title',
+              title: '15 MDG training',
               location: 'testLocation',
               organizationId: null,
               status: 'ACTIVE',
             },
+            {
+              description: 'test description 2',
+              id: 1,
+              interval: 365,
+              title: 'New training',
+              location: 'testLocation 2',
+              organizationId: 3,
+              status: 'ACTIVE',
+              _count: {
+                memberTrackingItem: 2,
+              },
+            },
+            {
+              description: 'test description 2',
+              id: 1,
+              interval: 365,
+              title: 'Inactive Training',
+              location: 'testLocation 2',
+              organizationId: 3,
+              status: 'INACTIVE',
+            },
           ],
         })
       );
+    }),
+    rest.post(EUri.TRACKING_ITEMS + '*', (req, res, ctx) => {
+      return res(ctx.status(200));
     }),
     rest.delete(EUri.TRACKING_ITEMS + '*', (req, res, ctx) => {
       return res(ctx.status(204));
@@ -91,15 +115,15 @@ afterEach(() => {
 /**
  * Render tests
  */
-it.skip('renders the Tracking Item page', async () => {
+it('renders the Tracking Item page', async () => {
   const { getByText } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
-  // await waitFor(() => getByText(/test title/i));
-  // expect(getByText(/test title/i)).toBeInTheDocument();
+  await waitFor(() => getByText(/15 MDG training/i));
+  expect(getByText(/15 MDG training/i)).toBeInTheDocument();
 });
 
-it.skip('monitor should not be able to create training item if no orgs have catalog type', async () => {
+it('monitor should not be able to create training item if no orgs have catalog type', async () => {
   server.use(
     // return a user with the right permissions
     rest.get(EUri.LOGIN, (req, res, ctx) => {
@@ -117,7 +141,7 @@ it.skip('monitor should not be able to create training item if no orgs have cata
   ).not.toBeInTheDocument();
 });
 
-it.skip('renders the tracking item page as admin and deletes trackingItem', async () => {
+it('renders the tracking item page as admin and deletes trackingItem', async () => {
   server.use(
     // return a user with the right permissions
     rest.get(EUri.LOGIN, (req, res, ctx) => {
@@ -128,8 +152,8 @@ it.skip('renders the tracking item page as admin and deletes trackingItem', asyn
   const { getByText, getByRole } = render(<TrackingItemPage />);
   await waitForLoadingToFinish();
   expect(getByText(/global training/i)).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
-  expect(getByText(/test title/i)).toBeInTheDocument();
+  await waitFor(() => getByText(/15 MDG training/i));
+  expect(getByText(/15 MDG training/i)).toBeInTheDocument();
 
   server.use(
     rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
@@ -143,17 +167,31 @@ it.skip('renders the tracking item page as admin and deletes trackingItem', asyn
   );
 
   const row = getByRole('row', {
-    name: /test title/i,
+    name: /15 MDG training/i,
   });
 
   const button = within(row).getByTestId('DeleteIcon');
 
   fireEvent.click(button);
 
-  await waitForElementToBeRemoved(() => getByText(/test title/i));
+  expect(getByText(/warning!/i)).toBeInTheDocument();
+  const noButton = getByRole('button', {
+    name: /no/i,
+  });
+  fireEvent.click(noButton);
+
+  fireEvent.click(button);
+
+  const confirmDeleteButton = getByRole('button', {
+    name: /yes/i,
+  });
+
+  fireEvent.click(confirmDeleteButton);
+
+  await waitForElementToBeRemoved(() => getByText(/15 MDG training/i));
 });
 
-it.skip('renders the tracking item page as user with out delete permissions', async () => {
+it('renders the tracking item page as user with out delete permissions', async () => {
   server.use(
     rest.get(EUri.LOGIN, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 0, name: ERole.MEMBER } } as LoggedInUser));
@@ -162,13 +200,13 @@ it.skip('renders the tracking item page as user with out delete permissions', as
   const { getByText, queryByRole } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
-  expect(getByText(/test title/i)).toBeInTheDocument();
+  await waitFor(() => getByText(/15 MDG training/i));
+  expect(getByText(/15 MDG training/i)).toBeInTheDocument();
 
   expect(queryByRole('button', { name: /delete/i })).toBeFalsy();
 });
 
-test.skip('monitors should see global training items and all training items of their org and children orgs', async () => {
+test('monitors should see global training items and all training items of their org and children orgs', async () => {
   server.use(
     rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
@@ -177,19 +215,21 @@ test.skip('monitors should see global training items and all training items of t
           trackingItems: [
             {
               description: 'test description',
-              id: 1,
+              id: 8,
               interval: 365,
-              title: 'test title',
+              title: '15 MDG training',
               location: 'testLocation',
               organizationId: null,
+              status: 'ACTIVE',
             },
             {
               description: 'test description 2',
-              id: 1,
+              id: 7,
               interval: 365,
-              title: 'test title 2',
+              title: '15 MDG training 2',
               location: 'testLocation 2',
               organizationId: 3,
+              status: 'ACTIVE',
             },
           ],
         })
@@ -204,8 +244,8 @@ test.skip('monitors should see global training items and all training items of t
   const screen = render(<TrackingItemPage />);
 
   await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-  expect(await screen.findByText(/test title/i)).toBeInTheDocument();
-  expect(screen.queryByText(/test title 2/i)).not.toBeInTheDocument();
+  expect(await screen.findByText(/15 MDG training/i)).toBeInTheDocument();
+  expect(screen.queryByText(/15 MDG training 2/i)).not.toBeInTheDocument();
 
   const catalogDropdown = screen.getByRole('button', {
     name: /global training catalog/i,
@@ -215,16 +255,16 @@ test.skip('monitors should see global training items and all training items of t
 
   fireEvent.click(screen.getByRole('option', { name: /organization 3/i }));
 
-  expect(screen.queryByText('test title')).not.toBeInTheDocument();
-  expect(screen.queryByText(/test title 2/i)).toBeInTheDocument();
+  expect(screen.queryByText('15 MDG training')).not.toBeInTheDocument();
+  expect(screen.queryByText(/15 MDG training 2/i)).toBeInTheDocument();
 });
 
-test.skip('should open then close the dialog box', async () => {
+test('should open then close the dialog box', async () => {
   const { getByText, getByRole, queryByText } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   const title = getByText(/global training/i) as HTMLElement;
   expect(title).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
+  await waitFor(() => getByText(/15 MDG training/i));
   const button = getByRole('button', {
     name: /create/i,
   });
@@ -235,7 +275,7 @@ test.skip('should open then close the dialog box', async () => {
   expect(queryByText(/Please create the training title/i)).toBeFalsy();
 });
 
-test.only('should do serverside rending and return list of tracking items', async () => {
+test('should do serverside rending and return list of tracking items', async () => {
   mockMethodAndReturn(getTrackingItems, [trackingItemFromDb]);
   const value = await getServerSideProps();
 
@@ -276,4 +316,106 @@ test('should allow edit location', async () => {
       name: /testLocation/i,
     })
   ).toBeInTheDocument();
+});
+
+test('monitior should be able to archive training item', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      //has organization id of 1
+      return res(
+        ctx.status(200),
+        ctx.json({ ...andrewMonitor, organizationId: 3, role: { id: 0, name: ERole.MONITOR } })
+      );
+    })
+  );
+
+  const screen = render(<TrackingItemPage />);
+
+  await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+  const catalogDropdown = screen.getByRole('button', {
+    name: /global training catalog/i,
+  });
+
+  fireEvent.mouseDown(catalogDropdown);
+
+  fireEvent.click(screen.getByRole('option', { name: /organization 3/i }));
+
+  expect(await screen.findByText(/new training/i)).toBeInTheDocument();
+
+  const row = screen.getByRole('row', {
+    name: /new training/i,
+  });
+
+  const archiveButton = within(row).getByTestId('ArchiveIcon');
+
+  expect(archiveButton).toBeInTheDocument();
+
+  fireEvent.click(archiveButton);
+
+  const noButton = screen.getByRole('button', {
+    name: /no/i,
+  });
+
+  fireEvent.click(noButton);
+
+  fireEvent.click(archiveButton);
+
+  const confirmArchiveButton = screen.getByRole('button', {
+    name: /yes/i,
+  });
+  expect(confirmArchiveButton).toBeInTheDocument();
+  fireEvent.click(confirmArchiveButton);
+
+  await waitFor(() => screen.findByText(/training archived/i));
+});
+
+test('monitor should be able to unarchive training item', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      //has organization id of 1
+      return res(
+        ctx.status(200),
+        ctx.json({ ...andrewMonitor, organizationId: 3, role: { id: 0, name: ERole.MONITOR } })
+      );
+    })
+  );
+
+  const screen = render(<TrackingItemPage />);
+
+  await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+  const catalogDropdown = screen.getByRole('button', {
+    name: /global training catalog/i,
+  });
+
+  fireEvent.mouseDown(catalogDropdown);
+
+  fireEvent.click(screen.getByRole('option', { name: /organization 3/i }));
+  const archiveTab = screen.getByRole('tab', {
+    name: /archived/i,
+  });
+  fireEvent.click(archiveTab);
+  expect(await screen.findByText(/inactive training/i)).toBeInTheDocument();
+  const unarchiveButton = screen.getByTestId('UnarchiveIcon');
+
+  expect(unarchiveButton).toBeInTheDocument();
+
+  fireEvent.click(unarchiveButton);
+
+  const noButton = screen.getByRole('button', {
+    name: /no/i,
+  });
+
+  fireEvent.click(noButton);
+
+  fireEvent.click(unarchiveButton);
+
+  const yesButton = screen.getByRole('button', {
+    name: /yes/i,
+  });
+
+  fireEvent.click(yesButton);
+
+  await waitFor(() => screen.findByText(/unarchived/i));
 });
