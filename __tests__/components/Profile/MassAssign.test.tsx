@@ -4,6 +4,7 @@ import { fireEvent, render, userEvent } from '../../testutils/TempestTestUtils';
 import { MassAssign } from '../../../src/components/Dashboard/MassAssign';
 import { EUri } from '../../../src/const/enums';
 import { usersQuery } from '../../testutils/mocks/fixtures';
+import React from 'react';
 
 const trackingItemsList = {
   trackingItems: [
@@ -249,7 +250,7 @@ test('should display Mass Assign Feature and navigate forward and back through s
   fireEvent.click(trackingItemsNextButton2);
   const usersNextButton2 = screen.getByRole('button', { name: 'users-next-button' });
 
-  const joeAdminCheckBox = screen.getByText(/joe admin/i);
+  const joeAdminCheckBox = screen.getByText(/admin, joe/i);
   fireEvent.click(joeAdminCheckBox);
   expect(usersNextButton2).not.toBeDisabled();
 
@@ -257,7 +258,7 @@ test('should display Mass Assign Feature and navigate forward and back through s
 
   expect(screen.getByText(/selected member/i)).toBeInTheDocument();
   expect(screen.getByText(/selected training/i)).toBeInTheDocument();
-  expect(screen.getByText(/joe admin/i)).toBeInTheDocument();
+  expect(screen.getByText(/admin, joe/i)).toBeInTheDocument();
   expect(screen.getByText(/big bug safety/i)).toBeInTheDocument();
 
   const reviewBackButton = screen.getByRole('button', { name: 'review-back-button' });
@@ -315,7 +316,7 @@ test('should check all in user item select and filter', async () => {
   fireEvent.click(allUserCheckBox);
 
   const joeAdminCheckBox = screen.getByRole('checkbox', {
-    name: /joe admin/i,
+    name: /admin,/i,
   });
   expect(joeAdminCheckBox).toBeChecked();
 
@@ -326,7 +327,7 @@ test('should check all in user item select and filter', async () => {
   fireEvent.click(allUserCheckBox);
 
   const edmondCheckBox = screen.getByRole('checkbox', {
-    name: /edmond adams/i,
+    name: /adams, edmond/i,
   });
 
   fireEvent.click(edmondCheckBox);
@@ -337,8 +338,8 @@ test('should check all in user item select and filter', async () => {
 
   fireEvent.change(searchBox, { target: { value: 'joe' } });
 
-  expect(screen.getByText(/joe admin/i)).toBeInTheDocument();
-  expect(screen.queryByText(/edmond adams/i)).not.toBeInTheDocument();
+  expect(screen.getByText(/admin, joe/i)).toBeInTheDocument();
+  expect(screen.queryByText(/adams, edmond/i)).not.toBeInTheDocument();
 });
 
 test('should be able to remove users and/or tracking items on review page', async () => {
@@ -360,7 +361,7 @@ test('should be able to remove users and/or tracking items on review page', asyn
 
   fireEvent.click(usersNextButton);
 
-  expect(screen.getByText(/joe admin/i)).toBeInTheDocument();
+  expect(screen.getByText(/admin, joe/i)).toBeInTheDocument();
   expect(screen.getByText(/big bug safety/i)).toBeInTheDocument();
 
   const deleteBigBug = screen.getByRole('button', {
@@ -374,7 +375,7 @@ test('should be able to remove users and/or tracking items on review page', asyn
   fireEvent.click(deleteBigBug);
   fireEvent.click(edmondDelete);
 
-  expect(screen.queryByText(/joe admin/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/admin, joe/i)).not.toBeInTheDocument();
   expect(screen.queryByText(/big bug safety/i)).not.toBeInTheDocument();
 });
 
@@ -389,12 +390,12 @@ test('should display Mass assign result dialog after assign', async () => {
 
   const usersNextButton = screen.getByRole('button', { name: 'users-next-button' });
 
-  const joeAdminCheckBox = screen.getByText(/joe admin/i);
+  const joeAdminCheckBox = screen.getByText(/admin, joe/i);
   fireEvent.click(joeAdminCheckBox);
 
   fireEvent.click(usersNextButton);
 
-  expect(screen.getByText(/joe admin/i)).toBeInTheDocument();
+  expect(screen.getByText(/admin, joe/i)).toBeInTheDocument();
   expect(screen.getByText(/big bug safety/i)).toBeInTheDocument();
 
   const assignButton = screen.getByRole('button', { name: /assign/i });
@@ -420,12 +421,12 @@ test('mass assign result should show in progress', async () => {
 
   const usersNextButton = screen.getByRole('button', { name: 'users-next-button' });
 
-  const joeAdminCheckBox = screen.getByText(/joe admin/i);
+  const joeAdminCheckBox = screen.getByText(/admin, joe/i);
   fireEvent.click(joeAdminCheckBox);
 
   fireEvent.click(usersNextButton);
 
-  expect(screen.getByText(/joe admin/i)).toBeInTheDocument();
+  expect(screen.getByText(/admin, joe/i)).toBeInTheDocument();
   expect(screen.getByText(/big bug safety/i)).toBeInTheDocument();
 
   const assignButton = screen.getByRole('button', { name: /assign/i });
@@ -451,12 +452,12 @@ test('mass assign result should show in progress and calculate estimated time re
 
   const usersNextButton = screen.getByRole('button', { name: 'users-next-button' });
 
-  const joeAdminCheckBox = screen.getByText(/joe admin/i);
+  const joeAdminCheckBox = screen.getByText(/admin, joe/i);
   fireEvent.click(joeAdminCheckBox);
 
   fireEvent.click(usersNextButton);
 
-  expect(screen.getByText(/joe admin/i)).toBeInTheDocument();
+  expect(screen.getByText(/admin, joe/i)).toBeInTheDocument();
   expect(screen.getByText(/big bug safety/i)).toBeInTheDocument();
 
   const assignButton = screen.getByRole('button', { name: /assign/i });
@@ -482,12 +483,12 @@ test('mass assign result should show members and items that failed to assign', a
 
   const usersNextButton = screen.getByRole('button', { name: 'users-next-button' });
 
-  const joeAdminCheckBox = screen.getByText(/joe admin/i);
+  const joeAdminCheckBox = screen.getByText(/admin, joe/i);
   fireEvent.click(joeAdminCheckBox);
 
   fireEvent.click(usersNextButton);
 
-  expect(screen.getByText(/joe admin/i)).toBeInTheDocument();
+  expect(screen.getByText(/admin, joe/i)).toBeInTheDocument();
   expect(screen.getByText(/big bug safety/i)).toBeInTheDocument();
 
   const assignButton = screen.getByRole('button', { name: /assign/i });
@@ -513,12 +514,12 @@ test('mass assign result should close dialog and reset form', async () => {
 
   const usersNextButton = screen.getByRole('button', { name: 'users-next-button' });
 
-  const joeAdminCheckBox = screen.getByText(/joe admin/i);
+  const joeAdminCheckBox = screen.getByText(/admin, joe/i);
   fireEvent.click(joeAdminCheckBox);
 
   fireEvent.click(usersNextButton);
 
-  expect(screen.getByText(/joe admin/i)).toBeInTheDocument();
+  expect(screen.getByText(/admin, joe/i)).toBeInTheDocument();
   expect(screen.getByText(/big bug safety/i)).toBeInTheDocument();
 
   const assignButton = screen.getByRole('button', { name: /assign/i });
@@ -549,12 +550,12 @@ test('mass assign result should close dialog and select retry members and tracki
 
   const usersNextButton = screen.getByRole('button', { name: 'users-next-button' });
 
-  const joeAdminCheckBox = screen.getByText(/joe admin/i);
+  const joeAdminCheckBox = screen.getByText(/admin, joe/i);
   fireEvent.click(joeAdminCheckBox);
 
   fireEvent.click(usersNextButton);
 
-  expect(screen.getByText(/joe admin/i)).toBeInTheDocument();
+  expect(screen.getByText(/admin, joe/i)).toBeInTheDocument();
   expect(screen.getByText(/big bug safety/i)).toBeInTheDocument();
 
   const assignButton = screen.getByRole('button', { name: /assign/i });
