@@ -330,9 +330,7 @@ test('monitior should be able to archive training item', async () => {
   );
 
   const screen = render(<TrackingItemPage />);
-
-  await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-
+  await waitForLoadingToFinish();
   const catalogDropdown = screen.getByRole('button', {
     name: /global training catalog/i,
   });
@@ -373,7 +371,6 @@ test('monitior should be able to archive training item', async () => {
 test('monitor should be able to unarchive training item', async () => {
   server.use(
     rest.get(EUri.LOGIN, (req, res, ctx) => {
-      //has organization id of 1
       return res(
         ctx.status(200),
         ctx.json({ ...andrewMonitor, organizationId: 3, role: { id: 0, name: ERole.MONITOR } })
@@ -383,7 +380,7 @@ test('monitor should be able to unarchive training item', async () => {
 
   const screen = render(<TrackingItemPage />);
 
-  await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+  await waitForLoadingToFinish();
 
   const catalogDropdown = screen.getByRole('button', {
     name: /global training catalog/i,

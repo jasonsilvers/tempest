@@ -22,8 +22,6 @@ export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpa
   const canDeleteTrackingItem = permissionCheck(user?.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
   const canUpdateTrackingItem = permissionCheck(user?.role.name, EFuncAction.UPDATE_ANY, EResource.TRACKING_ITEM);
 
-  console.log(canUpdateTrackingItem);
-
   const columns = useMemo(
     () => [
       {
