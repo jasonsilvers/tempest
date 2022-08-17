@@ -1,12 +1,14 @@
-import { InputAdornment, TextField, Typography } from '@mui/material';
-import { MemberTrackingRecord, Organization } from '@prisma/client';
+import { InputAdornment, TextField } from '@mui/material';
+import { MemberTrackingRecord } from '@prisma/client';
 import React, { useEffect, useReducer } from 'react';
 import 'twin.macro';
+import { SearchIcon } from '../assets/Icons';
+import { DashboardFilter } from '../components/Dashboard/DashboardFilter';
 import { EStatus } from '../components/Dashboard/Enums';
 import { MassAssign } from '../components/Dashboard/MassAssign';
+import { MassSign } from '../components/Dashboard/MassSign';
 import { Actions, AllCounts, StatusCounts, UserCounts } from '../components/Dashboard/Types';
 import { UserList } from '../components/Dashboard/UserList';
-import { DashboardFilter } from '../components/Dashboard/DashboardFilter';
 import { EFuncAction, EResource } from '../const/enums';
 import { useUsers } from '../hooks/api/users';
 import { usePermissions } from '../hooks/usePermissions';
@@ -15,9 +17,6 @@ import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
 import { UserWithAll } from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
 import { getStatus } from '../utils/status';
-import { MassSign } from '../components/Dashboard/MassSign';
-import { OrganizationSelect } from '../components/OrganizationSelect';
-import { SearchIcon } from '../assets/Icons';
 
 const initialCounts: StatusCounts = {
   All: 0,
