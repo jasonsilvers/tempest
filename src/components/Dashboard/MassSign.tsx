@@ -57,30 +57,34 @@ export const MassSign = ({ usersQuery }: MassSignProps) => {
   };
 
   return (
-    <Card tw="flex flex-col h-full overflow-auto">
+    <Card tw="flex flex-col min-h-full overflow-auto">
       <div tw="p-5">
         <Typography variant="h6">Sign Training</Typography>
       </div>
-      <div tw="w-full px-5 pb-5">
-        <TextField
-          tw="bg-white rounded w-full"
-          id="SearchBar"
-          label="Search"
-          size="small"
-          value={searchTerm}
-          onChange={(event) => {
-            setSearchTerm(event.target.value);
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </div>
-      {userList?.length === 0 ? <div tw="p-5">Nothing to sign</div> : null}
+
+      {userList?.length === 0 ? (
+        <div tw="p-5">Nothing to sign</div>
+      ) : (
+        <div tw="w-full px-5 pb-5">
+          <TextField
+            tw="bg-white rounded w-full"
+            id="SearchBar"
+            label="Search"
+            size="small"
+            value={searchTerm}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </div>
+      )}
       {userList
         ?.filter((user) => {
           if (searchTerm === '') {

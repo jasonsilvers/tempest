@@ -8,8 +8,8 @@ import { LoggedInUser, UserWithAll } from '../../repositories/userRepo';
 import { EStatus } from './Enums';
 
 const UserTable = tw.div``;
-const UserTableHeader = tw.div`flex text-sm mb-4`;
-const UserTableRow = tw.div`border-t h-12 flex items-center justify-center py-2`;
+const UserTableHeader = tw.div`flex text-sm mb-4 px-4`;
+const UserTableRow = tw.div`border-t h-12 flex items-center justify-center py-2 px-4`;
 
 const UserTableColumn = tw.div``;
 const UserTableColumnHeader = tw.div`text-lg font-bold`;

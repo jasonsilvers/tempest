@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
-import { MemberTrackingRecord } from '@prisma/client';
+import { InputAdornment, TextField, Typography } from '@mui/material';
+import { MemberTrackingRecord, Organization } from '@prisma/client';
 import React, { useEffect, useReducer } from 'react';
 import 'twin.macro';
 import { EStatus } from '../components/Dashboard/Enums';
@@ -16,6 +16,8 @@ import { UserWithAll } from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
 import { getStatus } from '../utils/status';
 import { MassSign } from '../components/Dashboard/MassSign';
+import { OrganizationSelect } from '../components/OrganizationSelect';
+import { SearchIcon } from '../assets/Icons';
 
 const initialCounts: StatusCounts = {
   All: 0,
@@ -170,18 +172,35 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <main tw="grid grid-cols-12 gap-4 w-[1200px] p-5">
+    <main tw="grid grid-cols-12 gap-4 w-[1200px] p-6 h-auto">
       <div tw="col-span-8">
-        <Card tw="p-5">
-          <Typography variant="h6">Member List</Typography>
-          <div tw="py-8">
-            <DashboardFilter dashboardState={dashboardState} dispatch={dispatch} />
+        <Card tw="p-0">
+          <div tw="w-full py-5 px-4">
+            <TextField
+              tw="bg-white rounded w-full"
+              id="SearchBar"
+              label="Search"
+              size="small"
+              value={dashboardState.nameFilter}
+              onChange={(event) => dispatch({ type: 'filterByName', nameFilter: event.target.value })}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
           </div>
           <UserList usersQuery={usersQuery} dashboardState={dashboardState} loggedInUser={loggedInUser} />
         </Card>
       </div>
 
-      <div tw="col-span-4 row-span-4 pb-8">
+      <div tw="col-span-4 row-span-2 pb-[18em] space-y-4">
+        <Card tw="h-16 px-4">
+          <DashboardFilter dispatch={dispatch} />
+        </Card>
+        <Card tw="h-48">test</Card>
         <MassSign usersQuery={usersQuery} />
       </div>
 

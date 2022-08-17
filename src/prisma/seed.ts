@@ -192,7 +192,7 @@ async function seedDev() {
     },
   });
 
-  for (let i = 0; i <= 20; i++) {
+  for (let i = 0; i <= 200; i++) {
     await createRandomUser(mdg.id, memberRole ? memberRole.id : 2);
   }
 
