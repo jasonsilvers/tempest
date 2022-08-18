@@ -1,16 +1,41 @@
-import { JobStatus } from '@prisma/client';
+import { JobStatus, TrackingItemStatus } from '@prisma/client';
 import { rest, server } from '../../testutils/mocks/msw';
 import { fireEvent, render, userEvent } from '../../testutils/TempestTestUtils';
 import { MassAssign } from '../../../src/components/Dashboard/MassAssign';
 import { EUri } from '../../../src/const/enums';
 import { usersQuery } from '../../testutils/mocks/fixtures';
+import React from 'react';
 
 const trackingItemsList = {
   trackingItems: [
-    { id: 1, title: 'Fire Extinguisher', description: 'This is a AF yearly requirment', interval: 365 },
-    { id: 2, title: 'Supervisor Safety Training', description: 'One time training for new supevisors', interval: 0 },
-    { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 60 },
-    { id: 4, title: 'Big Bug Safety', description: 'There are big bugs in Hawaii!  Be careful!', interval: 365 },
+    {
+      id: 1,
+      title: 'Fire Extinguisher',
+      description: 'This is a AF yearly requirment',
+      interval: 365,
+      status: TrackingItemStatus.ACTIVE,
+    },
+    {
+      id: 2,
+      title: 'Supervisor Safety Training',
+      description: 'One time training for new supevisors',
+      interval: 0,
+      status: TrackingItemStatus.ACTIVE,
+    },
+    {
+      id: 3,
+      title: 'Fire Safety',
+      description: 'How to be SAFE when using Fire',
+      interval: 60,
+      status: TrackingItemStatus.ACTIVE,
+    },
+    {
+      id: 4,
+      title: 'Big Bug Safety',
+      description: 'There are big bugs in Hawaii!  Be careful!',
+      interval: 365,
+      status: TrackingItemStatus.ACTIVE,
+    },
   ],
 };
 

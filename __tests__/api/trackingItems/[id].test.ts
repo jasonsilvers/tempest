@@ -77,6 +77,17 @@ test('should return 403 if incorrect permission - DELETE', async () => {
   expect(status).toBe(403);
 });
 
+test('should return 403 if incorrect permission - PUT', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: globalUserId,
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  const { status } = await testNextApi.put(trackingItemQueryHandler, { urlId: '/1', body: { id: 2 } });
+
+  expect(status).toBe(403);
+});
+
 test('should return correct status for put', async () => {
   const expectedReturnData = { ...item, location: 'share drive' };
 

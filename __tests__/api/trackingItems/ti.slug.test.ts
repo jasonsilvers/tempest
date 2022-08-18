@@ -71,14 +71,38 @@ test('should return 403 if member tries to archive training item', async () => {
     firstName: 'joe',
     role: { id: '19', name: 'member' },
   });
-  mockMethodAndReturn(findTrackingByIdIncludeCount, trackingItemFromDb);
+
+  const findTrackingByIdIncludeCountSpy = mockMethodAndReturn(findTrackingByIdIncludeCount, {
+    ...inactiveTrackingItem,
+    organizationId: 2,
+  });
 
   const { status, data } = await testNextApi.post(trackingItemSlugHandler, {
     body: {},
     urlSlug: '18/archive',
   });
-  const inactiveSpy = mockMethodAndReturn(updateTrackingItem, inactiveTrackingItem);
-  expect(inactiveSpy).not.toBeCalled();
+
+  expect(findTrackingByIdIncludeCountSpy).toBeCalled();
+
+  expect(status).toBe(403);
+  expect(data).toStrictEqual({ message: 'You do not have permission to perform this action' });
+});
+
+test('should return 403 if monitor tries to update global item', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '19', name: 'monitor' },
+  });
+
+  const findTrackingByIdIncludeCountSpy = mockMethodAndReturn(findTrackingByIdIncludeCount, inactiveTrackingItem);
+
+  const { status, data } = await testNextApi.post(trackingItemSlugHandler, {
+    body: {},
+    urlSlug: '18/archive',
+  });
+
+  expect(findTrackingByIdIncludeCountSpy).toBeCalled();
 
   expect(status).toBe(403);
   expect(data).toStrictEqual({ message: 'You are not authorized to update training items in the global catalog' });

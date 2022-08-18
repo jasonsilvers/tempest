@@ -1,16 +1,18 @@
 import { DialogContent, DialogContentText } from '@mui/material';
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
 import { useSnackbar } from 'notistack';
 import { useState, useMemo } from 'react';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
-import { EFuncAction, EResource, ETrackingItemVerb } from '../../const/enums';
+import { EFuncAction, EResource, ERole, ETrackingItemVerb } from '../../const/enums';
 import { useUpdateTrackingItemStatus } from '../../hooks/api/trackingItem';
 import { usePermissions } from '../../hooks/usePermissions';
 import { TrackingItemInterval } from '../../utils/daysToString';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 import 'twin.macro';
+import { ItemsProps } from './TrainingItemUtils';
+import { renderCellExpand } from '../GridCellExpand';
 
-export const ArchivedItems = ({ rows, processRowUpdate, components, renderCellExpand, selectedCatalog }) => {
+export const ArchivedItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, selectedCatalog }) => {
   const [unarchiveConfirmation, setUnarchiveConfirmation] = useState({ isOpen: false, trackingItemId: null });
 
   const { user, permissionCheck, isLoading } = usePermissions();
@@ -53,18 +55,22 @@ export const ArchivedItems = ({ rows, processRowUpdate, components, renderCellEx
         type: 'actions',
         width: 150,
         getActions: ({ id }) => {
-          if (user.role.name !== 'admin' && selectedCatalog === 0 && canUpdateTrackingItem) {
+          if (user.role.name !== ERole.ADMIN && selectedCatalog === 0) {
             return [];
           }
 
-          return [
-            // eslint-disable-next-line react/jsx-key
-            <GridActionsCellItem
-              icon={<UnarchiveIcon tw="text-primary" />}
-              label="UNARCHIVE"
-              onClick={() => setUnarchiveConfirmation({ isOpen: true, trackingItemId: id })}
-            />,
-          ];
+          if (canUpdateTrackingItem.granted) {
+            return [
+              // eslint-disable-next-line react/jsx-key
+              <GridActionsCellItem
+                icon={<UnarchiveIcon tw="text-primary" />}
+                label="UNARCHIVE"
+                onClick={() => setUnarchiveConfirmation({ isOpen: true, trackingItemId: id })}
+              />,
+            ];
+          }
+
+          return [];
         },
       },
     ],
@@ -85,7 +91,9 @@ export const ArchivedItems = ({ rows, processRowUpdate, components, renderCellEx
         experimentalFeatures={{ newEditingApi: true }}
         processRowUpdate={processRowUpdate}
         disableVirtualization
-        components={components}
+        components={{
+          Toolbar: GridToolbar,
+        }}
       />
 
       {unarchiveConfirmation.isOpen && (

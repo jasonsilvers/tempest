@@ -1,16 +1,18 @@
 import { DialogTitle, DialogContent, DialogContentText } from '@mui/material';
-import { GridActionsCellItem, DataGrid, GridRowParams } from '@mui/x-data-grid';
+import { GridActionsCellItem, DataGrid, GridRowParams, GridToolbar } from '@mui/x-data-grid';
 import { useSnackbar } from 'notistack';
 import { useState, useMemo } from 'react';
 import { DeleteIcon, ArchiveIcon } from '../../assets/Icons';
-import { EFuncAction, EResource, ETrackingItemVerb } from '../../const/enums';
+import { EFuncAction, EResource, ERole, ETrackingItemVerb } from '../../const/enums';
 import { useUpdateTrackingItemStatus, useDeleteTrackingItem } from '../../hooks/api/trackingItem';
 import { usePermissions } from '../../hooks/usePermissions';
 import { TrackingItemInterval } from '../../utils/daysToString';
 import 'twin.macro';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
+import { ItemsProps } from './TrainingItemUtils';
+import { renderCellExpand } from '../GridCellExpand';
 
-export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpand, selectedCatalog }) => {
+export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, selectedCatalog }) => {
   const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, trackingItemId: null });
   const [archiveConfirmation, setArchiveConfirmation] = useState({ isOpen: false, trackingItemId: null });
 
@@ -56,13 +58,28 @@ export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpa
         type: 'actions',
         width: 150,
         getActions: (params: GridRowParams) => {
-          if (user.role.name !== 'admin' && selectedCatalog === 0 && canDeleteTrackingItem && canUpdateTrackingItem) {
+          if (user.role.name !== ERole.ADMIN && selectedCatalog === 0) {
             return [];
           }
-          const memberTrackingItemCount: boolean = params.row?._count?.memberTrackingItem > 0;
 
-          const filterActionIcon = (mtiCount: boolean) => {
-            return !mtiCount ? (
+          const hasMemberTrackingItems: boolean = params.row?._count?.memberTrackingItem > 0;
+
+          if (hasMemberTrackingItems && canUpdateTrackingItem.granted) {
+            // eslint-disable-next-line react/jsx-key
+            return [
+              <GridActionsCellItem
+                key={params.row?.id}
+                icon={<ArchiveIcon tw="text-secondary" />}
+                label="Delete"
+                onClick={() => {
+                  setArchiveConfirmation({ isOpen: true, trackingItemId: params.row.id });
+                }}
+              />,
+            ];
+          }
+
+          if (!hasMemberTrackingItems && canDeleteTrackingItem.granted) {
+            return [
               <GridActionsCellItem
                 key={params.row?.id}
                 icon={<DeleteIcon tw="text-secondary" />}
@@ -70,22 +87,11 @@ export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpa
                 onClick={() => {
                   setDeleteConfirmation({ isOpen: true, trackingItemId: params.row.id });
                 }}
-              />
-            ) : (
-              <GridActionsCellItem
-                key={params?.row.id}
-                icon={<ArchiveIcon tw="text-secondary" />}
-                label="Archive"
-                onClick={() => {
-                  setArchiveConfirmation({ isOpen: true, trackingItemId: params.row.id });
-                }}
-              />
-            );
-          };
-          return [
-            // eslint-disable-next-line react/jsx-key
-            filterActionIcon(memberTrackingItemCount),
-          ];
+              />,
+            ];
+          }
+
+          return [];
         },
       },
     ],
@@ -107,7 +113,9 @@ export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpa
         experimentalFeatures={{ newEditingApi: true }}
         processRowUpdate={processRowUpdate}
         disableVirtualization
-        components={components}
+        components={{
+          Toolbar: GridToolbar,
+        }}
       />
       {deleteConfirmation.isOpen && (
         <ConfirmDialog

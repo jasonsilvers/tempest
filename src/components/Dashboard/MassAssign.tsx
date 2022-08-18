@@ -20,7 +20,7 @@ import { UseQueryResult } from 'react-query';
 import 'twin.macro';
 import { DeleteIcon, ErrorIcon, SearchIcon } from '../../assets/Icons';
 import { useAssignManyTrackingItemsToManyUsers, useJob } from '../../hooks/api/bulk';
-import { useTrackingItems } from '../../hooks/api/trackingItem';
+import { trackingItemsActiveSelect, useTrackingItems } from '../../hooks/api/trackingItem';
 import { CircularProgressWithLabel } from '../../lib/ui';
 import { UserWithAll } from '../../repositories/userRepo';
 import { BulkTrackingBodyItem } from '../../utils/bulk';
@@ -579,7 +579,7 @@ type MassAssignProps = {
 const steps = ['Assign Training(s)', 'To Members(s)', 'Review'];
 
 export const MassAssign = ({ usersQuery }: MassAssignProps) => {
-  const trackingItemsQuery = useTrackingItems();
+  const trackingItemsQuery = useTrackingItems(trackingItemsActiveSelect);
   const { mutate: assign } = useAssignManyTrackingItemsToManyUsers();
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
   const [selectedTrackingItemIds, setSelectedTrackingItemIds] = useState<number[]>([]);

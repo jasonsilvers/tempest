@@ -68,6 +68,21 @@ beforeEach(() => {
               location: 'testLocation',
               organizationId: null,
               status: 'ACTIVE',
+              _count: {
+                memberTrackingItem: 0,
+              },
+            },
+            {
+              description: 'test description',
+              id: 1,
+              interval: 365,
+              title: '15 MDG INACTIVE',
+              location: 'testLocation',
+              organizationId: null,
+              status: 'INACTIVE',
+              _count: {
+                memberTrackingItem: 2,
+              },
             },
             {
               description: 'test description 2',
@@ -415,4 +430,28 @@ test('monitor should be able to unarchive training item', async () => {
   fireEvent.click(yesButton);
 
   await waitFor(() => screen.findByText(/unarchived/i));
+});
+
+test('monitor should not be able to unarchive global training item', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ ...andrewMonitor, organizationId: 3, role: { id: 0, name: ERole.MONITOR } })
+      );
+    })
+  );
+
+  const screen = render(<TrackingItemPage />);
+
+  await waitForLoadingToFinish();
+
+  const archiveTab = screen.getByRole('tab', {
+    name: /archived/i,
+  });
+  fireEvent.click(archiveTab);
+  expect(await screen.findByText(/15 MDG INACTIVE/i)).toBeInTheDocument();
+  const unarchiveButton = screen.queryByTestId('UnarchiveIcon');
+
+  expect(unarchiveButton).not.toBeInTheDocument();
 });

@@ -1,4 +1,4 @@
-import { TrackingItem } from '@prisma/client';
+import { TrackingItem, TrackingItemStatus } from '@prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
@@ -9,10 +9,21 @@ export const tiQueryKeys = {
   trackingItems: () => ['trackingitems'],
 };
 
-const useTrackingItems = () => {
-  return useQuery<TrackingItem[]>(tiQueryKeys.trackingItems(), async () => {
-    return axios.get<TrackingItemsDTO>(EUri.TRACKING_ITEMS).then((result) => result.data.trackingItems);
-  });
+type SelectType = (trackingItems: TrackingItem[]) => TrackingItem[];
+
+export const trackingItemsActiveSelect = (tis: TrackingItem[]) =>
+  tis.filter((ti) => ti.status === TrackingItemStatus.ACTIVE);
+
+const useTrackingItems = (select?: SelectType) => {
+  return useQuery<TrackingItem[]>(
+    tiQueryKeys.trackingItems(),
+    async () => {
+      return axios.get<TrackingItemsDTO>(EUri.TRACKING_ITEMS).then((result) => result.data.trackingItems);
+    },
+    {
+      select,
+    }
+  );
 };
 
 const useAddTrackingItem = () => {

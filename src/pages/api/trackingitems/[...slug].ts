@@ -9,7 +9,7 @@ import {
 } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { ETrackingItemVerb, EResource } from '../../../const/enums';
+import { ETrackingItemVerb, EResource, ERole } from '../../../const/enums';
 import { findTrackingByIdIncludeCount, updateTrackingItem } from '../../../repositories/trackingItemRepo';
 import { TrackingItem, MemberTrackingItemStatus, TrackingItemStatus } from '@prisma/client';
 import { getAc } from '../../../middleware/utils';
@@ -49,7 +49,7 @@ async function trackingItemSlugHandler(req: NextApiRequestWithAuthorization<Logg
     throw new NotFoundError();
   }
 
-  if (trackingItemFromDb.organizationId === null && req.user.role.name !== 'admin') {
+  if (trackingItemFromDb.organizationId === null && req.user.role.name !== ERole.ADMIN) {
     throw new PermissionError('You are not authorized to update training items in the global catalog');
   }
 

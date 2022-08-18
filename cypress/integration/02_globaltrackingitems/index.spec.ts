@@ -127,6 +127,7 @@ it('should be able to unarchive training on organization catalog', () => {
   cy.findByText(/pharmacy - big bug safety/i).should('exist');
 });
 
+
 it.only('should be able to delete training on global catalog', () => {
   cy.loginAsMonitor();
   cy.wait(10000);

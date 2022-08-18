@@ -8,7 +8,7 @@ import { Close, DeleteIcon } from '../../../assets/Icons';
 import { EMtrVariant } from '../../../const/enums';
 import { mtiQueryKeys, useCreateMemberTrackingItemAndRecord } from '../../../hooks/api/memberTrackingItem';
 import { useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
-import { useTrackingItems } from '../../../hooks/api/trackingItem';
+import { trackingItemsActiveSelect, useTrackingItems } from '../../../hooks/api/trackingItem';
 import { useMemberTrackingItemsForUser } from '../../../hooks/api/users';
 import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay, TempestDatePicker } from '../../../lib/ui';
 import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
@@ -37,7 +37,7 @@ const TableData = tw.div`pr-3 font-size[12px] flex[0 0 auto] pb-0`;
 const StyledDeleteIcon = tw(DeleteIcon)`text-xl`;
 
 const AddMemberTrackingItemDialog: React.FC<AddMemberTrackingItemDialogProps> = ({ handleClose, forMemberId }) => {
-  const trackingItemsQuery = useTrackingItems();
+  const trackingItemsQuery = useTrackingItems(trackingItemsActiveSelect);
   const addMemberTrackingItemAndRecord = useCreateMemberTrackingItemAndRecord();
   const addMemberTrackingRecord = useCreateMemberTrackingRecord();
   const memberTrackingItemsQuery = useMemberTrackingItemsForUser(forMemberId);
