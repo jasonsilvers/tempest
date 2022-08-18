@@ -221,6 +221,7 @@ const TrackingItems = () => {
               processRowUpdate={processRowUpdate}
               components={{ Toolbar: GridToolbar }}
               renderCellExpand={renderCellExpand}
+              selectedCatalog={selectedCatalog}
             />
           )}
         </TabPanel>
@@ -234,6 +235,7 @@ const TrackingItems = () => {
               processRowUpdate={processRowUpdate}
               components={{ Toolbar: GridToolbar }}
               renderCellExpand={renderCellExpand}
+              selectedCatalog={selectedCatalog}
             />
           )}
         </TabPanel>

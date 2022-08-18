@@ -10,7 +10,7 @@ import { TrackingItemInterval } from '../../utils/daysToString';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 import 'twin.macro';
 
-export const ArchivedItems = ({ rows, processRowUpdate, components, renderCellExpand }) => {
+export const ArchivedItems = ({ rows, processRowUpdate, components, renderCellExpand, selectedCatalog }) => {
   const [unarchiveConfirmation, setUnarchiveConfirmation] = useState({ isOpen: false, trackingItemId: null });
 
   const { user, permissionCheck, isLoading } = usePermissions();
@@ -53,7 +53,7 @@ export const ArchivedItems = ({ rows, processRowUpdate, components, renderCellEx
         type: 'actions',
         width: 150,
         getActions: ({ id }) => {
-          if (!canUpdateTrackingItem?.granted) {
+          if (user.role.name === 'monitor' && selectedCatalog === 0 && canUpdateTrackingItem) {
             return [];
           }
 
@@ -68,7 +68,7 @@ export const ArchivedItems = ({ rows, processRowUpdate, components, renderCellEx
         },
       },
     ],
-    [canUpdateTrackingItem]
+    [canUpdateTrackingItem, user.role.name, selectedCatalog]
   );
   if (isLoading) {
     return <div>...loading</div>;

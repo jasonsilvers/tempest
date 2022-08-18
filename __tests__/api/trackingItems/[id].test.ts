@@ -30,7 +30,7 @@ afterEach(() => {
 });
 
 const item = {
-  id: 2,
+  id: 1,
   title: 'Supervisor Safety Training',
   description: 'One time training for new supervisors',
   interval: 0,

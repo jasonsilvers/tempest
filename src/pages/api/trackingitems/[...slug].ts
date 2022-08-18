@@ -49,6 +49,10 @@ async function trackingItemSlugHandler(req: NextApiRequestWithAuthorization<Logg
     throw new NotFoundError();
   }
 
+  if (trackingItemFromDb.organizationId === null && req.user.role.name !== 'admin') {
+    throw new PermissionError('You are not authorized to update training items in the global catalog');
+  }
+
   const permission = ac.can(req.user.role.name).updateAny(EResource.TRACKING_ITEM);
 
   if (!permission.granted) {

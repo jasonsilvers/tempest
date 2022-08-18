@@ -81,7 +81,7 @@ test('should return 403 if member tries to archive training item', async () => {
   expect(inactiveSpy).not.toBeCalled();
 
   expect(status).toBe(403);
-  expect(data).toStrictEqual({ message: 'You do not have permission to perform this action' });
+  expect(data).toStrictEqual({ message: 'You are not authorized to update training items in the global catalog' });
 });
 
 test('should return 404 if training item not found ', async () => {

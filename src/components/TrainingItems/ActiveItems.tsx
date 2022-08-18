@@ -10,7 +10,7 @@ import { TrackingItemInterval } from '../../utils/daysToString';
 import 'twin.macro';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 
-export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpand }) => {
+export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpand, selectedCatalog }) => {
   const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, trackingItemId: null });
   const [archiveConfirmation, setArchiveConfirmation] = useState({ isOpen: false, trackingItemId: null });
 
@@ -56,7 +56,7 @@ export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpa
         type: 'actions',
         width: 150,
         getActions: (params: GridRowParams) => {
-          if (!canDeleteTrackingItem?.granted || !canUpdateTrackingItem?.granted) {
+          if (user.role.name === 'monitor' && selectedCatalog === 0 && canDeleteTrackingItem && canUpdateTrackingItem) {
             return [];
           }
           const memberTrackingItemCount: boolean = params.row?._count?.memberTrackingItem > 0;
@@ -90,7 +90,7 @@ export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpa
       },
     ],
 
-    [canDeleteTrackingItem, canUpdateTrackingItem]
+    [canDeleteTrackingItem, canUpdateTrackingItem, selectedCatalog]
   );
   if (isLoading) {
     return <div>...loading</div>;
@@ -120,6 +120,9 @@ export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpa
             del(deleteConfirmation.trackingItemId, {
               onSuccess: () => {
                 enqueueSnackbar('Training Deleted', { variant: 'success' });
+              },
+              onError: () => {
+                enqueueSnackbar('Error deleting training item. Please try again', { variant: 'error' });
               },
             });
             setDeleteConfirmation({ isOpen: false, trackingItemId: null });
