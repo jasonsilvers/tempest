@@ -1,6 +1,6 @@
 import { AppBar, Button, Card, Dialog, Slide, Toolbar, Typography } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
-import { DataGrid, GridColumns } from '@mui/x-data-grid';
+import { DataGrid, GridColumns, GridToolbar } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
 import tw from 'twin.macro';
@@ -95,7 +95,15 @@ const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
     return <Typography>...Loading</Typography>;
   }
 
-  return <DataGrid rows={detailedReportData} columns={columns} disableVirtualization disableSelectionOnClick />;
+  return (
+    <DataGrid
+      components={{ Toolbar: GridToolbar }}
+      rows={detailedReportData}
+      columns={columns}
+      disableVirtualization
+      disableSelectionOnClick
+    />
+  );
 };
 
 type ReportProps = {
