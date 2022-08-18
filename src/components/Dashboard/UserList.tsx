@@ -14,7 +14,7 @@ const UserTableRow = tw.div`border-t h-12 flex items-center justify-center py-2 
 const UserTableColumn = tw.div``;
 const UserTableColumnHeader = tw.div`text-lg font-bold`;
 
-const StatusPillVariant = {
+export const StatusPillVariant = {
   Done: {
     color: tw`bg-[#6FD9A6]`,
     textColor: tw`text-white`,
@@ -75,7 +75,7 @@ export const UserList = ({ usersQuery, dashboardState, loggedInUser }: UserListP
           <UserTableColumnHeader tw="ml-auto mr-4">Actions</UserTableColumnHeader>
         </UserTableHeader>
         {usersQuery.isLoading ? '...Loading' : ''}
-        {dashboardState.filteredUserList?.length === 0 ? 'No Members Found' : ''}
+        {dashboardState.filteredUserList?.length === 0 ? <div tw="p-4">No Members Found</div> : null}
         {dashboardState.filteredUserList?.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((user) => (
           <UserTableRow key={user.id} tw="text-base flex">
             <UserTableColumn tw="w-1/3">
