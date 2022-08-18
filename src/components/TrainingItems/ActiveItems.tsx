@@ -56,7 +56,7 @@ export const ActiveItems = ({ rows, processRowUpdate, components, renderCellExpa
         type: 'actions',
         width: 150,
         getActions: (params: GridRowParams) => {
-          if (user.role.name === 'monitor' && selectedCatalog === 0 && canDeleteTrackingItem && canUpdateTrackingItem) {
+          if (user.role.name !== 'admin' && selectedCatalog === 0 && canDeleteTrackingItem && canUpdateTrackingItem) {
             return [];
           }
           const memberTrackingItemCount: boolean = params.row?._count?.memberTrackingItem > 0;

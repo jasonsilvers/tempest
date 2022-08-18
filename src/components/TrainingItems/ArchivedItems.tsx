@@ -53,7 +53,7 @@ export const ArchivedItems = ({ rows, processRowUpdate, components, renderCellEx
         type: 'actions',
         width: 150,
         getActions: ({ id }) => {
-          if (user.role.name === 'monitor' && selectedCatalog === 0 && canUpdateTrackingItem) {
+          if (user.role.name !== 'admin' && selectedCatalog === 0 && canUpdateTrackingItem) {
             return [];
           }
 
