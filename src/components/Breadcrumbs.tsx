@@ -2,7 +2,7 @@ import { Breadcrumbs, Link } from '@mui/material';
 import NextLink from 'next/link';
 import 'twin.macro';
 
-export const BreadCrumbs = () => {
+export const BreadCrumbs = ({ text }: { text: string }) => {
   return (
     <Breadcrumbs aria-label="breadcrumb">
       <NextLink href={'/Dashboard'}>
@@ -10,7 +10,7 @@ export const BreadCrumbs = () => {
           Dashboard
         </Link>
       </NextLink>
-      <p tw="text-secondary">Member Training Record</p>
+      <p tw="text-secondary">{text}</p>
     </Breadcrumbs>
   );
 };

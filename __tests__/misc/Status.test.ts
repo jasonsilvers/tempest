@@ -1,14 +1,14 @@
 import { getCategory, getStatus } from '../../src/utils/status';
 import dayjs from 'dayjs';
 import { MemberTrackingRecord } from '@prisma/client';
-import { ECategories } from '../../src/const/enums';
+import { ECategorie } from '../../src/const/enums';
 
 test('Should return Done when interval is greater than 60 days completed Date before due Date --Left', () => {
   const completedDate = dayjs().toDate();
   const interval = 365;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.DONE);
+  expect(result).toBe(ECategorie.DONE);
 });
 
 test('Should return Done when interval is greater than 60 days completed Date before due Date --Right', () => {
@@ -18,7 +18,7 @@ test('Should return Done when interval is greater than 60 days completed Date be
   const interval = 365;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.DONE);
+  expect(result).toBe(ECategorie.DONE);
 });
 
 test('Should return Upcoming when interval is greater than 60 days and completed date is 30 days before due date --Right ', () => {
@@ -28,7 +28,7 @@ test('Should return Upcoming when interval is greater than 60 days and completed
   const interval = 365;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.UPCOMING);
+  expect(result).toBe(ECategorie.UPCOMING);
 });
 
 test('Should return Upcoming when interval is greater than 60 days and completed date is 30 days before due date --Left ', () => {
@@ -38,7 +38,7 @@ test('Should return Upcoming when interval is greater than 60 days and completed
   const interval = 365;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.UPCOMING);
+  expect(result).toBe(ECategorie.UPCOMING);
 });
 
 test('Should return Overdue when interval is greater than interval ', () => {
@@ -46,7 +46,7 @@ test('Should return Overdue when interval is greater than interval ', () => {
   const interval = 365;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.OVERDUE);
+  expect(result).toBe(ECategorie.OVERDUE);
 });
 
 test('Should return Overdue when interval is equal to interval ', () => {
@@ -54,7 +54,7 @@ test('Should return Overdue when interval is equal to interval ', () => {
   const interval = 365;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.OVERDUE);
+  expect(result).toBe(ECategorie.OVERDUE);
 });
 
 test('Should return Done when interval is 60 days and completed Date before due Date --Left', () => {
@@ -62,7 +62,7 @@ test('Should return Done when interval is 60 days and completed Date before due 
   const interval = 60;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.DONE);
+  expect(result).toBe(ECategorie.DONE);
 });
 
 test('Should return Done when interval is 60 days and completed Date before due Date  --Right', () => {
@@ -72,7 +72,7 @@ test('Should return Done when interval is 60 days and completed Date before due 
   const interval = 60;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.DONE);
+  expect(result).toBe(ECategorie.DONE);
 });
 
 test('Should return Upcoming when interval is 60 days and completed date is 14 days before due date --Left ', () => {
@@ -82,7 +82,7 @@ test('Should return Upcoming when interval is 60 days and completed date is 14 d
   const interval = 60;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.UPCOMING);
+  expect(result).toBe(ECategorie.UPCOMING);
 });
 
 test('Should return Upcoming when interval is 60 days and completed date is 14 days before due date --Right', () => {
@@ -92,7 +92,7 @@ test('Should return Upcoming when interval is 60 days and completed date is 14 d
   const interval = 60;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.UPCOMING);
+  expect(result).toBe(ECategorie.UPCOMING);
 });
 
 test('Should return Overdue when interval is 60 days and completed date is 30 days before due date ', () => {
@@ -100,26 +100,26 @@ test('Should return Overdue when interval is 60 days and completed date is 30 da
   const interval = 60;
   const result = getStatus(completedDate, interval);
 
-  expect(result).toBe(ECategories.OVERDUE);
+  expect(result).toBe(ECategorie.OVERDUE);
 });
 
 test('Should return ToDo if no completion date', () => {
   const interval = 60;
   const result = getCategory({ completedDate: null } as MemberTrackingRecord, interval);
 
-  expect(result).toBe(ECategories.TODO);
+  expect(result).toBe(ECategorie.TODO);
 });
 
 test('Should return Signature Required if no signed dates', () => {
   const interval = 60;
   const result = getCategory({ completedDate: dayjs().toDate() } as MemberTrackingRecord, interval);
 
-  expect(result).toBe(ECategories.SIGNATURE_REQUIRED);
+  expect(result).toBe(ECategorie.SIGNATURE_REQUIRED);
 });
 
 test('should return Done if one time training is completed', () => {
   const interval = 0;
   const result = getStatus(dayjs().toDate(), interval);
 
-  expect(result).toBe(ECategories.DONE);
+  expect(result).toBe(ECategorie.DONE);
 });

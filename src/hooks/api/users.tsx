@@ -59,7 +59,7 @@ const useUsers = () => {
   });
 };
 
-const useMember = (id: number, initialMemberData: UserWithAll) => {
+const useMember = (id: number, initialMemberData?: UserWithAll) => {
   return useQuery<User & { role: Role; organization: Organization }>(
     usersQueryKeys.member(id),
     async () =>

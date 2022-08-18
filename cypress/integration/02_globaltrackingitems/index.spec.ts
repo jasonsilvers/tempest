@@ -8,9 +8,9 @@ describe('Can view Global Tracking Items', () => {
     });
 
     cy.visit(baseUrl);
-    cy.url().should('include', '/Dashboard') 
+    cy.url().should('include', '/Dashboard');
     cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
-    cy.url().should('include', '/Trackingitems') 
+    cy.url().should('include', '/Trackingitems');
   });
 
   it('should navigate to Global Training Catalog and show a list', () => {
@@ -22,18 +22,16 @@ describe('Can view Global Tracking Items', () => {
     cy.findByText(/global - keyboard warrior training/i).should('exist');
     cy.findByText(/pharmacy - big bug safety/i).should('not.exist');
 
-    cy.findByRole('button', {name: /global training catalog/i}).click()
-    cy.findByRole('option', {name: /15th medical group/i}).click()
+    cy.findByRole('button', { name: /global training catalog/i }).click();
+    cy.findByRole('option', { name: /15th medical group/i }).click();
     cy.findByText(/global/i).should('not.exist');
     cy.findByText(/mdg - shoom too fast/i).should('exist');
 
-    cy.findByRole('button', {name: /15th medical group/i}).click()
-    cy.findByRole('option', {name: /pharmacy/i}).click()
+    cy.findByRole('button', { name: /15th medical group/i }).click();
+    cy.findByRole('option', { name: /pharmacy/i }).click();
     cy.findByText(/global/i).should('not.exist');
     cy.findByText(/pharmacy/i).should('not.exist');
     cy.findByText(/pharmacy - big bug safety/i).should('exist');
-
-
   });
 
   it('should create new training item', () => {
@@ -41,20 +39,20 @@ describe('Can view Global Tracking Items', () => {
 
     const newTrainingItemTitle = 'New training item title';
     const newTrainingItemDescription = 'New training item description';
-    const newTrainingItemLocation = 'New training item location'
+    const newTrainingItemLocation = 'New training item location';
 
     cy.findByRole('textbox', { name: 'training-title-input' }).type(newTrainingItemTitle);
     cy.findByRole('textbox', { name: 'training-description-input' }).type(newTrainingItemDescription);
     cy.findByRole('textbox', { name: 'training-location-input' }).type(newTrainingItemLocation);
-    cy.findByRole('button', {name: /recurrance-select/i,}).click();
+    cy.findByRole('button', { name: /recurrance-select/i }).click();
 
-    cy.findByRole('option', {name: /monthly/i}).click()
+    cy.findByRole('option', { name: /monthly/i }).click();
 
     cy.findByRole('button', { name: /create/i }).click();
 
-    cy.findByRole('button', {name: /global training catalog/i}).click()
-    cy.findByRole('option', {name: /15th medical group/i}).click()
-   
+    cy.findByRole('button', { name: /global training catalog/i }).click();
+    cy.findByRole('option', { name: /15th medical group/i }).click();
+
     cy.contains('Monthly').should('exist');
     cy.findByText(newTrainingItemDescription).should('exist');
   });
@@ -64,22 +62,82 @@ describe('Can view Global Tracking Items', () => {
 
     const newTrainingItemTitle = 'New training item title 2';
     const newTrainingItemDescription = 'New training item description';
-    const newTrainingItemLocation = 'New training item location'
+    const newTrainingItemLocation = 'New training item location';
 
     cy.findByRole('textbox', { name: 'training-title-input' }).type(newTrainingItemTitle);
     cy.findByRole('textbox', { name: 'training-description-input' }).type(newTrainingItemDescription);
     cy.findByRole('textbox', { name: 'training-location-input' }).type(newTrainingItemLocation);
-    cy.findByRole('button', {name: /recurrance-select/i,}).click();
+    cy.findByRole('button', { name: /recurrance-select/i }).click();
 
-    cy.findByRole('option', {name: /monthly/i}).click()
+    cy.findByRole('option', { name: /monthly/i }).click();
 
     cy.findByRole('button', { name: /create/i }).click();
-    cy.findByRole('button', {name: /yes/i}).click()
+    cy.findByRole('button', { name: /yes/i }).click();
 
-    cy.findByRole('button', {name: /global training catalog/i}).click()
-    cy.findByRole('option', {name: /15th medical group/i}).click()
-   
+    cy.findByRole('button', { name: /global training catalog/i }).click();
+    cy.findByRole('option', { name: /15th medical group/i }).click();
+
     cy.contains(newTrainingItemTitle).should('exist');
-   
   });
+});
+
+it('should not be able to archive or delete training on global catalog', () => {
+  cy.loginAsMonitor();
+  cy.wait(10000);
+  cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
+
+  cy.findByRole('menuitem', {
+    name: /delete/i,
+  }).should('not.exist');
+
+  cy.findByRole('menuitem', {
+    name: /archive/i,
+  }).should('not.exist');
+});
+
+it('should be able to archive training in organization catalog', () => {
+  cy.loginAsMonitor();
+
+  cy.wait(10000);
+
+  cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
+  cy.findByRole('button', { name: /global training catalog/i }).click();
+  cy.findByRole('option', { name: /pharmacy/i }).click();
+
+  cy.findByRole('menuitem', { name: /archive/i }).click();
+  cy.findByRole('button', { name: /yes/i }).click();
+
+  cy.findByRole('tab', { name: /archived/i }).click();
+  cy.findByText(/pharmacy - big bug safety/i).should('exist');
+});
+
+it('should be able to unarchive training on organization catalog', () => {
+  cy.loginAsMonitor();
+  cy.wait(10000);
+
+  cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
+  cy.findByRole('button', { name: /global training catalog/i }).click();
+  cy.findByRole('option', { name: /pharmacy/i }).click();
+
+  cy.findByRole('tab', { name: /archived/i }).click();
+  cy.findByRole('menuitem', { name: /archive/i }).click();
+  cy.findByRole('button', { name: /yes/i }).click();
+
+  cy.findByRole('tab', { name: /active items/i }).click();
+  cy.findByText(/pharmacy - big bug safety/i).should('exist');
+});
+
+
+it.only('should be able to delete training on global catalog', () => {
+  cy.loginAsMonitor();
+  cy.wait(10000);
+
+  cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
+  cy.findByRole('button', { name: /global training catalog/i }).click();
+  cy.findByRole('option', { name: /pharmacy/i }).click();
+
+  cy.findByRole('menuitem', { name: /delete/i }).click();
+  cy.findByRole('button', { name: /yes/i }).click();
+
+  cy.findByText(/pharmacy - paper cuts/i).should('not.exist');
 });

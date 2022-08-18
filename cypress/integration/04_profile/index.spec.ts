@@ -7,7 +7,7 @@ describe('Member role', () => {
     cy.findAllByText(/nothing to show/i).should('have.length', 1);
   });
 
-  it.only('should add new training and be able to sign', () => {
+  it('should add new training and be able to sign', () => {
     cy.loginAsMember();
 
     const trackingItemName = 'GLOBAL - Fire Extinguisher';
@@ -118,6 +118,19 @@ describe('Member role', () => {
     cy.findByText(date).should('exist');
     cy.findByText(oldDate).should('not.exist');
   });
+
+  it.only('should not be able to archive training', () => {
+    cy.loginAsMember();
+
+    cy.findByRole('button', {name: /training in progress/i}).click()
+    cy.findByRole('option', {
+      name: /offical training record/i
+    }).click()
+
+    cy.findByRole('button', {
+        name: /archive-tracking-record/i
+    }).should('not.exist')
+  });
 });
 
 describe('Monitor role', () => {
@@ -171,6 +184,62 @@ describe('Monitor role', () => {
     cy.findAllByRole('button', { name: /delete-tracking-record-/i }).should('not.be.disabled');
     cy.findAllByTestId('DeleteIcon').click({multiple: true})
     cy.findByRole('alert').should('be.visible');
+
+  });
+
+  it('should be able to archive record', () => {
+    const baseUrl = Cypress.config('baseUrl');
+    cy.loginAsMonitor();
+    cy.visit(baseUrl + 'Dashboard');
+    cy.findByRole('button', {
+      name: /rows per page: 5/i
+    }).click()
+    cy.findByRole('option', {
+      name: /25/i
+    }).click()
+    cy.findByText(/member, scarlet/i)
+      .parent()
+      .within(() => {
+        cy.findByRole('button', { name: 'member-popup-menu' }).click();
+        cy.focused().click();
+      });
+
+    cy.findByRole('button', {name: /training in progress/i}).click()
+    cy.findByRole('option', {
+      name: /offical training record/i
+    }).click()
+
+    cy.findByText(/global - fire extinguisher/i).should('exist')
+    cy.findByRole('button', {
+        name: /archive-tracking-record/i
+      }).within(() => {
+        cy.findByTestId('ArchiveIcon').click()
+      });
+
+    
+    cy.findByRole('alert').should('be.visible');
+    cy.findByText(/global - fire extinguisher/i).should('not.exist')
+
+    cy.findByRole('button', {
+      name: /view archive/i
+    }).click()
+
+    cy.findByText(/global - fire extinguisher/i).should('exist')
+    cy.findByRole('button', {
+      name: /unarchive/i
+    }).click()
+    cy.findByRole('alert').should('be.visible');
+    cy.findByText(/global - fire extinguisher/i).should('not.exist')
+
+    cy.findByRole('button', {
+      name: /view training record/i
+    }).click()
+
+    cy.findByRole('button', {name: /training in progress/i}).click()
+    cy.findByRole('option', {
+      name: /offical training record/i
+    }).click()
+    cy.findByText(/global - fire extinguisher/i).should('exist')
 
   });
 });

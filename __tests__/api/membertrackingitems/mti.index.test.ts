@@ -29,7 +29,6 @@ const globalUserId = 1;
 const memberTrackingItemBody = {
   userId: globalUserId,
   trackingItemId: 2,
-  isActive: true,
 };
 
 const memberTrackingItemFromDb = {
@@ -39,7 +38,6 @@ const memberTrackingItemFromDb = {
     organizationId: '123',
   },
   trackingItemId: 2,
-  isActive: true,
 };
 
 const trackingItemFromDb = {
@@ -101,7 +99,6 @@ test('GET - should return membertrackingitem (read - own)', async () => {
       organizationId: '123',
     },
     trackingItemId: 2,
-    isActive: true,
   };
 
   mockMethodAndReturn(findUserByEmail, {
@@ -348,7 +345,8 @@ test('DELETE - should return 404 if record is not found', async () => {
   expect(status).toBe(404);
 });
 
-test('PUT - Should allow monitor to update isActive', async () => {
+//TODO: This needs to be updated
+test('PUT - Should allow monitor to update status', async () => {
   const userId = 2;
   const trackingItemId = 2;
 
@@ -360,7 +358,7 @@ test('PUT - Should allow monitor to update isActive', async () => {
   mockMethodAndReturn(findGrants, grants);
 
   const body = {
-    isActive: false,
+    status: 'INACTIVE',
   };
 
   mockMethodAndReturn(findMemberTrackingItemById, { ...memberTrackingItemFromDb });
@@ -375,7 +373,7 @@ test('PUT - Should allow monitor to update isActive', async () => {
     memberTrackingItemFromDb.trackingItemId,
     memberTrackingItemFromDb.userId,
     {
-      isActive: false,
+      status: 'INACTIVE',
     }
   );
 
@@ -395,7 +393,7 @@ test('PUT - Should not allow update if role does not have permission', async () 
   mockMethodAndReturn(findGrants, grants);
 
   const body = {
-    isActive: false,
+    status: 'INACTIVE',
   };
 
   mockMethodAndReturn(findMemberTrackingItemById, { ...memberTrackingItemFromDb });
@@ -421,7 +419,7 @@ test('PUT - Should return 404 is record not found', async () => {
   mockMethodAndReturn(findGrants, grants);
 
   const body = {
-    isActive: false,
+    status: 'INACTIVE',
   };
 
   mockMethodAndReturn(findMemberTrackingItemById, null);
@@ -493,7 +491,6 @@ test('POST - should create member tracking item and member tracking record when 
   //Data returned from mocked DB create method for creating a tracking item
   const memberTrackingItemPostBody = {
     userId: globalUserId,
-    isActive: true,
     trackingItemId: 2,
   };
 
@@ -544,7 +541,6 @@ test('POST - should return 403 if user role is not allowed to create member trac
 
   const body = {
     userId: globalUserId,
-    isActive: true,
     trackingItemId: 1,
   };
 

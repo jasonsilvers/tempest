@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { useQueryClient } from 'react-query';
 import { styled } from 'twin.macro';
 import {
+  ArchiveIcon,
   AssignmentIcon,
   DashboardIcon,
   FolderSharedIcon,
@@ -98,6 +99,11 @@ const Navbar: React.FC = () => {
             <Link goToUrl={`/Profile/${user.id}`} icon={<FolderSharedIcon fontSize="medium" />}>
               <div role="navigation" aria-label="training-record">
                 Training Record
+              </div>
+            </Link>
+            <Link goToUrl={`/Profile/${user.id}/Archive`} icon={<ArchiveIcon fontSize="medium" />}>
+              <div role="navigation" aria-label="training-record-archive">
+                Archive
               </div>
             </Link>
             <Link goToUrl={`/Ppe`} icon={<MasksIcon fontSize="medium" />}>

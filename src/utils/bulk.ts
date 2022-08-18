@@ -42,7 +42,6 @@ async function findOrCreateMemberTrackingItem(item: BulkTrackingBodyItem, tracki
   if (!memberTrackingItem) {
     //create member tracking item
     const newMemberTrackingItem = {
-      isActive: item.isActive,
       userId: item.userId,
       trackingItemId: item.trackingItemId,
       createdAt: null,

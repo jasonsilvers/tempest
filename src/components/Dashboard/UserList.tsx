@@ -2,9 +2,9 @@ import { TablePagination } from '@mui/material';
 import React from 'react';
 import { UseQueryResult } from 'react-query';
 import tw from 'twin.macro';
-import DashboardPopMenu from '../../lib/ui';
 import { IDashboardState } from '../../pages/Dashboard';
 import { LoggedInUser, UserWithAll } from '../../repositories/userRepo';
+import DashboardPopMenu from './DashboardPopMenu';
 import { EStatus } from './Enums';
 
 const UserTable = tw.div``;

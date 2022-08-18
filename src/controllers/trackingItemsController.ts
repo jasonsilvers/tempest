@@ -5,7 +5,7 @@ import { NextApiResponse } from 'next';
 import { EResource, ERole, ITempestApiMessage } from '../const/enums';
 import { getAc } from '../middleware/utils';
 import { PermissionError } from '../middleware/withErrorHandling';
-import { getOrganizationAndUp, getOrganizationAndDown } from '../repositories/organizationRepo';
+import { getOrganizationAndDown, getOrganizationAndUp } from '../repositories/organizationRepo';
 import { createTrackingItem, getGlobalTrackingItemsAndThoseByOrgId } from '../repositories/trackingItemRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { TrackingItemsDTO } from '../types';
@@ -16,7 +16,6 @@ export const getTrackingItemAction = async (
 ) => {
   let orgIds: number[];
   let trackingItems: TrackingItem[];
-
   const ac = await getAc();
   const permission = ac.can(req.user.role.name).readAny(EResource.TRACKING_ITEM);
 
@@ -61,8 +60,6 @@ export const postTrackingItemAction = async (
 
   const { body } = req;
 
-  const ac = await getAc();
-
   if (body.organizationId === null && req.user.role.name !== ERole.ADMIN) {
     throw new PermissionError('You are not authorized to create training items in the global catalog');
   }
@@ -73,7 +70,7 @@ export const postTrackingItemAction = async (
   if (!orgToAddTrainingItemTo?.types?.includes('CATALOG') && req.user.role.name !== ERole.ADMIN) {
     throw new PermissionError('You are not authorized to create a training item in that organization');
   }
-
+  const ac = await getAc();
   const permission = ac.can(req.user.role.name).createAny(EResource.TRACKING_ITEM);
 
   if (!permission.granted) {

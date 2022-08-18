@@ -1,4 +1,4 @@
-import { ECategories } from '../const/enums';
+import { ECategorie } from '../const/enums';
 const dayjs = require('dayjs');
 import { MemberTrackingRecord } from '.prisma/client';
 /**
@@ -16,25 +16,25 @@ export const getStatus = (completedDate: Date, interval: number) => {
   const upComing = interval <= DEFAULT_MIN_INTERVAL ? DEFAULT_INTERVAL_SMALL : DEFAULT_INTERVAL_MEDIUM;
 
   if (interval === 0) {
-    return ECategories.DONE;
+    return ECategorie.DONE;
   }
 
   if (numberOfDaysAfterCompleted >= interval) {
-    return ECategories.OVERDUE;
+    return ECategorie.OVERDUE;
   } else if (numberOfDaysAfterCompleted >= interval - upComing) {
-    return ECategories.UPCOMING;
+    return ECategorie.UPCOMING;
   } else {
-    return ECategories.DONE;
+    return ECategorie.DONE;
   }
 };
 
 export const getCategory = (memberTrackingRecord: MemberTrackingRecord, trackingItemInterval: number) => {
   if (!memberTrackingRecord.completedDate) {
-    return ECategories.TODO;
+    return ECategorie.TODO;
   }
 
   if (!memberTrackingRecord.authoritySignedDate || !memberTrackingRecord.traineeSignedDate) {
-    return ECategories.SIGNATURE_REQUIRED;
+    return ECategorie.SIGNATURE_REQUIRED;
   }
 
   return getStatus(memberTrackingRecord.completedDate, trackingItemInterval);

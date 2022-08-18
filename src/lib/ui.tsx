@@ -1,4 +1,3 @@
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import {
   Box,
   CircularProgress,
@@ -11,21 +10,15 @@ import {
   DrawerProps,
   IconButton,
   LinearProgress,
-  Menu,
-  MenuItem as TempestMenuItem,
   OutlinedInputProps,
   SelectChangeEvent,
   Tooltip,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import React, { CSSProperties } from 'react';
-import { useQueryClient } from 'react-query';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { CSSProperties } from 'react';
 import tw, { css, styled } from 'twin.macro';
-import { DeleteIcon, EventIcon, MoreHorizIcon } from '../assets/Icons';
-import { EMtrVariant } from '../const/enums';
-import { mtiQueryKeys } from '../hooks/api/memberTrackingItem';
-import { fetchMemberTrackingItems } from '../hooks/api/users';
+import { DeleteIcon, EventIcon } from '../assets/Icons';
 
 const Card = tw.div`overflow-x-hidden overflow-y-hidden bg-white rounded-md filter drop-shadow-md p-2`;
 
@@ -67,70 +60,6 @@ const TempestToolTip = styled(({ className, ...props }) => <Tooltip {...props} c
     color: #dedede;
   }
 `;
-
-export default function DashboardPopMenu({ userId }: { userId: number }) {
-  const router = useRouter();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const queryClient = useQueryClient();
-
-  const prefetchUserTrainingRecord = (userIdToFetch: number) => {
-    queryClient.prefetchQuery(
-      mtiQueryKeys.memberTrackingItems(userIdToFetch, EMtrVariant.IN_PROGRESS),
-      () => fetchMemberTrackingItems(userIdToFetch, EMtrVariant.IN_PROGRESS),
-      {
-        staleTime: 5000,
-      }
-    );
-
-    queryClient.prefetchQuery(
-      mtiQueryKeys.memberTrackingItems(userIdToFetch, EMtrVariant.COMPLETED),
-      () => fetchMemberTrackingItems(userIdToFetch, EMtrVariant.COMPLETED),
-      {
-        staleTime: 5000,
-      }
-    );
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-    prefetchUserTrainingRecord(userId);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleMenuItemClick = () => {
-    router.push(`/Profile/${userId}`);
-  };
-
-  return (
-    <div>
-      <IconButton aria-label={`member-popup-menu`} size="small" onClick={handleClick} tw="hover:bg-transparent">
-        <MoreHorizIcon />
-      </IconButton>
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <TempestMenuItem aria-label="view-member-profile" onClick={handleClose}>
-          <span onClick={handleMenuItemClick}>View Member Profile</span>
-        </TempestMenuItem>
-      </Menu>
-    </div>
-  );
-}
 
 const litCompletionDate = tw`placeholder:text-secondary`;
 const litInputBorder = tw`border-secondary`;

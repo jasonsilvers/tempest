@@ -51,7 +51,7 @@ const ShowLoadingOverlay = ({ showLoading }: { showLoading: boolean }) => {
   return null;
 };
 
-type TrackingItemToAdd = Omit<TrackingItem, 'id'>;
+type TrackingItemToAdd = Omit<TrackingItem, 'id' | 'status'>;
 
 const TableRowHeader = tw.div`text-gray-400 text-sm flex items-center flex-wrap min-width[450px] border-solid border-b border-gray-200`;
 const TableRow = tw.div`py-2 text-sm flex items-center flex-wrap min-width[450px] border-solid border-b border-gray-200`;
@@ -76,9 +76,7 @@ const alertIfDuplicate = (trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[
 };
 
 const formIsInValid = (trackingItem: TrackingItemToAdd): boolean => {
-  const test = !trackingItem.title || trackingItem.interval < 0 || trackingItem.interval === null ? true : false;
-
-  return test;
+  return !trackingItem.title || trackingItem.interval < 0 || trackingItem.interval === null ? true : false;
 };
 
 const isDuplicate = (title: string, trackingItemsThatMatch: Fuse.FuseResult<TrackingItem>[]) => {

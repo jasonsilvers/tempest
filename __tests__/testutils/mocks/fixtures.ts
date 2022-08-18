@@ -3,7 +3,7 @@ import { P1_JWT } from '@tron/nextjs-auth-p1';
 import { UseQueryResult } from 'react-query';
 import { EAction, EResource, ERole } from '../../../src/const/enums';
 import { grants as realGrants } from '../../../src/const/grants';
-import { LoggedInUser, UserWithAll } from '../../../src/repositories/userRepo';
+import { UserWithAll } from '../../../src/repositories/userRepo';
 
 const grants = [
   ...realGrants,
@@ -108,7 +108,7 @@ export const andrewMonitor = {
     shortName: 'org 1',
     parentId: null,
   },
-} as unknown as LoggedInUser;
+} as unknown as User;
 
 export const joeAdmin = {
   id: 456,

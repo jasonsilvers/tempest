@@ -30,7 +30,7 @@ const trackingItemFromDb = {
 
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'error',
+    onUnhandledRequest: 'warn',
   });
 });
 
@@ -64,13 +64,53 @@ beforeEach(() => {
               description: 'test description',
               id: 1,
               interval: 365,
-              title: 'test title',
+              title: '15 MDG training',
               location: 'testLocation',
               organizationId: null,
+              status: 'ACTIVE',
+              _count: {
+                memberTrackingItem: 0,
+              },
+            },
+            {
+              description: 'test description',
+              id: 1,
+              interval: 365,
+              title: '15 MDG INACTIVE',
+              location: 'testLocation',
+              organizationId: null,
+              status: 'INACTIVE',
+              _count: {
+                memberTrackingItem: 2,
+              },
+            },
+            {
+              description: 'test description 2',
+              id: 1,
+              interval: 365,
+              title: 'New training',
+              location: 'testLocation 2',
+              organizationId: 3,
+              status: 'ACTIVE',
+              _count: {
+                memberTrackingItem: 2,
+              },
+            },
+            {
+              description: 'test description 2',
+              id: 1,
+              interval: 365,
+              title: 'Inactive Training',
+              location: 'testLocation 2',
+              organizationId: 3,
+              status: 'INACTIVE',
             },
           ],
         })
       );
+    }),
+    rest.post(EUri.TRACKING_ITEMS + '*', (req, res, ctx) => {
+      return res(ctx.status(200));
     }),
     rest.delete(EUri.TRACKING_ITEMS + '*', (req, res, ctx) => {
       return res(ctx.status(204));
@@ -94,8 +134,8 @@ it('renders the Tracking Item page', async () => {
   const { getByText } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
-  expect(getByText(/test title/i)).toBeInTheDocument();
+  await waitFor(() => getByText(/15 MDG training/i));
+  expect(getByText(/15 MDG training/i)).toBeInTheDocument();
 });
 
 it('monitor should not be able to create training item if no orgs have catalog type', async () => {
@@ -127,8 +167,8 @@ it('renders the tracking item page as admin and deletes trackingItem', async () 
   const { getByText, getByRole } = render(<TrackingItemPage />);
   await waitForLoadingToFinish();
   expect(getByText(/global training/i)).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
-  expect(getByText(/test title/i)).toBeInTheDocument();
+  await waitFor(() => getByText(/15 MDG training/i));
+  expect(getByText(/15 MDG training/i)).toBeInTheDocument();
 
   server.use(
     rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
@@ -142,14 +182,28 @@ it('renders the tracking item page as admin and deletes trackingItem', async () 
   );
 
   const row = getByRole('row', {
-    name: /test title/i,
+    name: /15 MDG training/i,
   });
 
   const button = within(row).getByTestId('DeleteIcon');
 
   fireEvent.click(button);
 
-  await waitForElementToBeRemoved(() => getByText(/test title/i));
+  expect(getByText(/warning!/i)).toBeInTheDocument();
+  const noButton = getByRole('button', {
+    name: /no/i,
+  });
+  fireEvent.click(noButton);
+
+  fireEvent.click(button);
+
+  const confirmDeleteButton = getByRole('button', {
+    name: /yes/i,
+  });
+
+  fireEvent.click(confirmDeleteButton);
+
+  await waitForElementToBeRemoved(() => getByText(/15 MDG training/i));
 });
 
 it('renders the tracking item page as user with out delete permissions', async () => {
@@ -161,8 +215,8 @@ it('renders the tracking item page as user with out delete permissions', async (
   const { getByText, queryByRole } = render(<TrackingItemPage />);
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   expect(getByText(/global training/i)).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
-  expect(getByText(/test title/i)).toBeInTheDocument();
+  await waitFor(() => getByText(/15 MDG training/i));
+  expect(getByText(/15 MDG training/i)).toBeInTheDocument();
 
   expect(queryByRole('button', { name: /delete/i })).toBeFalsy();
 });
@@ -176,19 +230,21 @@ test('monitors should see global training items and all training items of their 
           trackingItems: [
             {
               description: 'test description',
-              id: 1,
+              id: 8,
               interval: 365,
-              title: 'test title',
+              title: '15 MDG training',
               location: 'testLocation',
               organizationId: null,
+              status: 'ACTIVE',
             },
             {
               description: 'test description 2',
-              id: 1,
+              id: 7,
               interval: 365,
-              title: 'test title 2',
+              title: '15 MDG training 2',
               location: 'testLocation 2',
               organizationId: 3,
+              status: 'ACTIVE',
             },
           ],
         })
@@ -203,8 +259,8 @@ test('monitors should see global training items and all training items of their 
   const screen = render(<TrackingItemPage />);
 
   await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
-  expect(await screen.findByText(/test title/i)).toBeInTheDocument();
-  expect(screen.queryByText(/test title 2/i)).not.toBeInTheDocument();
+  expect(await screen.findByText(/15 MDG training/i)).toBeInTheDocument();
+  expect(screen.queryByText(/15 MDG training 2/i)).not.toBeInTheDocument();
 
   const catalogDropdown = screen.getByRole('button', {
     name: /global training catalog/i,
@@ -214,8 +270,8 @@ test('monitors should see global training items and all training items of their 
 
   fireEvent.click(screen.getByRole('option', { name: /organization 3/i }));
 
-  expect(screen.queryByText('test title')).not.toBeInTheDocument();
-  expect(screen.queryByText(/test title 2/i)).toBeInTheDocument();
+  expect(screen.queryByText('15 MDG training')).not.toBeInTheDocument();
+  expect(screen.queryByText(/15 MDG training 2/i)).toBeInTheDocument();
 });
 
 test('should open then close the dialog box', async () => {
@@ -223,7 +279,7 @@ test('should open then close the dialog box', async () => {
   await waitForElementToBeRemoved(() => getByText(/loading/i));
   const title = getByText(/global training/i) as HTMLElement;
   expect(title).toBeInTheDocument();
-  await waitFor(() => getByText(/test title/i));
+  await waitFor(() => getByText(/15 MDG training/i));
   const button = getByRole('button', {
     name: /create/i,
   });
@@ -275,4 +331,127 @@ test('should allow edit location', async () => {
       name: /testLocation/i,
     })
   ).toBeInTheDocument();
+});
+
+test('monitior should be able to archive training item', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      //has organization id of 1
+      return res(
+        ctx.status(200),
+        ctx.json({ ...andrewMonitor, organizationId: 3, role: { id: 0, name: ERole.MONITOR } })
+      );
+    })
+  );
+
+  const screen = render(<TrackingItemPage />);
+  await waitForLoadingToFinish();
+  const catalogDropdown = screen.getByRole('button', {
+    name: /global training catalog/i,
+  });
+
+  fireEvent.mouseDown(catalogDropdown);
+
+  fireEvent.click(screen.getByRole('option', { name: /organization 3/i }));
+
+  expect(await screen.findByText(/new training/i)).toBeInTheDocument();
+
+  const row = screen.getByRole('row', {
+    name: /new training/i,
+  });
+
+  const archiveButton = within(row).getByTestId('ArchiveIcon');
+
+  expect(archiveButton).toBeInTheDocument();
+
+  fireEvent.click(archiveButton);
+
+  const noButton = screen.getByRole('button', {
+    name: /no/i,
+  });
+
+  fireEvent.click(noButton);
+
+  fireEvent.click(archiveButton);
+
+  const confirmArchiveButton = screen.getByRole('button', {
+    name: /yes/i,
+  });
+  expect(confirmArchiveButton).toBeInTheDocument();
+  fireEvent.click(confirmArchiveButton);
+
+  await waitFor(() => screen.findByText(/training archived/i));
+});
+
+test('monitor should be able to unarchive training item', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ ...andrewMonitor, organizationId: 3, role: { id: 0, name: ERole.MONITOR } })
+      );
+    })
+  );
+
+  const screen = render(<TrackingItemPage />);
+
+  await waitForLoadingToFinish();
+
+  const catalogDropdown = screen.getByRole('button', {
+    name: /global training catalog/i,
+  });
+
+  fireEvent.mouseDown(catalogDropdown);
+
+  fireEvent.click(screen.getByRole('option', { name: /organization 3/i }));
+  const archiveTab = screen.getByRole('tab', {
+    name: /archived/i,
+  });
+  fireEvent.click(archiveTab);
+  expect(await screen.findByText(/inactive training/i)).toBeInTheDocument();
+  const unarchiveButton = screen.getByTestId('UnarchiveIcon');
+
+  expect(unarchiveButton).toBeInTheDocument();
+
+  fireEvent.click(unarchiveButton);
+
+  const noButton = screen.getByRole('button', {
+    name: /no/i,
+  });
+
+  fireEvent.click(noButton);
+
+  fireEvent.click(unarchiveButton);
+
+  const yesButton = screen.getByRole('button', {
+    name: /yes/i,
+  });
+
+  fireEvent.click(yesButton);
+
+  await waitFor(() => screen.findByText(/unarchived/i));
+});
+
+test('monitor should not be able to unarchive global training item', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ ...andrewMonitor, organizationId: 3, role: { id: 0, name: ERole.MONITOR } })
+      );
+    })
+  );
+
+  const screen = render(<TrackingItemPage />);
+
+  await waitForLoadingToFinish();
+
+  const archiveTab = screen.getByRole('tab', {
+    name: /archived/i,
+  });
+  fireEvent.click(archiveTab);
+  expect(await screen.findByText(/15 MDG INACTIVE/i)).toBeInTheDocument();
+  const unarchiveButton = screen.queryByTestId('UnarchiveIcon');
+
+  expect(unarchiveButton).not.toBeInTheDocument();
 });

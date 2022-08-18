@@ -10,6 +10,7 @@ import { EUri } from '../../src/const/enums';
 import { findUserById } from '../../src/repositories/userRepo';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import { GetServerSidePropsContext } from 'next/types';
+import React from 'react';
 
 jest.mock('../../src/repositories/userRepo');
 jest.mock('next/router', () => require('next-router-mock'));
