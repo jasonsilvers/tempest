@@ -151,13 +151,17 @@ const UnArchiveActions: React.FC<{
   const { mutate: updateMemberTrackingItem } = useUpdateMemberTrackingItem();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
-  const memberTrackingItems = queryClient.getQueriesData<MemberTrackingItemWithAll[]>(
+  const memberTrackingItemsQueryData = queryClient.getQueriesData<MemberTrackingItemWithAll[]>(
     mtiQueryKeys.memberTrackingItems(memberTrackingRecord.traineeId, EMtrVariant.ARCHIVED)
-  )[0][1];
-
-  const memberTrackingItem = memberTrackingItems.find(
-    (mti) => mti.trackingItemId === memberTrackingRecord.trackingItemId
   );
+
+  let memberTrackingItem: MemberTrackingItemWithAll;
+
+  if (memberTrackingItemsQueryData[0]?.[1]) {
+    memberTrackingItem = memberTrackingItemsQueryData[0]?.[1]?.find(
+      (mti) => mti.trackingItemId === memberTrackingRecord.trackingItemId
+    );
+  }
 
   const unarchiveRecord = () => {
     updateMemberTrackingItem(
@@ -180,7 +184,7 @@ const UnArchiveActions: React.FC<{
     );
   };
 
-  if (memberTrackingItem.trackingItem.status === TrackingItemStatus.INACTIVE) {
+  if (memberTrackingItem?.trackingItem.status === TrackingItemStatus.INACTIVE) {
     return (
       <div tw="flex items-center space-x-1">
         <LockIcon color="disabled" fontSize="small" />
@@ -234,13 +238,15 @@ const UnArchiveActions: React.FC<{
 };
 
 const ArchiveActions: React.FC<{
-  isMonitor: boolean;
+  loggedInUserRole: string;
   memberTrackingRecord: MemberTrackingRecord & { trainee: User; authority: User };
-}> = ({ isMonitor, memberTrackingRecord }) => {
+}> = ({ loggedInUserRole, memberTrackingRecord }) => {
   const { mutate: updateMemberTrackingItem } = useUpdateMemberTrackingItem();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const { variant } = useMemberItemTrackerContext();
+
+  const canArchiveRecord = loggedInUserRole === ERole.MONITOR || loggedInUserRole === ERole.ADMIN;
 
   const archiveRecord = () => {
     updateMemberTrackingItem(
@@ -263,7 +269,7 @@ const ArchiveActions: React.FC<{
     );
   };
 
-  if (!isMonitor) {
+  if (!canArchiveRecord) {
     return null;
   }
 
@@ -322,7 +328,6 @@ const RecordRowActions: React.FC<{
   );
 
   const isAdmin = LoggedInUser?.role?.name === ERole.ADMIN;
-  const isMonitor = LoggedInUser?.role?.name === ERole.MONITOR;
 
   if (disabled) {
     return (
@@ -367,6 +372,7 @@ const RecordRowActions: React.FC<{
         </TempestToolTip>
         <TableData>
           <IconButton
+            color="secondary"
             aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
             size="small"
             onClick={() =>
@@ -392,7 +398,7 @@ const RecordRowActions: React.FC<{
   if (authoritySignedDate && traineeSignedDate) {
     return (
       <>
-        <TableData tw="ml-auto color['#7B7B7B'] opacity-60 pr-10 w-52">
+        <TableData tw="ml-auto color['#7B7B7B'] opacity-60 pr-10 w-60">
           <RecordSignatureToolTip
             traineeSignature={{ signee: trainee, date: memberTrackingRecord.authoritySignedDate }}
             authoritySignature={{ signee: authority, date: memberTrackingRecord.traineeSignedDate }}
@@ -403,10 +409,11 @@ const RecordRowActions: React.FC<{
           </RecordSignatureToolTip>
         </TableData>
         <TableData tw="w-28 flex">
-          <div tw="ml-auto">
-            <ArchiveActions isMonitor={isMonitor} memberTrackingRecord={memberTrackingRecord} />
+          <div tw="ml-auto flex">
+            <ArchiveActions loggedInUserRole={LoggedInUser?.role?.name} memberTrackingRecord={memberTrackingRecord} />
             {isAdmin && (
               <IconButton
+                color="secondary"
                 aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
                 size="small"
                 onClick={() =>
