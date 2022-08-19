@@ -148,6 +148,7 @@ test('should findUserByIdWithMemberTrackingItems all variant', async () => {
     },
     include: {
       memberTrackingItems: {
+        where: {},
         include: {
           trackingItem: true,
           memberTrackingRecords: {
@@ -181,8 +182,12 @@ test('should findUserByIdWithMemberTrackingItems completed variant', async () =>
     },
     include: {
       memberTrackingItems: {
+        where: {
+          status: 'ACTIVE',
+        },
         include: {
           trackingItem: true,
+
           memberTrackingRecords: {
             where: { NOT: [{ traineeSignedDate: null }, { authoritySignedDate: null }] },
             include: {
@@ -214,6 +219,9 @@ test('should findUserByIdWithMemberTrackingItems in progress variant', async () 
     },
     include: {
       memberTrackingItems: {
+        where: {
+          status: 'ACTIVE',
+        },
         include: {
           trackingItem: true,
           memberTrackingRecords: {

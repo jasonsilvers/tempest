@@ -30,7 +30,7 @@ afterEach(() => {
 });
 
 const item = {
-  id: 2,
+  id: 1,
   title: 'Supervisor Safety Training',
   description: 'One time training for new supervisors',
   interval: 0,
@@ -70,9 +70,20 @@ test('should return 403 if incorrect permission - DELETE', async () => {
   mockMethodAndReturn(findUserByEmail, {
     id: globalUserId,
     firstName: 'joe',
-    role: { id: '22', name: 'monitor' },
+    role: { id: '22', name: 'member' },
   });
   const { status } = await testNextApi.delete(trackingItemQueryHandler, { urlId: '/1' });
+
+  expect(status).toBe(403);
+});
+
+test('should return 403 if incorrect permission - PUT', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: globalUserId,
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+  });
+  const { status } = await testNextApi.put(trackingItemQueryHandler, { urlId: '/1', body: { id: 2 } });
 
   expect(status).toBe(403);
 });

@@ -89,9 +89,8 @@ test('GET - should return member tracking items', async () => {
   };
   mockMethodAndReturn(findUserById, recordFromDb);
   const { data, status } = await testNextApi.get(userSlugHandler, {
-    urlSlug: '1',
+    urlSlug: '1/',
   });
-
   expect(findUserByIdWithMemberTrackingItems).not.toBeCalled();
   expect(findUserById).toBeCalled();
   expect(status).toBe(200);

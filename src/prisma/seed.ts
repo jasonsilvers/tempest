@@ -243,19 +243,19 @@ async function seedDev() {
 
   const newMemberTrackingItem1 = {
     userId: createdUser2.id,
-    isActive: true,
+
     trackingItemId: trackingItem1.id,
   };
 
   const newMemberTrackingItem2 = {
     userId: createdUser2.id,
-    isActive: true,
+
     trackingItemId: trackingItem2.id,
   };
 
   const newMemberTrackingItem3 = {
     userId: createdUser2.id,
-    isActive: true,
+
     trackingItemId: trackingItem3.id,
   };
 
@@ -310,6 +310,9 @@ async function seedDev() {
   await prisma.memberTrackingRecord.create({
     data: {
       order: 1,
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {

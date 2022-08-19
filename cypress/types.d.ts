@@ -14,6 +14,7 @@ declare namespace Cypress {
     cleanUpRecords(): Chainable<Element>;
     loginAsMonitor(): Chainable<Element>;
     loginAsMember(): Chainable<Element>;
+    loginAsMemberWithRecords(): Chainable<Element>;
     addMemberTrackingRecord(trackingItemName: string, date: string): Chainable<Element>;
 
     /**

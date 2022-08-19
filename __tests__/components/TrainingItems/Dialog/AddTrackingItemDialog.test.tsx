@@ -5,6 +5,7 @@ import { server, rest } from '../../../testutils/mocks/msw';
 import 'whatwg-fetch';
 import { EUri } from '../../../../src/const/enums';
 import { andrewMonitor, joeAdmin } from '../../../testutils/mocks/fixtures';
+import { TrackingItemStatus } from '@prisma/client';
 
 const trackingItemsList = {
   trackingItems: [
@@ -15,6 +16,7 @@ const trackingItemsList = {
       description: 'One time training for new supevisors',
       interval: 0,
       location: '',
+      status: TrackingItemStatus.ACTIVE,
     },
     { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 60, location: '' },
     {
@@ -23,6 +25,7 @@ const trackingItemsList = {
       description: 'There are big bugs in Hawaii!  Be careful!',
       interval: 365,
       location: '',
+      status: TrackingItemStatus.ACTIVE,
     },
   ],
 };
@@ -110,6 +113,7 @@ test('should add new training to list waiting to be added', async () => {
           description: 'New training item description',
           interval: 2,
           location: 'New training item location',
+          status: TrackingItemStatus.ACTIVE,
         })
       );
     })
@@ -156,6 +160,7 @@ test('should add training with zero interval', async () => {
           description: 'New training item description',
           interval: 2,
           location: 'New training itetm location',
+          status: TrackingItemStatus.ACTIVE,
         })
       );
     })
@@ -197,7 +202,12 @@ test('should show duplicates', async () => {
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          status: TrackingItemStatus.ACTIVE,
+        })
       );
     })
   );
@@ -238,7 +248,12 @@ test('should tell user they cannot add a duplicate', async () => {
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          status: TrackingItemStatus.ACTIVE,
+        })
       );
     })
   );
@@ -268,7 +283,12 @@ test('should tell user this might be a duplicate but allow them to create it if 
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          status: TrackingItemStatus.ACTIVE,
+        })
       );
     })
   );
@@ -311,7 +331,12 @@ test('only admins can add items to global training catalog', async () => {
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          status: TrackingItemStatus.ACTIVE,
+        })
       );
     }),
     rest.get(EUri.LOGIN, (req, res, ctx) => {

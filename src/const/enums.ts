@@ -14,6 +14,11 @@ export enum EMtrVerb {
   UPDATE_COMPLETION = 'update_completion',
 }
 
+export enum ETrackingItemVerb {
+  ARCHIVE = 'archive',
+  UNARCHIVE = 'unarchive',
+}
+
 export enum ERole {
   ADMIN = 'admin',
   MEMBER = 'member',
@@ -88,7 +93,7 @@ export enum EFuncAction {
   DELETE_OWN = 'deleteOwn',
 }
 
-export enum ECategories {
+export enum ECategorie {
   ALL = 'All',
   DONE = 'Done',
   UPCOMING = 'Upcoming',
@@ -105,6 +110,7 @@ export enum EMtrVariant {
   ALL = 'all',
   COMPLETED = 'completed',
   IN_PROGRESS = 'in_progress',
+  ARCHIVED = 'archived',
 }
 
 export enum EUserResources {

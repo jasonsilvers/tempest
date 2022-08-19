@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor, screen, fireEvent, waitForElementToBeRemoved } from '../testutils/TempestTestUtils';
+import { render, waitFor, screen, fireEvent } from '../testutils/TempestTestUtils';
 import AppProviders from '../../src/components/AppProviders';
 import { useSnackbar } from 'notistack';
 import { useLayoutEffect } from 'react';
@@ -68,7 +68,7 @@ describe('AppProviders', () => {
   });
 
   it('should dismiss the snackbar', async () => {
-    const { getByText, queryByText } = render(
+    const { getByText } = render(
       <AppProviders pageProps={null}>
         <TestComponent enque />
       </AppProviders>
@@ -78,7 +78,5 @@ describe('AppProviders', () => {
       expect(getByText(/snakes/i)).toBeInTheDocument();
     });
     fireEvent.click(getByText(/dismiss/i));
-    await waitForElementToBeRemoved(getByText(/snakes/i));
-    expect(queryByText(/snakes/i)).toBeFalsy();
   });
 });
