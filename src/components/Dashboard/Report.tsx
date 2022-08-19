@@ -50,9 +50,9 @@ const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
       return member.memberTrackingItems
         .filter((mti) => mti.memberTrackingRecords.length !== 0)
         .flatMap((mti) => {
-          return removeInProgressRecords(removeOldCompletedRecords(mti.memberTrackingRecords)).map((mtr, _index) => {
+          return removeInProgressRecords(removeOldCompletedRecords(mti.memberTrackingRecords)).map((mtr) => {
             return {
-              id: `${member.id}-${_index}`,
+              id: `${member.id}-${mtr.id}`,
               name: `${member.firstName} ${member.lastName}`,
               rank: member.rank,
               organizationId: member.organizationId,
@@ -64,9 +64,9 @@ const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
         });
     });
 
-  const columns: GridColumns = useMemo(
+  const columns: GridColumns<typeof detailedReportData[number]> = useMemo(
     () => [
-      { field: 'id', headerName: 'Id', flex: 1 },
+      // { field: 'id', headerName: 'Id', flex: 1 },
       { field: 'name', headerName: 'Name', flex: 1 },
       { field: 'rank', headerName: 'Rank', flex: 1 },
       {
