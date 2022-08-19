@@ -111,9 +111,15 @@ it('should be able to archive training in organization catalog - Part 1', () => 
 });
 
 it('should be able to archive training in organization catalog - Part 2', () => {
-  cy.loginAsMember();
+  cy.loginAsMemberWithRecords();
 
   cy.wait(2000);
+  cy.findByRole('button', {name: /training in progress/i}).click()
+    cy.findByRole('option', {
+      name: /offical training record/i
+    }).click()
+  cy.findByText(/pharmacy - big bug safety/i).should('not.exist');
+
 
   cy.findByRole('navigation', { name: /archive/ }).click();
   cy.findByText(/pharmacy - big bug safety/i).should('exist');
@@ -136,9 +142,15 @@ it('should be able to unarchive training on organization catalog - Part 1', () =
 });
 
 it('should be able to unarchive training in organization catalog - Part 2', () => {
-  cy.loginAsMember();
-
+  cy.loginAsMemberWithRecords();
   cy.wait(2000);
+  cy.findByRole('button', {name: /training in progress/i}).click()
+    cy.findByRole('option', {
+      name: /offical training record/i
+    }).click()
+
+  cy.findByText(/pharmacy - big bug safety/i).should('exist');
+
 
   cy.findByRole('navigation', { name: /archive/ }).click();
   cy.findByText(/pharmacy - big bug safety/i).should('not.exist');

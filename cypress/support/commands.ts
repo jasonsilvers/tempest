@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-import { monitorJWT, memberJWT } from '../fixtures/jwt';
+import { monitorJWT, memberJWT, memberWithRecordsJWT } from '../fixtures/jwt';
 
 Cypress.Commands.add('dataCy', (value) => {
   return cy.get(`[data-cy=${value}]`);
@@ -47,6 +47,15 @@ Cypress.Commands.add('loginAsMember', () => {
   const baseUrl = Cypress.config('baseUrl');
   cy.intercept(baseUrl + 'api/**', (req) => {
     req.headers['Authorization'] = `Bearer ${memberJWT}`;
+  });
+
+  cy.visit(baseUrl);
+});
+
+Cypress.Commands.add('loginAsMemberWithRecords', () => {
+  const baseUrl = Cypress.config('baseUrl');
+  cy.intercept(baseUrl + 'api/**', (req) => {
+    req.headers['Authorization'] = `Bearer ${memberWithRecordsJWT}`;
   });
 
   cy.visit(baseUrl);
