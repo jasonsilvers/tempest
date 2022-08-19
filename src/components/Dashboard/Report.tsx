@@ -20,10 +20,10 @@ const StatusPill = ({ variant, count }: { variant: EStatus; count: number }) => 
         css={[
           StatusPillVariant[variant].color,
           StatusPillVariant[variant].textColor,
-          tw`rounded-md h-4 w-4 flex items-center justify-center text-sm`,
+          tw`rounded-sm h-3 w-3 flex items-center justify-center text-sm`,
         ]}
       ></div>
-      <div>{count}</div>
+      <Typography fontSize={14}>{count}</Typography>
     </div>
   );
 };
@@ -50,9 +50,9 @@ const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
       return member.memberTrackingItems
         .filter((mti) => mti.memberTrackingRecords.length !== 0)
         .flatMap((mti) => {
-          return removeInProgressRecords(removeOldCompletedRecords(mti.memberTrackingRecords)).map((mtr) => {
+          return removeInProgressRecords(removeOldCompletedRecords(mti.memberTrackingRecords)).map((mtr, _index) => {
             return {
-              id: member.id,
+              id: `${member.id}-${_index}`,
               name: `${member.firstName} ${member.lastName}`,
               rank: member.rank,
               organizationId: member.organizationId,
@@ -124,13 +124,21 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
 
   const filteredCount = memberList?.reduce(
     (prevCount, nextMember) => {
+      const memberHasUpcomingTraining = counts[nextMember.id].Upcoming > 0 && counts[nextMember.id].Overdue === 0;
+      const memberHasOverDueTraining = counts[nextMember.id].Overdue > 0;
+      const memberIsDone =
+        counts[nextMember.id].Upcoming === 0 && counts[nextMember.id].Overdue === 0 && counts[nextMember.id].Done > 0;
+      const memberHasNoTraining =
+        counts[nextMember.id].Upcoming === 0 && counts[nextMember.id].Overdue === 0 && counts[nextMember.id].Done === 0;
+
       return {
-        Done: prevCount.Done + counts[nextMember.id].Done,
-        Overdue: prevCount.Overdue + counts[nextMember.id].Overdue,
-        Upcoming: prevCount.Upcoming + counts[nextMember.id].Upcoming,
+        Done: prevCount.Done + (memberIsDone ? 1 : 0),
+        Overdue: prevCount.Overdue + (memberHasOverDueTraining ? 1 : 0),
+        Upcoming: prevCount.Upcoming + (memberHasUpcomingTraining ? 1 : 0),
+        None: prevCount.None + (memberHasNoTraining ? 1 : 0),
       };
     },
-    { Done: 0, Overdue: 0, Upcoming: 0 }
+    { Done: 0, Overdue: 0, Upcoming: 0, None: 0 }
   );
 
   const memberSize = memberList?.length;
@@ -142,24 +150,30 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
           Readiness Stats
         </Typography>
         <div tw="flex items-center">
-          <div tw="w-1/2 pl-4 flex space-x-3">
-            <div tw="flex flex-col items-center">
-              <Typography tw="text-secondarytext">Done</Typography>
+          <div tw="w-1/2 pl-4 flex space-x-4">
+            <div tw="flex flex-col items-start">
+              <Typography tw="text-secondarytext" fontSize={14}>
+                Done
+              </Typography>
               <StatusPill variant={EStatus.DONE} count={filteredCount?.Done} />
             </div>
-            <div tw="flex flex-col items-center">
-              <Typography tw="text-secondarytext">Upcoming</Typography>
+            <div tw="flex flex-col items-start">
+              <Typography tw="text-secondarytext" fontSize={14}>
+                Upcoming
+              </Typography>
               <StatusPill variant={EStatus.UPCOMING} count={filteredCount?.Upcoming} />
             </div>
-            <div tw="flex flex-col items-center">
-              <Typography tw="text-secondarytext">Overdue</Typography>
+            <div tw="flex flex-col items-start">
+              <Typography tw="text-secondarytext" fontSize={14}>
+                Overdue
+              </Typography>
               <StatusPill variant={EStatus.OVERDUE} count={filteredCount?.Overdue} />
             </div>
           </div>
           <div tw="w-1/2">
             <svg height={200}>
               <VictoryPie
-                colorScale={['#6FD9A6', '#FB7F7F', '#F6B83F']}
+                colorScale={['#6FD9A6', '#FB7F7F', '#F6B83F', 'lightgrey']}
                 standalone={false}
                 height={200}
                 width={200}
@@ -167,6 +181,7 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
                   { x: 'done', y: filteredCount?.Done },
                   { x: 'overdue', y: filteredCount?.Overdue },
                   { x: 'upcoming', y: filteredCount?.Upcoming },
+                  { x: 'none', y: filteredCount?.None },
                 ]}
                 innerRadius={65}
                 labelRadius={100}

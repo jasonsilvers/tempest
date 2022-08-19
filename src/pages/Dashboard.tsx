@@ -1,5 +1,5 @@
 import { InputAdornment, TextField } from '@mui/material';
-import { MemberTrackingRecord } from '@prisma/client';
+import { MemberTrackingItemStatus, MemberTrackingRecord } from '@prisma/client';
 import React, { useEffect, useReducer } from 'react';
 import 'twin.macro';
 import { SearchIcon } from '../assets/Icons';
@@ -152,12 +152,14 @@ const DashboardPage: React.FC = () => {
         Done: 0,
       };
       membersCount[user.id] = specificCountsForMember;
-      user.memberTrackingItems.forEach((mti) => {
-        const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
-        mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
-          determineMemberCounts(mti, mtr, membersCount, specificCountsForMember);
+      user.memberTrackingItems
+        .filter((mti) => mti.status === MemberTrackingItemStatus.ACTIVE)
+        .forEach((mti) => {
+          const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
+          mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
+            determineMemberCounts(mti, mtr, membersCount, specificCountsForMember);
+          });
         });
-      });
     });
 
     dispatch({ type: 'setCounts', counts: membersCount });

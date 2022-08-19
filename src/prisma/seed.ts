@@ -225,7 +225,7 @@ async function seedDev() {
 
   const user4 = createUser('Scarlet', 'Member', 'scarlet.member@gmail.com');
 
-  await prisma.user.create({
+  const createdUser4 = await prisma.user.create({
     data: {
       ...user4,
       organization: {
@@ -259,6 +259,18 @@ async function seedDev() {
     trackingItemId: trackingItem3.id,
   };
 
+  const newMemberTrackingItem4 = {
+    userId: createdUser4.id,
+
+    trackingItemId: trackingItem3.id,
+  };
+
+  const newMemberTrackingItem5 = {
+    userId: createdUser4.id,
+
+    trackingItemId: trackingItem2.id,
+  };
+
   const memberTrackingItem1 = await prisma.memberTrackingItem.create({
     data: newMemberTrackingItem1,
   });
@@ -269,6 +281,32 @@ async function seedDev() {
 
   const memberTrackingItem3 = await prisma.memberTrackingItem.create({
     data: newMemberTrackingItem3,
+  });
+
+  const memberTrackingItem4 = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem4,
+  });
+
+  const memberTrackingItem5 = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem5,
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 2,
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
+      authority: { connect: { id: createdUser3.id } },
+      memberTrackingItem: {
+        connect: {
+          userId_trackingItemId: {
+            userId: createdUser2.id,
+            trackingItemId: memberTrackingItem1.trackingItemId,
+          },
+        },
+      },
+    },
   });
 
   await prisma.memberTrackingRecord.create({
@@ -299,8 +337,26 @@ async function seedDev() {
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {
-            userId: createdUser2.id,
-            trackingItemId: memberTrackingItem1.trackingItemId,
+            userId: createdUser4.id,
+            trackingItemId: memberTrackingItem4.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 1,
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
+      authority: { connect: { id: createdUser3.id } },
+      memberTrackingItem: {
+        connect: {
+          userId_trackingItemId: {
+            userId: createdUser4.id,
+            trackingItemId: memberTrackingItem5.trackingItemId,
           },
         },
       },
