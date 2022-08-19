@@ -83,7 +83,7 @@ describe('Can view Global Tracking Items', () => {
 
 it('should not be able to archive or delete training on global catalog', () => {
   cy.loginAsMonitor();
-  cy.wait(10000);
+  cy.wait(2000);
   cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
 
   cy.findByRole('menuitem', {
@@ -95,10 +95,9 @@ it('should not be able to archive or delete training on global catalog', () => {
   }).should('not.exist');
 });
 
-it('should be able to archive training in organization catalog', () => {
+it('should be able to archive training in organization catalog - Part 1', () => {
   cy.loginAsMonitor();
-
-  cy.wait(10000);
+  cy.wait(2000);
 
   cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
   cy.findByRole('button', { name: /global training catalog/i }).click();
@@ -111,26 +110,43 @@ it('should be able to archive training in organization catalog', () => {
   cy.findByText(/pharmacy - big bug safety/i).should('exist');
 });
 
-it('should be able to unarchive training on organization catalog', () => {
+it('should be able to archive training in organization catalog - Part 2', () => {
+  cy.loginAsMember();
+
+  cy.wait(2000);
+
+  cy.findByRole('navigation', { name: /archive/ }).click();
+  cy.findByText(/pharmacy - big bug safety/i).should('exist');
+});
+
+it('should be able to unarchive training on organization catalog - Part 1', () => {
   cy.loginAsMonitor();
-  cy.wait(10000);
+  cy.wait(2000);
 
   cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
   cy.findByRole('button', { name: /global training catalog/i }).click();
   cy.findByRole('option', { name: /pharmacy/i }).click();
 
   cy.findByRole('tab', { name: /archived/i }).click();
-  cy.findByRole('menuitem', { name: /archive/i }).click();
+  cy.findByRole('menuitem', { name: /unarchive/i }).click();
   cy.findByRole('button', { name: /yes/i }).click();
 
   cy.findByRole('tab', { name: /active items/i }).click();
   cy.findByText(/pharmacy - big bug safety/i).should('exist');
 });
 
+it('should be able to unarchive training in organization catalog - Part 2', () => {
+  cy.loginAsMember();
 
-it.only('should be able to delete training on global catalog', () => {
+  cy.wait(2000);
+
+  cy.findByRole('navigation', { name: /archive/ }).click();
+  cy.findByText(/pharmacy - big bug safety/i).should('not.exist');
+});
+
+it('should be able to delete training on organizational catalog', () => {
   cy.loginAsMonitor();
-  cy.wait(10000);
+  cy.wait(2000);
 
   cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
   cy.findByRole('button', { name: /global training catalog/i }).click();

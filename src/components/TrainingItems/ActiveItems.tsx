@@ -70,7 +70,7 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
               <GridActionsCellItem
                 key={params.row?.id}
                 icon={<ArchiveIcon tw="text-secondary" />}
-                label="Delete"
+                label="Archive"
                 onClick={() => {
                   setArchiveConfirmation({ isOpen: true, trackingItemId: params.row.id });
                 }}
