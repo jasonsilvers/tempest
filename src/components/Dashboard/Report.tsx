@@ -13,6 +13,18 @@ import { EStatus } from './Enums';
 import { StatusCounts } from './Types';
 import { StatusPillVariant } from './UserList';
 
+export const StatusDetailVariant = {
+  Done: {
+    textColor: tw`text-[#6FD9A6]`,
+  },
+  Overdue: {
+    textColor: tw`text-[#FB7F7F]`,
+  },
+  Upcoming: {
+    textColor: tw`text-[#F6B83F]`,
+  },
+};
+
 const StatusPill = ({ variant, count }: { variant: EStatus; count: number }) => {
   return (
     <div tw="flex space-x-2 items-center">
@@ -66,7 +78,6 @@ const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
 
   const columns: GridColumns<typeof detailedReportData[number]> = useMemo(
     () => [
-      // { field: 'id', headerName: 'Id', flex: 1 },
       { field: 'name', headerName: 'Name', flex: 1 },
       { field: 'rank', headerName: 'Rank', flex: 1 },
       {
@@ -83,7 +94,7 @@ const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
         headerName: 'Status',
         flex: 1,
         renderCell: (params) => {
-          return <Typography sx={{ color: 'red' }}>{params.value}</Typography>;
+          return <Typography sx={{ color: StatusDetailVariant[params.value].textColor }}>{params.value}</Typography>;
         },
       },
       { field: 'dueDate', headerName: 'Due Date', flex: 1 },
@@ -145,25 +156,25 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
 
   return (
     <>
-      <Card tw="h-52 relative">
+      <Card data-testid="report-widget" tw="h-52 relative">
         <Typography variant="h6" tw="absolute top-4 left-4">
           Readiness Stats
         </Typography>
         <div tw="flex items-center">
           <div tw="w-1/2 pl-4 flex space-x-4">
-            <div tw="flex flex-col items-start">
+            <div data-testid="report-done" tw="flex flex-col items-start">
               <Typography tw="text-secondarytext" fontSize={14}>
                 Done
               </Typography>
               <StatusPill variant={EStatus.DONE} count={filteredCount?.Done} />
             </div>
-            <div tw="flex flex-col items-start">
+            <div data-testid="report-upcoming" tw="flex flex-col items-start">
               <Typography tw="text-secondarytext" fontSize={14}>
                 Upcoming
               </Typography>
               <StatusPill variant={EStatus.UPCOMING} count={filteredCount?.Upcoming} />
             </div>
-            <div tw="flex flex-col items-start">
+            <div data-testid="report-overdue" tw="flex flex-col items-start">
               <Typography tw="text-secondarytext" fontSize={14}>
                 Overdue
               </Typography>

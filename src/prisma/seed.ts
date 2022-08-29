@@ -192,7 +192,7 @@ async function seedDev() {
     },
   });
 
-  for (let i = 0; i <= 200; i++) {
+  for (let i = 0; i <= 20; i++) {
     await createRandomUser(mdg.id, memberRole ? memberRole.id : 2);
   }
 
@@ -293,7 +293,7 @@ async function seedDev() {
 
   await prisma.memberTrackingRecord.create({
     data: {
-      order: 2,
+      order: 1,
       completedDate: getDate(5),
       authoritySignedDate: getDate(2),
       traineeSignedDate: getDate(2),
