@@ -190,14 +190,13 @@ afterEach(() => {
   server.resetHandlers();
 });
 
-// it('renders the Dashboard page', async () => {
-//   const { getByText } = render(<Dashboard />);
+it('renders the Dashboard page', async () => {
+  const { getByText } = render(<Dashboard />);
 
-//   await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+  await waitForLoadingToFinish();
 
-//   await waitForElementToBeRemoved(() => getByText(/loading/i));
-//   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-// });
+  await waitFor(() => expect(getByText(/status/i)).toBeInTheDocument());
+});
 
 // it('should show loading spinner for status counts', async () => {
 //   server.use(
@@ -345,4 +344,26 @@ it('should not allow access with incorrect permissions', async () => {
   await waitForElementToBeRemoved(() => getByText(/loading/i));
 
   expect(getByText(/you are not allowed to view this page/i)).toBeInTheDocument();
+});
+
+it('should render detailed report', async () => {
+  const { getByText, getByRole } = render(<Dashboard />);
+
+  await waitForLoadingToFinish();
+
+  await waitFor(() => expect(getByText(/readiness stats/i)).toBeInTheDocument());
+
+  const reportButton = getByRole('button', { name: /detailed report/i });
+
+  fireEvent.click(reportButton);
+
+  const banner = getByRole('banner');
+
+  expect(banner).toBeInTheDocument();
+
+  const doneButton = getByRole('button', {
+    name: /done/i,
+  });
+
+  fireEvent.click(doneButton);
 });
