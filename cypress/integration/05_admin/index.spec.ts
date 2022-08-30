@@ -43,7 +43,7 @@ describe('Can use admin features', () => {
     
   });
 
-  it.only('should be able to change org catalog type', () => {
+  it('should be able to change org catalog type', () => {
     /* Want to test changing an org catalog type
 
     **/
