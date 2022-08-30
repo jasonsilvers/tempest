@@ -22,10 +22,16 @@ async function createNextApiServer(handler: ApiHandler) {
     (server = http.createServer((req, res) => {
       const reqUrl = new URL(req.url, 'http://nextjstesttool/');
       const urlSplit = reqUrl.pathname.split('/');
-      const id = urlSplit[3];
-      const slug = urlSplit.slice(3, urlSplit.length);
       const queryParams = queryString.parse(reqUrl.search);
-      apiResolver(req, res, { slug, id, ...queryParams }, handler, undefined, false);
+      let paramsObj;
+      if (urlSplit.length < 5) {
+        const id = urlSplit[3];
+        paramsObj = { id, ...queryParams };
+      } else {
+        const slug = urlSplit.slice(3, urlSplit.length);
+        paramsObj = { slug, ...queryParams };
+      }
+      apiResolver(req, res, paramsObj, handler, undefined, false);
     }))
   );
 
@@ -177,7 +183,7 @@ const testNextApi = {
       urlSlug,
       customHeaders = {},
     }: {
-      body: Record<string, unknown>;
+      body: unknown;
       withJwt?: boolean;
       urlId?: string | number;
       urlSlug?: string;

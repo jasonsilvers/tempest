@@ -16,16 +16,18 @@ const TabAndTableContainer = tw.div`flex flex-col `;
 const MemberItemTracker: React.FC<{
   userId: number;
   variant: EMtrVariant;
-}> = ({ userId, variant, children }) => {
+  showTabs?: boolean;
+  children?: React.ReactNode;
+}> = ({ userId, variant, showTabs = true, children }) => {
   const TabAndTableRef: LegacyRef<HTMLDivElement> = useRef();
 
   const categories = React.Children.map(children, (child: React.ReactElement<ITabProps>) => child.props.category);
 
   return (
-    <MemberItemTrackerContextProvider categories={categories}>
+    <MemberItemTrackerContextProvider categories={categories} variant={variant}>
       <div tw="mr-5 pr-2 w-full">
         <TabAndTableContainer tw="p-2 rounded-md" ref={TabAndTableRef}>
-          <TabContainer id="Filter Tabs">{children}</TabContainer>
+          {showTabs && <TabContainer id="Filter Tabs">{children}</TabContainer>}
 
           <MemberTrackingItemTable userId={userId} variant={variant} />
         </TabAndTableContainer>

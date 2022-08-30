@@ -8,12 +8,14 @@ import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import trackingItemHandler from '../../../src/pages/api/trackingitems';
 import { testNextApi } from '../../testutils/NextAPIUtils';
-import { getTrackingItems, createTrackingItem } from '../../../src/repositories/trackingItemRepo';
+import { createTrackingItem, getGlobalTrackingItemsAndThoseByOrgId } from '../../../src/repositories/trackingItemRepo';
+import { getOrganizationAndDown, getOrganizationAndUp } from '../../../src/repositories/organizationRepo';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/roleRepo.ts');
 jest.mock('../../../src/repositories/trackingItemRepo.ts');
+jest.mock('../../../src/repositories/organizationRepo.ts');
 
 export class MockPrismaError extends Error {
   readonly code: string;
@@ -37,6 +39,7 @@ const newTrackingItem = {
   title: 'Fire Extinguisher',
   description: 'This is a test item',
   interval: 365,
+  organizationId: 2,
 };
 
 beforeEach(() => {
@@ -47,16 +50,115 @@ beforeEach(() => {
     organizationId: '2',
   });
   mockMethodAndReturn(findGrants, grants);
+  mockMethodAndReturn(getOrganizationAndDown, [
+    {
+      id: 2,
+      org_name: '15th Medical Group',
+      org_short_name: '15th MDG',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+    {
+      id: 3,
+      org_name: 'Force Support Squardron',
+      org_short_name: 'FSS',
+      parent_id: null,
+      types: [],
+    },
+  ]);
+
+  mockMethodAndReturn(getOrganizationAndUp, [
+    {
+      id: 1,
+      org_name: '15th Wing',
+      org_short_name: '15th Wg',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+    {
+      id: 2,
+      org_name: '15th Medical Group',
+      org_short_name: '15th MDG',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+  ]);
 });
 
 afterEach(() => {
   jest.resetAllMocks();
 });
 
-test('should return tracking items - GET', async () => {
-  mockMethodAndReturn(getTrackingItems, [trackingItemFromDb]);
+test('should return tracking items - MONITOR - GET', async () => {
+  mockMethodAndReturn(getGlobalTrackingItemsAndThoseByOrgId, [trackingItemFromDb]);
 
   const { status, data } = await testNextApi.get(trackingItemHandler);
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ trackingItems: [trackingItemFromDb] });
+});
+
+test('should return tracking items - ADMIN - GET', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+    organizationId: '2',
+  });
+  mockMethodAndReturn(getGlobalTrackingItemsAndThoseByOrgId, [trackingItemFromDb]);
+
+  const { status, data } = await testNextApi.get(trackingItemHandler);
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ trackingItems: [trackingItemFromDb] });
+});
+
+test('should return tracking items - MEMBER - GET', async () => {
+  const getOrganizationAndDownSpy = mockMethodAndReturn(getOrganizationAndDown, [
+    {
+      id: 2,
+      org_name: '15th Medical Group',
+      org_short_name: '15th MDG',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+    {
+      id: 3,
+      org_name: 'Force Support Squardron',
+      org_short_name: 'FSS',
+      parent_id: null,
+      types: [],
+    },
+  ]);
+
+  const getOrganizationAndUpSpy = mockMethodAndReturn(getOrganizationAndUp, [
+    {
+      id: 1,
+      org_name: '15th Wing',
+      org_short_name: '15th Wg',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+    {
+      id: 2,
+      org_name: '15th Medical Group',
+      org_short_name: '15th MDG',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+  ]);
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '22', name: 'member' },
+    organizationId: '2',
+  });
+  mockMethodAndReturn(getGlobalTrackingItemsAndThoseByOrgId, [trackingItemFromDb]);
+
+  const { status, data } = await testNextApi.get(trackingItemHandler);
+
+  expect(getOrganizationAndDownSpy).not.toHaveBeenCalled();
+  expect(getOrganizationAndUpSpy).toHaveBeenCalled();
 
   expect(status).toBe(200);
   expect(data).toStrictEqual({ trackingItems: [trackingItemFromDb] });
@@ -77,12 +179,97 @@ test('should return 401 if not authorized', async () => {
 
   expect(status).toBe(401);
 });
-test('should create new tracking item', async () => {
+test('should create new global tracking item', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: '22', name: 'admin' },
+    organizationId: 2,
+  });
+  mockMethodAndReturn(createTrackingItem, { ...newTrackingItem, id: newTrackingItemId });
+  const { status, data } = await testNextApi.post(trackingItemHandler, {
+    body: { ...newTrackingItem, organizationId: null },
+  });
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ ...newTrackingItem, id: newTrackingItemId });
+});
+
+test('should create new tracking item for org with catalog', async () => {
   mockMethodAndReturn(createTrackingItem, { ...newTrackingItem, id: newTrackingItemId });
   const { status, data } = await testNextApi.post(trackingItemHandler, { body: newTrackingItem });
 
   expect(status).toBe(200);
   expect(data).toStrictEqual({ ...newTrackingItem, id: newTrackingItemId });
+});
+
+test('should return 403 if monitor tries to create global training item', async () => {
+  const createTrackingItemSpy = mockMethodAndReturn(createTrackingItem, { ...newTrackingItem, id: newTrackingItemId });
+  const { status } = await testNextApi.post(trackingItemHandler, {
+    body: { ...newTrackingItem, organizationId: null },
+  });
+
+  expect(createTrackingItemSpy).not.toBeCalled();
+
+  expect(status).toBe(403);
+});
+
+test('should return 403 if monitor tries to create training item in org that isnt CATALOG type', async () => {
+  const createTrackingItemSpy = mockMethodAndReturn(createTrackingItem, { ...newTrackingItem, id: newTrackingItemId });
+  const { status } = await testNextApi.post(trackingItemHandler, {
+    body: { ...newTrackingItem, organizationId: 3 },
+  });
+
+  expect(createTrackingItemSpy).not.toBeCalled();
+
+  expect(status).toBe(403);
+});
+
+test('should return 403 if monitor tries to create  training item in org they dont have access to', async () => {
+  const getOrganizationAndDownSpy = mockMethodAndReturn(getOrganizationAndDown, [
+    {
+      id: 2,
+      org_name: '15th Medical Group',
+      org_short_name: '15th MDG',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+    {
+      id: 3,
+      org_name: 'Force Support Squardron',
+      org_short_name: 'FSS',
+      parent_id: null,
+      types: [],
+    },
+  ]);
+
+  const getOrganizationAndUpSpy = mockMethodAndReturn(getOrganizationAndUp, [
+    {
+      id: 1,
+      org_name: '15th Wing',
+      org_short_name: '15th Wg',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+    {
+      id: 2,
+      org_name: '15th Medical Group',
+      org_short_name: '15th MDG',
+      parent_id: null,
+      types: ['CATALOG'],
+    },
+  ]);
+  const createTrackingItemSpy = mockMethodAndReturn(createTrackingItem, { ...newTrackingItem, id: newTrackingItemId });
+  const { status } = await testNextApi.post(trackingItemHandler, {
+    body: { ...newTrackingItem, organizationId: 5 },
+  });
+
+  expect(getOrganizationAndDownSpy).toBeCalled();
+  expect(getOrganizationAndUpSpy).not.toBeCalled();
+
+  expect(createTrackingItemSpy).not.toBeCalled();
+
+  expect(status).toBe(403);
 });
 
 test('should return 400 if request body is not valid', async () => {

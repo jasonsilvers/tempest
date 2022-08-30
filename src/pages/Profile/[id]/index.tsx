@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
-import { usePermissions } from '../../hooks/usePermissions';
+import { usePermissions } from '../../../hooks/usePermissions';
 import { useRouter } from 'next/router';
-import { ECategories, EFuncAction, EMtrVariant, EResource } from '../../const/enums';
+import { ECategorie, EFuncAction, EMtrVariant, EResource } from '../../../const/enums';
 import { GetServerSidePropsContext } from 'next';
-import { findUserById, UserWithAll } from '../../repositories/userRepo';
-import { AddMemberTrackingItemDialog } from '../../components/Records/Dialog/AddMemberTrackingItemDialog';
+import { findUserById, UserWithAll } from '../../../repositories/userRepo';
+import { AddMemberTrackingItemDialog } from '../../../components/Records/Dialog/AddMemberTrackingItemDialog';
 import 'twin.macro';
-import MemberItemTracker from '../../components/Records/MemberRecordTracker/MemberItemTracker';
-import Tab from '../../components/Records/MemberRecordTracker/Tab';
-import { ProfileHeader } from '../../components/Profile/ProfileHeader';
-import { useMember } from '../../hooks/api/users';
-import { BreadCrumbs } from '../../components/Breadcrumbs';
-import { AddIcon } from '../../assets/Icons';
-import { Card, Fab, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import MemberItemTracker from '../../../components/Records/MemberRecordTracker/MemberItemTracker';
+import Tab from '../../../components/Records/MemberRecordTracker/Tab';
+import { ProfileHeader } from '../../../components/Profile/ProfileHeader';
+import { useMember } from '../../../hooks/api/users';
+import { BreadCrumbs } from '../../../components/Breadcrumbs';
+import { AddIcon, ArchiveIcon } from '../../../assets/Icons';
+import { Button, Card, Fab, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 
 const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
   const {
+    push,
     query: { id },
   } = useRouter();
 
@@ -47,10 +48,15 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   }
 
   return (
-    <div tw="relative min-w-min max-width[1440px] pr-8">
+    <div tw="relative min-w-min max-width[1440px] p-5">
       {canViewDashboard.granted && !isOnOwnProfile ? (
-        <div tw="pb-10">
-          <BreadCrumbs />
+        <div tw="pb-10 flex items-center">
+          <BreadCrumbs text="Training Record" />
+          <div tw="mr-auto"></div>
+          <Button color="secondary" size="medium" onClick={() => push(`/Profile/${userId}/Archive`)}>
+            <ArchiveIcon sx={{ mr: 1 }} />
+            View Archive
+          </Button>
         </div>
       ) : null}
       <div tw="pb-5">
@@ -72,22 +78,22 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
         {view === EMtrVariant.IN_PROGRESS ? (
           <MemberItemTracker variant={EMtrVariant.IN_PROGRESS} userId={userId}>
-            <Tab category={ECategories.ALL}>Show All</Tab>
-            <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
-            <Tab category={ECategories.TODO}>To Do</Tab>
+            <Tab category={ECategorie.ALL}>Show All</Tab>
+            <Tab category={ECategorie.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+            <Tab category={ECategorie.TODO}>To Do</Tab>
           </MemberItemTracker>
         ) : null}
 
         {view === EMtrVariant.COMPLETED ? (
           <MemberItemTracker variant={EMtrVariant.COMPLETED} userId={userId}>
-            <Tab category={ECategories.ALL}>Show All</Tab>
-            <Tab category={ECategories.DONE}>Current</Tab>
-            <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
-            <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+            <Tab category={ECategorie.ALL}>Show All</Tab>
+            <Tab category={ECategorie.DONE}>Current</Tab>
+            <Tab category={ECategorie.UPCOMING}>Upcoming</Tab>
+            <Tab category={ECategorie.OVERDUE}>Overdue</Tab>
           </MemberItemTracker>
         ) : null}
 
-        <div tw="absolute top-6 right-6">
+        <div tw="absolute top-6 right-6 flex space-x-10">
           <Fab
             color="secondary"
             size="medium"

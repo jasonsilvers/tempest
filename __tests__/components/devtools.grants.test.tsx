@@ -1,10 +1,11 @@
+import { Grant } from '@prisma/client';
+import { AddGrantDialog, Grants } from '../../src/components/Devtools/Grants';
 import { ERole, EUri } from '../../src/const/enums';
 import { grants } from '../../src/const/grants';
 import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, waitFor, within } from '../testutils/TempestTestUtils';
-import { Grant } from '@prisma/client';
-import { Grants } from '../../src/components/Devtools/Grants';
+import { fireEvent, render, waitFor, waitForLoadingToFinish, within } from '../testutils/TempestTestUtils';
 
+import React from 'react';
 import 'whatwg-fetch';
 
 type DbGrant = Grant & { id: number };
@@ -78,6 +79,8 @@ test('should show grants and allow edit', async () => {
 
   const screen = render(<Grants />);
 
+  await waitForLoadingToFinish();
+
   const matterMostCell = await screen.findByRole('cell', {
     name: /mattermost/i,
   });
@@ -120,13 +123,16 @@ test('should add a grant', async () => {
     })
   );
 
-  const screen = render(<Grants />);
+  const screen = render(
+    <AddGrantDialog
+      isOpen={true}
+      setIsOpen={() => {
+        jest.fn();
+      }}
+    />
+  );
 
-  const addNewButton = await screen.findByRole('button', {
-    name: /add record/i,
-  });
-
-  fireEvent.click(addNewButton);
+  await waitForLoadingToFinish();
 
   expect(
     screen.getByRole('heading', {

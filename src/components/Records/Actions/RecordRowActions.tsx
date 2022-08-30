@@ -1,17 +1,20 @@
-import { IconButton, Zoom } from '@mui/material';
-import { MemberTrackingRecord, User } from '@prisma/client';
+import { Button, Fade, IconButton, Paper, Popper, Typography, Zoom } from '@mui/material';
+import { MemberTrackingItemStatus, MemberTrackingRecord, TrackingItemStatus, User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
-import React from 'react';
-import { UseMutateFunction } from 'react-query';
+import React, { useState } from 'react';
+import { UseMutateFunction, useQueryClient } from 'react-query';
 import 'twin.macro';
-import { DoneAllIcon } from '../../../assets/Icons';
-import { EFuncAction, EMtrVerb, EResource, ERole } from '../../../const/enums';
+import { ArchiveIcon, DoneAllIcon, LockIcon } from '../../../assets/Icons';
+import { EFuncAction, EMtrVariant, EMtrVerb, EResource, ERole } from '../../../const/enums';
+import { mtiQueryKeys, useUpdateMemberTrackingItem } from '../../../hooks/api/memberTrackingItem';
 import { useDeleteMemberTrackingRecord, useUpdateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { LoadingSpinner, TempestDeleteIcon, TempestToolTip } from '../../../lib/ui';
+import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
 import { LoggedInUser as LoggedInUserType } from '../../../repositories/userRepo';
 import setDomRole from '../../../utils/setDomRole';
+import { useMemberItemTrackerContext } from '../MemberRecordTracker/providers/useMemberItemTrackerContext';
 import { ActionButton, DisabledButton, TableData } from '../TwinMacro/Twin';
 import { RecordSignatureToolTip } from './RecordSignatureToolTip';
 const dayjs = require('dayjs');
@@ -25,10 +28,14 @@ export const determineActionOnRecord = (
   loggedInUser: User
 ): DeterminedActionOnRecord => {
   let action: DeterminedActionOnRecord;
+
+  //Check if the record is signed
   if (!memberTrackingRecord[signatureType]) {
+    //If it's not signed and the signee is a monitor and it's not their record allow signature
     if (signee === 'authority' && loggedInUser?.id !== memberTrackingRecord.traineeId) {
       action = 'authorityCanSign';
     }
+
     if (signee === 'trainee' && loggedInUser?.id === memberTrackingRecord.traineeId) {
       action = 'traineeCanSign';
     }
@@ -41,7 +48,7 @@ export const determineActionOnRecord = (
   return action;
 };
 
-const AwaitingSignature: React.FC = ({ children }) => (
+const AwaitingSignature: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
   <TableData tw="text-xs mr-3">
     <DisabledButton tw="h-8" disabled>
       {children ?? 'Awaiting Signature'}
@@ -49,7 +56,7 @@ const AwaitingSignature: React.FC = ({ children }) => (
   </TableData>
 );
 
-const AwaitingSignatureSecondary: React.FC = ({ children }) => (
+const AwaitingSignatureSecondary: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
   <TableData tw="text-xs mr-3">
     <DisabledButton tw="h-8 text-secondary border-secondary" disabled>
       {children ?? 'Awaiting Signature'}
@@ -78,12 +85,6 @@ const getAllowedActions = (
   >,
   enqueueSnackbar: (message: SnackbarMessage, options?: OptionsObject) => SnackbarKey
 ) => {
-  // fail back if the signatureOwner:User is false
-  // would indicate data is still fetching
-  if (!loggedInUser) {
-    return 'Fetching Data...';
-  }
-
   const handleSign = () => {
     signRecordFor(
       { memberTrackingRecord, userId: memberTrackingRecord.traineeId },
@@ -114,6 +115,7 @@ const getAllowedActions = (
   }
   // if signature date is true and signature owner is true
   // render signature based on the signature owner and date
+
   if (determinedAction === 'completed') {
     return (
       <TableData>
@@ -141,6 +143,155 @@ const getAllowedActions = (
   );
 };
 
+const UnArchiveActions: React.FC<{
+  memberTrackingRecord: MemberTrackingRecord & { trainee: User; authority: User };
+}> = ({ memberTrackingRecord }) => {
+  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLSpanElement | null>(null);
+  const { mutate: updateMemberTrackingItem } = useUpdateMemberTrackingItem();
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+  const memberTrackingItemsQueryData = queryClient.getQueriesData<MemberTrackingItemWithAll[]>(
+    mtiQueryKeys.memberTrackingItems(memberTrackingRecord.traineeId, EMtrVariant.ARCHIVED)
+  );
+
+  let memberTrackingItem: MemberTrackingItemWithAll;
+
+  if (memberTrackingItemsQueryData[0]?.[1]) {
+    memberTrackingItem = memberTrackingItemsQueryData[0]?.[1]?.find(
+      (mti) => mti.trackingItemId === memberTrackingRecord.trackingItemId
+    );
+  }
+
+  const unarchiveRecord = () => {
+    updateMemberTrackingItem(
+      {
+        updatedMemberTrackingItem: { status: MemberTrackingItemStatus.ACTIVE },
+        trackingItemId: memberTrackingRecord.trackingItemId,
+        userId: memberTrackingRecord.traineeId,
+      },
+      {
+        onSuccess: () => {
+          enqueueSnackbar('Record successfully unarchived', { variant: 'success' });
+        },
+        onError: () => {
+          console.log('error with unarchiving');
+        },
+        onSettled: (data) => {
+          queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.ARCHIVED));
+        },
+      }
+    );
+  };
+
+  if (memberTrackingItem?.trackingItem.status === TrackingItemStatus.INACTIVE) {
+    return (
+      <div tw="flex items-center space-x-1">
+        <LockIcon color="disabled" fontSize="small" />
+        <Typography
+          variant="body2"
+          sx={{ color: '#DADADA' }}
+          onMouseEnter={(event) => {
+            setOpen(true);
+            setAnchorEl(event.currentTarget);
+          }}
+          onMouseLeave={() => {
+            setOpen(false);
+            setAnchorEl(null);
+          }}
+        >
+          UNARCHIVE
+        </Typography>
+        <Popper
+          id={`unarchive-popper-${memberTrackingRecord.id}`}
+          open={open}
+          anchorEl={anchorEl}
+          placement={'left-start'}
+          transition
+        >
+          {({ TransitionProps }) => (
+            <Fade {...TransitionProps} timeout={350}>
+              <Paper elevation={4} sx={{ bgcolor: 'white', p: 2, width: 250, textAlign: 'center' }}>
+                {memberTrackingItem.trackingItem.organizationId === null ? (
+                  <Typography tw="text-secondarytext">
+                    This item is no longer a requirement and has been archived by a <strong>Monitor</strong> in the
+                    <strong> Global Training Catalog.</strong>
+                  </Typography>
+                ) : (
+                  <Typography tw="text-secondarytext">
+                    This item is no longer a requirement and has been archived by a <strong>Training Monitor</strong>.
+                  </Typography>
+                )}
+              </Paper>
+            </Fade>
+          )}
+        </Popper>
+      </div>
+    );
+  }
+
+  return (
+    <Button color="secondary" onClick={unarchiveRecord}>
+      Unarchive
+    </Button>
+  );
+};
+
+const ArchiveActions: React.FC<{
+  loggedInUserRole: string;
+  memberTrackingRecord: MemberTrackingRecord & { trainee: User; authority: User };
+}> = ({ loggedInUserRole, memberTrackingRecord }) => {
+  const { mutate: updateMemberTrackingItem } = useUpdateMemberTrackingItem();
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+  const { variant } = useMemberItemTrackerContext();
+
+  const canArchiveRecord = loggedInUserRole === ERole.MONITOR || loggedInUserRole === ERole.ADMIN;
+
+  const archiveRecord = () => {
+    updateMemberTrackingItem(
+      {
+        updatedMemberTrackingItem: { status: MemberTrackingItemStatus.INACTIVE },
+        trackingItemId: memberTrackingRecord.trackingItemId,
+        userId: memberTrackingRecord.traineeId,
+      },
+      {
+        onSuccess: () => {
+          enqueueSnackbar('Record successfully archived', { variant: 'success' });
+        },
+        onError: () => {
+          console.log('error with archiving');
+        },
+        onSettled: (data) => {
+          queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.COMPLETED));
+        },
+      }
+    );
+  };
+
+  if (!canArchiveRecord) {
+    return null;
+  }
+
+  return (
+    <>
+      {variant === EMtrVariant.COMPLETED ? (
+        <IconButton
+          aria-label={`archive-tracking-record-${memberTrackingRecord.id}`}
+          size="small"
+          color="secondary"
+          onClick={archiveRecord}
+          tw="hover:bg-transparent"
+        >
+          <ArchiveIcon />
+        </IconButton>
+      ) : (
+        <UnArchiveActions memberTrackingRecord={memberTrackingRecord} />
+      )}
+    </>
+  );
+};
+
 const RecordRowActions: React.FC<{
   authoritySignedDate: Date;
   traineeSignedDate: Date;
@@ -151,6 +302,7 @@ const RecordRowActions: React.FC<{
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: signTrainee } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_TRAINEE);
   const { mutate: signAuthority } = useUpdateMemberTrackingRecord(EMtrVerb.SIGN_AUTHORITY);
+
   const { mutate: deleteRecord } = useDeleteMemberTrackingRecord();
 
   const { trainee, authority } = memberTrackingRecord;
@@ -220,6 +372,7 @@ const RecordRowActions: React.FC<{
         </TempestToolTip>
         <TableData>
           <IconButton
+            color="secondary"
             aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
             size="small"
             onClick={() =>
@@ -245,7 +398,7 @@ const RecordRowActions: React.FC<{
   if (authoritySignedDate && traineeSignedDate) {
     return (
       <>
-        <TableData tw="ml-auto color['#7B7B7B'] opacity-60 pr-10 w-72">
+        <TableData tw="ml-auto color['#7B7B7B'] opacity-60 pr-10 w-60">
           <RecordSignatureToolTip
             traineeSignature={{ signee: trainee, date: memberTrackingRecord.authoritySignedDate }}
             authoritySignature={{ signee: authority, date: memberTrackingRecord.traineeSignedDate }}
@@ -255,22 +408,26 @@ const RecordRowActions: React.FC<{
             </div>
           </RecordSignatureToolTip>
         </TableData>
-        <TableData tw="w-4">
-          {isAdmin && (
-            <IconButton
-              aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
-              size="small"
-              onClick={() =>
-                deleteRecord({
-                  memberTrackingRecordId: memberTrackingRecord.id,
-                  userId: memberTrackingRecord.traineeId,
-                })
-              }
-              tw="ml-auto mr-3 hover:bg-transparent"
-            >
-              <TempestDeleteIcon />
-            </IconButton>
-          )}
+        <TableData tw="w-28 flex">
+          <div tw="ml-auto flex">
+            <ArchiveActions loggedInUserRole={LoggedInUser?.role?.name} memberTrackingRecord={memberTrackingRecord} />
+            {isAdmin && (
+              <IconButton
+                color="secondary"
+                aria-label={`delete-tracking-record-${memberTrackingRecord.id}`}
+                size="small"
+                onClick={() =>
+                  deleteRecord({
+                    memberTrackingRecordId: memberTrackingRecord.id,
+                    userId: memberTrackingRecord.traineeId,
+                  })
+                }
+                tw="hover:bg-transparent"
+              >
+                <TempestDeleteIcon />
+              </IconButton>
+            )}
+          </div>
         </TableData>
       </>
     );

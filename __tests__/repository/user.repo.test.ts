@@ -1,7 +1,7 @@
 import prisma from '../setup/mockedPrisma';
 import { MemberTrackingRecord, Organization, Role, User } from '@prisma/client';
 import { EMtrVariant, EUserResources } from '../../src/const/enums';
-import { getOrganizationTree } from '../../src/repositories/organizationRepo';
+import { getOrganizationAndDown } from '../../src/repositories/organizationRepo';
 import {
   createUser,
   deleteUser,
@@ -150,6 +150,7 @@ test('should findUserByIdWithMemberTrackingItems all variant', async () => {
     },
     include: {
       memberTrackingItems: {
+        where: {},
         include: {
           trackingItem: true,
           memberTrackingRecords: {
@@ -183,8 +184,12 @@ test('should findUserByIdWithMemberTrackingItems completed variant', async () =>
     },
     include: {
       memberTrackingItems: {
+        where: {
+          status: 'ACTIVE',
+        },
         include: {
           trackingItem: true,
+
           memberTrackingRecords: {
             where: { NOT: [{ traineeSignedDate: null }, { authoritySignedDate: null }] },
             include: {
@@ -216,6 +221,9 @@ test('should findUserByIdWithMemberTrackingItems in progress variant', async () 
     },
     include: {
       memberTrackingItems: {
+        where: {
+          status: 'ACTIVE',
+        },
         include: {
           trackingItem: true,
           memberTrackingRecords: {
@@ -358,7 +366,7 @@ test('should return usrs with member trakcing records', async () => {
 });
 
 test('should return list of organizations and their children', async () => {
-  mockMethodAndReturn(getOrganizationTree, testOrganizations);
+  mockMethodAndReturn(getOrganizationAndDown, testOrganizations);
   const mockResult = {
     ...mockUser,
     organization: mockOrg,
@@ -390,7 +398,7 @@ test('should return list of organizations and their children', async () => {
 });
 
 test('should catch error when getting organization tree', async () => {
-  const mockedGetOrganizationTree = getOrganizationTree as jest.MockedFunction<typeof getOrganizationTree>;
+  const mockedGetOrganizationTree = getOrganizationAndDown as jest.MockedFunction<typeof getOrganizationAndDown>;
   mockedGetOrganizationTree.mockImplementation(() => {
     throw new Error('Test');
   });

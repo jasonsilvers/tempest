@@ -49,3 +49,26 @@ export const useDeleteOrganization = () => {
     },
   });
 };
+type PartialOrganization = Partial<Organization>;
+export const useUpdateOrganization = () => {
+  const queryClient = useQueryClient();
+  const snackbar = useSnackbar();
+
+  return useMutation<Organization, unknown, PartialOrganization>(
+    (updatedOrganization: PartialOrganization) =>
+      axios
+        .put<Organization>(EUri.ORGANIZATIONS + updatedOrganization.id, updatedOrganization)
+        .then((response) => response.data),
+    {
+      onSuccess: () => {
+        snackbar.enqueueSnackbar('Updated Organization', { variant: 'success' });
+      },
+      onError: () => {
+        snackbar.enqueueSnackbar('Error updating Organization. Please try again!', { variant: 'error' });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries(organizationQueryKeys.organizations());
+      },
+    }
+  );
+};

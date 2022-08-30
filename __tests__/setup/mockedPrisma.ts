@@ -5,6 +5,8 @@ interface IMockedPrisma {
   role: {
     findMany: jest.Mock;
     findUnique: jest.Mock;
+    create: jest.Mock;
+    delete: jest.Mock;
   };
   user: {
     create: jest.Mock;
@@ -24,6 +26,8 @@ interface IMockedPrisma {
     findMany: jest.Mock;
     delete: jest.Mock;
     create: jest.Mock;
+    update: jest.Mock;
+    findUnique: jest.Mock;
   };
   logEvent: {
     create: jest.Mock;
@@ -61,6 +65,18 @@ interface IMockedPrisma {
     delete: jest.Mock;
     update: jest.Mock;
   };
+
+  job: {
+    findMany: jest.Mock;
+    findUnique: jest.Mock;
+    create: jest.Mock;
+    update: jest.Mock;
+  };
+  jobResult: {
+    update: jest.Mock;
+    createMany: jest.Mock;
+    findMany: jest.Mock;
+  };
 }
 
 jest.mock(
@@ -70,6 +86,8 @@ jest.mock(
     role: {
       findUnique: jest.fn(),
       findMany: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
     },
     user: {
       create: jest.fn(),
@@ -89,6 +107,8 @@ jest.mock(
       findMany: jest.fn(),
       delete: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
+      findUnique: jest.fn(),
     },
     logEvent: {
       create: jest.fn(),
@@ -125,6 +145,17 @@ jest.mock(
       create: jest.fn(),
       delete: jest.fn(),
       update: jest.fn(),
+    },
+    job: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
+    jobResult: {
+      update: jest.fn(),
+      createMany: jest.fn(),
+      findMany: jest.fn(),
     },
   })
 );

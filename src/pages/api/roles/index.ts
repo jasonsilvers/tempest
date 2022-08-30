@@ -1,31 +1,51 @@
-import { NextApiResponse } from 'next';
+import { Role } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { getAc } from '../../../middleware/utils';
-import { EResource } from '../../../const/enums';
+import Joi from 'joi';
+import { NextApiResponse } from 'next';
+import { ITempestApiMessage } from '../../../const/enums';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
-import { getRoles } from '../../../repositories/roleRepo';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+import { createRole, getRoles } from '../../../repositories/roleRepo';
+import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import { RolesDTO } from '../../../types';
+import { jwtParser } from '../../../utils/jwtUtils';
 
-const rolesHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse<RolesDTO>) => {
-  const { method } = req;
+const rolesPostSchema = {
+  post: {
+    body: Joi.object({
+      name: Joi.string().required(),
+    }),
+  },
+};
 
-  if (method !== 'GET') {
-    throw new MethodNotAllowedError(method);
-  }
+const rolesHandler = async (
+  req: NextApiRequestWithAuthorization<LoggedInUser>,
+  res: NextApiResponse<RolesDTO | Role | ITempestApiMessage>
+) => {
+  const { method, body } = req;
 
-  const ac = await getAc();
+  const jwt = jwtParser(req);
+  const isAdmin =
+    jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
 
-  const permission = ac.can(req.user.role.name).readAny(EResource.ROLE);
-
-  if (!permission.granted) {
+  if (!isAdmin) {
     throw new PermissionError();
   }
 
-  const roles = await getRoles();
+  switch (method) {
+    case 'GET': {
+      const roles = await getRoles();
+      return res.status(200).json({ roles });
+    }
 
-  res.status(200).json({ roles });
+    case 'POST': {
+      const newRole = await createRole(body);
+      return res.status(200).json(newRole);
+    }
+    default: {
+      throw new MethodNotAllowedError(method);
+    }
+  }
 };
 
-export default withTempestHandlers(rolesHandler, findUserByEmail);
+export default withTempestHandlers(rolesHandler, findUserByEmail, rolesPostSchema);

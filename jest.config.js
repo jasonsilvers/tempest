@@ -3,6 +3,7 @@ const { defaults } = require('jest-config');
 
 module.exports = {
   ...defaults,
+  testTimeout: 20000,
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: [
     '<rootDir>/cypress/',
@@ -39,4 +40,5 @@ module.exports = {
       '<rootDir>/__tests__/utils/__mocks__/fileMock.js',
   },
   setupFilesAfterEnv: ['./__tests__/setup/jest.setup.ts'],
+  resolver: '<rootDir>/__tests__/setup/resolver.js',
 };

@@ -10,15 +10,22 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { DataGrid, GridActionsCellItem, GridColumns, GridRowParams, GridValueGetterParams } from '@mui/x-data-grid';
-import { Organization } from '@prisma/client';
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridColumns,
+  GridRowModel,
+  GridRowParams,
+  GridValueGetterParams,
+} from '@mui/x-data-grid';
+import { Organization, OrganizationType } from '@prisma/client';
 import Joi from 'joi';
 import { useSnackbar } from 'notistack';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Controller, FieldError, useForm } from 'react-hook-form';
 import 'twin.macro';
 import { AddIcon, Close, DeleteIcon } from '../../assets/Icons';
-import { useCreateOrg, useDeleteOrganization, useOrgs } from '../../hooks/api/organizations';
+import { useCreateOrg, useDeleteOrganization, useOrgs, useUpdateOrganization } from '../../hooks/api/organizations';
 import { Dialog, DialogActions, DialogContent, DialogTitle, LoadingOverlay } from '../../lib/ui';
 
 const organizationSchema = Joi.object({
@@ -67,6 +74,7 @@ export const OrganizationList = () => {
   const { data: orgs, isLoading } = useOrgs();
   const createOrg = useCreateOrg();
   const deleteOrg = useDeleteOrganization();
+  const updateOrg = useUpdateOrganization();
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
   const [isSavingOrg, setIsSavingOrg] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -109,12 +117,12 @@ export const OrganizationList = () => {
       />,
     ];
   };
-
+  const orgCatalogValue = Object.values(OrganizationType);
   const columns: GridColumns<Organization> = useMemo(
     () => [
       { field: 'id', headerName: 'Id', flex: 1 },
-      { field: 'name', headerName: 'Name', flex: 1 },
-      { field: 'shortName', headerName: 'Short Name', flex: 1 },
+      { field: 'name', headerName: 'Name', flex: 1, editable: true },
+      { field: 'shortName', headerName: 'Short Name', flex: 1, editable: true },
       {
         field: 'parentId',
         headerName: 'Parent',
@@ -124,9 +132,17 @@ export const OrganizationList = () => {
         },
       },
       {
+        field: 'types',
+        headerName: 'Type',
+        flex: 1,
+        editable: true,
+        type: 'singleSelect',
+        valueOptions: orgCatalogValue,
+      },
+      {
         field: 'actions',
         type: 'actions',
-        width: 150,
+        width: 50,
         getActions: deleteCellAction,
       },
     ],
@@ -152,6 +168,22 @@ export const OrganizationList = () => {
     });
   };
 
+  const processRowUpdate = useCallback((updatedRow: GridRowModel<Organization>, oldRow: GridRowModel<Organization>) => {
+    const { id, name, shortName, types } = updatedRow;
+    if (oldRow.name !== name || oldRow.shortName !== shortName || oldRow.types !== types) {
+      const newRow = { id, name, shortName, types };
+      if (!name || !shortName) {
+        throw new Error('Organization names cannot be empty');
+      }
+      updateOrg.mutate(newRow);
+      return newRow;
+    }
+    return oldRow;
+  }, []);
+
+  const handleUpdateError = (e: Error) => {
+    enqueueSnackbar(e.message, { variant: 'error' });
+  };
   if (isLoading) {
     return <div>...Loading</div>;
   }
@@ -159,7 +191,15 @@ export const OrganizationList = () => {
   return (
     <div>
       <div tw="h-[500px] pb-10">
-        <DataGrid rows={orgs} columns={columns} disableVirtualization disableSelectionOnClick />
+        <DataGrid
+          rows={orgs}
+          columns={columns}
+          disableVirtualization
+          disableSelectionOnClick
+          experimentalFeatures={{ newEditingApi: true }}
+          processRowUpdate={processRowUpdate}
+          onProcessRowUpdateError={handleUpdateError}
+        />
       </div>
       <div tw="flex justify-center">
         <Fab color="secondary" onClick={() => setDialogIsOpen(true)}>
@@ -231,14 +271,7 @@ export const OrganizationList = () => {
           </DialogContent>
 
           <DialogActions>
-            <Button
-              type="submit"
-              // onClick={}
-
-              size="medium"
-              color="secondary"
-              variant="contained"
-            >
+            <Button type="submit" size="medium" color="secondary" variant="contained">
               Create
             </Button>
           </DialogActions>

@@ -1,4 +1,4 @@
-import { Grant, PrismaClient, User } from '@prisma/client';
+import { Grant, OrganizationType, PrismaClient, User } from '@prisma/client';
 import { EAction, EResource, ERole } from '../const/enums';
 import { grants } from '../const/grants';
 const casual = require('casual');
@@ -44,13 +44,14 @@ async function createRandomUser(organizationId: number, roleId: number) {
   return addUserToDb(newUser, organizationId, roleId);
 }
 
-async function createOrganization(name: string, shortName: string, parentId?: number) {
+async function createOrganization(name: string, shortName: string, parentId?: number, type?: OrganizationType) {
   const connection = parentId ? { parent: { connect: { id: parentId } } } : null;
 
   return prisma.organization.create({
     data: {
       name,
       shortName,
+      types: [type],
       ...connection,
     },
   });
@@ -70,7 +71,8 @@ async function addPPEItem(userId: number) {
 }
 
 async function createOrganizationStructure() {
-  const mdg = await createOrganization('15th Medical Group', '15th MDG');
+  const mdg = await createOrganization('15th Medical Group', '15th MDG', null, 'CATALOG');
+  const lrs = await createOrganization('LRS', 'LRS', null, 'CATALOG');
   const omrs = await createOrganization('15 Operation Medical Readiness Squadron', '15 OMRS', mdg.id);
   const hcos = await createOrganization('15 Healthcare Operation Squadron', '15 HCOS', mdg.id);
   const execStaff = await createOrganization('15th Medical Group Executive Staff', '15th MDG Exc Staff', mdg.id);
@@ -90,7 +92,7 @@ async function createOrganizationStructure() {
   await createOrganization('Ohana Clinic', 'Ohana Clinic', hcos.id);
 
   //MDSS Flights
-  await createOrganization('Pharmacy', 'Pharmacy', mdss.id);
+  const pharmacy = await createOrganization('Pharmacy', 'Pharmacy', mdss.id, 'CATALOG');
   await createOrganization('Diagnostics and Therapeutics ', 'D&T', mdss.id);
   await createOrganization('Readiness', 'Readiness', mdss.id);
   await createOrganization('Medical Logistics', 'Medical Logistics', mdss.id);
@@ -99,30 +101,48 @@ async function createOrganizationStructure() {
   await createOrganization('Information Systems Flight', 'Information Systems Flight', mdss.id);
   await createOrganization('Faculty Managers', 'Faculty Managers', mdss.id);
 
-  return [mdg, omrs, execStaff];
+  return [mdg, omrs, execStaff, pharmacy, lrs];
 }
 
 async function seedDev() {
-  const [organization1, organization2, organization3] = await createOrganizationStructure();
+  const [mdg, omrs, execStaff, pharmacy, lrs] = await createOrganizationStructure();
 
   await prisma.trackingItem.createMany({
     data: [
       {
-        title: 'Fire Extinguisher',
+        title: 'GLOBAL - Fire Extinguisher',
         description: 'This is a AF yearly requirment',
         interval: 365,
       },
       {
-        title: 'Supervisor Safety Training',
+        title: 'GLOBAL - Supervisor Safety Training',
         description: 'One time training for new supevisors',
         interval: 0,
+      },
+      {
+        title: 'LRS - Check your gloves',
+        description: 'One time training for new supevisors',
+        interval: 0,
+        organizationId: lrs.id,
+      },
+      {
+        title: 'MDG - shoom too fast',
+        description: 'One time training for new supevisors',
+        interval: 0,
+        organizationId: mdg.id,
+      },
+      {
+        title: 'PHARMACY - Paper cuts',
+        description: 'No paper cuts',
+        interval: 0,
+        organizationId: pharmacy.id,
       },
     ],
   });
 
   const trackingItem1 = await prisma.trackingItem.create({
     data: {
-      title: 'Fire Safety',
+      title: 'GLOBAL - Fire Safety',
       description: 'How to be SAFE when using Fire',
       interval: 90,
     },
@@ -130,15 +150,16 @@ async function seedDev() {
 
   const trackingItem2 = await prisma.trackingItem.create({
     data: {
-      title: 'Big Bug Safety',
+      title: 'PHARMACY - Big Bug Safety',
       description: 'There are big bugs in Hawaii!  Be careful!',
       interval: 365,
+      organizationId: pharmacy.id,
     },
   });
 
   const trackingItem3 = await prisma.trackingItem.create({
     data: {
-      title: 'Keyboard Warrior Training',
+      title: 'GLOBAL - Keyboard Warrior Training',
       description: 'How to be a true keyboard warrior via writing code',
       interval: 180,
     },
@@ -167,19 +188,19 @@ async function seedDev() {
   await prisma.user.create({
     data: {
       ...user1,
-      organizationId: organization1.id,
-      reportingOrganizationId: organization1.id,
+      organizationId: mdg.id,
+      reportingOrganizationId: mdg.id,
       roleId: adminRole ? adminRole.id : 2,
     },
   });
 
   for (let i = 0; i <= 20; i++) {
-    await createRandomUser(organization1.id, memberRole ? memberRole.id : 2);
+    await createRandomUser(mdg.id, memberRole ? memberRole.id : 2);
   }
 
   const user2 = createUser('Sam', 'Member', 'sam.member@gmail.com');
 
-  const createdUser2 = await addUserToDb(user2, organization3.id, memberRole ? memberRole.id : 2);
+  const createdUser2 = await addUserToDb(user2, execStaff.id, memberRole ? memberRole.id : 2);
 
   await addPPEItem(createdUser2.id);
   await addPPEItem(createdUser2.id);
@@ -193,12 +214,12 @@ async function seedDev() {
       ...user3,
       organization: {
         connect: {
-          id: organization1.id,
+          id: mdg.id,
         },
       },
       reportingOrganization: {
         connect: {
-          id: organization1.id,
+          id: mdg.id,
         },
       },
       role: {
@@ -216,12 +237,12 @@ async function seedDev() {
       ...user4,
       organization: {
         connect: {
-          id: organization2.id,
+          id: omrs.id,
         },
       },
       reportingOrganization: {
         connect: {
-          id: organization1.id,
+          id: omrs.id,
         },
       },
       role: {
@@ -234,19 +255,19 @@ async function seedDev() {
 
   const newMemberTrackingItem1 = {
     userId: createdUser2.id,
-    isActive: true,
+
     trackingItemId: trackingItem1.id,
   };
 
   const newMemberTrackingItem2 = {
     userId: createdUser2.id,
-    isActive: true,
+
     trackingItemId: trackingItem2.id,
   };
 
   const newMemberTrackingItem3 = {
     userId: createdUser2.id,
-    isActive: true,
+
     trackingItemId: trackingItem3.id,
   };
 
@@ -301,6 +322,9 @@ async function seedDev() {
   await prisma.memberTrackingRecord.create({
     data: {
       order: 1,
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {

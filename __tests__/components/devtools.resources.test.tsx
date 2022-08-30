@@ -12,6 +12,7 @@ import {
 } from '../testutils/TempestTestUtils';
 
 import 'whatwg-fetch';
+import React from 'react';
 
 beforeEach(() => {
   server.listen({
@@ -57,8 +58,7 @@ test('should render resources component and show list of resources', async () =>
   const screen = render(<Resources />);
 
   await waitForLoadingToFinish();
-
-  expect(screen.getByText(/admin/i)).toBeInTheDocument();
+  expect(await screen.findByText(/admin/i)).toBeInTheDocument();
 });
 
 test('should add resource', async () => {
@@ -76,7 +76,7 @@ test('should add resource', async () => {
 
   fireEvent.click(addNewButton);
 
-  userEvent.keyboard('{esc}');
+  userEvent.keyboard('{Escape}');
 
   await waitForElementToBeRemoved(() => screen.getByRole('dialog'));
 

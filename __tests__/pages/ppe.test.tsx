@@ -3,6 +3,8 @@ import 'whatwg-fetch';
 import PpePage from '../../src/pages/Ppe';
 import { fireEvent, render, waitFor } from '../testutils/TempestTestUtils';
 
+jest.mock('lodash.debounce', () => jest.fn((fn) => fn));
+
 const testPPEItem = {
   id: 1,
   name: 'Steel Toe',
@@ -41,9 +43,6 @@ beforeEach(() => {
   );
 });
 
-// jest.useFakeTimers();
-jest.mock('lodash/debounce', () => jest.fn((fn) => fn));
-
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
 afterEach(() => {
@@ -63,7 +62,7 @@ it('renders the ppe page', async () => {
 
 it('Can add new PPE Item', async () => {
   server.use(
-    rest.post('/api/ppeitems/', (req, res, ctx) => {
+    rest.post('/api/ppeitems', (req, res, ctx) => {
       return res(ctx.json(req.body));
     })
   );

@@ -22,7 +22,7 @@ type OrgFormEvent = SelectChangeEvent<string>;
 const Users = () => {
   const [modalState, setModalState] = useState({ userId: null, open: false });
   const queryClient = useQueryClient();
-  const { user: LoggedInUser, isLoading } = usePermissions();
+  const { user: LoggedInUser, isLoading: LoggedInUserIsLoading } = usePermissions();
   const usersListQuery = useQuery<UserWithAll[]>('users', () =>
     axios.get<UsersDTO>(EUri.USERS).then((response) => response.data.users)
   );
@@ -90,8 +90,8 @@ const Users = () => {
     });
   };
 
-  if (usersListQuery.isLoading || isLoading) {
-    return <div>...loading users</div>;
+  if (usersListQuery.isLoading || LoggedInUserIsLoading || orgsListQuery.isLoading || rolesListQuery.isLoading) {
+    return <div>...Loading</div>;
   }
 
   return (
@@ -107,7 +107,7 @@ const Users = () => {
             <div tw="px-2">|</div>
             <div tw="flex flex-row items-center space-x-2">
               <Data>Org:</Data>
-              {orgsListQuery.isLoading ? (
+              {orgsListQuery?.isLoading ? (
                 <div>...loading</div>
               ) : (
                 <Select
@@ -116,7 +116,7 @@ const Users = () => {
                   size="small"
                   value={user.organizationId?.toString()}
                 >
-                  {orgsListQuery.data.map((org) => (
+                  {orgsListQuery?.data?.map((org) => (
                     <MenuItem key={org.id} value={org.id}>
                       {org.shortName}
                     </MenuItem>
@@ -137,7 +137,7 @@ const Users = () => {
                     size="small"
                     value={user.role?.id}
                   >
-                    {rolesListQuery.data.map((role) => (
+                    {rolesListQuery?.data?.map((role) => (
                       <MenuItem key={role.id} value={role.id}>
                         {role.name}
                       </MenuItem>

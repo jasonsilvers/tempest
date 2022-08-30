@@ -235,20 +235,21 @@ afterEach(() => {
 // });
 
 it('should filter by name', async () => {
-  const { getByText, queryByText, getByLabelText } = render(<Dashboard />);
+  const user = userEvent.setup();
+  const screen = render(<Dashboard />);
 
-  await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText(/loading/i)).toBeInTheDocument());
 
-  await waitForElementToBeRemoved(() => getByText(/loading/i));
+  await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
 
-  expect(getByText(/clark, sandra/i)).toBeInTheDocument();
-  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+  expect(screen.getByText(/clark, sandra/i)).toBeInTheDocument();
+  expect(screen.getByText(/smith, joe/i)).toBeInTheDocument();
 
-  const searchInput = getByLabelText(/search/i);
+  const searchInput = screen.getByLabelText(/search/i);
 
-  userEvent.type(searchInput, 'smith');
-  expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
-  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+  await user.type(searchInput, 'smith');
+  expect(screen.queryByText(/clark, sandra/i)).not.toBeInTheDocument();
+  expect(screen.getByText(/smith, joe/i)).toBeInTheDocument();
 });
 
 it('should filter by organization', async () => {
@@ -260,8 +261,8 @@ it('should filter by organization', async () => {
   const searchInput = getByLabelText(/organizations/i);
 
   userEvent.type(searchInput, '15');
-  await waitForLoadingToFinish();
-  fireEvent.click(getByText('15th Medical Group'));
+
+  fireEvent.click(await findByText('15th Medical Group'));
 
   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
   expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();

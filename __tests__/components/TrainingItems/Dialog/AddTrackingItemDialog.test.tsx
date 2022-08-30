@@ -4,26 +4,55 @@ import { AddTrackingItemDialog } from '../../../../src/components/TrainingItems/
 import { server, rest } from '../../../testutils/mocks/msw';
 import 'whatwg-fetch';
 import { EUri } from '../../../../src/const/enums';
+import { andrewMonitor, joeAdmin } from '../../../testutils/mocks/fixtures';
+import { TrackingItemStatus } from '@prisma/client';
 
 const trackingItemsList = {
   trackingItems: [
-    { id: 1, title: 'Fire Extinguisher', description: 'This is a AF yearly requirment', interval: 365 },
-    { id: 2, title: 'Supervisor Safety Training', description: 'One time training for new supevisors', interval: 0 },
-    { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 60 },
-    { id: 4, title: 'Big Bug Safety', description: 'There are big bugs in Hawaii!  Be careful!', interval: 365 },
+    { id: 1, title: 'Fire Extinguisher', description: 'This is a AF yearly requirment', interval: 365, location: '' },
+    {
+      id: 2,
+      title: 'Supervisor Safety Training',
+      description: 'One time training for new supevisors',
+      interval: 0,
+      location: '',
+      status: TrackingItemStatus.ACTIVE,
+    },
+    { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 60, location: '' },
+    {
+      id: 4,
+      title: 'Big Bug Safety',
+      description: 'There are big bugs in Hawaii!  Be careful!',
+      interval: 365,
+      location: '',
+      status: TrackingItemStatus.ACTIVE,
+    },
   ],
 };
 
 // Establish API mocking before tests.
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'bypass',
+    onUnhandledRequest: 'warn',
   });
 });
 beforeEach(() => {
   server.use(
     rest.get(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(trackingItemsList));
+    }),
+    rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          organizations: [
+            { id: 1, name: '15th Medical group', shortName: '15th mdg', parentId: null, types: ['CATALOG'] },
+            { id: 2, name: 'organization 2', shortName: 'org 2', parentId: 1, types: [] },
+            { id: 3, name: 'organization 3', shortName: 'org 3', parentId: 2, types: ['CATALOG'] },
+            { id: 4, name: 'organization 4', shortName: 'org 4', parentId: 3, types: [] },
+          ],
+        })
+      );
     })
   );
 });
@@ -48,7 +77,11 @@ const Container = () => {
       >
         Open Dialog
       </button>
-      <AddTrackingItemDialog isOpen={openDialog} handleClose={() => setOpenDialog(false)}></AddTrackingItemDialog>
+      <AddTrackingItemDialog
+        isOpen={openDialog}
+        handleClose={() => setOpenDialog(false)}
+        defaultCatalog={'0'}
+      ></AddTrackingItemDialog>
     </div>
   );
 };
@@ -75,7 +108,13 @@ test('should add new training to list waiting to be added', async () => {
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          location: 'New training item location',
+          status: TrackingItemStatus.ACTIVE,
+        })
       );
     })
   );
@@ -87,19 +126,23 @@ test('should add new training to list waiting to be added', async () => {
 
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  const trainingLocationInput = getByRole('textbox', {
+    name: 'training-location-input',
+  });
   const trainingIntervalSelect = getByRole('button', {
     name: /recurrance-select/i,
   });
 
   const newTrainingItemTitle = 'New training item title';
   const newTrainingItemDescription = 'New training item description';
+  const newTrainingItemLocation = 'New training item location';
 
   fireEvent.change(trainingTitleInput, { target: { value: newTrainingItemTitle } });
-  fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
   fireEvent.mouseDown(trainingIntervalSelect);
-
   const options = getAllByRole('option');
   fireEvent.click(options[1]);
+  fireEvent.change(trainingLocationInput, { target: { value: newTrainingItemLocation } });
+  fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
 
   const createButton = getByRole('button', { name: /create/i });
   fireEvent.click(createButton);
@@ -112,7 +155,13 @@ test('should add training with zero interval', async () => {
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          location: 'New training itetm location',
+          status: TrackingItemStatus.ACTIVE,
+        })
       );
     })
   );
@@ -124,17 +173,21 @@ test('should add training with zero interval', async () => {
 
   const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
   const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  const trainingLocationInput = getByRole('textbox', {
+    name: /training-location-input/i,
+  });
   const trainingIntervalSelect = getByRole('button', {
     name: /recurrance-select/i,
   });
 
   const newTrainingItemTitle = 'New training item title';
   const newTrainingItemDescription = 'New training item description';
+  const newTrainingItemLocation = 'New training itetm location';
 
   fireEvent.change(trainingTitleInput, { target: { value: newTrainingItemTitle } });
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  fireEvent.change(trainingLocationInput, { target: { value: newTrainingItemLocation } });
   fireEvent.mouseDown(trainingIntervalSelect);
-
   const options = getAllByRole('option');
   fireEvent.click(options[5]);
 
@@ -149,34 +202,45 @@ test('should show duplicates', async () => {
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          status: TrackingItemStatus.ACTIVE,
+        })
       );
     })
   );
 
-  const { getByRole, queryByText } = render(<Container />);
+  const screen = render(<Container />);
 
-  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
-  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
-  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+  const trainingTitleInput = screen.getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = screen.getByRole('textbox', { name: 'training-description-input' });
+  const trainingIntervalSelect = screen.getByRole('button', {
+    name: /recurrance-select/i,
+  });
 
   const newTrainingItemTitle = 'Big';
   const newTrainingItemDescription = 'New training item description';
 
   userEvent.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  fireEvent.mouseDown(trainingIntervalSelect);
+  const options = screen.getAllByRole('option');
+  fireEvent.click(options[0]);
 
-  expect(queryByText(/Bug Safety/i)).toBeInTheDocument();
+  expect(await screen.findByText(/Bug Safety/i)).toBeInTheDocument();
 
-  const createButton = getByRole('button', { name: /create/i });
+  const createButton = screen.getByRole('button', { name: /create/i });
   fireEvent.click(createButton);
 
-  expect(queryByText(/this is a potential duplicate/i)).toBeInTheDocument();
+  expect(screen.queryByText(/this is a potential duplicate/i)).toBeInTheDocument();
 
-  fireEvent.click(getByRole('button', { name: 'No' }));
+  fireEvent.click(screen.getByRole('button', { name: 'No' }));
 });
 
 test('should tell user they cannot add a duplicate', async () => {
@@ -184,60 +248,125 @@ test('should tell user they cannot add a duplicate', async () => {
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          status: TrackingItemStatus.ACTIVE,
+        })
       );
     })
   );
 
-  const { getByRole, queryByText } = render(<Container />);
+  const user = userEvent.setup();
 
-  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  const screen = render(<Container />);
+
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
-  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
-  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+  const trainingTitleInput = screen.getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = screen.getByRole('textbox', { name: 'training-description-input' });
 
   const newTrainingItemTitle = 'Big Bug Safety';
   const newTrainingItemDescription = 'New training item description';
 
-  userEvent.type(trainingTitleInput, newTrainingItemTitle);
+  await user.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
 
-  expect(queryByText(/unable to add/i)).toBeInTheDocument();
+  expect(await screen.findByText(/unable to add/i)).toBeInTheDocument();
 });
 
-test('should tell user they cannot add a duplicate', async () => {
+test('should tell user this might be a duplicate but allow them to create it if its similiar but not exactly the same', async () => {
   server.use(
     rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json({ title: 'New training item title', description: 'New training item description', interval: 2 })
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          status: TrackingItemStatus.ACTIVE,
+        })
       );
     })
   );
 
-  const { getByRole, queryByText, getByText } = render(<Container />);
+  const user = userEvent.setup();
 
-  const openDialogButton = getByRole('button', { name: /open dialog/i });
+  const screen = render(<Container />);
+
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
   fireEvent.click(openDialogButton);
 
-  await waitForElementToBeRemoved(() => getByRole('progressbar'));
-  const trainingTitleInput = getByRole('textbox', { name: 'training-title-input' });
-  const trainingDescriptionInput = getByRole('textbox', { name: 'training-description-input' });
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+  const trainingTitleInput = screen.getByRole('textbox', { name: 'training-title-input' });
+  const trainingDescriptionInput = screen.getByRole('textbox', { name: 'training-description-input' });
+  const trainingIntervalSelect = screen.getByRole('button', {
+    name: /recurrance-select/i,
+  });
 
   const newTrainingItemTitle = 'Big Bug';
   const newTrainingItemDescription = 'New training item description';
 
-  userEvent.type(trainingTitleInput, newTrainingItemTitle);
+  await user.type(trainingTitleInput, newTrainingItemTitle);
   fireEvent.change(trainingDescriptionInput, { target: { value: newTrainingItemDescription } });
+  fireEvent.mouseDown(trainingIntervalSelect);
+  const options = screen.getAllByRole('option');
+  fireEvent.click(options[0]);
 
-  const createButton = getByRole('button', { name: /create/i });
+  const createButton = screen.getByRole('button', { name: /create/i });
   fireEvent.click(createButton);
 
-  expect(queryByText(/this is a potential duplicate/i)).toBeInTheDocument();
+  expect(await screen.findByText(/this is a potential duplicate/i)).toBeInTheDocument();
 
-  fireEvent.click(getByRole('button', { name: 'Yes' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Yes' }));
 
-  await waitForElementToBeRemoved(() => getByText(/create new training/i));
+  await waitForElementToBeRemoved(() => screen.getByText(/create new training/i));
+});
+
+test('only admins can add items to global training catalog', async () => {
+  server.use(
+    rest.post(EUri.TRACKING_ITEMS, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          title: 'New training item title',
+          description: 'New training item description',
+          interval: 2,
+          status: TrackingItemStatus.ACTIVE,
+        })
+      );
+    }),
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    })
+  );
+
+  const screen = render(<Container />);
+
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
+  fireEvent.click(openDialogButton);
+
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+
+  expect(await screen.findByText(/15th medical group/i)).toBeInTheDocument();
+});
+
+test('admins should be able to add items to the global training catalog', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(joeAdmin));
+    })
+  );
+
+  const screen = render(<Container />);
+
+  const openDialogButton = screen.getByRole('button', { name: /open dialog/i });
+  fireEvent.click(openDialogButton);
+
+  await waitForElementToBeRemoved(() => screen.getByRole('progressbar'));
+
+  expect(await screen.findByText(/global training catalog/i)).toBeInTheDocument();
 });

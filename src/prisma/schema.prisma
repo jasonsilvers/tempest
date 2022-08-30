@@ -34,6 +34,8 @@ model User {
   afsc                     String?
   dutyTitle                String?                           @map("duty_title")
   logEvent                 LogEvent[]
+  jobs                     Job[]
+  jobResults               JobResult[]
 
   @@map(name: "user")
 }
@@ -73,34 +75,51 @@ model MemberTrackingRecord {
   @@map("member_tracking_record")
 }
 
+enum MemberTrackingItemStatus {
+  ACTIVE
+  INACTIVE
+}
+
 model MemberTrackingItem {
   //Compound key of userId and trackingItemId
-  isActive              Boolean
-  user                  User                   @relation(fields: [userId], references: [id])
+  // isActive              Boolean
+  user                  User                     @relation(fields: [userId], references: [id])
   userId                Int
-  createdAt             DateTime?              @default(now()) @map("created_at")
-  trackingItem          TrackingItem           @relation(fields: [trackingItemId], references: [id])
+  createdAt             DateTime?                @default(now()) @map("created_at")
+  trackingItem          TrackingItem             @relation(fields: [trackingItemId], references: [id])
   trackingItemId        Int
   memberTrackingRecords MemberTrackingRecord[]
+  status                MemberTrackingItemStatus @default(ACTIVE)
 
   //compositeid userid_trackingitemids
   @@id([userId, trackingItemId])
   @@map("member_tracking_item")
 }
 
+enum OrganizationType {
+  CATALOG
+}
+
 model Organization {
-  id             Int            @id @default(autoincrement())
-  name           String         @map("org_name")
-  shortName      String         @map("org_short_name")
+  id             Int                @id @default(autoincrement())
+  name           String             @map("org_name")
+  shortName      String             @map("org_short_name")
   //Self reference
-  parent         Organization?  @relation(name: "ParentChildren", fields: [parentId], references: [id])
-  parentId       Int?           @map("parent_id")
-  children       Organization[] @relation(name: "ParentChildren")
-  reportingUsers User[]         @relation("reportingOrganization")
+  parent         Organization?      @relation(name: "ParentChildren", fields: [parentId], references: [id])
+  parentId       Int?               @map("parent_id")
+  children       Organization[]     @relation(name: "ParentChildren")
+  reportingUsers User[]             @relation("reportingOrganization")
   users          User[]
   templates      Template[]
+  trackingItems  TrackingItem[]
+  types          OrganizationType[]
 
   @@map("organization")
+}
+
+enum TrackingItemStatus {
+  ACTIVE
+  INACTIVE
 }
 
 model TrackingItem {
@@ -108,10 +127,15 @@ model TrackingItem {
   title                String                 @unique
   description          String
   interval             Int? //days
+  organzation          Organization?          @relation(fields: [organizationId], references: [id])
+  organizationId       Int?
   memberTrackingRecord MemberTrackingRecord[]
   templates            TemplateTrackingItem[]
+  status               TrackingItemStatus     @default(ACTIVE)
+  JobResults           JobResult[]
+  location             String?
+  memberTrackingItem   MemberTrackingItem[]
 
-  memberTrackingItem MemberTrackingItem[]
   @@map("training_record")
 }
 
@@ -122,7 +146,6 @@ model TemplateTrackingItem {
   trackingItemId Int
   template       Template     @relation(fields: [templateId], references: [id])
   templateId     Int
-
 
   @@map("template_tracking_item")
 }
@@ -184,4 +207,38 @@ model LogEvent {
   message      String?
 
   @@map("log_event")
+}
+
+enum JobStatus {
+  QUEUED
+  WORKING
+  FAILED
+  COMPLETED
+  KILLED
+}
+
+model Job {
+  id                Int         @id @default(autoincrement())
+  message           String?
+  progress          Int?
+  status            JobStatus?
+  total             Int?
+  url               String?
+  startedBy         User?       @relation(fields: [startedById], references: [id])
+  startedById       Int?
+  avgProcessingTime Float?
+  results           JobResult[]
+}
+
+model JobResult {
+  id                Int           @id @default(autoincrement())
+  status            JobStatus?
+  success           Boolean?
+  message           String?
+  forUser           User?         @relation(fields: [forUserId], references: [id])
+  forUserId         Int?
+  forTrackingItem   TrackingItem? @relation(fields: [forTrackingItemId], references: [id])
+  forTrackingItemId Int?
+  job               Job           @relation(fields: [jobId], references: [id])
+  jobId             Int
 }

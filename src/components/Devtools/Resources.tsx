@@ -147,7 +147,7 @@ export const Resources = () => {
         onClick={() => {
           del(params.row.id, {
             onSuccess: () => {
-              enqueueSnackbar('Organization Deleted', { variant: 'success' });
+              enqueueSnackbar('Resource has been Deleted', { variant: 'success' });
             },
           });
         }}
@@ -182,7 +182,6 @@ export const Resources = () => {
         components={{
           Toolbar: GridToolbar,
         }}
-        disableSelectionOnClick={true}
       />
     </div>
   );

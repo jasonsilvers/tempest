@@ -54,7 +54,7 @@ interface IWrapperProps {
 
 const notistackRef = React.createRef<SnackbarProvider>();
 const onClickDismiss = (key: string) => () => {
-  notistackRef.current.closeSnackbar(key);
+  notistackRef?.current?.closeSnackbar(key);
 };
 
 const createWrapper = (queryClient?: QueryClient) => {

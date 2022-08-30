@@ -1,4 +1,4 @@
-import { MemberTrackingItem } from '@prisma/client';
+import { MemberTrackingItem, MemberTrackingItemStatus } from '@prisma/client';
 import Joi from 'joi';
 const dayjs = require('dayjs');
 import { NextApiResponse } from 'next';
@@ -85,7 +85,7 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
 
 export const memberTrackingItemPutSchema = {
   body: Joi.object({
-    isActive: Joi.boolean().required(),
+    status: Joi.any().valid(MemberTrackingItemStatus.ACTIVE, MemberTrackingItemStatus.INACTIVE),
   }),
   query: Joi.object({
     slug: Joi.optional(),
@@ -138,7 +138,6 @@ export const putMemberTrackingItemAction: IMemberTrackingItemController = async 
 
 export const memberTrackingItemPostSchema = {
   body: Joi.object({
-    isActive: Joi.boolean().required(),
     userId: Joi.number().required(),
     trackingItemId: Joi.number().required(),
   }),

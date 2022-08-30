@@ -13,7 +13,7 @@ import { TrackingItem } from '.prisma/client';
 import { User } from '@prisma/client';
 import { server } from '../../testutils/mocks/msw';
 import Tab from '../../../src/components/Records/MemberRecordTracker/Tab';
-import { ECategories, EMtrVariant, EUri } from '../../../src/const/enums';
+import { ECategorie, EMtrVariant, EUri } from '../../../src/const/enums';
 
 import 'whatwg-fetch';
 
@@ -89,10 +89,10 @@ test('should render a record requiring signature - authority signed', async () =
 
   const { getByText, getByRole } = render(
     <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.IN_PROGRESS}>
-      <Tab category={ECategories.ALL}>All</Tab>
-      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
-      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
-      <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+      <Tab category={ECategorie.ALL}>All</Tab>
+      <Tab category={ECategorie.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategorie.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategorie.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
     </MemberItemTracker>
   );
 
@@ -136,10 +136,10 @@ test('should render a record requiring signature - trainee signed', async () => 
 
   const { getByText, getByRole } = render(
     <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.IN_PROGRESS}>
-      <Tab category={ECategories.ALL}>All</Tab>
-      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
-      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
-      <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+      <Tab category={ECategorie.ALL}>All</Tab>
+      <Tab category={ECategorie.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategorie.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategorie.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
     </MemberItemTracker>
   );
 
@@ -182,10 +182,10 @@ test('should render a record that is done', async () => {
 
   const { getByText } = render(
     <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.COMPLETED}>
-      <Tab category={ECategories.ALL}>All</Tab>
-      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
-      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
-      <Tab category={ECategories.DONE}>Done</Tab>
+      <Tab category={ECategorie.ALL}>All</Tab>
+      <Tab category={ECategorie.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategorie.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategorie.DONE}>Done</Tab>
     </MemberItemTracker>
   );
 
@@ -234,9 +234,9 @@ test('should render a record that is coming due', async () => {
 
   const { getByText } = render(
     <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.COMPLETED}>
-      <Tab category={ECategories.ALL}>All</Tab>
-      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
-      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategorie.ALL}>All</Tab>
+      <Tab category={ECategorie.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategorie.OVERDUE}>Overdue</Tab>
     </MemberItemTracker>
   );
 
@@ -283,9 +283,9 @@ test('should render a record that is overdue', async () => {
 
   const { getByText } = render(
     <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.COMPLETED}>
-      <Tab category={ECategories.ALL}>All</Tab>
-      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
-      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategorie.ALL}>All</Tab>
+      <Tab category={ECategorie.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategorie.OVERDUE}>Overdue</Tab>
     </MemberItemTracker>
   );
 
@@ -341,11 +341,11 @@ test('should sign record as trainee and mark as done', async () => {
 
   const { getByText, getByRole, queryByText } = render(
     <MemberItemTracker userId={testTrainee.id} variant={EMtrVariant.IN_PROGRESS}>
-      <Tab category={ECategories.ALL}>All</Tab>
-      <Tab category={ECategories.UPCOMING}>Upcoming</Tab>
-      <Tab category={ECategories.OVERDUE}>Overdue</Tab>
-      <Tab category={ECategories.DONE}>Done</Tab>
-      <Tab category={ECategories.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
+      <Tab category={ECategorie.ALL}>All</Tab>
+      <Tab category={ECategorie.UPCOMING}>Upcoming</Tab>
+      <Tab category={ECategorie.OVERDUE}>Overdue</Tab>
+      <Tab category={ECategorie.DONE}>Done</Tab>
+      <Tab category={ECategorie.SIGNATURE_REQUIRED}>Awaiting Signature</Tab>
     </MemberItemTracker>
   );
 

@@ -73,7 +73,7 @@ const memberTrackingItemGrants: Grants[] = [
   },
   {
     action: EAction.UPDATE_ANY,
-    attributes: 'isActive',
+    attributes: 'status',
     resource: EResource.MEMBER_TRACKING_ITEM,
     role: ERole.MONITOR,
   },
@@ -265,25 +265,43 @@ const trackingItemGrants: Grants[] = [
     resource: EResource.TRACKING_ITEM,
     role: ERole.MONITOR,
   },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.DELETE_ANY,
+    attributes: '*',
+    resource: EResource.TRACKING_ITEM,
+    role: ERole.MONITOR,
+  },
 ];
 
 const resourceGrants: Grants[] = [
   {
     action: EAction.READ_ANY,
     attributes: '*',
-    resource: EResource.ADMIN_PAGE,
+    resource: EResource.RESOURCE,
     role: ERole.ADMIN,
   },
   {
     action: EAction.CREATE_ANY,
     attributes: '*',
-    resource: EResource.ADMIN_PAGE,
+    resource: EResource.RESOURCE,
     role: ERole.ADMIN,
   },
   {
     action: EAction.DELETE_ANY,
     attributes: '*',
-    resource: EResource.ADMIN_PAGE,
+    resource: EResource.RESOURCE,
     role: ERole.ADMIN,
   },
 ];
@@ -340,6 +358,42 @@ const ppeItemGrants: Grants[] = [
   },
 ];
 
+const jobGrants: Grants[] = [
+  {
+    action: EAction.READ_OWN,
+    attributes: '*',
+    resource: EResource.JOB,
+    role: ERole.MONITOR,
+  },
+];
+
+const rolesGrants: Grants[] = [
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.ROLE,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.ROLE,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.ROLE,
+    role: ERole.ADMIN,
+  },
+  {
+    action: EAction.DELETE_ANY,
+    attributes: '*',
+    resource: EResource.ROLE,
+    role: ERole.ADMIN,
+  },
+];
+
 export const grants: Grants[] = [
   ...mattermostGrants,
   ...pageGrants,
@@ -351,4 +405,6 @@ export const grants: Grants[] = [
   ...trackingItemGrants,
   ...resourceGrants,
   ...ppeItemGrants,
+  ...jobGrants,
+  ...rolesGrants,
 ];

@@ -14,6 +14,11 @@ export enum EMtrVerb {
   UPDATE_COMPLETION = 'update_completion',
 }
 
+export enum ETrackingItemVerb {
+  ARCHIVE = 'archive',
+  UNARCHIVE = 'unarchive',
+}
+
 export enum ERole {
   ADMIN = 'admin',
   MEMBER = 'member',
@@ -37,6 +42,8 @@ export enum EResource {
   ROLE = 'role',
   UPLOAD = 'upload',
   PPE_ITEM = 'ppeitem',
+  JOB = 'job',
+  RESOURCE = 'resource',
 }
 
 // All must begin and end in a slash
@@ -51,7 +58,9 @@ export enum EUri {
   ORGANIZATIONS = '/api/organizations/',
   LOGS = '/api/logs',
   RESOURCES = '/api/resource/',
-  PPE_ITEMS = 'api/ppeitems/',
+  PPE_ITEMS = '/api/ppeitems/',
+  BULK_CREATE = '/api/bulk/tracking/create/',
+  JOBS = '/api/jobs/',
 }
 
 export enum EAttribute {
@@ -84,7 +93,7 @@ export enum EFuncAction {
   DELETE_OWN = 'deleteOwn',
 }
 
-export enum ECategories {
+export enum ECategorie {
   ALL = 'All',
   DONE = 'Done',
   UPCOMING = 'Upcoming',
@@ -101,6 +110,7 @@ export enum EMtrVariant {
   ALL = 'all',
   COMPLETED = 'completed',
   IN_PROGRESS = 'in_progress',
+  ARCHIVED = 'archived',
 }
 
 export enum EUserResources {

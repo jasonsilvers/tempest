@@ -1,5 +1,5 @@
 import tw from 'twin.macro';
-import { ECategories } from '../../../const/enums';
+import { ECategorie } from '../../../const/enums';
 import { Chip } from '@mui/material';
 import setDomRole from '../../../utils/setDomRole';
 import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerContext';
@@ -7,7 +7,8 @@ import { useMemberItemTrackerContext } from './providers/useMemberItemTrackerCon
 // tab container
 const Container = tw.div`flex items-center whitespace-nowrap pb-5`;
 export interface ITabProps {
-  category: ECategories;
+  category: ECategorie;
+  children?: React.ReactNode;
 }
 
 const Tab: React.FC<ITabProps> = ({ children, category }) => {

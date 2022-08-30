@@ -12,7 +12,7 @@ import { AddMemberTrackingItemDialog } from '../../../src/components/Records/Dia
 import { server } from '../../testutils/mocks/msw';
 import 'whatwg-fetch';
 import { EMtrVariant, EUri } from '../../../src/const/enums';
-import { TrackingItem, User } from '@prisma/client';
+import { MemberTrackingItemStatus, TrackingItem, TrackingItemStatus, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import { MemberTrackingItemWithAll } from '../../../src/repositories/memberTrackingRepo';
 import { UserWithAll } from '../../../src/repositories/userRepo';
@@ -57,10 +57,34 @@ const Container = () => {
 
 const trackingItemsList = {
   trackingItems: [
-    { id: 1, title: 'Fire Extinguisher', description: 'This is a AF yearly requirment', interval: 365 },
-    { id: 2, title: 'Supervisor Safety Training', description: 'One time training for new supevisors', interval: 0 },
-    { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 60 },
-    { id: 4, title: 'Big Bug Safety', description: 'There are big bugs in Hawaii!  Be careful!', interval: 365 },
+    {
+      id: 1,
+      title: 'Fire Extinguisher',
+      description: 'This is a AF yearly requirment',
+      interval: 365,
+      status: TrackingItemStatus.ACTIVE,
+    },
+    {
+      id: 2,
+      title: 'Supervisor Safety Training',
+      description: 'One time training for new supevisors',
+      interval: 0,
+      status: TrackingItemStatus.ACTIVE,
+    },
+    {
+      id: 3,
+      title: 'Fire Safety',
+      description: 'How to be SAFE when using Fire',
+      interval: 60,
+      status: TrackingItemStatus.ACTIVE,
+    },
+    {
+      id: 4,
+      title: 'Big Bug Safety',
+      description: 'There are big bugs in Hawaii!  Be careful!',
+      interval: 365,
+      status: TrackingItemStatus.ACTIVE,
+    },
   ],
 };
 
@@ -81,7 +105,7 @@ const fireSafetyItem: TrackingItem = {
 
 const memberTrackingItems: MemberTrackingItemWithAll[] = [
   {
-    isActive: true,
+    status: MemberTrackingItemStatus.ACTIVE,
     trackingItemId: 1,
     userId: 123,
     trackingItem: fireSafetyItem,

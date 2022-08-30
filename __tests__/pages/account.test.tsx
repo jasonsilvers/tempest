@@ -1,3 +1,4 @@
+import React from 'react';
 import 'whatwg-fetch';
 import { EUri } from '../../src/const/enums';
 import Accountpage from '../../src/pages/Account';
@@ -45,7 +46,7 @@ it('should update personal fields', async () => {
     name: /lastname/i,
   });
 
-  const rankSelect = screen.getByRole('button', {
+  const rankSelect = await screen.findByRole('button', {
     name: 'TSgt/E-6',
   });
   const submit = screen.getByRole('button', {
@@ -106,10 +107,10 @@ it('should update work fields', async () => {
   userEvent.type(dutyInput, 'newDutyTitle');
   userEvent.type(afscInput, 'newAfscInput');
 
-  await waitFor(() => screen.findByText(/test org 2/i));
+  await waitFor(() => screen.findByText(/test org 1/i));
 
   const orgSelect = screen.getByRole('button', {
-    name: /test org 2/i,
+    name: /test org 1/i,
   });
 
   fireEvent.mouseDown(orgSelect);

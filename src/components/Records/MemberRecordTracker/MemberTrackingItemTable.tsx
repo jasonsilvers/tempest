@@ -66,18 +66,19 @@ const MemberTrackingItemTable: React.FC<{
           <TableData tw="w-16 pl-1 text-primarytext font-bold">Due Date</TableData>
         </div>
         <div tw="flex ml-auto">
-          {variant === EMtrVariant.IN_PROGRESS ? (
+          {variant === EMtrVariant.IN_PROGRESS && (
             <>
               <TableData tw="w-32 pl-2 text-primarytext font-bold">Authority Signature</TableData>
               <TableData tw="w-32 text-primarytext font-bold">Member Signature</TableData>
               <TableData tw="w-8"></TableData>
             </>
-          ) : (
-            <>
-              <TableData tw="w-72 pr-10 font-bold">Signatures</TableData>
-              <TableData tw="w-4"></TableData>
-            </>
           )}
+          {variant === EMtrVariant.COMPLETED || variant === EMtrVariant.ARCHIVED ? (
+            <>
+              <TableData tw="w-52 pr-10 font-bold">Signatures</TableData>
+              <TableData tw="w-28"></TableData>
+            </>
+          ) : null}
         </div>
       </TableHeaderRow>
       {/* Map though items and create Table Data Rows */}
