@@ -62,7 +62,7 @@ describe('Member role', () => {
     cy.findByRole('option', {
       name: /offical training record/i
     }).click()
-    cy.findByText(/signatures present/i).should('be.visible');
+    cy.findAllByText(/signatures present/i).should('be.visible');
   });
 
   it('should be able to delete record', () => {
@@ -119,7 +119,7 @@ describe('Member role', () => {
     cy.findByText(oldDate).should('not.exist');
   });
 
-  it.only('should not be able to archive training', () => {
+  it('should not be able to archive training', () => {
     cy.loginAsMember();
 
     cy.findByRole('button', {name: /training in progress/i}).click()
@@ -191,9 +191,9 @@ describe('Monitor role', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
     cy.visit(baseUrl + 'Dashboard');
-    cy.findByRole('button', {
+    cy.findAllByRole('button', {
       name: /rows per page: 5/i
-    }).click()
+    }).first().click()
     cy.findByRole('option', {
       name: /25/i
     }).click()
@@ -211,7 +211,7 @@ describe('Monitor role', () => {
 
     cy.findByText(/global - fire extinguisher/i).should('exist')
     cy.findByRole('button', {
-        name: /archive-tracking-record/i
+        name: /archive-tracking-record-10/i
       }).within(() => {
         cy.findByTestId('ArchiveIcon').click()
       });
