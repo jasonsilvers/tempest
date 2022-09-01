@@ -62,7 +62,7 @@ describe('Member role', () => {
     cy.findByRole('option', {
       name: /offical training record/i
     }).click()
-    cy.findByText(/signatures present/i).should('be.visible');
+    cy.findAllByText(/signatures present/i).should('be.visible');
   });
 
   it('should be able to delete record', () => {
@@ -211,7 +211,7 @@ describe('Monitor role', () => {
 
     cy.findByText(/global - fire extinguisher/i).should('exist')
     cy.findByRole('button', {
-        name: /archive-tracking-record/i
+        name: /archive-tracking-record-12/i
       }).within(() => {
         cy.findByTestId('ArchiveIcon').click()
       });

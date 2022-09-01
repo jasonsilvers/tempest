@@ -12,6 +12,7 @@ export function OrganizationSelect({ onChange }: OrganizationSelectProps) {
   const orgsQuery = useOrgs();
   return (
     <Autocomplete
+      size="small"
       options={orgsQuery.data ?? []}
       loading={orgsQuery.isLoading}
       getOptionLabel={(option: Organization) => option.name}
@@ -27,7 +28,7 @@ export function OrganizationSelect({ onChange }: OrganizationSelectProps) {
         <TextField
           {...params}
           tw="w-full bg-white rounded"
-          variant="outlined"
+          variant="standard"
           label="Organizations"
           name="organizations_textfield"
           id="organizations_textfield"

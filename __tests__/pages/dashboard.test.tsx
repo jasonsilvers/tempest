@@ -21,6 +21,7 @@ import {
   waitForLoadingToFinish,
   userEvent,
   fireEvent,
+  within,
 } from '../testutils/TempestTestUtils';
 
 jest.mock('../../src/repositories/userRepo');
@@ -43,7 +44,34 @@ const users = {
       dutyTitle: '24/7 solutions maximize',
       address: '15 WG/WSA Tron, Bldg 1102',
       role: { id: 3, name: 'monitor' },
-      memberTrackingItems: [],
+      memberTrackingItems: [
+        {
+          status: 'ACTIVE',
+          userId: 1,
+          createdAt: '2021-08-27T19:28:10.525Z',
+          trackingItemId: 3,
+          trackingItem: {
+            id: 3,
+            title: 'Fire Safety',
+            description: 'How to be SAFE when using Fire',
+            interval: 365,
+            status: 'ACTIVE',
+          },
+          memberTrackingRecords: [
+            {
+              id: 5,
+              traineeSignedDate: dayjs().toDate(),
+              authoritySignedDate: dayjs().toDate(),
+              authorityId: 4,
+              createdAt: dayjs().toDate(),
+              completedDate: dayjs().toDate(),
+              order: 3,
+              traineeId: 1,
+              trackingItemId: 3,
+            },
+          ],
+        },
+      ],
     },
     {
       id: 2,
@@ -63,11 +91,17 @@ const users = {
       role: { id: 1, name: 'admin' },
       memberTrackingItems: [
         {
-          isActive: true,
+          status: 'ACTIVE',
           userId: 2,
           createdAt: '2021-08-27T19:28:10.525Z',
           trackingItemId: 3,
-          trackingItem: { id: 3, title: 'Fire Safety', description: 'How to be SAFE when using Fire', interval: 365 },
+          trackingItem: {
+            id: 3,
+            title: 'Fire Safety',
+            description: 'How to be SAFE when using Fire',
+            interval: 365,
+            status: 'ACTIVE',
+          },
           memberTrackingRecords: [
             {
               id: 5,
@@ -94,7 +128,7 @@ const users = {
           ],
         },
         {
-          isActive: true,
+          status: 'ACTIVE',
           userId: 2,
           createdAt: '2021-08-27T19:28:10.548Z',
           trackingItemId: 4,
@@ -103,6 +137,7 @@ const users = {
             title: 'Big Bug Safety',
             description: 'There are big bugs in Hawaii!  Be careful!',
             interval: 365,
+            status: 'ACTIVE',
           },
           memberTrackingRecords: [
             {
@@ -119,7 +154,7 @@ const users = {
           ],
         },
         {
-          isActive: true,
+          status: 'ACTIVE',
           userId: 2,
           createdAt: '2021-08-27T19:28:10.558Z',
           trackingItemId: 5,
@@ -128,6 +163,7 @@ const users = {
             title: 'Keyboard Warrior Training',
             description: 'How to be a true keyboard warrior via writing code',
             interval: 365,
+            status: 'ACTIVE',
           },
           memberTrackingRecords: [
             {
@@ -144,6 +180,71 @@ const users = {
           ],
         },
       ],
+    },
+    {
+      id: 3,
+      firstName: 'FirstName3',
+      lastName: 'LastName3',
+      middleName: null,
+      email: 'first_last@hotmail.com',
+      createdAt: '2021-08-27T19:28:10.509Z',
+      updatedAt: '2021-08-28T00:42:55.528Z',
+      lastLogin: '2021-08-27T19:58:29.894Z',
+      roleId: 3,
+      organizationId: 2,
+      rank: 'SSgt/E5',
+      afsc: '1A1X4',
+      dutyTitle: '24/7 solutions maximize',
+      address: '15 WG/WSA Tron, Bldg 1102',
+      role: { id: 3, name: 'member' },
+      memberTrackingItems: [
+        {
+          status: 'ACTIVE',
+          userId: 1,
+          createdAt: '2021-08-27T19:28:10.525Z',
+          trackingItemId: 3,
+          trackingItem: {
+            id: 3,
+            title: 'Fire Safety',
+            description: 'How to be SAFE when using Fire',
+            interval: 365,
+            status: 'ACTIVE',
+          },
+          memberTrackingRecords: [
+            {
+              id: 5,
+              traineeSignedDate: dayjs().toDate(),
+              authoritySignedDate: dayjs().toDate(),
+              authorityId: 4,
+              createdAt: dayjs().toDate(),
+              completedDate: dayjs()
+                .subtract(365 - 1, 'days')
+                .toDate(),
+              order: 3,
+              traineeId: 3,
+              trackingItemId: 3,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 4,
+      firstName: 'FirstName4',
+      lastName: 'LastName4',
+      middleName: null,
+      email: 'first_last4@hotmail.com',
+      createdAt: '2021-08-27T19:28:10.509Z',
+      updatedAt: '2021-08-28T00:42:55.528Z',
+      lastLogin: '2021-08-27T19:58:29.894Z',
+      roleId: 3,
+      organizationId: 2,
+      rank: 'SSgt/E5',
+      afsc: '1A1X4',
+      dutyTitle: '24/7 solutions maximize',
+      address: '15 WG/WSA Tron, Bldg 1102',
+      role: { id: 3, name: 'member' },
+      memberTrackingItems: [],
     },
   ],
 };
@@ -190,47 +291,13 @@ afterEach(() => {
   server.resetHandlers();
 });
 
-// it('renders the Dashboard page', async () => {
-//   const { getByText } = render(<Dashboard />);
+it('renders the Dashboard page', async () => {
+  const { getByText } = render(<Dashboard />);
 
-//   await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+  await waitForLoadingToFinish();
 
-//   await waitForElementToBeRemoved(() => getByText(/loading/i));
-//   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-// });
-
-// it('should show loading spinner for status counts', async () => {
-//   server.use(
-//     rest.get(EUri.USERS, (req, res, ctx) => {
-//       return res(ctx.delay(2000), ctx.status(200), ctx.json(users));
-//     })
-//   );
-
-//   const { getAllByRole, getByText } = render(<Dashboard />);
-//   await waitForElementToBeRemoved(() => getByText(/loading/i));
-
-//   expect(getAllByRole('progressbar').length).toBe(4);
-
-//   const allContainer = getByText(/all/i);
-
-//   await waitForElementToBeRemoved(() => within(allContainer.parentElement).getByRole('progressbar'), { timeout: 3000 });
-// });
-
-// it('should show correct counts', async () => {
-//   const { getByText } = render(<Dashboard />);
-
-//   await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
-
-//   await waitForElementToBeRemoved(() => getByText(/loading/i));
-//   await waitFor(() => expect(getByText(/all/i)).toBeInTheDocument());
-
-//   const allContainer = getByText(/all/i);
-//   const upcomingContainer = getByText(/upcoming/i);
-//   const overdueContainer = getByText(/overdue/i);
-//   expect(within(allContainer.parentElement).getByText('2')).toBeInTheDocument();
-//   expect(within(upcomingContainer.parentElement).getByText('0')).toBeInTheDocument();
-//   expect(within(overdueContainer.parentElement).getByText('1')).toBeInTheDocument();
-// });
+  await waitFor(() => expect(getByText(/status/i)).toBeInTheDocument());
+});
 
 it('should filter by name', async () => {
   const user = userEvent.setup();
@@ -265,33 +332,6 @@ it('should filter by organization', async () => {
   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
   expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
 });
-
-// it('should filter by Status', async () => {
-//   const { getByText, queryByText } = render(<Dashboard />);
-
-//   await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
-
-//   await waitForElementToBeRemoved(() => getByText(/loading/i));
-
-//   expect(getByText(/clark, sandra/i)).toBeInTheDocument();
-//   expect(getByText(/smith, joe/i)).toBeInTheDocument();
-
-//   fireEvent.click(getByText(/overdue/i));
-//   expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
-//   expect(getByText(/smith, joe/i)).toBeInTheDocument();
-
-//   fireEvent.click(getByText(/upcoming/i));
-//   expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
-//   expect(queryByText(/smith, joe/i)).toBeInTheDocument();
-
-//   fireEvent.click(getByText(/done/i));
-//   expect(queryByText(/clark, sandra/i)).not.toBeInTheDocument();
-//   expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
-
-//   fireEvent.click(getByText(/all/i));
-//   expect(queryByText(/clark, sandra/i)).toBeInTheDocument();
-//   expect(queryByText(/smith, joe/i)).toBeInTheDocument();
-// });
 
 it('should show error on query failure', async () => {
   server.use(
@@ -345,4 +385,69 @@ it('should not allow access with incorrect permissions', async () => {
   await waitForElementToBeRemoved(() => getByText(/loading/i));
 
   expect(getByText(/you are not allowed to view this page/i)).toBeInTheDocument();
+});
+
+it('should render report widget and show correct counts', async () => {
+  const screen = render(<Dashboard />);
+
+  await waitForLoadingToFinish();
+
+  await waitFor(() => expect(screen.getByText(/readiness stats/i)).toBeInTheDocument());
+
+  const doneCountDiv = screen.getByTestId('report-done');
+  const doneCount = within(doneCountDiv).getByText(1);
+
+  expect(doneCount).toBeInTheDocument();
+
+  const upcomingCountDiv = screen.getByTestId('report-upcoming');
+  const upcomingCount = within(upcomingCountDiv).getByText(1);
+
+  expect(upcomingCount).toBeInTheDocument();
+
+  const overDueCountDiv = screen.getByTestId('report-overdue');
+  const overDueCount = within(overDueCountDiv).getByText(1);
+
+  expect(overDueCount).toBeInTheDocument();
+
+  expect(screen.getByText(/4 members/i)).toBeInTheDocument();
+});
+
+it('should render detailed report', async () => {
+  const screen = render(<Dashboard />);
+
+  await waitForLoadingToFinish();
+
+  await waitFor(() => expect(screen.getByText(/readiness stats/i)).toBeInTheDocument());
+
+  const reportButton = screen.getByRole('button', { name: /detailed report/i });
+
+  fireEvent.click(reportButton);
+
+  const banner = screen.getByRole('banner');
+
+  within(banner).getByText(/detailed report/i);
+
+  await waitForLoadingToFinish();
+
+  const dialog = screen.getByRole('dialog');
+
+  await waitFor(() => within(dialog).getByText(/sandra/i));
+
+  const sandraRow = within(dialog).getByText(/sandra clark/i).parentElement?.parentNode;
+
+  within(sandraRow).getByText(/done/i);
+
+  const joeSmithRow = within(dialog).getByText(/joe smith/i).parentElement?.parentNode;
+  within(joeSmithRow).getByText(/overdue/i);
+
+  const firstName3Row = within(dialog).getByText(/firstname3/i).parentElement?.parentNode;
+  within(firstName3Row).getByText(/upcoming/i);
+
+  expect(within(dialog).queryByText(/firstname4/i)).not.toBeInTheDocument();
+
+  const doneButton = screen.getByRole('button', {
+    name: /done/i,
+  });
+
+  fireEvent.click(doneButton);
 });

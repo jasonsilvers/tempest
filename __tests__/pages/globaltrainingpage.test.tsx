@@ -455,3 +455,24 @@ test('monitor should not be able to unarchive global training item', async () =>
 
   expect(unarchiveButton).not.toBeInTheDocument();
 });
+
+test('should not show delete or archive icons for members', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({ ...andrewMonitor, organizationId: 3, role: { id: 0, name: ERole.MEMBER } })
+      );
+    })
+  );
+
+  const screen = render(<TrackingItemPage />);
+
+  await waitForLoadingToFinish();
+  expect(await screen.findByText(/15 MDG training/i)).toBeInTheDocument();
+
+  const row = screen.getByRole('row', {
+    name: /15 MDG training/i,
+  });
+  expect(row).toBeInTheDocument();
+});

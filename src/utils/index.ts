@@ -27,3 +27,7 @@ export const removeOldCompletedRecords = (memberTrackingRecords: MemberTrackingR
 
   return [...inProgressMemberTrackingRecords, latestCompleteMemberTrackingRecord].filter((mtr) => mtr !== undefined);
 };
+
+export const removeInProgressRecords = (memberTrackingRecords: MemberTrackingRecordWithAll[]) => {
+  return memberTrackingRecords.filter((mtr) => mtr.authoritySignedDate !== null && mtr.traineeSignedDate !== null);
+};

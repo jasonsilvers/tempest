@@ -1,12 +1,15 @@
-import { Typography } from '@mui/material';
-import { MemberTrackingRecord } from '@prisma/client';
+import { InputAdornment, TextField } from '@mui/material';
+import { MemberTrackingItemStatus, MemberTrackingRecord } from '@prisma/client';
 import React, { useEffect, useReducer } from 'react';
 import 'twin.macro';
+import { SearchIcon } from '../assets/Icons';
+import { DashboardFilter } from '../components/Dashboard/DashboardFilter';
 import { EStatus } from '../components/Dashboard/Enums';
 import { MassAssign } from '../components/Dashboard/MassAssign';
+import { MassSign } from '../components/Dashboard/MassSign';
+import { Report } from '../components/Dashboard/Report';
 import { Actions, AllCounts, StatusCounts, UserCounts } from '../components/Dashboard/Types';
 import { UserList } from '../components/Dashboard/UserList';
-import { DashboardFilter } from '../components/Dashboard/DashboardFilter';
 import { EFuncAction, EResource } from '../const/enums';
 import { useUsers } from '../hooks/api/users';
 import { usePermissions } from '../hooks/usePermissions';
@@ -15,7 +18,6 @@ import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
 import { UserWithAll } from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
 import { getStatus } from '../utils/status';
-import { MassSign } from '../components/Dashboard/MassSign';
 
 const initialCounts: StatusCounts = {
   All: 0,
@@ -27,15 +29,15 @@ const initialCounts: StatusCounts = {
 const determineMemberCounts = (
   mti: MemberTrackingItemWithAll,
   mtr: MemberTrackingRecord,
-  newCounts: StatusCounts,
-  userCounts: UserCounts
+  membersCount: StatusCounts,
+  specificCountsForMember: UserCounts
 ): AllCounts => {
   if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
     const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
-    userCounts[status] = userCounts[status] + 1;
+    specificCountsForMember[status] = specificCountsForMember[status] + 1;
+    membersCount[status] = membersCount[status] + 1;
   }
-
-  return newCounts;
+  return membersCount;
 };
 
 export interface IDashboardState {
@@ -126,7 +128,7 @@ const DashboardPage: React.FC = () => {
   const usersQuery = useUsers();
 
   const [dashboardState, dispatch] = useReducer(filterReducer, {
-    userList: [],
+    userList: usersQuery.data,
     filteredUserList: [],
     counts: initialCounts,
     nameFilter: '',
@@ -141,24 +143,26 @@ const DashboardPage: React.FC = () => {
   }, [usersQuery.data]);
 
   useEffect(() => {
-    const newCounts = { ...initialCounts };
+    const membersCount = { ...initialCounts };
     usersQuery?.data?.forEach((user) => {
-      newCounts.All = newCounts.All + 1;
-      const userCounts = {
+      membersCount.All = membersCount.All + 1;
+      const specificCountsForMember = {
         Overdue: 0,
         Upcoming: 0,
         Done: 0,
       };
-      newCounts[user.id] = userCounts;
-      user.memberTrackingItems.forEach((mti) => {
-        const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
-        mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
-          determineMemberCounts(mti, mtr, newCounts, userCounts);
+      membersCount[user.id] = specificCountsForMember;
+      user.memberTrackingItems
+        .filter((mti) => mti.status === MemberTrackingItemStatus.ACTIVE)
+        .forEach((mti) => {
+          const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
+          mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
+            determineMemberCounts(mti, mtr, membersCount, specificCountsForMember);
+          });
         });
-      });
     });
 
-    dispatch({ type: 'setCounts', counts: newCounts });
+    dispatch({ type: 'setCounts', counts: membersCount });
   }, [usersQuery?.data]);
 
   if (isLoading) {
@@ -170,18 +174,35 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <main tw="grid grid-cols-12 gap-4 w-[1200px] p-5">
+    <main tw="grid grid-cols-12 gap-4 w-[1200px] p-6 h-auto">
       <div tw="col-span-8">
-        <Card tw="p-5">
-          <Typography variant="h6">Member List</Typography>
-          <div tw="py-8">
-            <DashboardFilter dashboardState={dashboardState} dispatch={dispatch} />
+        <Card tw="p-0">
+          <div tw="w-full py-5 px-4">
+            <TextField
+              tw="bg-white rounded w-full"
+              id="SearchBar"
+              label="Search"
+              size="small"
+              value={dashboardState.nameFilter}
+              onChange={(event) => dispatch({ type: 'filterByName', nameFilter: event.target.value })}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
           </div>
           <UserList usersQuery={usersQuery} dashboardState={dashboardState} loggedInUser={loggedInUser} />
         </Card>
       </div>
 
-      <div tw="col-span-4 row-span-4 pb-8">
+      <div tw="col-span-4 row-span-3 pb-[19em] space-y-4">
+        <Card tw="h-16 px-4">
+          <DashboardFilter dispatch={dispatch} />
+        </Card>
+        <Report memberList={dashboardState.filteredUserList} counts={dashboardState.counts} />
         <MassSign usersQuery={usersQuery} />
       </div>
 
