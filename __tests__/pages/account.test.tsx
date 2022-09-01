@@ -2,6 +2,7 @@ import React from 'react';
 import 'whatwg-fetch';
 import { EUri } from '../../src/const/enums';
 import Accountpage from '../../src/pages/Account';
+import { andrewMonitor } from '../testutils/mocks/fixtures';
 import { rest, server } from '../testutils/mocks/msw';
 import { fireEvent, render, screen, userEvent, waitFor } from '../testutils/TempestTestUtils';
 
@@ -110,6 +111,62 @@ it('should update work fields', async () => {
 
   const orgSelect = screen.getByRole('button', {
     name: /test org 1/i,
+  });
+
+  fireEvent.mouseDown(orgSelect);
+
+  const newOption = screen.getAllByRole('option');
+
+  fireEvent.click(newOption[2]);
+
+  const submit = screen.getByRole('button', {
+    name: /update/i,
+  });
+
+  fireEvent.click(submit);
+
+  await waitFor(() => screen.findByRole('alert'));
+});
+
+it('should update monitor fields only if monitor', async () => {
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    }),
+    rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
+      return res(
+        ctx.json({
+          organizations: [
+            { id: 1, name: 'test org 1', shortName: 'org 1' },
+            { id: 2, name: 'test org 2', shortName: 'org 2' },
+          ],
+        })
+      );
+    }),
+
+    rest.put(`/api/users/321`, (req, res, ctx) => {
+      return res(ctx.json(req.body));
+    })
+  );
+
+  render(<Accountpage />);
+
+  await waitFor(() => expect(screen.getByText(/andrew monitor/i)).toBeInTheDocument());
+
+  const tab = screen.getByRole('tab', {
+    name: /monitor/i,
+  });
+
+  fireEvent.click(tab);
+
+  await waitFor(() => screen.findByText(/test org 2/i));
+
+  const cancelButton = screen.getByRole('button', { name: /cancel/i });
+
+  fireEvent.click(cancelButton);
+
+  const orgSelect = screen.getByRole('button', {
+    name: /test org 2/i,
   });
 
   fireEvent.mouseDown(orgSelect);

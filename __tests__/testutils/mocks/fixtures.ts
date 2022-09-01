@@ -87,6 +87,13 @@ export const bobJones = {
     shortName: 'org 1',
     parentId: null,
   },
+  reportingOrganizationId: 1,
+  reportingOrganization: {
+    id: 1,
+    name: 'test org 1',
+    shortName: 'org 1',
+    parentId: 1,
+  },
 } as unknown as User;
 
 export const andrewMonitor = {
@@ -99,7 +106,7 @@ export const andrewMonitor = {
   },
   afsc: '12345',
   email: 'bob.jones@email.com',
-  rank: 'E-6',
+  rank: 'Capt/O-3',
   dutyTitle: 'Chief',
   organizationId: 1,
   organization: {
@@ -107,6 +114,13 @@ export const andrewMonitor = {
     name: 'test org 1',
     shortName: 'org 1',
     parentId: null,
+  },
+  reportingOrganizationId: 2,
+  reportingOrganization: {
+    id: 2,
+    name: 'test org 2',
+    shortName: 'org 2',
+    parentId: 1,
   },
 } as unknown as User;
 

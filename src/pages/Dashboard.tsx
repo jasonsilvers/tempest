@@ -70,7 +70,7 @@ const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: 
   }
 
   return userList.filter((user) => {
-    return user.organizationId === organizationIdFilter;
+    return user.reportingOrganizationId === organizationIdFilter;
   });
 };
 
