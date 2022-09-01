@@ -383,6 +383,9 @@ async function seedDev() {
   await prisma.memberTrackingRecord.create({
     data: {
       order: 1,
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {

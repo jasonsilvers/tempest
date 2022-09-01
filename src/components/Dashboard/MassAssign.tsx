@@ -145,14 +145,7 @@ export const MassAssignResultDialog = ({
   }, [jobQuery.data]);
 
   return (
-    <Dialog
-      sx={{ paddingRight: '24rem' }}
-      open={isOpen.open}
-      onClose={handleClose}
-      maxWidth="xs"
-      fullWidth
-      aria-labelledby="result-dialog"
-    >
+    <Dialog open={isOpen.open} onClose={handleClose} maxWidth="xs" fullWidth aria-labelledby="result-dialog">
       <DialogContent tw="min-height[200px] flex flex-col space-y-6 py-8">
         {jobQuery.data?.status === JobStatus.WORKING ? <MassAssignResultInProgress job={jobQuery.data} /> : null}
         {jobQuery.data?.status === JobStatus.COMPLETED &&
