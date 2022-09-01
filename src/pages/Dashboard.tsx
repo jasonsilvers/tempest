@@ -198,7 +198,7 @@ const DashboardPage: React.FC = () => {
         </Card>
       </div>
 
-      <div tw="col-span-4 row-span-2 pb-[19em] space-y-4">
+      <div tw="col-span-4 row-span-3 pb-[19em] space-y-4">
         <Card tw="h-16 px-4">
           <DashboardFilter dispatch={dispatch} />
         </Card>
