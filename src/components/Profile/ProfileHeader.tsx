@@ -2,14 +2,28 @@ import { Avatar, Card, Divider, Typography, useTheme } from '@mui/material';
 import { Organization, Role, User } from '@prisma/client';
 import 'twin.macro';
 
+type ProfileMember = User & { role: Role; organization: Organization; reportingOrganization: Organization };
+
+const getMembersOrganizationName = (member: ProfileMember) => {
+  if (member?.reportingOrganization) {
+    return member?.reportingOrganization.shortName;
+  }
+
+  if (member?.organization) {
+    return member?.organization.shortName;
+  }
+
+  return 'Organization';
+};
+
 const ProfileHeader: React.FC<{
-  member: User & { role: Role; organization: Organization; reportingOrganization: Organization };
+  member: ProfileMember;
 }> = ({ member }) => {
   const theme = useTheme();
 
   const rankDisplay = !member?.rank || member.rank === '' ? 'RANK' : member.rank;
   const afscDisplay = !member?.afsc || member.afsc === '' ? 'AFSC' : member.afsc;
-  const orgDisplay = member?.reportingOrganization ? member.reportingOrganization.shortName : 'Organization';
+  const orgDisplay = getMembersOrganizationName(member);
 
   return (
     <Card tw="relative min-w-min max-width[1440px] h-20 py-4 flex items-center justify-evenly">

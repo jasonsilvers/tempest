@@ -70,6 +70,11 @@ const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: 
   }
 
   return userList.filter((user) => {
+    //reporting org is only for monitors. Members should be filtered by their organization
+    if (user.reportingOrganizationId === null) {
+      return user.organizationId === organizationIdFilter;
+    }
+
     return user.reportingOrganizationId === organizationIdFilter;
   });
 };
