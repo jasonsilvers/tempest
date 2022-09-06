@@ -1,6 +1,7 @@
 import { AppBar, Button, Card, Dialog, Slide, Toolbar, Typography } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { DataGrid, GridColumns, GridToolbar } from '@mui/x-data-grid';
+import { MemberTrackingItemStatus } from '@prisma/client';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
 import tw from 'twin.macro';
@@ -22,6 +23,9 @@ export const StatusDetailVariant = {
   },
   Upcoming: {
     textColor: tw`text-[#F6B83F]`,
+  },
+  Archived: {
+    textColor: tw`text-gray-500`,
   },
 };
 
@@ -63,13 +67,15 @@ const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
         .filter((mti) => mti.memberTrackingRecords.length !== 0)
         .flatMap((mti) => {
           return removeInProgressRecords(removeOldCompletedRecords(mti.memberTrackingRecords)).map((mtr) => {
+            const isInactive = mti.status === MemberTrackingItemStatus.INACTIVE;
+
             return {
               id: `${member.id}-${mtr.id}`,
               name: `${member.firstName} ${member.lastName}`,
               rank: member.rank,
               organizationId: member.organizationId,
               trainingTitle: mti.trackingItem.title,
-              status: getStatus(mtr.completedDate, mti.trackingItem.interval),
+              status: isInactive ? 'Archived' : getStatus(mtr.completedDate, mti.trackingItem.interval),
               dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
             };
           });

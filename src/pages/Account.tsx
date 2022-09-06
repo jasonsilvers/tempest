@@ -86,7 +86,7 @@ const MonitorForm = ({ user }: { user: LoggedInUser }) => {
   } = useForm({
     resolver: joiResolver(monitorFormSchema),
     defaultValues: {
-      reportingOrganization: user.reportingOrganization.id.toString(),
+      reportingOrganization: user.reportingOrganization?.id.toString(),
     },
   });
 
