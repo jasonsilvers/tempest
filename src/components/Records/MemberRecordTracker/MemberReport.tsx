@@ -1,67 +1,42 @@
-import { AppBar, Button, Card, Dialog, Slide, Toolbar, Typography } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
+import { UserWithAll } from '../../../repositories/userRepo';
+import { AppBar, Button, Card, Dialog, Toolbar, Typography } from '@mui/material';
+import { Transition } from '../../Dashboard/Report';
 import { DataGrid, GridColumns, GridToolbar } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
+import { removeOldCompletedRecords } from '../../../utils';
 import React, { useMemo, useState } from 'react';
 import 'twin.macro';
 import { VictoryLabel, VictoryPie } from 'victory';
-import { useOrgs } from '../../hooks/api/organizations';
-import { UserWithAll } from '../../repositories/userRepo';
-import { removeInProgressRecords, removeOldCompletedRecords } from '../../utils';
-import { getStatus } from '../../utils/status';
-import { EStatus } from './Enums';
-import { StatusCounts } from './Types';
-import { StatusPill, StatusDetailVariant } from '../StatusVariants';
+import { getStatus } from '../../../utils/status';
+import { EStatus } from '../../Dashboard/Enums';
+import { StatusCounts } from '../../Dashboard/Types';
+import { StatusPill, StatusDetailVariant } from '../../StatusVariants';
 
-export const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-type DetailedReportProps = {
-  memberList: UserWithAll[];
+type MemberTrainingReportProps = {
+  memberData: UserWithAll;
 };
 
-const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
-  const { data: orgs, isLoading } = useOrgs();
-
-  const detailedReportData = memberList
-    .filter((member) => member.memberTrackingItems.length !== 0)
-    .flatMap((member) => {
-      return member.memberTrackingItems
-        .filter((mti) => mti.memberTrackingRecords.length !== 0)
-        .flatMap((mti) => {
-          return removeInProgressRecords(removeOldCompletedRecords(mti.memberTrackingRecords)).map((mtr) => {
-            return {
-              id: `${member.id}-${mtr.id}`,
-              name: `${member.firstName} ${member.lastName}`,
-              rank: member.rank,
-              organizationId: member.organizationId,
-              trainingTitle: mti.trackingItem.title,
-              status: getStatus(mtr.completedDate, mti.trackingItem.interval),
-              dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
-            };
-          });
-        });
+const DetailedMemberTrainingReport: React.FC<MemberTrainingReportProps> = ({ memberData }) => {
+  const detailedMemberTrainingReportData = memberData?.memberTrackingItems
+    .filter((member) => member.memberTrackingRecords.length !== 0)
+    .flatMap((mti) => {
+      return removeOldCompletedRecords(mti.memberTrackingRecords).map((mtr) => {
+        const date = dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY');
+        const dueDate = date === 'Invalid Date' ? 'N/A' : date;
+        return {
+          id: `${memberData.id}-${mtr.id}`,
+          trainingTitle: mti.trackingItem.title,
+          recurrence: mti.trackingItem.interval,
+          status: getStatus(mtr.completedDate, mti.trackingItem.interval),
+          dueDate: dueDate,
+        };
+      });
     });
 
-  const columns: GridColumns<typeof detailedReportData[number]> = useMemo(
+  const columns: GridColumns = useMemo(
     () => [
-      { field: 'name', headerName: 'Name', flex: 1 },
-      { field: 'rank', headerName: 'Rank', flex: 1 },
-      {
-        field: 'organizationId',
-        headerName: 'Organization',
-        flex: 1,
-        valueGetter: (params) => {
-          return orgs?.find((org) => org.id === params.value)?.name;
-        },
-      },
       { field: 'trainingTitle', headerName: 'Training Title', flex: 1 },
+      { field: 'recurrence', headerName: 'Recurrence', flex: 1 },
       {
         field: 'status',
         headerName: 'Status',
@@ -74,28 +49,22 @@ const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
     ],
     []
   );
-
-  if (isLoading) {
-    return <Typography>...Loading</Typography>;
-  }
-
   return (
     <DataGrid
       components={{ Toolbar: GridToolbar }}
-      rows={detailedReportData}
+      rows={detailedMemberTrainingReportData}
       columns={columns}
       disableVirtualization
       disableSelectionOnClick
     />
   );
 };
-
-type ReportProps = {
-  memberList: UserWithAll[];
+type MemberReportProps = {
+  memberData: UserWithAll;
   counts: StatusCounts;
 };
 
-export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
+export const MemberReport: React.FC<MemberReportProps> = ({ memberData, counts }) => {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -105,15 +74,20 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const filteredCount = memberList?.reduce(
-    (prevCount, nextMember) => {
-      const memberHasUpcomingTraining = counts[nextMember.id].Upcoming > 0 && counts[nextMember.id].Overdue === 0;
-      const memberHasOverDueTraining = counts[nextMember.id].Overdue > 0;
+  console.log(memberData);
+  const filteredCount = memberData?.memberTrackingItems.reduce(
+    (prevCount) => {
+      const memberHasUpcomingTraining = counts[memberData.id]?.Upcoming > 0 && counts[memberData.id]?.Overdue === 0;
+      const memberHasOverDueTraining = counts[memberData.id]?.Overdue > 0;
       const memberIsDone =
-        counts[nextMember.id].Upcoming === 0 && counts[nextMember.id].Overdue === 0 && counts[nextMember.id].Done > 0;
+        counts[memberData.id]?.Upcoming === 0 &&
+        counts[memberData.id]?.Overdue === 0 &&
+        counts[memberData.id]?.Done > 0;
       const memberHasNoTraining =
-        counts[nextMember.id].Upcoming === 0 && counts[nextMember.id].Overdue === 0 && counts[nextMember.id].Done === 0;
+        counts[memberData.id]?.Upcoming === 0 &&
+        counts[memberData.id]?.Overdue === 0 &&
+        counts[memberData.id]?.Done === 0;
+
       return {
         Done: prevCount.Done + (memberIsDone ? 1 : 0),
         Overdue: prevCount.Overdue + (memberHasOverDueTraining ? 1 : 0),
@@ -123,8 +97,8 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
     },
     { Done: 0, Overdue: 0, Upcoming: 0, None: 0 }
   );
-  console.log(memberList);
-  const memberSize = memberList?.length;
+  console.log(filteredCount, memberData.id);
+  const trainingListSize = memberData?.memberTrackingItems.length === 0 ? 'No' : memberData?.memberTrackingItems.length;
 
   return (
     <>
@@ -176,14 +150,14 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
                 style={{ fontSize: 14 }}
                 x={100}
                 y={100}
-                text={`${memberSize} members`}
+                text={`${trainingListSize} Trainings`}
               />
             </svg>
           </div>
         </div>
         <div tw="absolute bottom-4 left-4">
           <Button variant="outlined" onClick={handleClickOpen}>
-            Detailed Report
+            Reporting Excel
           </Button>
         </div>
       </Card>
@@ -197,7 +171,7 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
         <AppBar sx={{ position: 'relative', backgroundColor: 'white' }}>
           <Toolbar>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color="primary">
-              Detailed Report
+              Reporting Excel
             </Typography>
             <Button variant="contained" autoFocus color="primary" onClick={handleClose}>
               Done
@@ -206,7 +180,7 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
         </AppBar>
         <div tw="p-20">
           <Card tw="h-96">
-            <DetailedReport memberList={memberList} />
+            <DetailedMemberTrainingReport memberData={memberData} />
           </Card>
         </div>
       </Dialog>
