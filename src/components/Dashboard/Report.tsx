@@ -123,7 +123,7 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
     },
     { Done: 0, Overdue: 0, Upcoming: 0, None: 0 }
   );
-  console.log(memberList);
+  
   const memberSize = memberList?.length;
 
   return (

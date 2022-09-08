@@ -4,9 +4,10 @@ import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import 'twin.macro';
+import { MemberTrackingItemStatus, MemberTrackingRecord } from '@prisma/client';
 import { AddIcon, ArchiveIcon } from '../../../assets/Icons';
 import { BreadCrumbs } from '../../../components/Breadcrumbs';
-import { StatusCounts } from '../../../components/Dashboard/Types';
+import { StatusCounts, UserCounts, AllCounts } from '../../../components/Dashboard/Types';
 import { ProfileHeader } from '../../../components/Profile/ProfileHeader';
 import { AddMemberTrackingItemDialog } from '../../../components/Records/Dialog/AddMemberTrackingItemDialog';
 import MemberItemTracker from '../../../components/Records/MemberRecordTracker/MemberItemTracker';
@@ -16,12 +17,30 @@ import { ECategorie, EFuncAction, EMtrVariant, EResource } from '../../../const/
 import { useMember } from '../../../hooks/api/users';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { findUserByIdReturnAllIncludes, UserWithAll } from '../../../repositories/userRepo';
+import { removeOldCompletedRecords } from '../../../utils';
+import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
+import { getStatus } from '../../../utils/status';
 
 const initialCounts: StatusCounts = {
   All: 0,
   Overdue: 0,
   Upcoming: 0,
   Done: 0,
+};
+
+const determineTrainingCount = (
+  mti: MemberTrackingItemWithAll,
+  mtr: MemberTrackingRecord,
+  memberCount: StatusCounts,
+  specificCountsForMember: UserCounts
+): AllCounts => {
+  if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
+    const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
+    specificCountsForMember[status] = specificCountsForMember[status] + 1;
+    memberCount[status] = memberCount[status] + 1;
+  }
+  console.log(memberCount);
+  return memberCount;
 };
 
 const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
@@ -35,6 +54,28 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   const [view, setView] = useState<EMtrVariant>(EMtrVariant.IN_PROGRESS);
   const userId = parseInt(id?.toString());
   const { data: member } = useMember(userId, initialMemberData);
+  const memberData = initialMemberData;
+  const [counts, setCounts] = useState<StatusCounts>({ ...initialCounts });
+
+  React.useEffect(() => {
+    const memberCount = { ...initialCounts };
+    memberCount.All = memberData.memberTrackingItems.length;
+    const specificCountsForMember = {
+      Overdue: 0,
+      Upcoming: 0,
+      Done: 0,
+    };
+    memberCount[member.id] = specificCountsForMember;
+    memberData.memberTrackingItems
+      .filter((mti) => mti.status === MemberTrackingItemStatus.ACTIVE)
+      .forEach((mti) => {
+        const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
+        mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
+          console.log(determineTrainingCount(mti, mtr, memberCount, specificCountsForMember));
+        });
+      });
+    setCounts(memberCount);
+  }, [memberData.memberTrackingItems]);
 
   if (isLoading || !id) {
     return <div>Loading Profile</div>;
@@ -74,7 +115,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
       <div tw="flex pb-5 gap-5">
         <Card tw="w-2/3"></Card>
         <Card tw="w-1/3">
-          <MemberReport memberData={initialMemberData} counts={initialCounts} />
+          <MemberReport memberData={initialMemberData} counts={counts} />
         </Card>
       </div>
       <Card tw="p-8 relative">

@@ -74,7 +74,7 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberData, counts }
   const handleClose = () => {
     setOpen(false);
   };
-  console.log(memberData);
+
   const filteredCount = memberData?.memberTrackingItems.reduce(
     (prevCount) => {
       const memberHasUpcomingTraining = counts[memberData.id]?.Upcoming > 0 && counts[memberData.id]?.Overdue === 0;
@@ -97,7 +97,7 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberData, counts }
     },
     { Done: 0, Overdue: 0, Upcoming: 0, None: 0 }
   );
-  console.log(filteredCount, memberData.id);
+ 
   const trainingListSize = memberData?.memberTrackingItems.length === 0 ? 'No' : memberData?.memberTrackingItems.length;
 
   return (
