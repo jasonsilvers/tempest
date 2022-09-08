@@ -1,5 +1,5 @@
 import { TablePagination } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { UseQueryResult } from 'react-query';
 import tw from 'twin.macro';
 import { IDashboardState } from '../../pages/Dashboard';
@@ -65,6 +65,13 @@ export const UserList = ({ usersQuery, dashboardState, loggedInUser }: UserListP
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  useEffect(() => {
+    if (dashboardState.nameFilter !== '' || dashboardState.organizationIdFilter !== 0) {
+      setPage(0);
+    }
+  }, [dashboardState.nameFilter, dashboardState.organizationIdFilter]);
+
   return (
     <>
       <UserTable>
