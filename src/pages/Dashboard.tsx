@@ -37,7 +37,7 @@ const determineMemberCounts = (
     specificCountsForMember[status] = specificCountsForMember[status] + 1;
     membersCount[status] = membersCount[status] + 1;
   }
-  return membersCount
+  return membersCount;
 };
 
 export interface IDashboardState {
@@ -151,7 +151,7 @@ const DashboardPage: React.FC = () => {
         Upcoming: 0,
         Done: 0,
       };
-     
+
       membersCount[user.id] = specificCountsForMember;
       user.memberTrackingItems
         .filter((mti) => mti.status === MemberTrackingItemStatus.ACTIVE)

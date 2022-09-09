@@ -34,11 +34,10 @@ const determineTrainingCount = (
   memberCount: StatusCounts,
   specificCountsForMember: UserCounts
 ): AllCounts => {
-  if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
-    const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
-    specificCountsForMember[status] = specificCountsForMember[status] + 1;
-    memberCount[status] = memberCount[status] + 1;
-  }
+  const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
+  specificCountsForMember[status] = specificCountsForMember[status] + 1;
+  memberCount[status] = memberCount[status] + 1;
+
   console.log(memberCount);
   return memberCount;
 };
@@ -59,14 +58,14 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
   React.useEffect(() => {
     const memberCount = { ...initialCounts };
-    memberCount.All = memberData.memberTrackingItems.length;
+    memberCount.All = memberData?.memberTrackingItems?.length;
     const specificCountsForMember = {
       Overdue: 0,
       Upcoming: 0,
       Done: 0,
     };
     memberCount[member.id] = specificCountsForMember;
-    memberData.memberTrackingItems
+    memberData?.memberTrackingItems
       .filter((mti) => mti.status === MemberTrackingItemStatus.ACTIVE)
       .forEach((mti) => {
         const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
@@ -75,7 +74,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
         });
       });
     setCounts(memberCount);
-  }, [memberData.memberTrackingItems]);
+  }, []);
 
   if (isLoading || !id) {
     return <div>Loading Profile</div>;
