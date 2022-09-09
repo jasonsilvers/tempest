@@ -164,7 +164,7 @@ it('opens the add new training dialog modal', async () => {
   expect(screen.queryByText(/add new training/i)).not.toBeInTheDocument();
 });
 
-test.only('should do serverside rending and return user', async () => {
+test('should do serverside rending and return user', async () => {
   const user = {
     id: 1,
     firstName: 'joe',

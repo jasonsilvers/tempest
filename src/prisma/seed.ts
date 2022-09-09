@@ -32,6 +32,7 @@ async function addUserToDb(user: Partial<User>, organizationId: number, roleId: 
   return prisma.user.create({
     data: {
       ...user,
+      reportingOrganizationId: organizationId,
       organizationId,
       roleId,
     },
@@ -188,6 +189,7 @@ async function seedDev() {
     data: {
       ...user1,
       organizationId: mdg.id,
+      reportingOrganizationId: mdg.id,
       roleId: adminRole ? adminRole.id : 2,
     },
   });
@@ -215,6 +217,11 @@ async function seedDev() {
           id: mdg.id,
         },
       },
+      reportingOrganization: {
+        connect: {
+          id: mdg.id,
+        },
+      },
       role: {
         connect: {
           id: monitorRole ? monitorRole.id : 3,
@@ -229,6 +236,11 @@ async function seedDev() {
     data: {
       ...user4,
       organization: {
+        connect: {
+          id: omrs.id,
+        },
+      },
+      reportingOrganization: {
         connect: {
           id: omrs.id,
         },
@@ -383,6 +395,9 @@ async function seedDev() {
   await prisma.memberTrackingRecord.create({
     data: {
       order: 1,
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
       memberTrackingItem: {
         connect: {
           userId_trackingItemId: {

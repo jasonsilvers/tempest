@@ -176,7 +176,7 @@ const userGrants: Grants[] = [
   },
   {
     action: EAction.UPDATE_OWN,
-    attributes: 'organizationId, tags, afsc, rank, address, dutyTitle, firstName, lastName',
+    attributes: 'organizationId, tags, afsc, rank, address, dutyTitle, firstName, lastName, reportingOrganizationId',
     resource: EResource.USER,
     role: ERole.MONITOR,
   },

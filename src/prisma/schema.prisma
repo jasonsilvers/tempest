@@ -23,6 +23,8 @@ model User {
   roleId                   Int?                              @map("role_id")
   organization             Organization?                     @relation(fields: [organizationId], references: [id])
   organizationId           Int?                              @map("organization_id")
+  reportingOrganization    Organization?                     @relation(fields: [reportingOrganizationId], references: [id], name: "reportingOrganization")
+  reportingOrganizationId  Int?                              @map("reporting_organization_id")
   tags                     Tag[]
   ppeItems                 PersonalProtectionEquipmentItem[]
   memberTrackingItems      MemberTrackingItem[]
@@ -99,17 +101,18 @@ enum OrganizationType {
 }
 
 model Organization {
-  id            Int                @id @default(autoincrement())
-  name          String             @map("org_name")
-  shortName     String             @map("org_short_name")
+  id             Int                @id @default(autoincrement())
+  name           String             @map("org_name")
+  shortName      String             @map("org_short_name")
   //Self reference
-  parent        Organization?      @relation(name: "ParentChildren", fields: [parentId], references: [id])
-  parentId      Int?               @map("parent_id")
-  children      Organization[]     @relation(name: "ParentChildren")
-  users         User[]
-  templates     Template[]
-  trackingItems TrackingItem[]
-  types         OrganizationType[]
+  parent         Organization?      @relation(name: "ParentChildren", fields: [parentId], references: [id])
+  parentId       Int?               @map("parent_id")
+  children       Organization[]     @relation(name: "ParentChildren")
+  reportingUsers User[]             @relation("reportingOrganization")
+  users          User[]
+  templates      Template[]
+  trackingItems  TrackingItem[]
+  types          OrganizationType[]
 
   @@map("organization")
 }

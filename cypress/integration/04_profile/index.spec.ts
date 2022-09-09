@@ -210,9 +210,9 @@ describe('Monitor role', () => {
     }).click()
 
     cy.findByText(/global - fire extinguisher/i).should('exist')
-    cy.findByRole('button', {
-        name: /archive-tracking-record-10/i
-      }).within(() => {
+    cy.findAllByRole('button', {
+        name: /archive-tracking-record/i
+      }).first().within(() => {
         cy.findByTestId('ArchiveIcon').click()
       });
 

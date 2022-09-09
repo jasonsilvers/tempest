@@ -5,7 +5,7 @@ import React, { useMemo, useState } from 'react';
 import 'twin.macro';
 import { VictoryLabel, VictoryPie } from 'victory';
 import { UserWithAll } from '../../../repositories/userRepo';
-import { removeOldCompletedRecords } from '../../../utils';
+import { removeInProgressRecords, removeOldCompletedRecords } from '../../../utils';
 import { getStatus } from '../../../utils/status';
 import { EStatus } from '../../Dashboard/Enums';
 import { Transition } from '../../Dashboard/Report';
@@ -18,9 +18,9 @@ type MemberTrainingReportProps = {
 
 const DetailedMemberTrainingReport: React.FC<MemberTrainingReportProps> = ({ memberData }) => {
   const detailedMemberTrainingReportData = memberData?.memberTrackingItems
-    .filter((member) => member.memberTrackingRecords.length !== 0)
+    ?.filter((member) => member.memberTrackingRecords.length !== 0)
     .flatMap((mti) => {
-      return removeOldCompletedRecords(mti.memberTrackingRecords).map((mtr) => {
+      return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
         const date = dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY');
         const dueDate = date === 'Invalid Date' ? 'N/A' : date;
         return {
@@ -75,7 +75,8 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberData, counts }
     setOpen(false);
   };
 
-  const trainingListSize = memberData?.memberTrackingItems.length === 0 ? 'No' : memberData?.memberTrackingItems.length;
+  const trainingListSize =
+    memberData?.memberTrackingItems?.length === 0 ? 'No' : memberData?.memberTrackingItems?.length;
 
   return (
     <>

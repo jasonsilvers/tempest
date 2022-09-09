@@ -13,6 +13,7 @@ export const findUserByIdReturnAllIncludes = async (userId: number) => {
     include: {
       role: true,
       organization: true,
+      reportingOrganization: true,
       traineeTrackingRecords: {
         include: {
           trackingItem: true,
@@ -52,6 +53,7 @@ export const findUserById = async (id: number) => {
     include: {
       role: true,
       organization: true,
+      reportingOrganization: true,
     },
   });
 };
@@ -118,6 +120,7 @@ export const findUserByEmail = async (email: string) => {
     include: {
       role: true,
       organization: true,
+      reportingOrganization: true,
     },
   });
 };
@@ -312,6 +315,7 @@ export async function updateUserRole(id: number, roleName: string) {
     include: {
       role: true,
       organization: true,
+      reportingOrganization: true,
     },
   });
 }

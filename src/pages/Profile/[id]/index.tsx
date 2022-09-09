@@ -64,9 +64,9 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
       Upcoming: 0,
       Done: 0,
     };
-    memberCount[member.id] = specificCountsForMember;
+    // memberCount[member.id] = specificCountsForMember;
     memberData?.memberTrackingItems
-      .filter((mti) => mti.status === MemberTrackingItemStatus.ACTIVE)
+      ?.filter((mti) => mti.status === MemberTrackingItemStatus.ACTIVE)
       .forEach((mti) => {
         const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
         mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {

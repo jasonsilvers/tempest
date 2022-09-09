@@ -2,7 +2,12 @@ export function getToday(minus: number = 0) {
   const date = new Date();
 
   const monthShort = date.toLocaleString('default', { month: 'short' });
-  const day = date.getDate() - minus;
+  let day = date.getDate() - minus;
+
+  if (day === 0) {
+    day = 1
+  }
+
   const year = date.getFullYear();
 
   return `${monthShort} ${day}, ${year}`;

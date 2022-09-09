@@ -47,6 +47,7 @@ const mockUser: User = {
   lastName: commonApiPerson.lastName,
   middleName: commonApiPerson.middleName,
   organizationId: 1,
+  reportingOrganizationId: 1,
   rank: commonApiPerson.rank,
   roleId: 0,
   updatedAt: new Date(),
@@ -116,6 +117,7 @@ test('should findUserByIdReturnAllIncludes', async () => {
     include: {
       role: true,
       organization: true,
+      reportingOrganization: true,
       traineeTrackingRecords: {
         include: {
           trackingItem: true,
@@ -273,6 +275,7 @@ test('should updateUserRole', async () => {
     include: {
       role: true,
       organization: true,
+      reportingOrganization: true,
     },
   });
 });

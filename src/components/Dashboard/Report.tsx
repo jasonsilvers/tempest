@@ -1,9 +1,10 @@
 import { AppBar, Button, Card, Dialog, Slide, Toolbar, Typography } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { DataGrid, GridColumns, GridToolbar } from '@mui/x-data-grid';
+import { MemberTrackingItemStatus } from '@prisma/client';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
-import 'twin.macro';
+import tw from 'twin.macro';
 import { VictoryLabel, VictoryPie } from 'victory';
 import { useOrgs } from '../../hooks/api/organizations';
 import { UserWithAll } from '../../repositories/userRepo';
@@ -11,7 +12,37 @@ import { removeInProgressRecords, removeOldCompletedRecords } from '../../utils'
 import { getStatus } from '../../utils/status';
 import { EStatus } from './Enums';
 import { StatusCounts } from './Types';
-import { StatusPill, StatusDetailVariant } from '../StatusVariants';
+import { StatusPillVariant } from './UserList';
+
+export const StatusDetailVariant = {
+  Done: {
+    textColor: tw`text-[#6FD9A6]`,
+  },
+  Overdue: {
+    textColor: tw`text-[#FB7F7F]`,
+  },
+  Upcoming: {
+    textColor: tw`text-[#F6B83F]`,
+  },
+  Archived: {
+    textColor: tw`text-gray-500`,
+  },
+};
+
+const StatusPill = ({ variant, count }: { variant: EStatus; count: number }) => {
+  return (
+    <div tw="flex space-x-2 items-center">
+      <div
+        css={[
+          StatusPillVariant[variant].color,
+          StatusPillVariant[variant].textColor,
+          tw`rounded-sm h-3 w-3 flex items-center justify-center text-sm`,
+        ]}
+      ></div>
+      <Typography fontSize={14}>{count}</Typography>
+    </div>
+  );
+};
 
 export const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -36,13 +67,15 @@ const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
         .filter((mti) => mti.memberTrackingRecords.length !== 0)
         .flatMap((mti) => {
           return removeInProgressRecords(removeOldCompletedRecords(mti.memberTrackingRecords)).map((mtr) => {
+            const isInactive = mti.status === MemberTrackingItemStatus.INACTIVE;
+
             return {
               id: `${member.id}-${mtr.id}`,
               name: `${member.firstName} ${member.lastName}`,
               rank: member.rank,
               organizationId: member.organizationId,
               trainingTitle: mti.trackingItem.title,
-              status: getStatus(mtr.completedDate, mti.trackingItem.interval),
+              status: isInactive ? 'Archived' : getStatus(mtr.completedDate, mti.trackingItem.interval),
               dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
             };
           });

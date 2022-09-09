@@ -39,6 +39,7 @@ const users = {
       lastLogin: '2021-08-27T19:58:29.894Z',
       roleId: 3,
       organizationId: 1,
+      reportingOrganizationId: 1,
       rank: 'SSgt/E5',
       afsc: '1A1X4',
       dutyTitle: '24/7 solutions maximize',
@@ -84,6 +85,7 @@ const users = {
       lastLogin: '2021-08-28T00:43:56.579Z',
       roleId: 1,
       organizationId: 2,
+      reportingOrganizationId: 2,
       rank: 'SSgt/E5',
       afsc: '3P3X3',
       dutyTitle: 'strategic networks benchmark',
@@ -271,7 +273,7 @@ beforeEach(() => {
         ctx.status(200),
         ctx.json({
           organizations: [
-            { id: 1, name: '15th Medical Group', shortNme: '15th MDG', parentId: null },
+            { id: 1, name: '15th Medical Group', shortName: '15th MDG', parentId: null },
             { id: 2, name: 'organization 2', shortName: 'org 2', parentId: null },
             { id: 3, name: 'organization 3', shortName: 'org 3', parentId: 1 },
             { id: 4, name: 'organization 4', shortName: 'org 4', parentId: 1 },
