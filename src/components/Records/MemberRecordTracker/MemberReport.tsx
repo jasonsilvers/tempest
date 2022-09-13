@@ -1,30 +1,33 @@
 import { AppBar, Button, Card, Dialog, Toolbar, Typography } from '@mui/material';
 import { DataGrid, GridColumns, GridToolbar } from '@mui/x-data-grid';
+import { MemberTrackingItemStatus } from '@prisma/client';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
 import 'twin.macro';
 import { VictoryLabel, VictoryPie } from 'victory';
-import { UserWithAll } from '../../../repositories/userRepo';
+import { useMemberTrackingItemsForUser } from '../../../hooks/api/users';
+import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
 import { removeInProgressRecords, removeOldCompletedRecords } from '../../../utils';
 import { getStatus } from '../../../utils/status';
 import { EStatus } from '../../Dashboard/Enums';
 import { Transition } from '../../Dashboard/Report';
-import { StatusCounts } from '../../Dashboard/Types';
+import { addMemberCounts } from '../../Reports/reportsUtils';
 import { StatusDetailVariant, StatusPill } from '../../StatusVariants';
 
 type MemberTrainingReportProps = {
-  memberData: UserWithAll;
+  memberId: number;
+  memberTrackingItems: MemberTrackingItemWithAll[];
 };
 
-const DetailedMemberTrainingReport: React.FC<MemberTrainingReportProps> = ({ memberData }) => {
-  const detailedMemberTrainingReportData = memberData?.memberTrackingItems
+const DetailedMemberTrainingReport: React.FC<MemberTrainingReportProps> = ({ memberId, memberTrackingItems }) => {
+  const detailedMemberTrainingReportData = memberTrackingItems
     ?.filter((member) => member.memberTrackingRecords.length !== 0)
     .flatMap((mti) => {
       return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
         const date = dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY');
         const dueDate = date === 'Invalid Date' ? 'N/A' : date;
         return {
-          id: `${memberData.id}-${mtr.id}`,
+          id: `${memberId}-${mtr.id}`,
           trainingTitle: mti.trackingItem.title,
           recurrence: mti.trackingItem.interval,
           status: getStatus(mtr.completedDate, mti.trackingItem.interval),
@@ -60,12 +63,29 @@ const DetailedMemberTrainingReport: React.FC<MemberTrainingReportProps> = ({ mem
   );
 };
 type MemberReportProps = {
-  memberData: UserWithAll;
-  counts: StatusCounts;
+  memberId: number;
 };
 
-export const MemberReport: React.FC<MemberReportProps> = ({ memberData, counts }) => {
+export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
   const [open, setOpen] = useState(false);
+  const memberTrackingItemsQuery = useMemberTrackingItemsForUser(memberId);
+
+  const counts = {
+    Done: 0,
+    Overdue: 0,
+    Upcoming: 0,
+    All: 0,
+  };
+
+  memberTrackingItemsQuery.data
+    ?.filter((mti) => mti.status === MemberTrackingItemStatus.ACTIVE)
+    .forEach((mti) => {
+      const filteredMtrs = removeInProgressRecords(removeOldCompletedRecords(mti.memberTrackingRecords));
+      filteredMtrs.forEach((mtr) => {
+        counts.All = counts.All + 1;
+        addMemberCounts(mti, mtr, counts);
+      });
+    });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -75,8 +95,9 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberData, counts }
     setOpen(false);
   };
 
-  const trainingListSize =
-    memberData?.memberTrackingItems?.length === 0 ? 'No' : memberData?.memberTrackingItems?.length;
+  if (memberTrackingItemsQuery.isLoading) {
+    return <div>...Loading</div>;
+  }
 
   return (
     <>
@@ -127,7 +148,7 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberData, counts }
                 style={{ fontSize: 14 }}
                 x={100}
                 y={100}
-                text={`${trainingListSize} Trainings`}
+                text={`${counts.All} Trainings`}
               />
             </svg>
           </div>
@@ -157,7 +178,7 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberData, counts }
         </AppBar>
         <div tw="p-20">
           <Card tw="h-96">
-            <DetailedMemberTrainingReport memberData={memberData} />
+            {<DetailedMemberTrainingReport memberId={memberId} memberTrackingItems={memberTrackingItemsQuery.data} />}
           </Card>
         </div>
       </Dialog>
