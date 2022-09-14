@@ -1,9 +1,15 @@
-import { rest, server } from '../testutils/mocks/msw';
+import mockRouter from 'next-router-mock';
+import singletonRouter from 'next/router';
+import React from 'react';
 import 'whatwg-fetch';
-import PpePage from '../../src/pages/Ppe';
-import { fireEvent, render, waitFor } from '../testutils/TempestTestUtils';
+import PpePage from '../../src/pages/Ppe/[id]';
+import { bobJones } from '../testutils/mocks/fixtures';
+import { rest, server } from '../testutils/mocks/msw';
+import { fireEvent, rtlRender, waitFor, Wrapper } from '../testutils/TempestTestUtils';
 
 jest.mock('lodash.debounce', () => jest.fn((fn) => fn));
+jest.mock('next/router', () => require('next-router-mock'));
+jest.mock('next/dist/client/router', () => require('next-router-mock'));
 
 const testPPEItem = {
   id: 1,
@@ -32,13 +38,20 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  mockRouter.setCurrentUrl('/initial');
+  singletonRouter.push({
+    query: { id: 123 },
+  });
   server.use(
-    rest.get('/api/ppeitems/', (req, res, ctx) => {
+    rest.get('/api/ppeitems', (req, res, ctx) => {
       return res(
         ctx.json({
           ppeItems: [testPPEItem, testPPEItem2],
         })
       );
+    }),
+    rest.get('/api/users/123', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(bobJones));
     })
   );
 });
@@ -53,7 +66,11 @@ afterEach(() => {
 afterAll(() => server.close());
 
 it('renders the ppe page', async () => {
-  const screen = render(<PpePage />);
+  const screen = rtlRender(<PpePage />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
 
   await waitFor(() => expect(screen.getByText(/bob jones/i)).toBeInTheDocument());
 
@@ -66,7 +83,11 @@ it('Can add new PPE Item', async () => {
       return res(ctx.json(req.body));
     })
   );
-  const screen = render(<PpePage />);
+  const screen = rtlRender(<PpePage />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
 
   await waitFor(() => expect(screen.getByText(/bob jones/i)).toBeInTheDocument());
 
@@ -91,7 +112,11 @@ it('Can update ppe item', async () => {
       return res(ctx.json(req.body));
     })
   );
-  const screen = render(<PpePage />);
+  const screen = rtlRender(<PpePage />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
 
   await waitFor(() => expect(screen.getByText(/bob jones/i)).toBeInTheDocument());
 
@@ -116,7 +141,11 @@ it('Can delete ppe item', async () => {
       return res(ctx.json(req.body));
     })
   );
-  const screen = render(<PpePage />);
+  const screen = rtlRender(<PpePage />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
 
   await waitFor(() => expect(screen.getByText(/bob jones/i)).toBeInTheDocument());
 
@@ -135,7 +164,11 @@ it('Can remove new ppe item before saving', async () => {
       return res(ctx.json(req.body));
     })
   );
-  const screen = render(<PpePage />);
+  const screen = rtlRender(<PpePage />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
 
   await waitFor(() => expect(screen.getByText(/bob jones/i)).toBeInTheDocument());
 
