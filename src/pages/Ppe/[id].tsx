@@ -253,10 +253,11 @@ const PpePage: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
         <div tw="p-3 flex justify-center">
           <Fab
             color="secondary"
-            disabled={ppeQuery.data?.some((ppeItem) => ppeItem.id === -1) || ppeQuery.isFetching}
+            disabled={ppeItems?.some((ppeItem) => ppeItem.id === -1) || ppeQuery.isFetching}
             size="medium"
             variant="circular"
             onClick={addPpeItem}
+            aria-label="add-button"
           >
             <AddIcon />
           </Fab>
