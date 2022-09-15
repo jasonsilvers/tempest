@@ -436,7 +436,6 @@ it('should render detailed report', async () => {
   await waitFor(() => within(dialog).getByText(/sandra/i));
 
   const sandraRow = within(dialog).getByText(/sandra clark/i).parentElement?.parentNode;
-
   within(sandraRow).getByText(/done/i);
 
   const joeSmithRow = within(dialog).getByText(/joe smith/i).parentElement?.parentNode;

@@ -24,14 +24,12 @@ const DetailedMemberTrainingReport: React.FC<MemberTrainingReportProps> = ({ mem
     ?.filter((member) => member.memberTrackingRecords.length !== 0)
     .flatMap((mti) => {
       return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
-        const date = dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY');
-        const dueDate = date === 'Invalid Date' ? 'N/A' : date;
         return {
           id: `${memberId}-${mtr.id}`,
           trainingTitle: mti.trackingItem.title,
           recurrence: mti.trackingItem.interval,
           status: getStatus(mtr.completedDate, mti.trackingItem.interval),
-          dueDate: dueDate,
+          dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
         };
       });
     });
@@ -137,6 +135,7 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
                   { x: 'done', y: counts?.Done },
                   { x: 'overdue', y: counts?.Overdue },
                   { x: 'upcoming', y: counts?.Upcoming },
+                  { x: 'none', y: counts?.All === 0 },
                 ]}
                 innerRadius={65}
                 labelRadius={100}
