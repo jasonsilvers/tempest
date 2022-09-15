@@ -6,12 +6,12 @@ import { EUri } from '../../const/enums';
 import { PPEItemsDTO } from '../../types';
 
 export const ppeQueryKeys = {
-  items: () => ['ppe'],
+  items: (userId: number) => ['ppe', userId],
 };
 
 export const usePpeItems = (userId: number) => {
   return useQuery<PersonalProtectionEquipmentItem[]>(
-    ppeQueryKeys.items(),
+    ppeQueryKeys.items(userId),
     async () => {
       return axios.get<PPEItemsDTO>(EUri.PPE_ITEMS + `?userId=${userId}`).then((result) => result.data.ppeItems);
     },
@@ -37,8 +37,8 @@ export const useCreatePpeItem = () => {
       onError: () => {
         snackbar.enqueueSnackbar('Error adding PPE Item. Please try again!', { variant: 'error' });
       },
-      onSettled: () => {
-        queryClient.invalidateQueries(ppeQueryKeys.items());
+      onSettled: (response) => {
+        queryClient.invalidateQueries(ppeQueryKeys.items(response.data.userId));
       },
     }
   );
@@ -60,26 +60,29 @@ export const useUpdatePpeItem = () => {
       onError: () => {
         snackbar.enqueueSnackbar('Error updating PPE Item. Please try again!', { variant: 'error' });
       },
-      onSettled: () => {
-        queryClient.invalidateQueries(ppeQueryKeys.items());
+      onSettled: (response) => {
+        queryClient.invalidateQueries(ppeQueryKeys.items(response.userId));
       },
     }
   );
 };
 
-export const useDeletePpeItem = () => {
+export const useDeletePpeItem = (userId: number) => {
   const queryClient = useQueryClient();
   const snackbar = useSnackbar();
 
-  return useMutation(async (ppeItemId: number) => (await axios.delete(EUri.PPE_ITEMS + ppeItemId)).data, {
-    onSuccess: () => {
-      snackbar.enqueueSnackbar('Deleted PPE Item!', { variant: 'success' });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(ppeQueryKeys.items());
-    },
-    onError: () => {
-      snackbar.enqueueSnackbar('Error deleting PPE Item. Please try again!', { variant: 'error' });
-    },
-  });
+  return useMutation<PersonalProtectionEquipmentItem, unknown, unknown, PersonalProtectionEquipmentItem>(
+    async (ppeItemId: number) => (await axios.delete(EUri.PPE_ITEMS + ppeItemId)).data,
+    {
+      onSuccess: () => {
+        snackbar.enqueueSnackbar('Deleted PPE Item!', { variant: 'success' });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries(ppeQueryKeys.items(userId));
+      },
+      onError: () => {
+        snackbar.enqueueSnackbar('Error deleting PPE Item. Please try again!', { variant: 'error' });
+      },
+    }
+  );
 };

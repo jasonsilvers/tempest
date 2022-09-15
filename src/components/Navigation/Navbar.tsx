@@ -106,7 +106,7 @@ const Navbar: React.FC = () => {
                 Archive
               </div>
             </Link>
-            <Link goToUrl={`/Ppe`} icon={<MasksIcon fontSize="medium" />}>
+            <Link goToUrl={`/Ppe/${user.id}`} icon={<MasksIcon fontSize="medium" />}>
               <div role="navigation" aria-label="ppe">
                 Personal Protection Equipment
               </div>

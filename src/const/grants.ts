@@ -356,6 +356,30 @@ const ppeItemGrants: Grants[] = [
     resource: EResource.PPE_ITEM,
     role: ERole.MEMBER,
   },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
+  {
+    action: EAction.DELETE_ANY,
+    attributes: '*',
+    resource: EResource.PPE_ITEM,
+    role: ERole.MONITOR,
+  },
 ];
 
 const jobGrants: Grants[] = [
