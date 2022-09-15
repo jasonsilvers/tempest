@@ -182,3 +182,34 @@ it('Can remove new ppe item before saving', async () => {
 
   fireEvent.click(deleteButtons[2]);
 });
+
+it('Can only add one new item at a time', async () => {
+  server.use(
+    rest.delete('/api/ppeitems/1', (req, res, ctx) => {
+      return res(ctx.json(req.body));
+    })
+  );
+  const screen = rtlRender(<PpePage />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+
+  await waitFor(() => expect(screen.getByText(/bob jones/i)).toBeInTheDocument());
+
+  await waitFor(() => expect(screen.getByDisplayValue(/steel toe/i)).toBeInTheDocument());
+
+  const addButton = screen.getByTestId('AddIcon');
+
+  fireEvent.click(addButton);
+
+  const inputs = screen.getAllByPlaceholderText(/enter title/i);
+
+  expect(inputs).toHaveLength(3);
+
+  expect(
+    screen.getByRole('button', {
+      name: /add-button/i,
+    })
+  ).toBeDisabled();
+});
