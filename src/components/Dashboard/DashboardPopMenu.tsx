@@ -66,7 +66,7 @@ export default function DashboardPopMenu({ userId }: { userId: number }) {
           <span onClick={() => router.push(`/Profile/${userId}/Archive`)}>Archives</span>
         </MenuItem>
         <MenuItem aria-label="view-member-ppe" onClick={handleClose}>
-          <span onClick={() => router.push(`/Ppe/${userId}`)}>Ppe</span>
+          <span onClick={() => router.push(`/Ppe/${userId}`)}>View PPE</span>
         </MenuItem>
       </Menu>
     </div>
