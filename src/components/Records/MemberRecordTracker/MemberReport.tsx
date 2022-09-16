@@ -13,6 +13,7 @@ import { EStatus } from '../../Dashboard/Enums';
 import { Transition } from '../../Dashboard/Report';
 import { addMemberCounts } from '../../Reports/reportsUtils';
 import { StatusDetailVariant, StatusPill } from '../../StatusVariants';
+import { TrackingItemInterval } from '../../../../src/utils/daysToString';
 
 type MemberTrainingReportProps = {
   memberId: number;
@@ -27,7 +28,7 @@ const DetailedMemberTrainingReport: React.FC<MemberTrainingReportProps> = ({ mem
         return {
           id: `${memberId}-${mtr.id}`,
           trainingTitle: mti.trackingItem.title,
-          recurrence: mti.trackingItem.interval,
+          recurrence: TrackingItemInterval[mti.trackingItem.interval],
           status: getStatus(mtr.completedDate, mti.trackingItem.interval),
           dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
         };
@@ -99,7 +100,7 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
 
   return (
     <>
-      <Card data-testid="report-widget" tw="h-52 relative">
+      <Card data-testid="report-widget" tw="h-60 relative">
         <Typography variant="h6" tw="absolute top-4 left-4">
           Readiness Stats
         </Typography>
@@ -170,7 +171,7 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color="primary">
               Reporting Excel
             </Typography>
-            <Button variant="contained" autoFocus color="primary" onClick={handleClose}>
+            <Button variant="contained" size="small" autoFocus color="primary" onClick={handleClose}>
               Done
             </Button>
           </Toolbar>

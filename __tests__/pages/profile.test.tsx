@@ -32,7 +32,7 @@ const userWithTrackingItems = {
   memberTrackingItems: [
     {
       status: 'ACTIVE',
-      userId: 1,
+      userId: bobJones.id,
       createdAt: '2021-08-27T19:28:10.525Z',
       trackingItemId: 3,
       trackingItem: {
@@ -50,27 +50,27 @@ const userWithTrackingItems = {
           authorityId: 4,
           createdAt: dayjs().toDate(),
           completedDate: dayjs().toDate(),
-          order: 3,
-          traineeId: 1,
+          order: 1,
+          traineeId: bobJones.id,
           trackingItemId: 3,
         },
       ],
     },
     {
       status: 'ACTIVE',
-      userId: 1,
+      userId: bobJones.id,
       createdAt: '2021-08-27T19:28:10.525Z',
-      trackingItemId: 4,
+      trackingItemId: 7,
       trackingItem: {
-        id: 4,
-        title: 'Fire Ext',
-        description: 'How to be SAFE when using Fire',
+        id: 7,
+        title: 'MDG Training',
+        description: 'Random Training',
         interval: 365,
         status: 'ACTIVE',
       },
       memberTrackingRecords: [
         {
-          id: 5,
+          id: 2,
           traineeSignedDate: dayjs().toDate(),
           authoritySignedDate: dayjs().toDate(),
           authorityId: 4,
@@ -78,9 +78,35 @@ const userWithTrackingItems = {
           completedDate: dayjs()
             .subtract(365 - 1, 'days')
             .toDate(),
+          order: 2,
+          traineeId: bobJones.id,
+          trackingItemId: 7,
+        },
+      ],
+    },
+    {
+      status: 'ACTIVE',
+      userId: bobJones.id,
+      createdAt: '2021-08-27T19:28:10.548Z',
+      trackingItemId: 4,
+      trackingItem: {
+        id: 4,
+        title: 'Big Bug Safety',
+        description: 'There are big bugs in Hawaii!  Be careful!',
+        interval: 365,
+        status: 'ACTIVE',
+      },
+      memberTrackingRecords: [
+        {
+          id: 3,
+          traineeSignedDate: '2021-08-18T09:38:12.976Z',
+          authoritySignedDate: '2021-08-12T23:09:38.453Z',
+          authorityId: 'daf12fc8-65a2-416a-bbf1-662b3e52be85',
+          createdAt: '2021-08-27T19:28:10.568Z',
+          completedDate: '2021-08-10T13:37:20.770Z',
           order: 3,
-          traineeId: 3,
-          trackingItemId: 3,
+          traineeId: bobJones.id,
+          trackingItemId: 4,
         },
       ],
     },
@@ -271,11 +297,11 @@ test('should render report widget and show correct counts', async () => {
   expect(upcomingCount).toBeInTheDocument();
 
   const overDueCountDiv = screen.getByTestId('report-overdue');
-  const overDueCount = within(overDueCountDiv).getByText(0);
+  const overDueCount = within(overDueCountDiv).getByText(1);
 
   expect(overDueCount).toBeInTheDocument();
 
-  expect(screen.getByText(/2 trainings/i)).toBeInTheDocument();
+  expect(screen.getByText(/3 trainings/i)).toBeInTheDocument();
 });
 
 test('should render detailed report', async () => {
@@ -299,9 +325,19 @@ test('should render detailed report', async () => {
 
   within(banner).getByText(/reporting excel/i);
 
+  const dialog = screen.getByRole('dialog');
+
+  const fireSafetyRow = within(dialog).getByText(/fire safety/i).parentElement?.parentNode;
+  within(fireSafetyRow).getByText(/done/i);
+
+  const mdgTrainingRow = within(dialog).getByText(/mdg training/i).parentElement?.parentNode;
+  within(mdgTrainingRow).getByText(/upcoming/i);
+
+  const bigBugSafetyRow = within(dialog).getByText(/big bug safety/i).parentElement?.parentNode;
+  within(bigBugSafetyRow).getByText(/overdue/i);
+
   const doneButton = screen.getByRole('button', {
     name: /done/i,
   });
-
   fireEvent.click(doneButton);
 });

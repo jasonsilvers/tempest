@@ -15,6 +15,7 @@ import { ECategorie, EFuncAction, EMtrVariant, EResource } from '../../../const/
 import { useMember } from '../../../hooks/api/users';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { findUserByIdReturnAllIncludes, UserWithAll } from '../../../repositories/userRepo';
+import { QuickAssign } from '../../../components/Records/MemberRecordTracker/QuickAssign';
 
 const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
   const {
@@ -64,7 +65,9 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
         <ProfileHeader member={member} />
       </div>
       <div tw="flex pb-5 gap-5">
-        <Card tw="w-2/3"></Card>
+        <Card tw="w-2/3 max-w-4xl overflow-auto">
+          <QuickAssign memberId={initialMemberData.id} />
+        </Card>
         <Card tw="w-1/3">
           <MemberReport memberId={initialMemberData.id} />
         </Card>
