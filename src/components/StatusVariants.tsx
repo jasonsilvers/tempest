@@ -12,6 +12,9 @@ export const StatusDetailVariant = {
   Upcoming: {
     textColor: tw`text-[#F6B83F]`,
   },
+  Archived: {
+    textColor: tw`text-gray-500`,
+  },
 };
 
 const StatusPillVariant = {

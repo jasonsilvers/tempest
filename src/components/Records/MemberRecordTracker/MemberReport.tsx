@@ -25,11 +25,12 @@ const DetailedMemberTrainingReport: React.FC<MemberTrainingReportProps> = ({ mem
     ?.filter((member) => member.memberTrackingRecords.length !== 0)
     .flatMap((mti) => {
       return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
+        const isInactive = mti.status === MemberTrackingItemStatus.INACTIVE;
         return {
           id: `${memberId}-${mtr.id}`,
           trainingTitle: mti.trackingItem.title,
           recurrence: TrackingItemInterval[mti.trackingItem.interval],
-          status: getStatus(mtr.completedDate, mti.trackingItem.interval),
+          status: isInactive ? 'Archived' : getStatus(mtr.completedDate, mti.trackingItem.interval),
           dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
         };
       });

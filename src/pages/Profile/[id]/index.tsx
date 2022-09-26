@@ -65,7 +65,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
         <ProfileHeader member={member} />
       </div>
       <div tw="flex pb-5 gap-5">
-        <Card tw="w-2/3 max-w-4xl overflow-auto">
+        <Card tw="w-2/3">
           <QuickAssign memberId={initialMemberData.id} />
         </Card>
         <Card tw="w-1/3">
