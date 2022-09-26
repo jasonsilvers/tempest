@@ -1,15 +1,15 @@
 
-FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.14.0  AS builder
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.17.0  AS builder
 USER node
 WORKDIR /home/node
 COPY --chown=node:node . .
 RUN npx prisma generate --schema ./src/prisma/schema.prisma 
 RUN npm run build
-RUN npm prune --production
+RUN npm prune --production --legacy-peer-deps
 
 
 # Nextjs server
-FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.14.0 AS application
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.17.0 AS application
 USER node
 WORKDIR /app
 
