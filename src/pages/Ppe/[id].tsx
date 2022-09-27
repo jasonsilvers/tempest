@@ -1,18 +1,21 @@
 import { Card, Checkbox, Divider, Fab, IconButton, TextField } from '@mui/material';
-import { useUser, withPageAuth } from '@tron/nextjs-auth-p1';
-import { ProfileHeader } from '../components/Profile/ProfileHeader';
+import { withPageAuth } from '@tron/nextjs-auth-p1';
 import debounce from 'lodash.debounce';
-import { LoggedInUser } from '../repositories/userRepo';
+import { ProfileHeader } from '../../components/Profile/ProfileHeader';
+import { findUserById, UserWithAll } from '../../repositories/userRepo';
 
-import 'twin.macro';
-import { useCreatePpeItem, useDeletePpeItem, usePpeItems, useUpdatePpeItem } from '../hooks/api/ppe';
-import { AddIcon, DeleteIcon } from '../assets/Icons';
-import { PersonalProtectionEquipmentItem } from '@prisma/client';
-import { LoadingSpinner } from '../lib/ui';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import Joi from 'joi';
-import { Controller, useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
+import { PersonalProtectionEquipmentItem } from '@prisma/client';
+import Joi from 'joi';
+import { GetServerSidePropsContext } from 'next';
+import { useRouter } from 'next/router';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import 'twin.macro';
+import { AddIcon, DeleteIcon } from '../../assets/Icons';
+import { useCreatePpeItem, useDeletePpeItem, usePpeItems, useUpdatePpeItem } from '../../hooks/api/ppe';
+import { useMember } from '../../hooks/api/users';
+import { LoadingSpinner } from '../../lib/ui';
 
 const ppeItemSchema = Joi.object({
   id: Joi.number(),
@@ -33,7 +36,7 @@ const PpeItem = ({
   removeAddedPpeItem: () => void;
 }) => {
   const { mutate: create, isLoading: creatingInFlight } = useCreatePpeItem();
-  const { mutate: deletePpeItem, isLoading: deleteInFlight } = useDeletePpeItem();
+  const { mutate: deletePpeItem, isLoading: deleteInFlight } = useDeletePpeItem(userId);
   const { mutate: updatePpeItem } = useUpdatePpeItem();
 
   const [localPpeItem] = useState(() => ppeItem);
@@ -62,7 +65,9 @@ const PpeItem = ({
     if (data.id === -1) {
       delete data.id;
       data.userId = userId;
-      create(data);
+      create(data, {
+        onSettled: () => removeAddedPpeItem(),
+      });
       return;
     }
 
@@ -172,12 +177,25 @@ const PpeItem = ({
   );
 };
 
-const PpePage = () => {
-  const { user } = useUser<LoggedInUser>();
+const sortItemsByIdFromOldestToNewest = (a, b) => a.id - b.id;
 
-  const ppeQuery = usePpeItems(user?.id);
+const PpePage: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
+  const {
+    query: { id },
+  } = useRouter();
+
+  const userId = parseInt(id?.toString());
+  const { data: member } = useMember(userId, initialMemberData);
+  const ppeQuery = usePpeItems(userId);
 
   const [ppeItems, setPpeItems] = useState<PersonalProtectionEquipmentItem[]>([]);
+  const [addInitialItem, setAddInitialItem] = useState(true);
+
+  let ppeItemsFromServer = [];
+
+  if (ppeQuery.data) {
+    ppeItemsFromServer = [...ppeQuery.data].sort(sortItemsByIdFromOldestToNewest);
+  }
 
   const addPpeItem = () => {
     const newPpeItem: PersonalProtectionEquipmentItem = {
@@ -187,34 +205,26 @@ const PpePage = () => {
       providedDetails: '',
       inUse: false,
       inUseDetails: '',
-      userId: user.id,
+      userId: userId,
     };
+
     setPpeItems([...ppeItems, newPpeItem]);
   };
 
   const removeAddedPpeItem = () => {
     const ppeItemsWithNewItemRemoved = ppeItems.filter((ppeItem) => ppeItem.id !== -1);
-
     setPpeItems(ppeItemsWithNewItemRemoved);
   };
 
-  useEffect(() => {
-    if (ppeQuery.data?.length > 0) {
-      const sortedPpeItems = [...ppeQuery.data].sort((a, b) => a.id - b.id);
-
-      setPpeItems(sortedPpeItems);
-      return;
-    }
-
-    if (ppeQuery.isFetched && ppeItems.length === 0) {
-      addPpeItem();
-    }
-  }, [ppeQuery.data]);
+  if (ppeQuery.isFetched && ppeQuery.data.length === 0 && addInitialItem) {
+    addPpeItem();
+    setAddInitialItem(false);
+  }
 
   return (
     <div tw="relative min-w-min max-width[1440px] p-5">
       <div tw="pb-5">
-        <ProfileHeader member={user} />
+        <ProfileHeader member={member} />
       </div>
 
       <Card tw="relative min-w-min max-width[1440px] h-auto flex flex-col">
@@ -233,8 +243,11 @@ const PpePage = () => {
             <LoadingSpinner size="60px" />
           </div>
         )}
-        {ppeItems?.map((ppeItem) => (
-          <PpeItem key={ppeItem.id} ppeItem={ppeItem} userId={user.id} removeAddedPpeItem={removeAddedPpeItem} />
+        {ppeItemsFromServer.map((ppeItem) => (
+          <PpeItem key={ppeItem.id} ppeItem={ppeItem} userId={userId} removeAddedPpeItem={removeAddedPpeItem} />
+        ))}
+        {ppeItems.map((ppeItem) => (
+          <PpeItem key={ppeItem.id} ppeItem={ppeItem} userId={userId} removeAddedPpeItem={removeAddedPpeItem} />
         ))}
         <Divider />
         <div tw="p-3 flex justify-center">
@@ -244,6 +257,7 @@ const PpePage = () => {
             size="medium"
             variant="circular"
             onClick={addPpeItem}
+            aria-label="add-button"
           >
             <AddIcon />
           </Fab>
@@ -254,3 +268,18 @@ const PpePage = () => {
 };
 
 export default withPageAuth(PpePage);
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { params } = context;
+
+  const userId = parseInt(params?.id as string);
+
+  const initialMemberData = await findUserById(userId);
+
+  return {
+    props: {
+      initialMemberData,
+      userId,
+    },
+  };
+}
