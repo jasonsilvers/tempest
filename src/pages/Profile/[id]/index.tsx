@@ -50,7 +50,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   }
 
   return (
-    <div tw="relative min-w-min max-width[1440px] p-5">
+    <div tw="relative min-w-min max-width[1200px] p-5">
       {canViewDashboard.granted && !isOnOwnProfile ? (
         <div tw="pb-10 flex items-center">
           <BreadCrumbs text="Training Record" />
