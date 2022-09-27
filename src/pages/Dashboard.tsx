@@ -1,5 +1,5 @@
 import { InputAdornment, TextField } from '@mui/material';
-import { MemberTrackingItemStatus, MemberTrackingRecord } from '@prisma/client';
+import { MemberTrackingItemStatus } from '@prisma/client';
 import React, { useEffect, useReducer } from 'react';
 import 'twin.macro';
 import { SearchIcon } from '../assets/Icons';
@@ -8,36 +8,21 @@ import { EStatus } from '../components/Dashboard/Enums';
 import { MassAssign } from '../components/Dashboard/MassAssign';
 import { MassSign } from '../components/Dashboard/MassSign';
 import { Report } from '../components/Dashboard/Report';
-import { Actions, AllCounts, StatusCounts, UserCounts } from '../components/Dashboard/Types';
+import { Actions, StatusCounts } from '../components/Dashboard/Types';
 import { UserList } from '../components/Dashboard/UserList';
+import { addMemberCounts, addOverallCounts } from '../components/Reports/reportsUtils';
 import { EFuncAction, EResource } from '../const/enums';
 import { useUsers } from '../hooks/api/users';
 import { usePermissions } from '../hooks/usePermissions';
 import { Card } from '../lib/ui';
-import { MemberTrackingItemWithAll } from '../repositories/memberTrackingRepo';
 import { UserWithAll } from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
-import { getStatus } from '../utils/status';
 
 const initialCounts: StatusCounts = {
   All: 0,
   Overdue: 0,
   Upcoming: 0,
   Done: 0,
-};
-
-const determineMemberCounts = (
-  mti: MemberTrackingItemWithAll,
-  mtr: MemberTrackingRecord,
-  membersCount: StatusCounts,
-  specificCountsForMember: UserCounts
-): AllCounts => {
-  if (mtr.authoritySignedDate && mtr.traineeSignedDate) {
-    const status = getStatus(mtr.completedDate, mti.trackingItem.interval);
-    specificCountsForMember[status] = specificCountsForMember[status] + 1;
-    membersCount[status] = membersCount[status] + 1;
-  }
-  return membersCount;
 };
 
 export interface IDashboardState {
@@ -156,13 +141,15 @@ const DashboardPage: React.FC = () => {
         Upcoming: 0,
         Done: 0,
       };
+
       membersCount[user.id] = specificCountsForMember;
       user.memberTrackingItems
         .filter((mti) => mti.status === MemberTrackingItemStatus.ACTIVE)
         .forEach((mti) => {
           const mtrWithOldCompletedRecordsRemoved = removeOldCompletedRecords(mti.memberTrackingRecords);
           mtrWithOldCompletedRecordsRemoved.forEach((mtr) => {
-            determineMemberCounts(mti, mtr, membersCount, specificCountsForMember);
+            addMemberCounts(mti, mtr, membersCount[user.id]);
+            addOverallCounts(mti, mtr, membersCount);
           });
         });
     });

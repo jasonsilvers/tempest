@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import { withPageAuth } from '@tron/nextjs-auth-p1';
-import { usePermissions } from '../../../hooks/usePermissions';
-import { useRouter } from 'next/router';
-import { ECategorie, EFuncAction, EMtrVariant, EResource } from '../../../const/enums';
-import { GetServerSidePropsContext } from 'next';
-import { findUserById, UserWithAll } from '../../../repositories/userRepo';
-import { AddMemberTrackingItemDialog } from '../../../components/Records/Dialog/AddMemberTrackingItemDialog';
-import 'twin.macro';
-import MemberItemTracker from '../../../components/Records/MemberRecordTracker/MemberItemTracker';
-import Tab from '../../../components/Records/MemberRecordTracker/Tab';
-import { ProfileHeader } from '../../../components/Profile/ProfileHeader';
-import { useMember } from '../../../hooks/api/users';
-import { BreadCrumbs } from '../../../components/Breadcrumbs';
-import { AddIcon, ArchiveIcon } from '../../../assets/Icons';
 import { Button, Card, Fab, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { withPageAuth } from '@tron/nextjs-auth-p1';
+import { GetServerSidePropsContext } from 'next';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import 'twin.macro';
+import { AddIcon, ArchiveIcon } from '../../../assets/Icons';
+import { BreadCrumbs } from '../../../components/Breadcrumbs';
+import { ProfileHeader } from '../../../components/Profile/ProfileHeader';
+import { AddMemberTrackingItemDialog } from '../../../components/Records/Dialog/AddMemberTrackingItemDialog';
+import MemberItemTracker from '../../../components/Records/MemberRecordTracker/MemberItemTracker';
+import { MemberReport } from '../../../components/Records/MemberRecordTracker/MemberReport';
+import Tab from '../../../components/Records/MemberRecordTracker/Tab';
+import { ECategorie, EFuncAction, EMtrVariant, EResource } from '../../../const/enums';
+import { useMember } from '../../../hooks/api/users';
+import { usePermissions } from '../../../hooks/usePermissions';
+import { findUserByIdReturnAllIncludes, UserWithAll } from '../../../repositories/userRepo';
+import { QuickAssign } from '../../../components/Records/MemberRecordTracker/QuickAssign';
 
 const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
   const {
@@ -48,7 +50,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   }
 
   return (
-    <div tw="relative min-w-min max-width[1440px] p-5">
+    <div tw="relative min-w-min max-width[1200px] p-5">
       {canViewDashboard.granted && !isOnOwnProfile ? (
         <div tw="pb-10 flex items-center">
           <BreadCrumbs text="Training Record" />
@@ -62,7 +64,14 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
       <div tw="pb-5">
         <ProfileHeader member={member} />
       </div>
-
+      <div tw="flex pb-5 gap-5">
+        <Card tw="w-2/3">
+          <QuickAssign memberId={initialMemberData.id} />
+        </Card>
+        <Card tw="w-1/3">
+          <MemberReport memberId={initialMemberData.id} />
+        </Card>
+      </div>
       <Card tw="p-8 relative">
         <Typography tw="pb-6" variant="h5">
           My Training
@@ -125,7 +134,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const userId = parseInt(params?.id as string);
 
-  const initialMemberData = await findUserById(userId);
+  const initialMemberData = await findUserByIdReturnAllIncludes(userId);
 
   return {
     props: {
