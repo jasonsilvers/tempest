@@ -23,7 +23,11 @@ export const getTrackingItemAction = async (
     throw new PermissionError();
   }
 
-  if (req.user.role.name === ERole.MONITOR || req.user.role.name === ERole.ADMIN) {
+  if (
+    req.user.role.name === ERole.MONITOR ||
+    req.user.role.name === ERole.ADMIN ||
+    req.user.role.name === ERole.PROGRAM_MANAGER
+  ) {
     const orgsAndUp = await getOrganizationAndUp(req.user.organizationId);
     const orgsAndDown = await getOrganizationAndDown(req.user.organizationId);
     orgIds = [...orgsAndUp, ...orgsAndDown].map((org) => org.id);

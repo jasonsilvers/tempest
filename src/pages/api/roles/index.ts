@@ -24,14 +24,6 @@ const rolesHandler = async (
 ) => {
   const { method, body } = req;
 
-  const jwt = jwtParser(req);
-  const isAdmin =
-    jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
-
-  if (!isAdmin) {
-    throw new PermissionError();
-  }
-
   switch (method) {
     case 'GET': {
       const roles = await getRoles();
@@ -39,6 +31,12 @@ const rolesHandler = async (
     }
 
     case 'POST': {
+      const jwt = jwtParser(req);
+      const isAdmin =
+        jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
+      if (!isAdmin) {
+        throw new PermissionError();
+      }
       const newRole = await createRole(body);
       return res.status(200).json(newRole);
     }

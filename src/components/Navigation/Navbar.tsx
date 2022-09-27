@@ -30,9 +30,15 @@ type AdminNavigationProps = {
   canViewDashboard: boolean;
   canCreateGlobalTrackingItem: boolean;
   canViewAdminPage: boolean;
+  canViewProgramAdminPage: boolean;
 };
 
-const AdminNavigation = ({ canViewDashboard, canCreateGlobalTrackingItem, canViewAdminPage }: AdminNavigationProps) => {
+const AdminNavigation = ({
+  canViewDashboard,
+  canCreateGlobalTrackingItem,
+  canViewAdminPage,
+  canViewProgramAdminPage,
+}: AdminNavigationProps) => {
   return (
     <div tw="text-secondary">
       <div tw="py-6 px-4">
@@ -56,6 +62,13 @@ const AdminNavigation = ({ canViewDashboard, canCreateGlobalTrackingItem, canVie
       {canViewAdminPage ? (
         <Link goToUrl="/Admin" icon={<SecurityIcon fontSize="medium" />}>
           <div role="navigation" aria-label="admin">
+            Super Admin
+          </div>
+        </Link>
+      ) : null}
+      {canViewProgramAdminPage ? (
+        <Link goToUrl="/Programadmin" icon={<SecurityIcon fontSize="medium" />}>
+          <div role="navigation" aria-label="admin">
             Admin
           </div>
         </Link>
@@ -74,9 +87,16 @@ const Navbar: React.FC = () => {
     EFuncAction.CREATE_ANY,
     EResource.TRACKING_ITEM
   );
+
   const canViewAdminPage = permissionCheck(user?.role?.name, EFuncAction.READ_ANY, EResource.ADMIN_PAGE);
+
+  const canViewProgramAdminPage = permissionCheck(user?.role?.name, EFuncAction.READ_ANY, EResource.PROGRAM_ADMIN);
   const canViewDashboard = permissionCheck(user?.role?.name, EFuncAction.READ_ANY, EResource.DASHBOARD_PAGE);
-  const isAdmin = canCreateGlobalTrackingItem?.granted || canViewAdminPage?.granted || canViewDashboard?.granted;
+  const isAdmin =
+    canCreateGlobalTrackingItem?.granted ||
+    canViewAdminPage?.granted ||
+    canViewDashboard?.granted ||
+    canViewProgramAdminPage?.granted;
 
   useMemo(() => {
     if (user) {
@@ -127,6 +147,7 @@ const Navbar: React.FC = () => {
               canCreateGlobalTrackingItem={canCreateGlobalTrackingItem.granted}
               canViewAdminPage={canViewAdminPage.granted}
               canViewDashboard={canViewDashboard.granted}
+              canViewProgramAdminPage={canViewProgramAdminPage.granted}
             />
           </>
         ) : null}

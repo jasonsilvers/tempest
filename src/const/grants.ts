@@ -32,6 +32,12 @@ const pageGrants: Grants[] = [
     resource: EResource.ADMIN_PAGE,
     role: ERole.ADMIN,
   },
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.PROGRAM_ADMIN,
+    role: ERole.PROGRAM_MANAGER,
+  },
 ];
 
 const memberTrackingItemGrants: Grants[] = [

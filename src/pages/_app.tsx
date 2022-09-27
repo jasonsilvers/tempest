@@ -26,11 +26,15 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <AppProviders pageProps={pageProps}>
         <GlobalStyles />
-        <NavBar />
-        <MainContent>
-          {navigating ? <LoadingOverlay /> : null}
-          <Component {...pageProps} />
-        </MainContent>
+        <div tw="grid grid-cols-12 gap-4 md:ml-28">
+          <aside tw="col-span-2">
+            <NavBar />
+          </aside>
+          <main tw="col-span-10 pt-6 m-auto">
+            {navigating ? <LoadingOverlay /> : null}
+            <Component {...pageProps} />
+          </main>
+        </div>
       </AppProviders>
     </>
   );

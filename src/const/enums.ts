@@ -24,11 +24,13 @@ export enum ERole {
   MEMBER = 'member',
   MONITOR = 'monitor',
   NOROLE = 'norole',
+  PROGRAM_MANAGER = 'programmanager',
 }
 
 export enum EResource {
   AUHTORITY_RECORDS = 'authorityrecords',
   ADMIN_PAGE = 'admin',
+  PROGRAM_ADMIN = 'programadmin',
   DASHBOARD_PAGE = 'dashboard',
   PROFILE_PAGE = 'profile',
   MATTERMOST = 'mattermost',

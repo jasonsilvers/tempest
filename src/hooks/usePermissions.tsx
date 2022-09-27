@@ -2,8 +2,9 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { AccessControl } from 'accesscontrol';
 import { useCallback } from 'react';
 import { LoggedInUser } from '../repositories/userRepo';
-import { EAction, EFuncAction, EResource } from '../const/enums';
+import { EAction, EFuncAction, EResource, ERole } from '../const/enums';
 import { useGrants } from './api/grants';
+import { extendACRoles } from '../utils/AcRoleExtension';
 
 const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<LoggedInUser>();
@@ -29,6 +30,7 @@ const usePermissions = () => {
   if (grantsQuery.data) {
     try {
       ac = new AccessControl(grantsQuery.data);
+      extendACRoles(ac);
     } catch (error) {
       console.log(error, 'error creating access control list, attempting to clean grants');
       const cleanedUpGrants = grantsQuery.data.filter((grant) =>
