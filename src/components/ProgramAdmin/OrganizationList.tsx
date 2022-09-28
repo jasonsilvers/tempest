@@ -1,4 +1,4 @@
-import { Fab } from '@mui/material';
+import { Drawer, Fab } from '@mui/material';
 import {
   DataGrid,
   GridActionsCellItem,
@@ -13,10 +13,13 @@ import { useCallback, useMemo, useState } from 'react';
 import 'twin.macro';
 import { AddIcon, DeleteIcon } from '../../assets/Icons';
 import { useDeleteOrganization, useOrgs, useUpdateOrganization } from '../../hooks/api/organizations';
+import { OrgWithCounts } from '../../repositories/organizationRepo';
 import { AddNewOrganizationDialog } from './AddNewOrganizationDialog';
+import { OrgDetailEdit } from './OrgDetailEdit';
 
 export const OrganizationList = () => {
   const { data: orgs, isLoading } = useOrgs();
+  const [sidebarState, setSidebarState] = useState({ orgId: null, open: false });
 
   const deleteOrg = useDeleteOrganization();
   const updateOrg = useUpdateOrganization();
@@ -48,11 +51,10 @@ export const OrganizationList = () => {
     ];
   };
   const orgCatalogValue = Object.values(OrganizationType);
-  const columns: GridColumns<Organization> = useMemo(
+  const columns: GridColumns<OrgWithCounts> = useMemo(
     () => [
-      { field: 'id', headerName: 'Id', flex: 1 },
-      { field: 'name', headerName: 'Name', flex: 1, editable: true },
-      { field: 'shortName', headerName: 'Short Name', flex: 1, editable: true },
+      { field: 'name', headerName: 'Name', flex: 1 },
+      { field: 'shortName', headerName: 'Short Name', flex: 1 },
       {
         field: 'parentId',
         headerName: 'Parent',
@@ -65,15 +67,8 @@ export const OrganizationList = () => {
         field: 'types',
         headerName: 'Type',
         flex: 1,
-        editable: true,
         type: 'singleSelect',
         valueOptions: orgCatalogValue,
-      },
-      {
-        field: 'actions',
-        type: 'actions',
-        width: 50,
-        getActions: deleteCellAction,
       },
     ],
     []
@@ -101,15 +96,12 @@ export const OrganizationList = () => {
 
   return (
     <div>
-      <div tw="h-[500px]">
+      <div tw="h-[750px] pt-5">
         <DataGrid
           rows={orgs}
           columns={columns}
           disableVirtualization
-          disableSelectionOnClick
-          experimentalFeatures={{ newEditingApi: true }}
-          processRowUpdate={processRowUpdate}
-          onProcessRowUpdateError={handleUpdateError}
+          onRowClick={(params) => setSidebarState({ orgId: params.row.id, open: true })}
         />
       </div>
       <div tw="flex justify-center p-5">
@@ -117,6 +109,27 @@ export const OrganizationList = () => {
           <AddIcon />
         </Fab>
       </div>
+      <Drawer
+        sx={{
+          width: 300,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: 300,
+            boxSizing: 'border-box',
+          },
+        }}
+        variant="persistent"
+        anchor="right"
+        open={sidebarState.open}
+      >
+        {sidebarState.open && (
+          <OrgDetailEdit
+            key={sidebarState.orgId}
+            org={orgs.find((org) => org.id === sidebarState.orgId)}
+            closeEdit={() => setSidebarState({ orgId: null, open: false })}
+          />
+        )}
+      </Drawer>
       <AddNewOrganizationDialog orgs={orgs} dialogIsOpen={dialogIsOpen} setDialogIsOpen={setDialogIsOpen} />
     </div>
   );

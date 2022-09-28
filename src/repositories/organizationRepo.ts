@@ -85,3 +85,11 @@ export async function getOrganizationAndUp(organizationId: number) {
       id;`
   );
 }
+
+export type OrgsWithCounts = Prisma.PromiseReturnType<typeof findOrganizations>;
+export type OrgWithCounts = Organization & {
+  _count: {
+    children: number;
+    users: number;
+  };
+};

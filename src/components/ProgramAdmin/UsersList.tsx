@@ -9,7 +9,7 @@ import { UserDetailEdit } from './UserDetailEdit';
 import 'twin.macro';
 
 const UsersList = () => {
-  const [modalState, setModalState] = useState({ userId: null, open: false });
+  const [sidebarState, setSidebarState] = useState({ userId: null, open: false });
 
   const usersListQuery = useUsers();
   const orgsListQuery = useOrgs();
@@ -62,7 +62,7 @@ const UsersList = () => {
         rows={usersListQuery.data}
         columns={columns}
         disableVirtualization
-        onRowClick={(params) => setModalState({ userId: params.row.id, open: true })}
+        onRowClick={(params) => setSidebarState({ userId: params.row.id, open: true })}
       />
       <Drawer
         sx={{
@@ -75,13 +75,13 @@ const UsersList = () => {
         }}
         variant="persistent"
         anchor="right"
-        open={modalState.open}
+        open={sidebarState.open}
       >
-        {modalState.open && (
+        {sidebarState.open && (
           <UserDetailEdit
-            key={modalState.userId}
-            closeEdit={() => setModalState({ userId: null, open: false })}
-            user={usersListQuery?.data?.find((user) => user.id === modalState.userId)}
+            key={sidebarState.userId}
+            closeEdit={() => setSidebarState({ userId: null, open: false })}
+            user={usersListQuery?.data?.find((user) => user.id === sidebarState.userId)}
           />
         )}
       </Drawer>

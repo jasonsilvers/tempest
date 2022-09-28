@@ -27,6 +27,8 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
 
   switch (method) {
     case 'GET': {
+      //TODO: Only return organizations member is in and children
+      //TODO: Check if role can get any organization
       const organizations = await findOrganizations();
       res.status(200).json({ organizations });
       break;

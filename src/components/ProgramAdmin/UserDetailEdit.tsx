@@ -31,7 +31,9 @@ const personalFormSchema = Joi.object({
   roleId: Joi.required(),
 });
 
-export const UserDetailEdit = ({ user, closeEdit }: { user: UserWithAll; closeEdit: () => void }) => {
+type UserDetailEditProps = { user: UserWithAll; closeEdit: () => void };
+
+export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit }) => {
   const [modalState, setModalState] = useState(false);
   const { user: LoggedInUser } = usePermissions();
   const queryClient = useQueryClient();

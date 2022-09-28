@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { EUri } from '../../const/enums';
+import { OrgsWithCounts } from '../../repositories/organizationRepo';
 import { OrgsDTO } from '../../types';
 
 export const organizationQueryKeys = {
@@ -11,7 +12,7 @@ export const organizationQueryKeys = {
 };
 
 export const useOrgs = () => {
-  return useQuery<Organization[]>(organizationQueryKeys.organizations(), () =>
+  return useQuery<OrgsWithCounts>(organizationQueryKeys.organizations(), () =>
     axios.get<OrgsDTO>(EUri.ORGANIZATIONS).then((response) => response.data.organizations)
   );
 };

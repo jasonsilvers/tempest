@@ -74,6 +74,7 @@ export const deleteOrganizationAction = async (
   const organizationIdParam = parseInt(organizationId);
   const ac = await getAc();
 
+  //TODO: Make sure user can only delete organizations they own
   const permission = ac.can(user.role.name).deleteAny(EResource.ORGANIZATION);
 
   if (!permission.granted) {
@@ -107,6 +108,8 @@ export const putOrganizationAction = async (
   const organizationId = query.id;
   const organizationIdParam = parseInt(organizationId);
   const ac = await getAc();
+
+  //TODO: Make sure user can only update orgs that they own
 
   const permission = ac.can(user.role.name).updateAny(EResource.ORGANIZATION);
 

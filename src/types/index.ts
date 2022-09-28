@@ -1,6 +1,7 @@
-import { Organization, PersonalProtectionEquipmentItem, Resource, Role, TrackingItem } from '@prisma/client';
+import { PersonalProtectionEquipmentItem, Resource, Role, TrackingItem } from '@prisma/client';
 import { Grants } from '../repositories/grantsRepo';
 import { LogEventWithUser } from '../repositories/logRepo';
+import { OrgsWithCounts } from '../repositories/organizationRepo';
 import { UserWithAll } from '../repositories/userRepo';
 
 export type GroupedRank = { value: string; group: string };
@@ -18,7 +19,7 @@ export type PPEItemsDTO = {
 };
 
 export type OrgsDTO = {
-  organizations: Organization[];
+  organizations: OrgsWithCounts;
 };
 
 export type GrantsDTO = {
