@@ -10,7 +10,7 @@ import {
   deleteAllMemberTrackingItemsForUserId,
   deleteAllMemberTrackingRecordsForUserId,
 } from '../repositories/memberTrackingRepo';
-import { getRoleByName } from '../repositories/roleRepo';
+import { getRoleById, getRoleByName } from '../repositories/roleRepo';
 import { deleteUser, findUserById, LoggedInUser, updateUser } from '../repositories/userRepo';
 import { userWithinOrgOrChildOrg } from '../utils/userWithinOrgorChildOrg';
 
@@ -76,6 +76,12 @@ const putUserAction = async (
 ) => {
   const { userIdParam, ac, userFromRequest, body } = await setup(req);
 
+  const requestedRoleUpdate = await getRoleById(body.roleId);
+
+  if (requestedRoleUpdate.name === ERole.ADMIN) {
+    throw new PermissionError();
+  }
+
   let permission: Permission;
 
   if (req.user.id !== userIdParam) {
@@ -97,21 +103,14 @@ const putUserAction = async (
   let filteredData = permission.filter(body);
 
   const parsedOrganizationId = body.organizationId ? parseInt(body.organizationId) : null;
-  let finalOrganizationId = userFromRequest.organizationId;
 
   // if check on change of orgId is needed
   if (parsedOrganizationId && parsedOrganizationId !== userFromRequest.organizationId) {
     const memberRole = await getRoleByName(ERole.MEMBER);
     filteredData = { ...filteredData, roleId: memberRole.id };
-    finalOrganizationId = parsedOrganizationId;
   }
 
-  const preparedFilteredData = {
-    ...filteredData,
-    organizationId: finalOrganizationId,
-  };
-
-  const updatedUser = await updateUser(userIdParam, preparedFilteredData);
+  const updatedUser = await updateUser(userIdParam, filteredData);
 
   res.status(200).json(updatedUser);
 };

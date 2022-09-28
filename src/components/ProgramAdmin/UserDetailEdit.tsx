@@ -1,44 +1,54 @@
 import {
-  Select,
-  MenuItem,
   Button,
-  DialogTitle,
   DialogContent,
-  SelectChangeEvent,
-  Typography,
+  DialogTitle,
   Divider,
-  InputLabel,
   FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
 } from '@mui/material';
-import { Role, User } from '@prisma/client';
-import axios from 'axios';
+import { User } from '@prisma/client';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
-import { useQueryClient, useQuery, useMutation } from 'react-query';
-import { EUri } from '../../const/enums';
+import { useQueryClient } from 'react-query';
 import { useOrgs } from '../../hooks/api/organizations';
-import { useUpdateUser } from '../../hooks/api/users';
+import { useDeleteUser, useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
 import { UserWithAll } from '../../repositories/userRepo';
-import { RolesDTO } from '../../types';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
 
+import { joiResolver } from '@hookform/resolvers/joi';
+import Joi from 'joi';
+import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
+import { useRoles } from '../../hooks/api/roles';
 
-type RoleFormEvent = SelectChangeEvent<number>;
-type OrgFormEvent = SelectChangeEvent<string>;
+const personalFormSchema = Joi.object({
+  organizationId: Joi.required(),
+  reportingOrganizationId: Joi.required(),
+  roleId: Joi.required(),
+});
 
-export const UserDetailEdit = ({ user }: { user: UserWithAll }) => {
+export const UserDetailEdit = ({ user, closeEdit }: { user: UserWithAll; closeEdit: () => void }) => {
   const [modalState, setModalState] = useState(false);
   const { user: LoggedInUser } = usePermissions();
   const queryClient = useQueryClient();
-  const rolesListQuery = useQuery<Role[]>('roles', () =>
-    axios.get<RolesDTO>(EUri.ROLES).then((response) => response.data.roles)
-  );
 
-  const deleteUserMutation = useMutation((userId: number) =>
-    axios.delete(`${EUri.USERS}${userId}`).then((result) => result.data)
-  );
+  const { control, handleSubmit } = useForm({
+    resolver: joiResolver(personalFormSchema),
+    defaultValues: {
+      organizationId: user?.organizationId ? user?.organizationId.toString() : 'none',
+      reportingOrganizationId: user?.reportingOrganizationId ? user?.reportingOrganizationId.toString() : 'none',
+      roleId: user?.roleId,
+    },
+  });
+  const rolesListQuery = useRoles();
+
+  const roles = rolesListQuery?.data?.filter((role) => role.name !== 'norole' && role.name !== 'admin');
+
+  const deleteUserMutation = useDeleteUser();
   const orgsListQuery = useOrgs();
 
   const mutateUser = useUpdateUser();
@@ -50,6 +60,7 @@ export const UserDetailEdit = ({ user }: { user: UserWithAll }) => {
       onSuccess: () => {
         queryClient.invalidateQueries('users');
         enqueueSnackbar('User Deleted', { variant: 'success' });
+        closeEdit();
       },
       onSettled: () => {
         queryClient.invalidateQueries('users');
@@ -57,43 +68,44 @@ export const UserDetailEdit = ({ user }: { user: UserWithAll }) => {
     });
   };
 
-  const updateUsersOrg = (event: OrgFormEvent) => {
-    const selectedOrgId = parseInt(event.target.value);
-
+  const updateUser = (data) => {
     const updatedUser = {
       id: user.id,
-      organizationId: selectedOrgId,
-    } as User;
-    mutateUser.mutate(updatedUser, {
-      onSuccess: () => {
-        queryClient.invalidateQueries('users');
-        enqueueSnackbar('Organization Changed', { variant: 'success' });
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries('users');
-      },
-    });
-  };
-
-  const updateUsersRole = (event: RoleFormEvent) => {
-    const selectedRoleId = event.target.value;
-
-    const updatedUser = {
-      id: user.id,
-      roleId: selectedRoleId,
+      organizationId: parseInt(data.organizationId),
+      reportingOrganizationId: parseInt(data.reportingOrganizationId),
+      roleId: data.roleId,
     } as User;
 
     mutateUser.mutate(updatedUser, {
       onSuccess: () => {
         queryClient.invalidateQueries('users');
-
-        enqueueSnackbar('Role Changed', { variant: 'success' });
+        closeEdit();
+        enqueueSnackbar('User Updated!', { variant: 'success' });
       },
       onSettled: () => {
         queryClient.invalidateQueries('users');
       },
     });
   };
+
+  const detachUser = () => {
+    const updatedUser = {
+      id: user.id,
+      organizationId: null,
+      reportingOrganizationId: null,
+    } as User;
+    mutateUser.mutate(updatedUser, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('users');
+        closeEdit();
+        enqueueSnackbar('User Detached!', { variant: 'success' });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries('users');
+      },
+    });
+  };
+
   return (
     <>
       <div tw="flex flex-col pt-5 px-3 space-y-4">
@@ -103,71 +115,128 @@ export const UserDetailEdit = ({ user }: { user: UserWithAll }) => {
           </Typography>
           <Typography variant="h6">{`${user.rank} ${user.lastName}, ${user.firstName}`}</Typography>
         </div>
-        <div tw="flex flex-col w-full space-y-4 pb-5">
-          <Typography>Personal</Typography>
-          <Divider />
-          {orgsListQuery?.isLoading ? (
-            <div>...loading</div>
-          ) : (
-            <FormControl>
-              <InputLabel shrink htmlFor="select-org">
-                Organization
-              </InputLabel>
-              <Select
-                onChange={(event: OrgFormEvent) => updateUsersOrg(event)}
-                size="small"
-                value={user.organizationId?.toString()}
-                fullWidth
-                label="Organization"
-                inputProps={{
-                  id: 'select-org',
-                }}
-              >
-                {orgsListQuery?.data?.map((org) => (
-                  <MenuItem key={org.id} value={org.id}>
-                    {org.shortName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        </div>
-        <div tw="flex flex-col w-full space-y-4">
-          <Typography>Permissions</Typography>
-          <Divider />
-          {rolesListQuery.isLoading ? (
-            <div>...loading</div>
-          ) : (
-            <FormControl>
-              <InputLabel shrink htmlFor="select-role">
-                Role
-              </InputLabel>
-              <Select
-                onChange={(event) => updateUsersRole(event)}
-                size="small"
-                label="Role"
-                fullWidth
-                value={user.role?.id}
-              >
-                {rolesListQuery?.data?.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        </div>
+        <form id="edit-form" onSubmit={handleSubmit(updateUser)}>
+          <div tw="flex flex-col w-full space-y-4 pb-5">
+            <Typography>Personal</Typography>
+            <Divider />
 
-        <Button variant="outlined" color="primary">
-          UNATTACH MEMBER
+            {orgsListQuery?.isLoading ? (
+              <div>...loading</div>
+            ) : (
+              <>
+                <FormControl fullWidth>
+                  <Controller
+                    name="organizationId"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <InputLabel shrink htmlFor="select-org">
+                          Organization
+                        </InputLabel>
+                        <Select
+                          {...field}
+                          size="small"
+                          fullWidth
+                          label="Organization"
+                          inputProps={{
+                            id: 'select-org',
+                          }}
+                        >
+                          <MenuItem key="noneselected" value="none">
+                            No Org Selected
+                          </MenuItem>
+                          {orgsListQuery?.data?.map((org) => (
+                            <MenuItem key={org.id} value={org.id}>
+                              {org.shortName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </>
+                    )}
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <Controller
+                    name="reportingOrganizationId"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <InputLabel shrink htmlFor="select-report-org">
+                          Reporting Organization
+                        </InputLabel>
+                        <Select
+                          {...field}
+                          size="small"
+                          fullWidth
+                          label="Reporting Organization"
+                          inputProps={{
+                            id: 'select-report-org',
+                          }}
+                        >
+                          <MenuItem key="noneselected" value="none">
+                            No Org Selected
+                          </MenuItem>
+                          {orgsListQuery?.data?.map((org) => (
+                            <MenuItem key={org.id} value={org.id}>
+                              {org.shortName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </>
+                    )}
+                  />
+                </FormControl>
+              </>
+            )}
+          </div>
+
+          <div tw="flex flex-col w-full space-y-4 pb-5">
+            <Typography>Permissions</Typography>
+            <Divider />
+            {rolesListQuery.isLoading ? (
+              <div>...loading</div>
+            ) : (
+              <FormControl fullWidth>
+                <Controller
+                  name="roleId"
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <InputLabel shrink htmlFor="select-role">
+                        Role
+                      </InputLabel>
+                      <Select {...field} size="small" label="Role" fullWidth>
+                        {roles.map((role) => (
+                          <MenuItem key={role.id} value={role.id}>
+                            {role.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </>
+                  )}
+                />
+              </FormControl>
+            )}
+          </div>
+        </form>
+
+        <Button variant="outlined" color="primary" onClick={() => detachUser()}>
+          DETACH MEMBER
         </Button>
-        <div tw="flex flex-col items-center p-5">
-          {LoggedInUser?.id !== user.id ? (
-            <Button color="error" variant="contained" onClick={() => setModalState(true)}>
-              Delete
-            </Button>
-          ) : null}
+
+        {LoggedInUser?.id !== user.id ? (
+          <Button color="error" variant="outlined" onClick={() => setModalState(true)}>
+            Delete
+          </Button>
+        ) : null}
+
+        <div tw="p-5 pt-20 flex space-x-4 justify-evenly">
+          <Button variant="outlined" color="secondary" onClick={closeEdit}>
+            Cancel
+          </Button>
+          <Button type="submit" variant="contained" color="primary" form="edit-form">
+            UPDATE
+          </Button>
         </div>
       </div>
       <ConfirmDialog

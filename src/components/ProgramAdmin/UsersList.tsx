@@ -1,4 +1,4 @@
-import { Button, Drawer } from '@mui/material';
+import { Drawer } from '@mui/material';
 import { DataGrid, GridColumns, GridValueGetterParams } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
 import { useOrgs } from '../../hooks/api/organizations';
@@ -6,9 +6,9 @@ import { useUsers } from '../../hooks/api/users';
 import { UserWithAll } from '../../repositories/userRepo';
 import { UserDetailEdit } from './UserDetailEdit';
 
-import tw from 'twin.macro';
+import 'twin.macro';
 
-const Users = () => {
+const UsersList = () => {
   const [modalState, setModalState] = useState({ userId: null, open: false });
 
   const usersListQuery = useUsers();
@@ -33,8 +33,8 @@ const Users = () => {
         },
       },
       {
-        field: 'secondaryOrg',
-        headerName: 'Secondary Org',
+        field: 'reportingOrg',
+        headerName: 'Reporting Org',
         flex: 1,
         valueGetter: (params: GridValueGetterParams) => {
           return orgsListQuery?.data?.find((org) => org.id === params.row.reportingOrganizationId)?.name;
@@ -49,7 +49,7 @@ const Users = () => {
         },
       },
     ],
-    []
+    [orgsListQuery.data]
   );
 
   if (usersListQuery.isLoading || orgsListQuery.isLoading) {
@@ -78,16 +78,15 @@ const Users = () => {
         open={modalState.open}
       >
         {modalState.open && (
-          <UserDetailEdit user={usersListQuery?.data?.find((user) => user.id === modalState.userId)} />
+          <UserDetailEdit
+            key={modalState.userId}
+            closeEdit={() => setModalState({ userId: null, open: false })}
+            user={usersListQuery?.data?.find((user) => user.id === modalState.userId)}
+          />
         )}
-        <div tw="p-2 flex justify-center">
-          <Button variant="outlined" color="secondary" onClick={() => setModalState({ userId: null, open: false })}>
-            Cancel
-          </Button>
-        </div>
       </Drawer>
     </div>
   );
 };
 
-export { Users };
+export { UsersList };

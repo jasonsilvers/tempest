@@ -2,8 +2,6 @@ import { Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import { Grants } from './Grants';
 import { Logs } from './Logs';
-import { OrganizationList } from '../ProgramAdmin/OrganizationList';
-import { Users } from '../ProgramAdmin/Users';
 import { Resources } from './Resources';
 import { Roles } from './Roles';
 import 'twin.macro';

@@ -1,14 +1,12 @@
-import { Card, Drawer, Tab, Tabs } from '@mui/material';
+import { Card, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import { a11yProps, TabPanel } from '../components/Tabs';
 import { EFuncAction, EResource } from '../const/enums';
 import { usePermissions } from '../hooks/usePermissions';
 
 import 'twin.macro';
-import { Users } from '../components/ProgramAdmin/Users';
 import { OrganizationList } from '../components/ProgramAdmin/OrganizationList';
-
-const drawerWidth = 240;
+import { UsersList } from '../components/ProgramAdmin/UsersList';
 
 function ProgramAdminPage() {
   const { user, permissionCheck, isLoading } = usePermissions();
@@ -41,28 +39,13 @@ function ProgramAdminPage() {
             </Tabs>
           </div>
           <TabPanel value={value} index={0}>
-            <Users />
+            <UsersList />
           </TabPanel>
           <TabPanel value={value} index={1}>
             <OrganizationList />
           </TabPanel>
         </div>
       </Card>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-          },
-        }}
-        variant="persistent"
-        anchor="right"
-        open={false}
-      >
-        Test
-      </Drawer>
     </main>
   );
 }

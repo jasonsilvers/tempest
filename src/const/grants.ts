@@ -186,6 +186,13 @@ const userGrants: Grants[] = [
     resource: EResource.USER,
     role: ERole.MONITOR,
   },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes:
+      'organizationId, tags, afsc, rank, address, dutyTitle, firstName, lastName, reportingOrganizationId, organizationId, roleId',
+    resource: EResource.USER,
+    role: ERole.PROGRAM_MANAGER,
+  },
 ];
 
 const organizationGrants: Grants[] = [
@@ -207,6 +214,12 @@ const organizationGrants: Grants[] = [
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.ADMIN,
+  },
+  {
+    action: EAction.CREATE_ANY,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.PROGRAM_MANAGER,
   },
   {
     action: EAction.UPDATE_ANY,

@@ -9,6 +9,14 @@ export async function getRoleByName(name: string) {
   });
 }
 
+export async function getRoleById(id: number) {
+  return prisma.role.findUnique({
+    where: {
+      id,
+    },
+  });
+}
+
 export function getRoles() {
   return prisma.role.findMany({ include: { _count: { select: { user: true } } } });
 }
