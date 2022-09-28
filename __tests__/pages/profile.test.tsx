@@ -21,6 +21,8 @@ import { GetServerSidePropsContext } from 'next/types';
 import React from 'react';
 import { MemberReport } from '../../src/components/Records/MemberRecordTracker/MemberReport';
 import dayjs from 'dayjs';
+import { QuickAssign } from '../../src/components/Records/MemberRecordTracker/QuickAssign';
+import { waitForElementToBeRemoved } from '@testing-library/react';
 
 jest.mock('../../src/repositories/userRepo');
 jest.mock('../../src/repositories/memberTrackingRepo');
@@ -107,6 +109,37 @@ const userWithTrackingItems = {
           order: 3,
           traineeId: bobJones.id,
           trackingItemId: 4,
+        },
+      ],
+    },
+  ],
+};
+const userWithNoUpcomingTraining = {
+  ...andrewMonitor,
+  memberTrackingItems: [
+    {
+      status: 'ACTIVE',
+      userId: andrewMonitor.id,
+      createdAt: '2021-08-27T19:28:10.525Z',
+      trackingItemId: 3,
+      trackingItem: {
+        id: 3,
+        title: 'Fire Safety',
+        description: 'How to be SAFE when using Fire',
+        interval: 365,
+        status: 'ACTIVE',
+      },
+      memberTrackingRecords: [
+        {
+          id: 5,
+          traineeSignedDate: dayjs().toDate(),
+          authoritySignedDate: dayjs().toDate(),
+          authorityId: 4,
+          createdAt: dayjs().toDate(),
+          completedDate: dayjs().toDate(),
+          order: 1,
+          traineeId: andrewMonitor.id,
+          trackingItemId: 3,
         },
       ],
     },
@@ -340,4 +373,73 @@ test('should render detailed report', async () => {
     name: /done/i,
   });
   fireEvent.click(doneButton);
+});
+
+test('Should show upcoming trainings', async () => {
+  server.use(
+    rest.get('/api/users/123', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(bobJones));
+    }),
+    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(userWithTrackingItems));
+    })
+  );
+  const screen = render(<QuickAssign memberId={bobJones.id} />);
+
+  await waitForLoadingToFinish();
+  expect(screen.getByText(/mdg training/i)).toBeInTheDocument();
+});
+
+test('should not show done training items ', async () => {
+  server.use(
+    rest.get('/api/users/123', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(bobJones));
+    }),
+    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(userWithTrackingItems));
+    })
+  );
+
+  singletonRouter.push({
+    query: { id: bobJones.id },
+  });
+  const screen = rtlRender(<Profile initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+
+  expect(screen.queryByText(/fire safety/i)).not.toBeInTheDocument();
+});
+
+test('should remove training item from quick add widget to training in progress', async () => {
+  server.use(
+    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(userWithTrackingItems));
+    })
+  );
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+  const screen = rtlRender(<Profile initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+
+  await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
+  await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
+  fireEvent.click(screen.getByTestId('addButton'));
+
+});
+
+test('show show no upcoming training if user does not have any upcoming or overdue training', async () => {
+  server.use(
+    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(userWithNoUpcomingTraining));
+    })
+  );
+  const screen = render(<QuickAssign memberId={andrewMonitor.id} />);
+  await waitForLoadingToFinish();
+  expect(screen.getByText(/no upcoming trainings/i)).toBeInTheDocument();
 });

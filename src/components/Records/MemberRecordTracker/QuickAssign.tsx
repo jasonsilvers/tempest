@@ -2,7 +2,7 @@ import { Button, Card, CardActions, CardContent, Typography } from '@mui/materia
 import { MemberTrackingRecord } from '@prisma/client';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import 'twin.macro';
 import { TrackingItemInterval } from '../../../../src/utils/daysToString';
 import { ECategorie } from '../../../const/enums';
@@ -17,31 +17,44 @@ type UpcomingTrainingDetailsProps = {
   forMemberId: number;
 };
 
+type IMemberTrackingItemsToAdd = {
+  id: number;
+  trainingTitle: string;
+  recurrence: string;
+  status: string;
+  dueDate: string;
+};
+
 const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = ({
   memberTrackingItems,
   forMemberId,
 }) => {
   const addMemberTrackingRecord = useCreateMemberTrackingRecord();
   const { enqueueSnackbar } = useSnackbar();
+  const [memberTrackingItemsToAdd, setMemberTrackingItemsToAdd] = useState<IMemberTrackingItemsToAdd[]>([]);
 
-  const upcomingTrainingDetailsData = memberTrackingItems
-    ?.filter((member) => member.memberTrackingRecords.length !== 0)
-    .flatMap((mti) => {
-      return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
-        return {
-          id: mti.trackingItem.id,
-          trainingTitle: mti.trackingItem.title,
-          recurrence: TrackingItemInterval[mti.trackingItem.interval],
-          status: getStatus(mtr.completedDate, mti.trackingItem.interval),
-          dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
-        };
-      });
-    })
-    ?.filter((mti) => mti.status === ECategorie.UPCOMING);
+  useMemo(() => {
+    if (memberTrackingItems?.length > 0) {
+      const upcomingTrainingDetailsData = memberTrackingItems
+        ?.filter((member) => member.memberTrackingRecords.length !== 0)
+        .flatMap((mti) => {
+          return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
+            return {
+              id: mti.trackingItem.id,
+              trainingTitle: mti.trackingItem.title,
+              recurrence: TrackingItemInterval[mti.trackingItem.interval],
+              status: getStatus(mtr.completedDate, mti.trackingItem.interval),
+              dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
+            };
+          });
+        })
+        ?.filter((mti) => mti.status === ECategorie.UPCOMING);
 
-  console.log(upcomingTrainingDetailsData);
+      setMemberTrackingItemsToAdd(upcomingTrainingDetailsData);
+    }
+  }, [memberTrackingItems?.length]);
 
-  const handleAddMemberTrackingItem = (memberTrackingItemToAdd, memberId: number) => {
+  const handleAddMemberTrackingItem = (memberTrackingItemToAdd: IMemberTrackingItemsToAdd, memberId: number) => {
     const newMemberTrackingRecord: Partial<MemberTrackingRecord> = {
       trackingItemId: memberTrackingItemToAdd.id,
       completedDate: null,
@@ -53,16 +66,20 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
         enqueueSnackbar('A record was successfully added', { variant: 'success' });
       },
     });
+    const mtisWithNewItemRemoved = memberTrackingItemsToAdd?.filter(
+      (trackingItem) => trackingItem.id !== newMemberTrackingRecord.trackingItemId
+    );
+    setMemberTrackingItemsToAdd(mtisWithNewItemRemoved);
   };
 
   return (
-    <div tw="grid grid-flow-col overflow-auto px-5 py-8 divide-x place-items-center">
-      {upcomingTrainingDetailsData?.length > 0 ? (
-        upcomingTrainingDetailsData.map((filteredMti) => (
+    <div tw="grid grid-flow-col overflow-auto px-5 py-8 divide-x place-items-center" data-testId="card-div">
+      {memberTrackingItemsToAdd?.length > 0 ? (
+        memberTrackingItemsToAdd.map((filteredMti) => (
           <>
-            <Card key={filteredMti.id} tw="w-[170px] h-[150px]" elevation={0}>
+            <Card key={filteredMti.id} tw="w-[170px] h-[150px]" elevation={0} data-testid="mtiCard">
               <CardContent tw="pb-0">
-                <Typography tw="text-xs text-center font-bold">{filteredMti.trainingTitle}</Typography>
+                <Typography tw="text-xs text-center font-bold truncate">{filteredMti.trainingTitle}</Typography>
                 <Typography tw="text-xs text-center leading-6">{filteredMti.recurrence}</Typography>
                 <Typography tw="text-xs text-center leading-6">{filteredMti.dueDate}</Typography>
               </CardContent>
@@ -72,6 +89,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
                   onClick={() => handleAddMemberTrackingItem(filteredMti, forMemberId)}
                   size="small"
                   tw="w-3/4"
+                  data-testid="addButton"
                 >
                   + Add
                 </Button>
@@ -91,6 +109,10 @@ type QuickAssignProps = {
 };
 export const QuickAssign: React.FC<QuickAssignProps> = ({ memberId }) => {
   const memberTrackingItemsQuery = useMemberTrackingItemsForUser(memberId);
+
+  if (memberTrackingItemsQuery.isLoading) {
+    return <div>...Loading</div>;
+  }
 
   return (
     <div tw="flex flex-auto space-x-2 items-center max-w-5xl">
