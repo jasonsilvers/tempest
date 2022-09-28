@@ -430,7 +430,6 @@ test('should remove training item from quick add widget to training in progress'
   await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
   await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
   fireEvent.click(screen.getByTestId('addButton'));
-
 });
 
 test('show show no upcoming training if user does not have any upcoming or overdue training', async () => {
