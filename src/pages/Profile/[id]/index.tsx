@@ -66,10 +66,10 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
       </div>
       <div tw="flex pb-5 gap-5">
         <Card tw="w-2/3">
-          <QuickAssign memberId={initialMemberData.id} />
+          <QuickAssign memberId={userId} />
         </Card>
         <Card tw="w-1/3">
-          <MemberReport memberId={initialMemberData.id} />
+          <MemberReport memberId={userId} />
         </Card>
       </div>
       <Card tw="p-8 relative">

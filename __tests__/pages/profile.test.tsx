@@ -114,6 +114,7 @@ const userWithTrackingItems = {
     },
   ],
 };
+
 const userWithNoUpcomingTraining = {
   ...andrewMonitor,
   memberTrackingItems: [
@@ -148,7 +149,7 @@ const userWithNoUpcomingTraining = {
 
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'warn',
+    onUnhandledRequest: 'error',
   });
   server.use(
     rest.get('/api/users/123', (req, res, ctx) => {
@@ -157,8 +158,11 @@ beforeAll(() => {
     rest.get('/api/users/321', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
     }),
-    rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
+    rest.get('/api/users/321/membertrackingitems/in_progress', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
+    }),
+    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(userWithTrackingItems));
     })
   );
 });
@@ -271,9 +275,6 @@ it('opens the add new training dialog modal', async () => {
           },
         ])
       );
-    }),
-    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json([]));
     })
   );
 
@@ -309,13 +310,14 @@ test('should do serverside rending and return user', async () => {
 });
 
 test('should render report widget and show correct counts', async () => {
-  server.use(
-    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userWithTrackingItems));
-    })
-  );
-
-  const screen = render(<MemberReport memberId={bobJones.id} />);
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+  const screen = rtlRender(<Profile initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
 
   await waitFor(() => expect(screen.getByText(/readiness stats/i)).toBeInTheDocument());
 
@@ -338,15 +340,14 @@ test('should render report widget and show correct counts', async () => {
 });
 
 test('should render detailed report', async () => {
-  server.use(
-    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userWithTrackingItems));
-    })
-  );
-
-  const screen = render(<MemberReport memberId={bobJones.id} />);
-
-  await waitForLoadingToFinish();
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+  const screen = rtlRender(<Profile initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
 
   await waitFor(() => expect(screen.getByText(/readiness stats/i)).toBeInTheDocument());
 
@@ -375,31 +376,22 @@ test('should render detailed report', async () => {
   fireEvent.click(doneButton);
 });
 
-test('Should show upcoming trainings', async () => {
-  server.use(
-    rest.get('/api/users/123', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(bobJones));
-    }),
-    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userWithTrackingItems));
-    })
-  );
-  const screen = render(<QuickAssign memberId={bobJones.id} />);
+test('Should show upcoming and overdue trainings in quick assign widget', async () => {
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+  const screen = rtlRender(<Profile initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+  await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
+  await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
 
-  await waitForLoadingToFinish();
   expect(screen.getByText(/mdg training/i)).toBeInTheDocument();
 });
 
 test('should not show done training items ', async () => {
-  server.use(
-    rest.get('/api/users/123', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(bobJones));
-    }),
-    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userWithTrackingItems));
-    })
-  );
-
   singletonRouter.push({
     query: { id: bobJones.id },
   });
@@ -413,11 +405,6 @@ test('should not show done training items ', async () => {
 });
 
 test('should remove training item from quick add widget to training in progress', async () => {
-  server.use(
-    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userWithTrackingItems));
-    })
-  );
   singletonRouter.push({
     query: { id: 123 },
   });
@@ -426,19 +413,38 @@ test('should remove training item from quick add widget to training in progress'
       return <Wrapper {...props} />;
     },
   });
-
+  console.log({ screen });
   await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
   await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
-  fireEvent.click(screen.getByTestId('addButton'));
+  const addButton = screen.getAllByTestId('quickAddButton');
+  fireEvent.click(addButton[1]);
+  await waitFor(() => screen.queryByText(/a record was successfully added/i));
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+  rtlRender(<Profile initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
 });
 
 test('show show no upcoming training if user does not have any upcoming or overdue training', async () => {
   server.use(
-    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+    rest.get('/api/users/321/membertrackingitems/all', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(userWithNoUpcomingTraining));
     })
   );
-  const screen = render(<QuickAssign memberId={andrewMonitor.id} />);
-  await waitForLoadingToFinish();
+  mockMethodAndReturn(useMemberTrackingItemsForUser, userWithNoUpcomingTraining);
+  singletonRouter.push({
+    query: { id: 321 },
+  });
+  const screen = rtlRender(<Profile initialMemberData={andrewMonitor} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+  expect(await screen.findByText(/monitor/i)).toBeInTheDocument();
+  await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
   expect(screen.getByText(/no upcoming trainings/i)).toBeInTheDocument();
 });

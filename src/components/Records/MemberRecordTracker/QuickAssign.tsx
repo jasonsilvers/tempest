@@ -48,7 +48,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
             };
           });
         })
-        ?.filter((mti) => mti.status === ECategorie.UPCOMING);
+        ?.filter((mti) => mti.status === ECategorie.UPCOMING || mti.status === ECategorie.OVERDUE);
 
       setMemberTrackingItemsToAdd(upcomingTrainingDetailsData);
     }
@@ -89,7 +89,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
                   onClick={() => handleAddMemberTrackingItem(filteredMti, forMemberId)}
                   size="small"
                   tw="w-3/4"
-                  data-testid="addButton"
+                  data-testid="quickAddButton"
                 >
                   + Add
                 </Button>
