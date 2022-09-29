@@ -1,28 +1,18 @@
-import {
-  waitFor,
-  fireEvent,
-  rtlRender,
-  Wrapper,
-  within,
-  render,
-  waitForLoadingToFinish,
-} from '../testutils/TempestTestUtils';
-import Profile, { getServerSideProps } from '../../src/pages/Profile/[id]';
-import 'whatwg-fetch';
-import { server, rest } from '../testutils/mocks/msw';
-import singletonRouter from 'next/router';
+import { waitForElementToBeRemoved } from '@testing-library/react';
+import dayjs from 'dayjs';
 import mockRouter from 'next-router-mock';
-import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
-import { EUri } from '../../src/const/enums';
-import { findUserByIdReturnAllIncludes } from '../../src/repositories/userRepo';
-import { useMemberTrackingItemsForUser } from '../../src/hooks/api/users';
-import { mockMethodAndReturn } from '../testutils/mocks/repository';
+import singletonRouter from 'next/router';
 import { GetServerSidePropsContext } from 'next/types';
 import React from 'react';
-import { MemberReport } from '../../src/components/Records/MemberRecordTracker/MemberReport';
-import dayjs from 'dayjs';
-import { QuickAssign } from '../../src/components/Records/MemberRecordTracker/QuickAssign';
-import { waitForElementToBeRemoved } from '@testing-library/react';
+import 'whatwg-fetch';
+import { EUri } from '../../src/const/enums';
+import { useMemberTrackingItemsForUser } from '../../src/hooks/api/users';
+import Profile, { getServerSideProps } from '../../src/pages/Profile/[id]';
+import { findUserByIdReturnAllIncludes } from '../../src/repositories/userRepo';
+import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
+import { rest, server } from '../testutils/mocks/msw';
+import { mockMethodAndReturn } from '../testutils/mocks/repository';
+import { fireEvent, rtlRender, waitFor, within, Wrapper } from '../testutils/TempestTestUtils';
 
 jest.mock('../../src/repositories/userRepo');
 jest.mock('../../src/repositories/memberTrackingRepo');
@@ -413,7 +403,6 @@ test('should remove training item from quick add widget to training in progress'
       return <Wrapper {...props} />;
     },
   });
-  console.log({ screen });
   await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
   await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
   const addButton = screen.getAllByTestId('quickAddButton');
@@ -446,5 +435,5 @@ test('show show no upcoming training if user does not have any upcoming or overd
   });
   expect(await screen.findByText(/monitor/i)).toBeInTheDocument();
   await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
-  expect(screen.getByText(/no upcoming trainings/i)).toBeInTheDocument();
+  expect(screen.getByText('0 Overdue/Upcomging Trainings')).toBeInTheDocument();
 });

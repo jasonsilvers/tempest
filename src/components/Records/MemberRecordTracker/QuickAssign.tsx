@@ -73,11 +73,12 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
   };
 
   return (
-    <div tw="grid grid-flow-col overflow-auto px-5 py-8 divide-x place-items-center" data-testId="card-div">
-      {memberTrackingItemsToAdd?.length > 0 ? (
-        memberTrackingItemsToAdd.map((filteredMti) => (
+    <>
+      <Typography tw="text-xl font-bold text-center pt-2">{`${memberTrackingItemsToAdd?.length} Overdue/Upcomging Trainings`}</Typography>
+      <div tw="grid grid-flow-col overflow-auto px-5 py-4 gap-5 place-items-center">
+        {memberTrackingItemsToAdd.map((filteredMti) => (
           <>
-            <Card key={filteredMti.id} tw="w-[170px] h-[150px]" elevation={0} data-testid="mtiCard">
+            <Card key={filteredMti.id} tw="w-[170px] h-[150px] shadow-xl rounded-xl" elevation={10}>
               <CardContent tw="pb-0">
                 <Typography tw="text-xs text-center font-bold truncate">{filteredMti.trainingTitle}</Typography>
                 <Typography tw="text-xs text-center leading-6">{filteredMti.recurrence}</Typography>
@@ -96,11 +97,9 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
               </CardActions>
             </Card>
           </>
-        ))
-      ) : (
-        <Typography tw="text-2xl font-bold text-center">No Upcoming Trainings</Typography>
-      )}
-    </div>
+        ))}
+      </div>
+    </>
   );
 };
 
