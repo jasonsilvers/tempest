@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useRouter } from 'next/router';

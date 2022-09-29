@@ -2,12 +2,10 @@ import React, { useEffect } from 'react';
 import NavBar from '../components/Navigation/Navbar';
 import GlobalStyles from '../styles/GlobalStyles';
 import AppProviders from '../components/AppProviders';
-import tw from 'twin.macro';
+import 'twin.macro';
 import Head from 'next/head';
 import { useNavLoading } from '../hooks/useNavLoading';
 import { LoadingOverlay } from '../lib/ui';
-
-const MainContent = tw.div`ml-[20rem] mt-9`;
 
 function MyApp({ Component, pageProps }) {
   const { navigating } = useNavLoading();

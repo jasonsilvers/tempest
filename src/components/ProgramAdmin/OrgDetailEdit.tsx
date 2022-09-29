@@ -6,7 +6,6 @@ import Joi from 'joi';
 import 'twin.macro';
 import { useDeleteOrganization, useOrg, useOrgs, useUpdateOrganization } from '../../hooks/api/organizations';
 import { useSnackbar } from 'notistack';
-import { OrgsWithCounts, OrgWithCounts } from '../../repositories/organizationRepo';
 import { useState } from 'react';
 
 const DeleteButton: React.FC<{ childrenCount: number; usersCount: number; deleteOrg: () => void }> = ({

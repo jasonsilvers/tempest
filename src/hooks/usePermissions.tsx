@@ -2,7 +2,7 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { AccessControl } from 'accesscontrol';
 import { useCallback } from 'react';
 import { LoggedInUser } from '../repositories/userRepo';
-import { EAction, EFuncAction, EResource, ERole } from '../const/enums';
+import { EAction, EFuncAction, EResource } from '../const/enums';
 import { useGrants } from './api/grants';
 import { extendACRoles } from '../utils/AcRoleExtension';
 

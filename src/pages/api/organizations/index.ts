@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { createOrganizations, findOrganizations, getOrganizationAndDown } from '../../../repositories/organizationRepo';
+import { createOrganizations, getOrganizationAndDown } from '../../../repositories/organizationRepo';
 import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../const/enums';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
