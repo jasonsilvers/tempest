@@ -1,14 +1,31 @@
 import { Organization } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { Permission } from 'accesscontrol';
+import { AccessControl, Permission } from 'accesscontrol';
 import { NextApiResponse } from 'next';
 import { EResource, ITempestApiMessage } from '../const/enums';
 import { getAc } from '../middleware/utils';
-import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
+import { BadRequestError, NotFoundError, PermissionError } from '../middleware/withErrorHandling';
 import { deleteOrganization, findOrganizationById, updateOrganization } from '../repositories/organizationRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { getIncludesQueryArray } from '../utils/includeQuery';
 import { isOrgChildOf } from '../utils/isOrgChildOf';
+
+export const usersPermissionOnOrg = (requestingOrg: number, usersOrg: number, usersRole, ac: AccessControl) => {
+  let permission: Permission;
+
+  if (requestingOrg !== usersOrg) {
+    const isChild = isOrgChildOf(requestingOrg, usersOrg);
+    if (isChild) {
+      permission = ac.can(usersRole).readOwn(EResource.ORGANIZATION);
+    } else {
+      permission = ac.can(usersRole).readAny(EResource.ORGANIZATION);
+    }
+  } else {
+    permission = ac.can(usersRole).readOwn(EResource.ORGANIZATION);
+  }
+
+  return permission;
+};
 
 export interface ITempestOrganizationIdApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -33,9 +50,9 @@ export const getOrganizationAction = async (
   const includesQuery = getIncludesQueryArray(include);
 
   const ac = await getAc();
-  const bodyOrgId = parseInt(id);
+  const organizationIdParam = parseInt(id);
 
-  const organization = await findOrganizationById(bodyOrgId, {
+  const organization = await findOrganizationById(organizationIdParam, {
     withChildren: includesQuery.includes(EOrganizationIdIncludes.CHILDREN),
     withUsers: includesQuery.includes(EOrganizationIdIncludes.USERS),
   });
@@ -44,18 +61,7 @@ export const getOrganizationAction = async (
     throw new NotFoundError();
   }
 
-  let permission: Permission;
-
-  if (bodyOrgId !== req.user.organizationId) {
-    const isChild = isOrgChildOf(bodyOrgId, req.user.organizationId);
-    if (isChild) {
-      permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
-    } else {
-      permission = ac.can(req.user.role.name).readAny(EResource.ORGANIZATION);
-    }
-  } else {
-    permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
-  }
+  const permission = usersPermissionOnOrg(organizationIdParam, req.user.organizationId, req.user.role.name, ac);
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -69,13 +75,13 @@ export const deleteOrganizationAction = async (
   req: ITempestOrganizationIdApiRequest<LoggedInUser>,
   res: NextApiResponse<Organization | ITempestApiMessage>
 ) => {
-  const { query, user } = req;
-  const organizationId = query.id;
-  const organizationIdParam = parseInt(organizationId);
+  const {
+    query: { id },
+  } = req;
+  const organizationIdParam = parseInt(id);
   const ac = await getAc();
 
-  //TODO: Make sure user can only delete organizations they own
-  const permission = ac.can(user.role.name).deleteAny(EResource.ORGANIZATION);
+  const permission = usersPermissionOnOrg(organizationIdParam, req.user.organizationId, req.user.role.name, ac);
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -104,14 +110,19 @@ export const putOrganizationAction = async (
   req: ITempestOrganizationIdApiRequest<LoggedInUser>,
   res: NextApiResponse<Organization | ITempestApiMessage>
 ) => {
-  const { query, body, user } = req;
-  const organizationId = query.id;
-  const organizationIdParam = parseInt(organizationId);
+  const {
+    query: { id },
+    body,
+  } = req;
+
+  if (id !== body.id) {
+    throw new BadRequestError();
+  }
+
+  const organizationId = parseInt(body.id);
   const ac = await getAc();
 
-  //TODO: Make sure user can only update orgs that they own
-
-  const permission = ac.can(user.role.name).updateAny(EResource.ORGANIZATION);
+  const permission = usersPermissionOnOrg(organizationId, req.user.organizationId, req.user.role.name, ac);
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -119,7 +130,7 @@ export const putOrganizationAction = async (
 
   const filteredData = permission.filter(body);
 
-  const updatedOrganization = await updateOrganization(organizationIdParam, filteredData);
+  const updatedOrganization = await updateOrganization(organizationId, filteredData);
 
   res.status(200).json(updatedOrganization);
 };

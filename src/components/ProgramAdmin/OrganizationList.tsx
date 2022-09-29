@@ -1,18 +1,10 @@
 import { Drawer, Fab } from '@mui/material';
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridColumns,
-  GridRowModel,
-  GridRowParams,
-  GridValueGetterParams,
-} from '@mui/x-data-grid';
-import { Organization, OrganizationType } from '@prisma/client';
-import { useSnackbar } from 'notistack';
-import { useCallback, useMemo, useState } from 'react';
+import { DataGrid, GridColumns, GridToolbar, GridValueGetterParams } from '@mui/x-data-grid';
+import { OrganizationType } from '@prisma/client';
+import { useMemo, useState } from 'react';
 import 'twin.macro';
-import { AddIcon, DeleteIcon } from '../../assets/Icons';
-import { useDeleteOrganization, useOrgs, useUpdateOrganization } from '../../hooks/api/organizations';
+import { AddIcon } from '../../assets/Icons';
+import { useOrgs } from '../../hooks/api/organizations';
 import { OrgWithCounts } from '../../repositories/organizationRepo';
 import { AddNewOrganizationDialog } from './AddNewOrganizationDialog';
 import { OrgDetailEdit } from './OrgDetailEdit';
@@ -21,35 +13,8 @@ export const OrganizationList = () => {
   const { data: orgs, isLoading } = useOrgs();
   const [sidebarState, setSidebarState] = useState({ orgId: null, open: false });
 
-  const deleteOrg = useDeleteOrganization();
-  const updateOrg = useUpdateOrganization();
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
 
-  const deleteCellAction = (params: GridRowParams) => {
-    const disabled = params.row?._count?.users > 0 || params.row?._count?.children > 0;
-
-    return [
-      // eslint-disable-next-line react/jsx-key
-      <GridActionsCellItem
-        icon={<DeleteIcon />}
-        label="Delete"
-        disabled={disabled}
-        onClick={() => {
-          deleteOrg.mutate(params.row.id, {
-            onSuccess: () => {
-              enqueueSnackbar('Organization Deleted', { variant: 'success' });
-            },
-            onError: (error: { response: { status: number; data: { message: string } } }) => {
-              if (error.response.status === 409) {
-                enqueueSnackbar(error.response.data.message, { variant: 'error' });
-              }
-            },
-          });
-        }}
-      />,
-    ];
-  };
   const orgCatalogValue = Object.values(OrganizationType);
   const columns: GridColumns<OrgWithCounts> = useMemo(
     () => [
@@ -74,22 +39,6 @@ export const OrganizationList = () => {
     []
   );
 
-  const processRowUpdate = useCallback((updatedRow: GridRowModel<Organization>, oldRow: GridRowModel<Organization>) => {
-    const { id, name, shortName, types } = updatedRow;
-    if (oldRow.name !== name || oldRow.shortName !== shortName || oldRow.types !== types) {
-      const newRow = { id, name, shortName, types };
-      if (!name || !shortName) {
-        throw new Error('Organization names cannot be empty');
-      }
-      updateOrg.mutate(newRow);
-      return newRow;
-    }
-    return oldRow;
-  }, []);
-
-  const handleUpdateError = (e: Error) => {
-    enqueueSnackbar(e.message, { variant: 'error' });
-  };
   if (isLoading) {
     return <div>...Loading</div>;
   }
@@ -98,10 +47,16 @@ export const OrganizationList = () => {
     <div>
       <div tw="h-[750px] pt-5">
         <DataGrid
+          sx={{ border: 'none' }}
           rows={orgs}
           columns={columns}
           disableVirtualization
           onRowClick={(params) => setSidebarState({ orgId: params.row.id, open: true })}
+          components={{
+            Toolbar: GridToolbar,
+          }}
+          disableDensitySelector
+          disableColumnSelector
         />
       </div>
       <div tw="flex justify-center p-5">
@@ -125,7 +80,7 @@ export const OrganizationList = () => {
         {sidebarState.open && (
           <OrgDetailEdit
             key={sidebarState.orgId}
-            org={orgs.find((org) => org.id === sidebarState.orgId)}
+            orgFromList={orgs.find((org) => org.id === sidebarState.orgId)}
             closeEdit={() => setSidebarState({ orgId: null, open: false })}
           />
         )}

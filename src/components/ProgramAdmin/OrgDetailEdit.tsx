@@ -4,9 +4,9 @@ import { Organization, OrganizationType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
 import Joi from 'joi';
 import 'twin.macro';
-import { useDeleteOrganization, useOrgs, useUpdateOrganization } from '../../hooks/api/organizations';
+import { useDeleteOrganization, useOrg, useOrgs, useUpdateOrganization } from '../../hooks/api/organizations';
 import { useSnackbar } from 'notistack';
-import { OrgWithCounts } from '../../repositories/organizationRepo';
+import { OrgsWithCounts, OrgWithCounts } from '../../repositories/organizationRepo';
 import { useState } from 'react';
 
 const DeleteButton: React.FC<{ childrenCount: number; usersCount: number; deleteOrg: () => void }> = ({
@@ -15,9 +15,12 @@ const DeleteButton: React.FC<{ childrenCount: number; usersCount: number; delete
   deleteOrg,
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const canDelete = childrenCount === 0 && usersCount === 0;
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+    if (!canDelete) {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handlePopoverClose = () => {
@@ -25,7 +28,6 @@ const DeleteButton: React.FC<{ childrenCount: number; usersCount: number; delete
   };
 
   const open = Boolean(anchorEl);
-  const canDelete = childrenCount === 0 && usersCount === 0;
   return (
     <div tw="p-3" onMouseEnter={handlePopoverOpen} onMouseLeave={handlePopoverClose}>
       <Button disabled={!canDelete} fullWidth color="error" variant="outlined" onClick={deleteOrg}>
@@ -58,7 +60,7 @@ const DeleteButton: React.FC<{ childrenCount: number; usersCount: number; delete
 };
 
 type OrgDetailEditProps = {
-  org: OrgWithCounts;
+  orgFromList: Organization;
   closeEdit: () => void;
 };
 
@@ -69,7 +71,8 @@ const formSchema = Joi.object({
   orgCatalog: Joi.string().optional(),
 });
 
-export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ org, closeEdit }) => {
+export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, closeEdit }) => {
+  const orgFromServerQuery = useOrg(orgFromList.id);
   const orgsListQuery = useOrgs();
 
   const { mutate: deleteOrg } = useDeleteOrganization();
@@ -83,17 +86,16 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ org, closeEdit }) 
   } = useForm({
     resolver: joiResolver(formSchema),
     defaultValues: {
-      parentId: org.parentId ? org.parentId : '',
-      name: org.name,
-      shortName: org.shortName,
-      orgCatalog: org.types.includes(OrganizationType.CATALOG) ? 'yes' : 'no',
+      parentId: orgFromList?.parentId ? orgFromList?.parentId : '',
+      name: orgFromList?.name,
+      shortName: orgFromList?.shortName,
+      orgCatalog: orgFromList?.types.includes(OrganizationType.CATALOG) ? 'yes' : 'no',
     },
   });
 
   const submitForm = (data) => {
-    console.log(data);
     const updatedOrg: Organization = {
-      id: org.id,
+      id: orgFromList?.id,
       parentId: data.parentId,
       name: data.name,
       shortName: data.shortName,
@@ -104,7 +106,7 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ org, closeEdit }) 
   };
 
   const deleteOrgFunc = () => {
-    deleteOrg(org.id, {
+    deleteOrg(orgFromList?.id, {
       onSuccess: () => {
         closeEdit();
         enqueueSnackbar('Organization Deleted', { variant: 'success' });
@@ -124,7 +126,7 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ org, closeEdit }) 
           <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
             Organization Selected:
           </Typography>
-          <Typography variant="h6">{org.name}</Typography>
+          <Typography variant="h6">{orgFromList?.name}</Typography>
         </div>
 
         <form id="edit-form" onSubmit={handleSubmit(submitForm)}>
@@ -216,7 +218,13 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ org, closeEdit }) 
             </FormControl>
           </div>
         </form>
-        <DeleteButton childrenCount={org._count.children} usersCount={org._count.users} deleteOrg={deleteOrgFunc} />
+        {!orgFromServerQuery.isLoading ? (
+          <DeleteButton
+            childrenCount={orgFromServerQuery.data.children?.length}
+            usersCount={orgFromServerQuery.data.users?.length}
+            deleteOrg={deleteOrgFunc}
+          />
+        ) : null}
 
         <div tw="p-5 pt-20 flex space-x-4 justify-evenly">
           <Button variant="outlined" color="secondary" onClick={closeEdit}>

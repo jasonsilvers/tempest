@@ -1,12 +1,13 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { createOrganizations, findOrganizations } from '../../../repositories/organizationRepo';
+import { createOrganizations, findOrganizations, getOrganizationAndDown } from '../../../repositories/organizationRepo';
 import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../const/enums';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import Joi from 'joi';
+import { usersPermissionOnOrg } from '../../../controllers/organizationController';
 
 const organizationPostSchema = {
   body: Joi.object({
@@ -27,9 +28,13 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
 
   switch (method) {
     case 'GET': {
-      //TODO: Only return organizations member is in and children
-      //TODO: Check if role can get any organization
-      const organizations = await findOrganizations();
+      const permission = usersPermissionOnOrg(req.user.organizationId, req.user.organizationId, req.user.role.name, ac);
+
+      if (!permission.granted) {
+        throw new PermissionError();
+      }
+
+      const organizations = await getOrganizationAndDown(req.user.organizationId);
       res.status(200).json({ organizations });
       break;
     }

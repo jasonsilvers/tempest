@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { EUri } from '../../const/enums';
-import { OrgsWithCounts } from '../../repositories/organizationRepo';
+import { OrganizationWithChildrenAndUsers } from '../../repositories/organizationRepo';
 import { OrgsDTO } from '../../types';
 
 export const organizationQueryKeys = {
@@ -12,15 +12,18 @@ export const organizationQueryKeys = {
 };
 
 export const useOrgs = () => {
-  return useQuery<OrgsWithCounts>(organizationQueryKeys.organizations(), () =>
+  return useQuery<Organization[]>(organizationQueryKeys.organizations(), () =>
     axios.get<OrgsDTO>(EUri.ORGANIZATIONS).then((response) => response.data.organizations)
   );
 };
 
 export const useOrg = (organizationId: number) => {
-  return useQuery<Organization>(
+  return useQuery<OrganizationWithChildrenAndUsers>(
     organizationQueryKeys.organization(organizationId),
-    () => axios.get<Organization>(EUri.ORGANIZATIONS + organizationId).then((res) => res.data),
+    () =>
+      axios
+        .get<OrganizationWithChildrenAndUsers>(EUri.ORGANIZATIONS + organizationId + '/?include=users&include=children')
+        .then((res) => res.data),
     { enabled: !!organizationId }
   );
 };
