@@ -366,7 +366,7 @@ test('should render detailed report', async () => {
   fireEvent.click(doneButton);
 });
 
-test('Should show upcoming and overdue trainings in quick assign widget', async () => {
+test.only('Should show upcoming and overdue trainings in quick assign widget', async () => {
   singletonRouter.push({
     query: { id: 123 },
   });
@@ -375,6 +375,7 @@ test('Should show upcoming and overdue trainings in quick assign widget', async 
       return <Wrapper {...props} />;
     },
   });
+  console.log(userWithTrackingItems.memberTrackingItems.filter((mtr) => console.log(mtr.memberTrackingRecords)))
   await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
   await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
 
@@ -420,6 +421,9 @@ test('should remove training item from quick add widget to training in progress'
 
 test('show show no upcoming training if user does not have any upcoming or overdue training', async () => {
   server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(andrewMonitor));
+    }),
     rest.get('/api/users/321/membertrackingitems/all', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(userWithNoUpcomingTraining));
     })
@@ -435,5 +439,5 @@ test('show show no upcoming training if user does not have any upcoming or overd
   });
   expect(await screen.findByText(/monitor/i)).toBeInTheDocument();
   await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
-  expect(screen.getByText('0 Overdue/Upcomging Trainings')).toBeInTheDocument();
+  expect(screen.getByText('0 Overdue/Upcoming Trainings')).toBeInTheDocument();
 });
