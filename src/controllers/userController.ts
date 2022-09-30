@@ -76,10 +76,11 @@ const putUserAction = async (
 ) => {
   const { userIdParam, ac, userFromRequest, body } = await setup(req);
 
-  const requestedRoleUpdate = await getRoleById(body.roleId);
-
-  if (requestedRoleUpdate.name === ERole.ADMIN) {
-    throw new PermissionError();
+  if (body.roleId) {
+    const requestedRoleUpdate = await getRoleById(body.roleId);
+    if (requestedRoleUpdate.name === ERole.ADMIN) {
+      throw new PermissionError();
+    }
   }
 
   let permission: Permission;

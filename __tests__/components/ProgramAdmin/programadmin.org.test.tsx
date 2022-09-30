@@ -1,9 +1,16 @@
 import React from 'react';
 import 'whatwg-fetch';
-import { OrganizationList } from '../../src/components/Devtools/OrganizationList';
-import { ERole, EUri } from '../../src/const/enums';
-import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, userEvent, waitFor, waitForLoadingToFinish, within } from '../testutils/TempestTestUtils';
+import { OrganizationList } from '../../../src/components/ProgramAdmin/OrganizationList';
+import { ERole, EUri } from '../../../src/const/enums';
+import { rest, server } from '../../testutils/mocks/msw';
+import {
+  fireEvent,
+  render,
+  userEvent,
+  waitFor,
+  waitForLoadingToFinish,
+  within,
+} from '../../testutils/TempestTestUtils';
 
 beforeEach(() => {
   server.listen({

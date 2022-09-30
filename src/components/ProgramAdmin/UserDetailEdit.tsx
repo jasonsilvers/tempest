@@ -24,6 +24,7 @@ import Joi from 'joi';
 import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
 import { useRoles } from '../../hooks/api/roles';
+import { ERole } from '../../const/enums';
 
 const personalFormSchema = Joi.object({
   organizationId: Joi.required(),
@@ -41,13 +42,12 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
   const { control, handleSubmit } = useForm({
     resolver: joiResolver(personalFormSchema),
     defaultValues: {
-      organizationId: user?.organizationId ? user?.organizationId.toString() : 'none',
+      organizationId: user?.organizationId.toString(),
       reportingOrganizationId: user?.reportingOrganizationId ? user?.reportingOrganizationId.toString() : 'none',
       roleId: user?.roleId,
     },
   });
   const rolesListQuery = useRoles();
-
   const roles = rolesListQuery?.data?.filter((role) => role.name !== 'norole' && role.name !== 'admin');
 
   const deleteUserMutation = useDeleteUser();
@@ -60,7 +60,6 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
   const deleteUser = (userId: number) => {
     deleteUserMutation.mutate(userId, {
       onSuccess: () => {
-        queryClient.invalidateQueries('users');
         enqueueSnackbar('User Deleted', { variant: 'success' });
         closeEdit();
       },
@@ -74,13 +73,12 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
     const updatedUser = {
       id: user.id,
       organizationId: parseInt(data.organizationId),
-      reportingOrganizationId: parseInt(data.reportingOrganizationId),
+      reportingOrganizationId: data.reportingOrganizationId !== 'none' ? parseInt(data.reportingOrganizationId) : null,
       roleId: data.roleId,
     } as User;
 
     mutateUser.mutate(updatedUser, {
       onSuccess: () => {
-        queryClient.invalidateQueries('users');
         closeEdit();
         enqueueSnackbar('User Updated!', { variant: 'success' });
       },
@@ -98,7 +96,6 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
     } as User;
     mutateUser.mutate(updatedUser, {
       onSuccess: () => {
-        queryClient.invalidateQueries('users');
         closeEdit();
         enqueueSnackbar('User Detached!', { variant: 'success' });
       },
@@ -115,7 +112,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
           <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
             Member Selected:
           </Typography>
-          <Typography variant="h6">{`${user.rank} ${user.lastName}, ${user.firstName}`}</Typography>
+          <Typography variant="h6">{`${user?.rank} ${user?.lastName}, ${user?.firstName}`}</Typography>
         </div>
         <form id="edit-form" onSubmit={handleSubmit(updateUser)}>
           <div tw="flex flex-col w-full space-y-4 pb-5">
@@ -207,7 +204,15 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
                       <InputLabel shrink htmlFor="select-role">
                         Role
                       </InputLabel>
-                      <Select {...field} size="small" label="Role" fullWidth>
+                      <Select
+                        {...field}
+                        size="small"
+                        label="Role"
+                        fullWidth
+                        inputProps={{
+                          id: 'select-roles',
+                        }}
+                      >
                         {roles.map((role) => (
                           <MenuItem key={role.id} value={role.id}>
                             {role.name}
@@ -226,7 +231,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
           DETACH MEMBER
         </Button>
 
-        {LoggedInUser?.id !== user.id ? (
+        {LoggedInUser?.role.name === ERole.ADMIN ? (
           <Button color="error" variant="outlined" onClick={() => setModalState(true)}>
             Delete
           </Button>
