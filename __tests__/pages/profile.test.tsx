@@ -9,7 +9,7 @@ import { EUri } from '../../src/const/enums';
 import { useMemberTrackingItemsForUser } from '../../src/hooks/api/users';
 import Profile, { getServerSideProps } from '../../src/pages/Profile/[id]';
 import { findUserByIdReturnAllIncludes } from '../../src/repositories/userRepo';
-import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
+import { andrewMonitor, bobJones, usersQuery } from '../testutils/mocks/fixtures';
 import { rest, server } from '../testutils/mocks/msw';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import { fireEvent, rtlRender, waitFor, within, Wrapper } from '../testutils/TempestTestUtils';
@@ -61,6 +61,7 @@ const userWithTrackingItems = {
         status: 'ACTIVE',
       },
       memberTrackingRecords: [
+
         {
           id: 2,
           traineeSignedDate: dayjs().toDate(),
@@ -89,6 +90,7 @@ const userWithTrackingItems = {
         status: 'ACTIVE',
       },
       memberTrackingRecords: [
+
         {
           id: 3,
           traineeSignedDate: '2021-08-18T09:38:12.976Z',
@@ -96,7 +98,7 @@ const userWithTrackingItems = {
           authorityId: 'daf12fc8-65a2-416a-bbf1-662b3e52be85',
           createdAt: '2021-08-27T19:28:10.568Z',
           completedDate: '2021-08-10T13:37:20.770Z',
-          order: 3,
+          order: 2,
           traineeId: bobJones.id,
           trackingItemId: 4,
         },
@@ -139,7 +141,7 @@ const userWithNoUpcomingTraining = {
 
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'error',
+    onUnhandledRequest: 'warn',
   });
   server.use(
     rest.get('/api/users/123', (req, res, ctx) => {
@@ -148,14 +150,16 @@ beforeAll(() => {
     rest.get('/api/users/321', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
     }),
-    rest.get('/api/users/321/membertrackingitems/in_progress', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(andrewMonitor));
+    rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(userWithTrackingItems));
     }),
     rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(userWithTrackingItems));
     })
   );
 });
+
+
 beforeEach(() => {
   mockRouter.setCurrentUrl('/initial');
   mockMethodAndReturn(useMemberTrackingItemsForUser, userWithTrackingItems);
@@ -366,7 +370,7 @@ test('should render detailed report', async () => {
   fireEvent.click(doneButton);
 });
 
-test.only('Should show upcoming and overdue trainings in quick assign widget', async () => {
+test('Should show upcoming and overdue trainings in quick assign widget', async () => {
   singletonRouter.push({
     query: { id: 123 },
   });
@@ -375,11 +379,11 @@ test.only('Should show upcoming and overdue trainings in quick assign widget', a
       return <Wrapper {...props} />;
     },
   });
-  console.log(userWithTrackingItems.memberTrackingItems.filter((mtr) => console.log(mtr.memberTrackingRecords)))
+
   await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
   await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
-
-  expect(screen.getByText(/mdg training/i)).toBeInTheDocument();
+  const mdgTrainng = screen.queryAllByText(/mdg training/i)
+  expect(mdgTrainng[0]).toBeInTheDocument();
 });
 
 test('should not show done training items ', async () => {
@@ -396,6 +400,7 @@ test('should not show done training items ', async () => {
 });
 
 test('should remove training item from quick add widget to training in progress', async () => {
+  // Needs post 
   singletonRouter.push({
     query: { id: 123 },
   });
@@ -421,9 +426,6 @@ test('should remove training item from quick add widget to training in progress'
 
 test('show show no upcoming training if user does not have any upcoming or overdue training', async () => {
   server.use(
-    rest.get(EUri.LOGIN, (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(andrewMonitor));
-    }),
     rest.get('/api/users/321/membertrackingitems/all', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(userWithNoUpcomingTraining));
     })
