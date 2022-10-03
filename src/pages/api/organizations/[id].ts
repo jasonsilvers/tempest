@@ -14,7 +14,7 @@ const organizationPutSchema = {
   put: {
     body: Joi.object({
       id: Joi.number().required(),
-      parentId: Joi.number().optional(),
+      parentId: Joi.number().optional().allow(null),
       name: Joi.string().optional(),
       shortName: Joi.string().optional(),
       types: Joi.any(),

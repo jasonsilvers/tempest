@@ -54,7 +54,7 @@ const InputHelperText = ({ errors, variant }: { errors: FormErrors; variant: Inp
 const organizationSchema = Joi.object({
   name: Joi.string().required(),
   shortName: Joi.string().required(),
-  parentId: Joi.number().optional(),
+  parentId: Joi.number().required(),
 });
 
 const ShowLoadingOverlay = ({ showLoading }: { showLoading: boolean }) => {
@@ -69,12 +69,14 @@ type AddNewOrganizationDialogProps = {
   dialogIsOpen: boolean;
   setDialogIsOpen: Dispatch<SetStateAction<boolean>>;
   orgs: Organization[];
+  loggedInUserId: number;
 };
 
 export const AddNewOrganizationDialog: React.FC<AddNewOrganizationDialogProps> = ({
   dialogIsOpen,
   setDialogIsOpen,
   orgs,
+  loggedInUserId,
 }) => {
   const createOrg = useCreateOrg();
   const [isSavingOrg, setIsSavingOrg] = useState(false);
@@ -90,7 +92,7 @@ export const AddNewOrganizationDialog: React.FC<AddNewOrganizationDialogProps> =
     defaultValues: {
       name: '',
       shortName: '',
-      parentId: -1,
+      parentId: loggedInUserId,
     },
   });
 
@@ -98,7 +100,7 @@ export const AddNewOrganizationDialog: React.FC<AddNewOrganizationDialogProps> =
     const newOrg = {
       name: data.name,
       shortName: data.shortName,
-      parentId: data.parentId === -1 ? null : data.parentId,
+      parentId: data.parentId,
     };
 
     setIsSavingOrg(true);
@@ -159,9 +161,6 @@ export const AddNewOrganizationDialog: React.FC<AddNewOrganizationDialogProps> =
                 control={control}
                 render={({ field }) => (
                   <Select {...field} fullWidth size="small" error={!!errors.parentId}>
-                    <MenuItem key="noneselected" value="-1">
-                      None
-                    </MenuItem>
                     {orgs?.map((org) => {
                       return (
                         <MenuItem key={org.id} value={org.id}>

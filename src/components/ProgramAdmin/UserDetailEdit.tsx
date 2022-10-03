@@ -39,7 +39,11 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
   const { user: LoggedInUser } = usePermissions();
   const queryClient = useQueryClient();
 
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { dirtyFields },
+  } = useForm({
     resolver: joiResolver(personalFormSchema),
     defaultValues: {
       organizationId: user?.organizationId.toString(),
@@ -47,6 +51,8 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
       roleId: user?.roleId,
     },
   });
+  const updateDisabled = Object.keys(dirtyFields).length === 0;
+
   const rolesListQuery = useRoles();
   const roles = rolesListQuery?.data?.filter((role) => role.name !== 'norole' && role.name !== 'admin');
 
@@ -241,7 +247,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
           <Button variant="outlined" color="secondary" onClick={closeEdit}>
             Cancel
           </Button>
-          <Button type="submit" variant="contained" color="primary" form="edit-form">
+          <Button type="submit" variant="contained" color="primary" form="edit-form" disabled={updateDisabled}>
             UPDATE
           </Button>
         </div>

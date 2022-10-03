@@ -66,12 +66,12 @@ type OrgDetailEditProps = {
 const formSchema = Joi.object({
   name: Joi.string().required(),
   shortName: Joi.string().optional(),
-  parentId: Joi.number().optional(),
+  parentId: Joi.number().optional().allow('none'),
   orgCatalog: Joi.string().optional(),
 });
 
 export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, closeEdit }) => {
-  const orgFromServerQuery = useOrg(orgFromList.id);
+  const orgFromServerQuery = useOrg(orgFromList?.id);
   const orgsListQuery = useOrgs();
 
   const { mutate: deleteOrg } = useDeleteOrganization();
@@ -81,27 +81,33 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, close
     control,
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm({
     resolver: joiResolver(formSchema),
     defaultValues: {
-      parentId: orgFromList?.parentId ? orgFromList?.parentId : '',
+      parentId: orgFromList?.parentId ? orgFromList?.parentId : 'none',
       name: orgFromList?.name,
       shortName: orgFromList?.shortName,
-      orgCatalog: orgFromList?.types.includes(OrganizationType.CATALOG) ? 'yes' : 'no',
+      orgCatalog: orgFromList?.types?.includes(OrganizationType.CATALOG) ? 'yes' : 'no',
     },
   });
+
+  const updateDisabled = Object.keys(dirtyFields).length === 0;
 
   const submitForm = (data) => {
     const updatedOrg: Organization = {
       id: orgFromList?.id,
-      parentId: data.parentId,
+      parentId: data.parentId !== 'none' ? data.parentId : null,
       name: data.name,
       shortName: data.shortName,
       types: data.orgCatalog === 'yes' ? [OrganizationType.CATALOG] : [],
     };
 
-    updateOrg(updatedOrg);
+    updateOrg(updatedOrg, {
+      onSuccess: () => {
+        closeEdit();
+      },
+    });
   };
 
   const deleteOrgFunc = () => {
@@ -110,13 +116,12 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, close
         closeEdit();
         enqueueSnackbar('Organization Deleted', { variant: 'success' });
       },
-      onError: (error: { response: { status: number; data: { message: string } } }) => {
-        if (error.response.status === 409) {
-          enqueueSnackbar(error.response.data.message, { variant: 'error' });
-        }
-      },
     });
   };
+
+  if (orgFromServerQuery.isLoading || orgsListQuery.isLoading) {
+    return <div>...loading</div>;
+  }
 
   return (
     <>
@@ -166,7 +171,7 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, close
                           {...field}
                           size="small"
                           fullWidth
-                          label="Organization"
+                          label="Parent Organization"
                           inputProps={{
                             id: 'select-org',
                           }}
@@ -217,19 +222,21 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, close
             </FormControl>
           </div>
         </form>
-        {!orgFromServerQuery.isLoading ? (
+        {orgFromServerQuery?.data ? (
           <DeleteButton
-            childrenCount={orgFromServerQuery.data.children?.length}
-            usersCount={orgFromServerQuery.data.users?.length}
+            childrenCount={orgFromServerQuery?.data?.children?.length}
+            usersCount={orgFromServerQuery?.data?.users?.length}
             deleteOrg={deleteOrgFunc}
           />
-        ) : null}
+        ) : (
+          <div>...checking if Org can be deleted</div>
+        )}
 
         <div tw="p-5 pt-20 flex space-x-4 justify-evenly">
           <Button variant="outlined" color="secondary" onClick={closeEdit}>
             Cancel
           </Button>
-          <Button type="submit" variant="contained" color="primary" form="edit-form">
+          <Button type="submit" variant="contained" color="primary" form="edit-form" disabled={updateDisabled}>
             UPDATE
           </Button>
         </div>

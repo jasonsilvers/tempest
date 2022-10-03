@@ -20,10 +20,13 @@ export const useOrgs = () => {
 export const useOrg = (organizationId: number) => {
   return useQuery<OrganizationWithChildrenAndUsers>(
     organizationQueryKeys.organization(organizationId),
-    () =>
-      axios
+    async () => {
+      return axios
         .get<OrganizationWithChildrenAndUsers>(EUri.ORGANIZATIONS + organizationId + '/?include=users&include=children')
-        .then((res) => res.data),
+        .then((res) => {
+          return res.data;
+        });
+    },
     { enabled: !!organizationId }
   );
 };

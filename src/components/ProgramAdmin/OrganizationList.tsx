@@ -9,7 +9,11 @@ import { OrgWithCounts } from '../../repositories/organizationRepo';
 import { AddNewOrganizationDialog } from './AddNewOrganizationDialog';
 import { OrgDetailEdit } from './OrgDetailEdit';
 
-export const OrganizationList = () => {
+type OrganizationListProps = {
+  loggedInUserId: number;
+};
+
+export const OrganizationList: React.FC<OrganizationListProps> = ({ loggedInUserId }) => {
   const { data: orgs, isLoading } = useOrgs();
   const [sidebarState, setSidebarState] = useState({ orgId: null, open: false });
 
@@ -85,7 +89,12 @@ export const OrganizationList = () => {
           />
         )}
       </Drawer>
-      <AddNewOrganizationDialog orgs={orgs} dialogIsOpen={dialogIsOpen} setDialogIsOpen={setDialogIsOpen} />
+      <AddNewOrganizationDialog
+        orgs={orgs}
+        dialogIsOpen={dialogIsOpen}
+        setDialogIsOpen={setDialogIsOpen}
+        loggedInUserId={loggedInUserId}
+      />
     </div>
   );
 };

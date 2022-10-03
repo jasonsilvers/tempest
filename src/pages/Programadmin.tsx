@@ -9,9 +9,9 @@ import { OrganizationList } from '../components/ProgramAdmin/OrganizationList';
 import { UsersList } from '../components/ProgramAdmin/UsersList';
 
 function ProgramAdminPage() {
-  const { user, permissionCheck, isLoading } = usePermissions();
+  const { user: loggedInUser, permissionCheck, isLoading } = usePermissions();
 
-  const canViewAdminPage = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.PROGRAM_ADMIN);
+  const canViewAdminPage = permissionCheck(loggedInUser?.role.name, EFuncAction.READ_ANY, EResource.PROGRAM_ADMIN);
 
   const [value, setValue] = useState(0);
 
@@ -42,7 +42,7 @@ function ProgramAdminPage() {
             <UsersList />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <OrganizationList />
+            <OrganizationList loggedInUserId={loggedInUser.id} />
           </TabPanel>
         </div>
       </Card>

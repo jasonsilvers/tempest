@@ -115,11 +115,13 @@ export const putOrganizationAction = async (
     body,
   } = req;
 
-  if (id !== body.id) {
+  const queryId = parseInt(id);
+  const organizationId = parseInt(body.id);
+
+  if (queryId !== organizationId) {
     throw new BadRequestError();
   }
 
-  const organizationId = parseInt(body.id);
   const ac = await getAc();
 
   const permission = usersPermissionOnOrg(organizationId, req.user.organizationId, req.user.role.name, ac);
