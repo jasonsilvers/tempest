@@ -28,7 +28,7 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
 
   switch (method) {
     case 'GET': {
-      const permission = usersPermissionOnOrg(
+      const permission = await usersPermissionOnOrg(
         req.user.organizationId,
         req.user.organizationId,
         req.user.role.name,
@@ -51,10 +51,6 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
         throw new PermissionError();
       }
 
-      if (body.id) {
-        res.status(400).json({ message: `ID Must Be null` });
-        break;
-      }
       const createOrgData = await createOrganizations(body);
       res.status(200);
       res.json(createOrgData);

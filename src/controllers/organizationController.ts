@@ -10,7 +10,7 @@ import { LoggedInUser } from '../repositories/userRepo';
 import { getIncludesQueryArray } from '../utils/includeQuery';
 import { isOrgChildOf } from '../utils/isOrgChildOf';
 
-export const usersPermissionOnOrg = (
+export const usersPermissionOnOrg = async (
   requestingOrg: number,
   usersOrg: number,
   usersRole: string,
@@ -23,7 +23,10 @@ export const usersPermissionOnOrg = (
   const anyAction = `${action}Any`;
 
   if (requestingOrg !== usersOrg) {
-    const isChild = isOrgChildOf(requestingOrg, usersOrg);
+    const isChild = await isOrgChildOf(requestingOrg, usersOrg);
+
+    //WHY! A role should be able to do any action on an org that is a child of the org they are requesting
+    //that means that the role just needs own on the organization not any.
     if (isChild) {
       permission = ac.can(usersRole)[ownAction](EResource.ORGANIZATION);
     } else {
@@ -70,7 +73,7 @@ export const getOrganizationAction = async (
     throw new NotFoundError();
   }
 
-  const permission = usersPermissionOnOrg(
+  const permission = await usersPermissionOnOrg(
     organizationIdParam,
     req.user.organizationId,
     req.user.role.name,
@@ -96,7 +99,7 @@ export const deleteOrganizationAction = async (
   const organizationIdParam = parseInt(id);
   const ac = await getAc();
 
-  const permission = usersPermissionOnOrg(
+  const permission = await usersPermissionOnOrg(
     organizationIdParam,
     req.user.organizationId,
     req.user.role.name,
@@ -145,7 +148,7 @@ export const putOrganizationAction = async (
 
   const ac = await getAc();
 
-  const permission = usersPermissionOnOrg(
+  const permission = await usersPermissionOnOrg(
     organizationId,
     req.user.organizationId,
     req.user.role.name,

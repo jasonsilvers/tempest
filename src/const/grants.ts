@@ -197,7 +197,7 @@ const userGrants: Grants[] = [
 
 const organizationGrants: Grants[] = [
   {
-    action: EAction.READ_ANY,
+    action: EAction.READ_OWN,
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.MONITOR,
@@ -216,7 +216,7 @@ const organizationGrants: Grants[] = [
     role: ERole.ADMIN,
   },
   {
-    action: EAction.CREATE_ANY,
+    action: EAction.CREATE_OWN,
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.PROGRAM_MANAGER,
@@ -228,7 +228,7 @@ const organizationGrants: Grants[] = [
     role: ERole.ADMIN,
   },
   {
-    action: EAction.UPDATE_ANY,
+    action: EAction.UPDATE_OWN,
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.PROGRAM_MANAGER,
@@ -240,7 +240,7 @@ const organizationGrants: Grants[] = [
     role: ERole.ADMIN,
   },
   {
-    action: EAction.DELETE_ANY,
+    action: EAction.DELETE_OWN,
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.PROGRAM_MANAGER,
