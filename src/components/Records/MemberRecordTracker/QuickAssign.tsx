@@ -44,11 +44,13 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
         );
 
         const completedRecordState = getStatus(
-          completedMemberTrackingRecord.completedDate,
+          completedMemberTrackingRecord?.completedDate,
           completedMemberTrackingRecord.trackingItem?.interval
         );
 
-
+        if (completedRecordState === ECategorie.DONE) {
+          return false;
+        }
         if (completedMemberTrackingRecord && inProgressMemberTrackingRecord) {
           return false;
         }
@@ -57,9 +59,6 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
           return true;
         }
 
-        // if (completedRecordState === ECategorie.DONE) {
-        //   return false;
-        // }
         return true;
       })
       .flatMap((mti) => {
@@ -68,10 +67,9 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
             id: mti.trackingItem.id,
             trainingTitle: mti.trackingItem.title,
             recurrence: TrackingItemInterval[mti.trackingItem.interval],
-            status: getStatus(mtr.completedDate, mti.trackingItem.interval),
             dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
           };
-        }).filter((mtrState) => mtrState.status === ECategorie.OVERDUE || mtrState.status === ECategorie.UPCOMING);
+        });
       });
   }, [memberTrackingItems]);
 
@@ -92,7 +90,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
   return (
     <>
       <Typography tw="text-xl font-bold text-center pt-2">{`${memberTrackingItemsToAdd?.length} Overdue/Upcoming Trainings`}</Typography>
-      <div tw="grid grid-flow-col overflow-auto px-5 py-4 gap-5 place-items-center">
+      <div tw="grid grid-flow-col overflow-auto px-5 py-4 gap-5 place-items-center" data-testId="quick-assign">
         {memberTrackingItemsToAdd.map((memberTrackingItemToAdd) => (
           <Card key={memberTrackingItemToAdd.id} tw="w-[170px] h-[150px] shadow-xl rounded-xl">
             <CardContent tw="pb-0">
