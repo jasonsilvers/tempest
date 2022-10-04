@@ -95,6 +95,13 @@ export enum EFuncAction {
   DELETE_OWN = 'deleteOwn',
 }
 
+export enum EFuncBaseAction {
+  READ = 'read',
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+}
+
 export enum ECategorie {
   ALL = 'All',
   DONE = 'Done',

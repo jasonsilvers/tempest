@@ -3,7 +3,7 @@ import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
 import { createOrganizations, getOrganizationAndDown } from '../../../repositories/organizationRepo';
 import { getAc } from '../../../middleware/utils';
-import { EResource } from '../../../const/enums';
+import { EFuncBaseAction, EResource } from '../../../const/enums';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import Joi from 'joi';
@@ -28,7 +28,13 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
 
   switch (method) {
     case 'GET': {
-      const permission = usersPermissionOnOrg(req.user.organizationId, req.user.organizationId, req.user.role.name, ac);
+      const permission = usersPermissionOnOrg(
+        req.user.organizationId,
+        req.user.organizationId,
+        req.user.role.name,
+        ac,
+        EFuncBaseAction.READ
+      );
 
       if (!permission.granted) {
         throw new PermissionError();

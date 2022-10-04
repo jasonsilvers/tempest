@@ -2,7 +2,7 @@ import { Organization } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { AccessControl, Permission } from 'accesscontrol';
 import { NextApiResponse } from 'next';
-import { EResource, ITempestApiMessage } from '../const/enums';
+import { EFuncBaseAction, EResource, ITempestApiMessage } from '../const/enums';
 import { getAc } from '../middleware/utils';
 import { BadRequestError, NotFoundError, PermissionError } from '../middleware/withErrorHandling';
 import { deleteOrganization, findOrganizationById, updateOrganization } from '../repositories/organizationRepo';
@@ -10,18 +10,27 @@ import { LoggedInUser } from '../repositories/userRepo';
 import { getIncludesQueryArray } from '../utils/includeQuery';
 import { isOrgChildOf } from '../utils/isOrgChildOf';
 
-export const usersPermissionOnOrg = (requestingOrg: number, usersOrg: number, usersRole, ac: AccessControl) => {
+export const usersPermissionOnOrg = (
+  requestingOrg: number,
+  usersOrg: number,
+  usersRole: string,
+  ac: AccessControl,
+  action: EFuncBaseAction
+) => {
   let permission: Permission;
+
+  const ownAction = `${action}Own`;
+  const anyAction = `${action}Any`;
 
   if (requestingOrg !== usersOrg) {
     const isChild = isOrgChildOf(requestingOrg, usersOrg);
     if (isChild) {
-      permission = ac.can(usersRole).readOwn(EResource.ORGANIZATION);
+      permission = ac.can(usersRole)[ownAction](EResource.ORGANIZATION);
     } else {
-      permission = ac.can(usersRole).readAny(EResource.ORGANIZATION);
+      permission = ac.can(usersRole)[anyAction](EResource.ORGANIZATION);
     }
   } else {
-    permission = ac.can(usersRole).readOwn(EResource.ORGANIZATION);
+    permission = ac.can(usersRole)[ownAction](EResource.ORGANIZATION);
   }
 
   return permission;
@@ -61,7 +70,13 @@ export const getOrganizationAction = async (
     throw new NotFoundError();
   }
 
-  const permission = usersPermissionOnOrg(organizationIdParam, req.user.organizationId, req.user.role.name, ac);
+  const permission = usersPermissionOnOrg(
+    organizationIdParam,
+    req.user.organizationId,
+    req.user.role.name,
+    ac,
+    EFuncBaseAction.READ
+  );
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -81,7 +96,13 @@ export const deleteOrganizationAction = async (
   const organizationIdParam = parseInt(id);
   const ac = await getAc();
 
-  const permission = usersPermissionOnOrg(organizationIdParam, req.user.organizationId, req.user.role.name, ac);
+  const permission = usersPermissionOnOrg(
+    organizationIdParam,
+    req.user.organizationId,
+    req.user.role.name,
+    ac,
+    EFuncBaseAction.DELETE
+  );
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -124,7 +145,13 @@ export const putOrganizationAction = async (
 
   const ac = await getAc();
 
-  const permission = usersPermissionOnOrg(organizationId, req.user.organizationId, req.user.role.name, ac);
+  const permission = usersPermissionOnOrg(
+    organizationId,
+    req.user.organizationId,
+    req.user.role.name,
+    ac,
+    EFuncBaseAction.UPDATE
+  );
 
   if (!permission.granted) {
     throw new PermissionError();

@@ -3,7 +3,11 @@
  */
 
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import { findOrganizations, createOrganizations } from '../../../src/repositories/organizationRepo';
+import {
+  findOrganizations,
+  createOrganizations,
+  getOrganizationAndDown,
+} from '../../../src/repositories/organizationRepo';
 import organizationApiHandler from '../../../src/pages/api/organizations/index';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { findGrants } from '../../../src/repositories/grantsRepo';
@@ -49,7 +53,7 @@ afterEach(() => {
 });
 
 test('should return organizations', async () => {
-  mockMethodAndReturn(findOrganizations, testOrganizations);
+  mockMethodAndReturn(getOrganizationAndDown, testOrganizations);
   const { status, data } = await testNextApi.get(organizationApiHandler);
   expect(status).toBe(200);
   expect(data).toStrictEqual({ organizations: testOrganizations });

@@ -5,6 +5,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { Wrapper } from '../testutils/TempestTestUtils';
 import { AccessControl } from 'accesscontrol';
 import { ERole, EFuncAction, EResource, EUri } from '../../src/const/enums';
+import { extendACRoles } from '../../src/utils/AcRoleExtension';
 
 // Establish API mocking before tests.
 beforeAll(() => {
@@ -29,6 +30,7 @@ test('should return user and new ac list with grants', async () => {
   });
 
   const testAC = new AccessControl(grants);
+  extendACRoles(testAC);
 
   await waitForValueToChange(() => result.current.data);
 

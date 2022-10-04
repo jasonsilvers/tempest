@@ -9,7 +9,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import { User } from '@prisma/client';
-import { getRoleByName } from '../../../src/repositories/roleRepo';
+import { getRoleById, getRoleByName } from '../../../src/repositories/roleRepo';
 import { EAction, EResource, ERole } from '../../../src/const/enums';
 import { userWithinOrgOrChildOrg } from '../../../src/utils/userWithinOrgorChildOrg';
 
@@ -34,6 +34,7 @@ beforeEach(() => {
   });
 
   mockMethodAndReturn(findGrants, grants);
+  mockMethodAndReturn(getRoleById, { id: '22', name: 'monitor' });
 });
 
 afterEach(() => {

@@ -15,9 +15,9 @@ const usePermissions = () => {
   let ac: AccessControl;
 
   const permissionCheck = useCallback(
-    (userRole: string, permission: EFuncAction, resource: EResource) => {
+    (userRole: string, action: EFuncAction, resource: EResource) => {
       try {
-        return ac?.can(userRole)[permission](resource);
+        return ac?.can(userRole)[action](resource);
       } catch (error) {
         return { granted: false };
       }
