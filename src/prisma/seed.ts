@@ -165,8 +165,6 @@ async function seedDev() {
     },
   });
 
-  const user1 = createUser('Joe', 'Admin', 'joe.admin@gmail.com');
-
   const memberRole = await prisma.role.findFirst({
     where: {
       name: ERole.MEMBER,
@@ -185,12 +183,9 @@ async function seedDev() {
     },
   });
 
-  await prisma.user.create({
-    data: {
-      ...user1,
-      organizationId: mdg.id,
-      reportingOrganizationId: mdg.id,
-      roleId: adminRole ? adminRole.id : 2,
+  const ProgramManagerRole = await prisma.role.findFirst({
+    where: {
+      name: ERole.PROGRAM_MANAGER,
     },
   });
 
@@ -198,60 +193,30 @@ async function seedDev() {
     await createRandomUser(mdg.id, memberRole ? memberRole.id : 2);
   }
 
+  const user1 = createUser('Joe', 'Admin', 'joe.admin@gmail.com');
+
+  await addUserToDb(user1, mdg.id, adminRole ? adminRole.id : 2);
+
   const user2 = createUser('Sam', 'Member', 'sam.member@gmail.com');
 
   const createdUser2 = await addUserToDb(user2, execStaff.id, memberRole ? memberRole.id : 2);
 
-  await addPPEItem(createdUser2.id);
-  await addPPEItem(createdUser2.id);
-  await addPPEItem(createdUser2.id);
-  await addPPEItem(createdUser2.id);
-
   const user3 = createUser('Frank', 'Monitor', 'frank.monitor@gmail.com');
 
-  const createdUser3 = await prisma.user.create({
-    data: {
-      ...user3,
-      organization: {
-        connect: {
-          id: mdg.id,
-        },
-      },
-      reportingOrganization: {
-        connect: {
-          id: mdg.id,
-        },
-      },
-      role: {
-        connect: {
-          id: monitorRole ? monitorRole.id : 3,
-        },
-      },
-    },
-  });
+  const createdUser3 = await addUserToDb(user3, mdg.id, monitorRole ? monitorRole.id : 3);
 
   const user4 = createUser('Scarlet', 'Member', 'scarlet.member@gmail.com');
 
-  const createdUser4 = await prisma.user.create({
-    data: {
-      ...user4,
-      organization: {
-        connect: {
-          id: omrs.id,
-        },
-      },
-      reportingOrganization: {
-        connect: {
-          id: omrs.id,
-        },
-      },
-      role: {
-        connect: {
-          id: memberRole ? memberRole.id : 2,
-        },
-      },
-    },
-  });
+  const createdUser4 = await addUserToDb(user4, omrs.id, memberRole ? memberRole.id : 2);
+
+  const user5 = createUser('Tom', 'ProgramManager', 'tom.ProgramManager@gmail.com');
+
+  await addUserToDb(user5, mdg.id, ProgramManagerRole ? ProgramManagerRole.id : 5);
+
+  await addPPEItem(createdUser2.id);
+  await addPPEItem(createdUser2.id);
+  await addPPEItem(createdUser2.id);
+  await addPPEItem(createdUser2.id);
 
   const newMemberTrackingItem1 = {
     userId: createdUser2.id,

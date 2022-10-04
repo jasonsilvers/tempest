@@ -479,6 +479,9 @@ const AccountPage = () => {
     setTabValue(newValue);
   };
 
+  const canChangeReportingOrganization =
+    user?.role?.name === ERole.MONITOR || user?.role?.name === ERole.PROGRAM_MANAGER;
+
   if (isLoading) {
     return <div>...Loading</div>;
   }
@@ -501,7 +504,7 @@ const AccountPage = () => {
           <Tabs value={tabValue} onChange={handleTabChange}>
             <StyledTab label="PERSONAL" {...a11yProps(0)} />
             <StyledTab label="WORK" {...a11yProps(0)} />
-            {user.role.name === ERole.MONITOR ? <StyledTab label="MONITOR" {...a11yProps(0)} /> : null}
+            {canChangeReportingOrganization ? <StyledTab label="MONITOR" {...a11yProps(0)} /> : null}
           </Tabs>
         </div>
         <div tw="w-[720px] h-full border rounded-md">
@@ -511,7 +514,7 @@ const AccountPage = () => {
           <TabPanel value={tabValue} index={1}>
             <WorkForm user={user} />
           </TabPanel>
-          {user.role.name === ERole.MONITOR ? (
+          {canChangeReportingOrganization ? (
             <TabPanel value={tabValue} index={2}>
               <MonitorForm user={user} />
             </TabPanel>
