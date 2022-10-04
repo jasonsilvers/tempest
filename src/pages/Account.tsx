@@ -488,8 +488,8 @@ const AccountPage = () => {
       <div tw="flex flex-col items-center space-y-4">
         <Avatar sx={{ height: 96, width: 96, bgcolor: theme.palette.secondary.main }}>
           <Typography variant="h4">
-            {user?.firstName.charAt(0)}
-            {user?.lastName.charAt(0)}
+            {user?.firstName?.charAt(0)}
+            {user?.lastName?.charAt(0)}
           </Typography>
         </Avatar>
         <Typography variant="h4">
