@@ -45,22 +45,6 @@ it('should show admin page', async () => {
     rest.get(EUri.LOGIN, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 0, name: ERole.ADMIN } }));
     }),
-    rest.get(EUri.USERS, (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          users: [
-            {
-              id: '123',
-              firstName: 'bob',
-              lastName: 'jones',
-              organizationId: '1',
-              role: { id: 22, name: ERole.ADMIN },
-            },
-          ],
-        })
-      );
-    }),
 
     rest.get(EUri.ROLES, (req, res, ctx) => {
       return res(
@@ -69,17 +53,6 @@ it('should show admin page', async () => {
           roles: [
             { id: 22, name: ERole.ADMIN },
             { id: 33, name: ERole.MEMBER },
-          ],
-        })
-      );
-    }),
-    rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          organizations: [
-            { id: '1', name: '15th MDG', parentId: null },
-            { id: '2', name: 'org2', parentId: null },
           ],
         })
       );
@@ -117,9 +90,9 @@ it('should show admin page', async () => {
       );
     })
   );
-  const { getByText } = render(<AdminPage />);
+  const screen = render(<AdminPage />);
 
   await waitForLoadingToFinish();
 
-  expect(getByText(/bob jones/i)).toBeInTheDocument();
+  expect(await screen.findByText(/log data/i)).toBeInTheDocument();
 });
