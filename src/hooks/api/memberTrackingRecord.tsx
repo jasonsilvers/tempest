@@ -40,7 +40,7 @@ export const useCreateMemberTrackingRecord = () => {
     (memberTrackingRecord: Partial<MemberTrackingRecord>) =>
       axios.post(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}`, memberTrackingRecord).then((response) => response.data),
     {
-      onSuccess: (data: MemberTrackingRecord) => {
+      onSettled: (data: MemberTrackingRecord) => {
         queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId, EMtrVariant.IN_PROGRESS));
       },
     }

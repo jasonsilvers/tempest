@@ -165,6 +165,59 @@ const userWithCompletedTrainings = {
     {
       status: 'ACTIVE',
       userId: bobJones.id,
+      createdAt: '2021-08-27T19:28:10.525Z',
+      trackingItemId: 7,
+      trackingItem: {
+        id: 7,
+        title: 'MDG Training',
+        description: 'Random Training',
+        interval: 365,
+        status: 'ACTIVE',
+      },
+      memberTrackingRecords: [
+        {
+          id: 2,
+          traineeSignedDate: null,
+          authoritySignedDate: null,
+          authorityId: 4,
+          createdAt: dayjs().toDate(),
+          completedDate: null,
+          order: 2,
+          traineeId: bobJones.id,
+          trackingItemId: 7,
+          trackingItem: {
+            id: 7,
+            title: 'MDG Training',
+            description: 'Random Training',
+            interval: 365,
+            status: 'ACTIVE',
+          },
+        },
+        {
+          id: 2,
+          traineeSignedDate: dayjs().toDate(),
+          authoritySignedDate: dayjs().toDate(),
+          authorityId: 4,
+          createdAt: dayjs().toDate(),
+          completedDate: dayjs()
+            .subtract(365 - 1, 'days')
+            .toDate(),
+          order: 2,
+          traineeId: bobJones.id,
+          trackingItemId: 7,
+          trackingItem: {
+            id: 7,
+            title: 'MDG Training',
+            description: 'Random Training',
+            interval: 365,
+            status: 'ACTIVE',
+          },
+        },
+      ],
+    },
+    {
+      status: 'ACTIVE',
+      userId: bobJones.id,
       createdAt: '2021-08-27T19:28:10.548Z',
       trackingItemId: 4,
       trackingItem: {
@@ -176,13 +229,31 @@ const userWithCompletedTrainings = {
       },
       memberTrackingRecords: [
         {
-          id: 5,
-          traineeSignedDate: dayjs().toDate(),
-          authoritySignedDate: dayjs().toDate(),
-          authorityId: 4,
-          createdAt: dayjs().toDate(),
-          completedDate: dayjs().toDate(),
-          order: 1,
+          id: 3,
+          traineeSignedDate: '2021-08-18T09:38:12.976Z',
+          authoritySignedDate: '2021-08-12T23:09:38.453Z',
+          authorityId: 'daf12fc8-65a2-416a-bbf1-662b3e52be85',
+          createdAt: '2021-08-27T19:28:10.548Z',
+          completedDate: '2021-08-10T13:37:20.770Z',
+          order: 2,
+          traineeId: bobJones.id,
+          trackingItemId: 4,
+          trackingItem: {
+            id: 4,
+            title: 'Big Bug Safety',
+            description: 'There are big bugs in Hawaii!  Be careful!',
+            interval: 365,
+            status: 'ACTIVE',
+          },
+        },
+        {
+          id: 3,
+          traineeSignedDate: null,
+          authoritySignedDate: null,
+          authorityId: null,
+          createdAt: '2021-08-27T19:28:10.548Z',
+          completedDate: null,
+          order: 4,
           traineeId: bobJones.id,
           trackingItemId: 4,
           trackingItem: {
@@ -210,7 +281,7 @@ beforeAll(() => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
     }),
     rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userWithUpcomingAndInProgressTraining));
+      return res(ctx.status(200), ctx.json(userWithCompletedTrainings));
     }),
     rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(userWithUpcomingAndInProgressTraining));
@@ -473,18 +544,28 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
     });
     await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
     await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
+
+    server.use(
+      rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(userWithCompletedTrainings));
+      }),
+      rest.post('/api/membertrackingrecords', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.json({
+            completedDate: null,
+            traineeId: bobJones.id,
+            trackingItemId: 7,
+          })
+        );
+      })
+    );
     const addButton = screen.getAllByTestId('quickAddButton');
-    fireEvent.click(addButton[1]);
+
+    fireEvent.click(addButton[0]);
+
     const alert = await screen.findByText(/a record was successfully added/i);
     expect(alert).toBeInTheDocument();
-    singletonRouter.push({
-      query: { id: 123 },
-    });
-    rtlRender(<Profile initialMemberData={bobJones} />, {
-      wrapper: function withWrapper(props) {
-        return <Wrapper {...props} />;
-      },
-    });
   });
 
   test('should show zero training if user has no upcoming/overdue trainings', async () => {
@@ -493,7 +574,6 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
         return res(ctx.status(200), ctx.json(userWithCompletedTrainings));
       })
     );
-    mockMethodAndReturn(useMemberTrackingItemsForUser, userWithCompletedTrainings);
     singletonRouter.push({
       query: { id: 123 },
     });

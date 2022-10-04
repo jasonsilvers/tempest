@@ -55,11 +55,11 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
           return false;
         }
 
-        if (completedMemberTrackingRecord && inProgressMemberTrackingRecord === null) {
+        if (completedMemberTrackingRecord && inProgressMemberTrackingRecord === undefined) {
           return true;
         }
-
-        return true;
+        //I don't think it will ever reach this but keeping here just in case
+        return false;
       })
       .flatMap((mti) => {
         return mti.memberTrackingRecords.map((mtr) => {
@@ -81,7 +81,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
     };
 
     addMemberTrackingRecord.mutate(newMemberTrackingRecord, {
-      onSettled: () => {
+      onSuccess: () => {
         enqueueSnackbar('A record was successfully added', { variant: 'success' });
       },
     });
@@ -90,7 +90,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
   return (
     <>
       <Typography tw="text-xl font-bold text-center pt-2">{`${memberTrackingItemsToAdd?.length} Overdue/Upcoming Trainings`}</Typography>
-      <div tw="grid grid-flow-col overflow-auto px-5 py-4 gap-5 place-items-center" data-testId="quick-assign">
+      <div tw="grid grid-flow-col overflow-auto px-5 py-4 gap-5 place-items-center">
         {memberTrackingItemsToAdd.map((memberTrackingItemToAdd) => (
           <Card key={memberTrackingItemToAdd.id} tw="w-[170px] h-[150px] shadow-xl rounded-xl">
             <CardContent tw="pb-0">
