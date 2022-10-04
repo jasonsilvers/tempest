@@ -81,7 +81,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
     };
 
     addMemberTrackingRecord.mutate(newMemberTrackingRecord, {
-      onSuccess: () => {
+      onSettled: () => {
         enqueueSnackbar('A record was successfully added', { variant: 'success' });
       },
     });

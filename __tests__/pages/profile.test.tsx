@@ -19,7 +19,7 @@ jest.mock('../../src/repositories/memberTrackingRepo');
 jest.mock('next/router', () => require('next-router-mock'));
 jest.mock('next/dist/client/router', () => require('next-router-mock'));
 
-const userWithTrackingItems = {
+const userWithUpcomingAndInProgressTraining = {
   ...bobJones,
   memberTrackingItems: [
     {
@@ -126,7 +126,7 @@ const userWithTrackingItems = {
   ],
 };
 
-const userWithNoUpcomingTraining = {
+const userWithCompletedTrainings = {
   ...bobJones,
   memberTrackingItems: [
     {
@@ -142,24 +142,6 @@ const userWithNoUpcomingTraining = {
         status: 'ACTIVE',
       },
       memberTrackingRecords: [
-        {
-          id: 7,
-          traineeSignedDate: null,
-          authoritySignedDate: null,
-          authorityId: 4,
-          createdAt: dayjs().toDate(),
-          completedDate: null,
-          order: 1,
-          traineeId: bobJones.id,
-          trackingItemId: 3,
-          trackingItem: {
-            id: 3,
-            title: 'Fire Safety',
-            description: 'How to be SAFE when using Fire',
-            interval: 365,
-            status: 'ACTIVE',
-          },
-        },
         {
           id: 5,
           traineeSignedDate: dayjs().toDate(),
@@ -228,17 +210,17 @@ beforeAll(() => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
     }),
     rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userWithTrackingItems));
+      return res(ctx.status(200), ctx.json(userWithUpcomingAndInProgressTraining));
     }),
     rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userWithTrackingItems));
+      return res(ctx.status(200), ctx.json(userWithUpcomingAndInProgressTraining));
     })
   );
 });
 
 beforeEach(() => {
   mockRouter.setCurrentUrl('/initial');
-  mockMethodAndReturn(useMemberTrackingItemsForUser, userWithTrackingItems);
+  mockMethodAndReturn(useMemberTrackingItemsForUser, userWithUpcomingAndInProgressTraining);
 });
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
@@ -493,7 +475,8 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
     await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
     const addButton = screen.getAllByTestId('quickAddButton');
     fireEvent.click(addButton[1]);
-    expect(screen.findByRole('alert'));
+    const alert = await screen.findByText(/a record was successfully added/i);
+    expect(alert).toBeInTheDocument();
     singletonRouter.push({
       query: { id: 123 },
     });
@@ -504,13 +487,13 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
     });
   });
 
-  test('show not upcoming training if user does not have any upcoming or overdue training', async () => {
+  test('should show zero training if user has no upcoming/overdue trainings', async () => {
     server.use(
       rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(userWithNoUpcomingTraining));
+        return res(ctx.status(200), ctx.json(userWithCompletedTrainings));
       })
     );
-    mockMethodAndReturn(useMemberTrackingItemsForUser, userWithNoUpcomingTraining);
+    mockMethodAndReturn(useMemberTrackingItemsForUser, userWithCompletedTrainings);
     singletonRouter.push({
       query: { id: 123 },
     });
