@@ -3,7 +3,7 @@ import { useUser } from '@tron/nextjs-auth-p1';
 import { useSnackbar } from 'notistack';
 import React, { CSSProperties } from 'react';
 import 'twin.macro';
-import { useOrgs } from '../hooks/api/organizations';
+import { useOrgsAll } from '../hooks/api/organizations';
 import { useUpdateUser } from '../hooks/api/users';
 import { OrganizationSelect } from './OrganizationSelect';
 
@@ -19,7 +19,7 @@ export const UpdateUsersOrg = ({
   editStyle?: CSSProperties;
 }) => {
   const { refreshUser } = useUser();
-  const orgsQuery = useOrgs();
+  const orgsQuery = useOrgsAll();
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: updateUser } = useUpdateUser();
 

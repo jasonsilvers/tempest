@@ -24,7 +24,7 @@ import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
 import { ERole } from '../const/enums';
 import { ranks } from '../const/ranks';
-import { useOrgs } from '../hooks/api/organizations';
+import { useOrgsAll } from '../hooks/api/organizations';
 import { useUpdateUser } from '../hooks/api/users';
 import { LoggedInUser } from '../repositories/userRepo';
 
@@ -74,7 +74,7 @@ const monitorFormSchema = Joi.object({
 });
 
 const MonitorForm = ({ user }: { user: LoggedInUser }) => {
-  const orgsQuery = useOrgs();
+  const orgsQuery = useOrgsAll();
   const snackbar = useSnackbar();
   const userMutation = useUpdateUser();
 
@@ -158,7 +158,7 @@ const workFormSchema = Joi.object({
 });
 
 const WorkForm = ({ user }: { user: LoggedInUser }) => {
-  const orgsQuery = useOrgs();
+  const orgsQuery = useOrgsAll();
   const snackbar = useSnackbar();
   const userMutation = useUpdateUser();
   const {

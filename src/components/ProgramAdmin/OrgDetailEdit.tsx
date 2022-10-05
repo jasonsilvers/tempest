@@ -4,7 +4,12 @@ import { Organization, OrganizationType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
 import Joi from 'joi';
 import 'twin.macro';
-import { useDeleteOrganization, useOrg, useOrgs, useUpdateOrganization } from '../../hooks/api/organizations';
+import {
+  useDeleteOrganization,
+  useOrg,
+  useOrgsUserOrgAndDown,
+  useUpdateOrganization,
+} from '../../hooks/api/organizations';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 
@@ -72,7 +77,7 @@ const formSchema = Joi.object({
 
 export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, closeEdit }) => {
   const orgFromServerQuery = useOrg(orgFromList?.id);
-  const orgsListQuery = useOrgs();
+  const orgsListQuery = useOrgsUserOrgAndDown();
 
   const { mutate: deleteOrg } = useDeleteOrganization();
   const { mutate: updateOrg } = useUpdateOrganization();

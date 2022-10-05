@@ -13,7 +13,7 @@ import { User } from '@prisma/client';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { useQueryClient } from 'react-query';
-import { useOrgs } from '../../hooks/api/organizations';
+import { useOrgsUserOrgAndDown } from '../../hooks/api/organizations';
 import { useDeleteUser, useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
 import { UserWithAll } from '../../repositories/userRepo';
@@ -57,7 +57,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
   const roles = rolesListQuery?.data?.filter((role) => role.name !== 'norole' && role.name !== 'admin');
 
   const deleteUserMutation = useDeleteUser();
-  const orgsListQuery = useOrgs();
+  const orgsListQuery = useOrgsUserOrgAndDown();
 
   const mutateUser = useUpdateUser();
 

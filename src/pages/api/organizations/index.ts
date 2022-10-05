@@ -1,13 +1,23 @@
 import { NextApiResponse } from 'next';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { createOrganizations, getOrganizationAndDown } from '../../../repositories/organizationRepo';
+import { createOrganizations, findOrganizations, getOrganizationAndDown } from '../../../repositories/organizationRepo';
 import { getAc } from '../../../middleware/utils';
-import { EFuncBaseAction, EResource } from '../../../const/enums';
+import { EFuncBaseAction, EOrganizationsIncludes, EResource } from '../../../const/enums';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import Joi from 'joi';
 import { usersPermissionOnOrg } from '../../../controllers/organizationController';
+import { Organization } from '@prisma/client';
+import { getIncludesQueryArray } from '../../../utils/includeQuery';
+
+export interface ITempestOrganizationsApiRequest<T> extends NextApiRequestWithAuthorization<T> {
+  query: {
+    include: EOrganizationsIncludes | EOrganizationsIncludes[];
+    [key: string]: string | string[];
+  };
+  body: Organization;
+}
 
 const organizationPostSchema = {
   body: Joi.object({
@@ -21,8 +31,12 @@ const organizationSchema = {
   post: organizationPostSchema,
 };
 
-const organizationApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
-  const { body, method } = req;
+const organizationApiHandler = async (req: ITempestOrganizationsApiRequest<LoggedInUser>, res: NextApiResponse) => {
+  const {
+    body,
+    method,
+    query: { include },
+  } = req;
 
   const ac = await getAc();
 
@@ -40,7 +54,15 @@ const organizationApiHandler = async (req: NextApiRequestWithAuthorization<Logge
         throw new PermissionError();
       }
 
-      const organizations = await getOrganizationAndDown(req.user.organizationId);
+      let organizations: Organization[];
+      const includesQuery = getIncludesQueryArray(include);
+
+      if (includesQuery.includes(EOrganizationsIncludes.ALL)) {
+        organizations = await findOrganizations();
+      } else {
+        organizations = await getOrganizationAndDown(req.user.organizationId);
+      }
+
       res.status(200).json({ organizations });
       break;
     }

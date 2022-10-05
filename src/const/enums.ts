@@ -115,6 +115,10 @@ export interface ITempestApiMessage {
   message: string;
 }
 
+export enum EOrganizationsIncludes {
+  ALL = 'all',
+}
+
 export enum EMtrVariant {
   ALL = 'all',
   COMPLETED = 'completed',

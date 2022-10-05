@@ -11,7 +11,7 @@ import { ActiveItems } from '../components/TrainingItems/ActiveItems';
 import { ArchivedItems } from '../components/TrainingItems/ArchivedItems';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { EFuncAction, EResource } from '../const/enums';
-import { useOrgs } from '../hooks/api/organizations';
+import { useOrgsUserOrgAndDown } from '../hooks/api/organizations';
 import { tiQueryKeys, useTrackingItems, useUpdateTrackingItem } from '../hooks/api/trackingItem';
 import { usePermissions } from '../hooks/usePermissions';
 import { getTrackingItems } from '../repositories/trackingItemRepo';
@@ -30,7 +30,7 @@ const filterRows = (trackingItems: TrackingItem[], selectedCatalog: number) => {
 
 const TrackingItems = () => {
   const { data: trackingItems } = useTrackingItems();
-  const { data: orgsFromServer } = useOrgs();
+  const { data: orgsFromServer } = useOrgsUserOrgAndDown();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCatalog, setSelectedCatalog] = useState<number>(0);
   const [orgsWithCatalogs, setOrgsWithCatalogs] = useState<Organization[]>([]);

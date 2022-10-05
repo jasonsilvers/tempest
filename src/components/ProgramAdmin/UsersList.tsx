@@ -1,7 +1,7 @@
 import { Drawer } from '@mui/material';
 import { DataGrid, GridColumns, GridToolbar, GridValueGetterParams } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
-import { useOrgs } from '../../hooks/api/organizations';
+import { useOrgsUserOrgAndDown } from '../../hooks/api/organizations';
 import { useUsers } from '../../hooks/api/users';
 import { UserWithAll } from '../../repositories/userRepo';
 import { UserDetailEdit } from './UserDetailEdit';
@@ -12,7 +12,7 @@ const UsersList = () => {
   const [sidebarState, setSidebarState] = useState({ userId: null, open: false });
 
   const usersListQuery = useUsers();
-  const orgsListQuery = useOrgs();
+  const orgsListQuery = useOrgsUserOrgAndDown();
 
   const columns: GridColumns<UserWithAll> = useMemo(
     () => [

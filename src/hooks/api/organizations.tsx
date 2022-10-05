@@ -2,18 +2,24 @@ import { Organization } from '.prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { EUri } from '../../const/enums';
+import { EOrganizationsIncludes, EUri } from '../../const/enums';
 import { OrganizationWithChildrenAndUsers } from '../../repositories/organizationRepo';
 import { OrgsDTO } from '../../types';
 
 export const organizationQueryKeys = {
-  organizations: () => ['organizations'],
+  organizations: (include: EOrganizationsIncludes = null) => ['organizations', include],
   organization: (id: number) => ['organization', id],
 };
 
-export const useOrgs = () => {
+export const useOrgsUserOrgAndDown = () => {
   return useQuery<Organization[]>(organizationQueryKeys.organizations(), () =>
     axios.get<OrgsDTO>(EUri.ORGANIZATIONS).then((response) => response.data.organizations)
+  );
+};
+
+export const useOrgsAll = () => {
+  return useQuery<Organization[]>(organizationQueryKeys.organizations(EOrganizationsIncludes.ALL), () =>
+    axios.get<OrgsDTO>('/api/organizations?include=all').then((response) => response.data.organizations)
   );
 };
 
