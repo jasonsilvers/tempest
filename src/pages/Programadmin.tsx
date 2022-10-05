@@ -42,7 +42,7 @@ function ProgramAdminPage() {
             <UsersList />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <OrganizationList loggedInUserId={loggedInUser.id} />
+            <OrganizationList loggedInUser={loggedInUser} />
           </TabPanel>
         </div>
       </Card>

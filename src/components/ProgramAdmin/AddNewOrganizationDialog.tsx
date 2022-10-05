@@ -22,6 +22,7 @@ import { useForm, Controller, FieldError } from 'react-hook-form';
 import { useCreateOrg } from '../../hooks/api/organizations';
 import { LoadingOverlay } from '../../lib/ui';
 import 'twin.macro';
+import { LoggedInUser } from '../../repositories/userRepo';
 
 type FormErrors = {
   name?: FieldError;
@@ -69,14 +70,14 @@ type AddNewOrganizationDialogProps = {
   dialogIsOpen: boolean;
   setDialogIsOpen: Dispatch<SetStateAction<boolean>>;
   orgs: Organization[];
-  loggedInUserId: number;
+  loggedInUser: LoggedInUser;
 };
 
 export const AddNewOrganizationDialog: React.FC<AddNewOrganizationDialogProps> = ({
   dialogIsOpen,
   setDialogIsOpen,
   orgs,
-  loggedInUserId,
+  loggedInUser,
 }) => {
   const createOrg = useCreateOrg();
   const [isSavingOrg, setIsSavingOrg] = useState(false);
@@ -92,7 +93,7 @@ export const AddNewOrganizationDialog: React.FC<AddNewOrganizationDialogProps> =
     defaultValues: {
       name: '',
       shortName: '',
-      parentId: loggedInUserId,
+      parentId: loggedInUser.organizationId,
     },
   });
 

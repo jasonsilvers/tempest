@@ -61,7 +61,7 @@ const AdminNavigation = ({
       ) : null}
       {canViewAdminPage ? (
         <Link goToUrl="/Admin" icon={<SecurityIcon fontSize="medium" />}>
-          <div role="navigation" aria-label="admin">
+          <div role="navigation" aria-label="super-admin">
             Super Admin
           </div>
         </Link>

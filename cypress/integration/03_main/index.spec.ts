@@ -15,6 +15,7 @@ describe('Monitor Role', () => {
     cy.findByRole('navigation', { name: /dashboard/ }).should('be.visible');
     cy.findByRole('navigation', { name: /global-training-catalog/ }).should('be.visible');
     cy.contains(/admin/).should('not.exist');
+    cy.contains(/super admin/).should('not.exist');
   });
 });
 
@@ -33,6 +34,8 @@ describe('Member Role', () => {
 
     cy.contains(/dashboad/i).should('not.exist');
     cy.contains(/global-training-catalog/).should('not.exist');
+    cy.contains(/admin/).should('not.exist');
+    cy.contains(/super admin/).should('not.exist');
   });
 
   it('vists the site and redirect to welcome page, if user has no organization', () => {

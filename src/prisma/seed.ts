@@ -72,6 +72,7 @@ async function addPPEItem(userId: number) {
 
 async function createOrganizationStructure() {
   const mdg = await createOrganization('15th Medical Group', '15th MDG', null, 'CATALOG');
+  const p1 = await createOrganization('Platform one', 'p1', null, 'CATALOG');
   const lrs = await createOrganization('LRS', 'LRS', null, 'CATALOG');
   const omrs = await createOrganization('15 Operation Medical Readiness Squadron', '15 OMRS', mdg.id);
   const hcos = await createOrganization('15 Healthcare Operation Squadron', '15 HCOS', mdg.id);
@@ -101,11 +102,11 @@ async function createOrganizationStructure() {
   await createOrganization('Information Systems Flight', 'Information Systems Flight', mdss.id);
   await createOrganization('Faculty Managers', 'Faculty Managers', mdss.id);
 
-  return [mdg, omrs, execStaff, pharmacy, lrs];
+  return [mdg, omrs, execStaff, pharmacy, lrs, p1];
 }
 
 async function seedDev() {
-  const [mdg, omrs, execStaff, pharmacy, lrs] = await createOrganizationStructure();
+  const [mdg, omrs, execStaff, pharmacy, lrs, p1] = await createOrganizationStructure();
 
   await prisma.trackingItem.createMany({
     data: [
@@ -189,8 +190,16 @@ async function seedDev() {
     },
   });
 
-  for (let i = 0; i <= 20; i++) {
+  for (let i = 0; i <= 10; i++) {
     await createRandomUser(mdg.id, memberRole ? memberRole.id : 2);
+  }
+
+  for (let i = 0; i <= 10; i++) {
+    await createRandomUser(lrs.id, memberRole ? memberRole.id : 2);
+  }
+
+  for (let i = 0; i <= 10; i++) {
+    await createRandomUser(p1.id, memberRole ? memberRole.id : 2);
   }
 
   const user1 = createUser('Joe', 'Admin', 'joe.admin@gmail.com');
@@ -211,7 +220,7 @@ async function seedDev() {
 
   const user5 = createUser('Tom', 'ProgramManager', 'tom.ProgramManager@gmail.com');
 
-  await addUserToDb(user5, mdg.id, ProgramManagerRole ? ProgramManagerRole.id : 5);
+  await addUserToDb(user5, p1.id, ProgramManagerRole ? ProgramManagerRole.id : 5);
 
   await addPPEItem(createdUser2.id);
   await addPPEItem(createdUser2.id);

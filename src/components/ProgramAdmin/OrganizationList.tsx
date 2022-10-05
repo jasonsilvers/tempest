@@ -6,14 +6,15 @@ import 'twin.macro';
 import { AddIcon } from '../../assets/Icons';
 import { useOrgsUserOrgAndDown } from '../../hooks/api/organizations';
 import { OrgWithCounts } from '../../repositories/organizationRepo';
+import { LoggedInUser } from '../../repositories/userRepo';
 import { AddNewOrganizationDialog } from './AddNewOrganizationDialog';
 import { OrgDetailEdit } from './OrgDetailEdit';
 
 type OrganizationListProps = {
-  loggedInUserId: number;
+  loggedInUser: LoggedInUser;
 };
 
-export const OrganizationList: React.FC<OrganizationListProps> = ({ loggedInUserId }) => {
+export const OrganizationList: React.FC<OrganizationListProps> = ({ loggedInUser }) => {
   const { data: orgs, isLoading } = useOrgsUserOrgAndDown();
   const [sidebarState, setSidebarState] = useState({ orgId: null, open: false });
 
@@ -93,7 +94,7 @@ export const OrganizationList: React.FC<OrganizationListProps> = ({ loggedInUser
         orgs={orgs}
         dialogIsOpen={dialogIsOpen}
         setDialogIsOpen={setDialogIsOpen}
-        loggedInUserId={loggedInUserId}
+        loggedInUser={loggedInUser}
       />
     </div>
   );

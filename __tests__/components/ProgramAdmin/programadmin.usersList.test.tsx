@@ -177,7 +177,7 @@ test('should update a users organization', async () => {
 
   server.use(getUsers([{ ...users[0], organizationId: '2' }]));
 
-  fireEvent.click(options[2]);
+  fireEvent.click(options[1]);
 
   const updateButton = screen.getByRole('button', {
     name: /update/i,

@@ -2,6 +2,7 @@ import React from 'react';
 import 'whatwg-fetch';
 import { OrganizationList } from '../../../src/components/ProgramAdmin/OrganizationList';
 import { ERole, EUri } from '../../../src/const/enums';
+import { LoggedInUser } from '../../../src/repositories/userRepo';
 import { bobJones } from '../../testutils/mocks/fixtures';
 import { rest, server } from '../../testutils/mocks/msw';
 import {
@@ -13,6 +14,14 @@ import {
   waitForLoadingToFinish,
 } from '../../testutils/TempestTestUtils';
 
+const defaultLoggedInUser = {
+  id: '123',
+  firstName: 'bob',
+  lastName: 'jones',
+  organizationId: 1,
+  role: { id: 22, name: ERole.ADMIN },
+} as unknown as LoggedInUser;
+
 beforeEach(() => {
   server.listen({
     onUnhandledRequest: 'warn',
@@ -20,16 +29,7 @@ beforeEach(() => {
 
   server.use(
     rest.get(EUri.LOGIN, (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          id: '123',
-          firstName: 'bob',
-          lastName: 'jones',
-          organizationId: 1,
-          role: { id: 22, name: ERole.ADMIN },
-        })
-      );
+      return res(ctx.status(200), ctx.json(defaultLoggedInUser));
     }),
     rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
       return res(
@@ -85,7 +85,7 @@ afterEach(() => {
 afterAll(() => server.close());
 
 test('should show organizations', async () => {
-  const screen = render(<OrganizationList loggedInUserId={1} />);
+  const screen = render(<OrganizationList loggedInUser={defaultLoggedInUser} />);
   await waitForLoadingToFinish();
   expect(await screen.findByText(/15th mdg/i)).toBeInTheDocument();
 });
@@ -101,7 +101,7 @@ test('should delete a organization', async () => {
       );
     })
   );
-  const screen = render(<OrganizationList loggedInUserId={1} />);
+  const screen = render(<OrganizationList loggedInUser={defaultLoggedInUser} />);
 
   expect(await screen.findByText(/organization 2/i)).toBeInTheDocument();
 
@@ -143,7 +143,7 @@ test('should delete a organization', async () => {
 });
 
 test('should not be able to delete org with children or users', async () => {
-  const screen = render(<OrganizationList loggedInUserId={1} />);
+  const screen = render(<OrganizationList loggedInUser={defaultLoggedInUser} />);
 
   expect(await screen.findByText(/15th mdg/i)).toBeInTheDocument();
 
@@ -175,7 +175,7 @@ test('should add new organization', async () => {
     })
   );
 
-  const screen = render(<OrganizationList loggedInUserId={1} />);
+  const screen = render(<OrganizationList loggedInUser={defaultLoggedInUser} />);
 
   const addIcon = await screen.findByTestId('AddIcon');
 
@@ -244,7 +244,7 @@ test('should add new organization', async () => {
 });
 
 test('should allow edit organization', async () => {
-  const screen = render(<OrganizationList loggedInUserId={1} />);
+  const screen = render(<OrganizationList loggedInUser={defaultLoggedInUser} />);
 
   expect(await screen.findByText(/organization 2/i)).toBeInTheDocument();
 

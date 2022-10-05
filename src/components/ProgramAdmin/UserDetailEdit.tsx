@@ -147,9 +147,6 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
                             id: 'select-org',
                           }}
                         >
-                          <MenuItem key="noneselected" value="none">
-                            No Org Selected
-                          </MenuItem>
                           {orgsListQuery?.data?.map((org) => (
                             <MenuItem key={org.id} value={org.id}>
                               {org.shortName}
@@ -179,7 +176,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
                           }}
                         >
                           <MenuItem key="noneselected" value="none">
-                            No Org Selected
+                            No Reporting Organization Selected
                           </MenuItem>
                           {orgsListQuery?.data?.map((orgData) => (
                             <MenuItem key={orgData.id} value={orgData.id}>
