@@ -1,20 +1,117 @@
-import { waitFor, fireEvent, rtlRender, Wrapper } from '../testutils/TempestTestUtils';
+import {
+  waitFor,
+  fireEvent,
+  rtlRender,
+  Wrapper,
+  within,
+  render,
+  waitForLoadingToFinish,
+} from '../testutils/TempestTestUtils';
 import Profile, { getServerSideProps } from '../../src/pages/Profile/[id]';
 import 'whatwg-fetch';
 import { server, rest } from '../testutils/mocks/msw';
 import singletonRouter from 'next/router';
-
 import mockRouter from 'next-router-mock';
 import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
 import { EUri } from '../../src/const/enums';
-import { findUserById } from '../../src/repositories/userRepo';
+import { findUserByIdReturnAllIncludes } from '../../src/repositories/userRepo';
+import { useMemberTrackingItemsForUser } from '../../src/hooks/api/users';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import { GetServerSidePropsContext } from 'next/types';
 import React from 'react';
+import { MemberReport } from '../../src/components/Records/MemberRecordTracker/MemberReport';
+import dayjs from 'dayjs';
 
 jest.mock('../../src/repositories/userRepo');
+jest.mock('../../src/repositories/memberTrackingRepo');
 jest.mock('next/router', () => require('next-router-mock'));
 jest.mock('next/dist/client/router', () => require('next-router-mock'));
+
+const userWithTrackingItems = {
+  ...bobJones,
+  memberTrackingItems: [
+    {
+      status: 'ACTIVE',
+      userId: bobJones.id,
+      createdAt: '2021-08-27T19:28:10.525Z',
+      trackingItemId: 3,
+      trackingItem: {
+        id: 3,
+        title: 'Fire Safety',
+        description: 'How to be SAFE when using Fire',
+        interval: 365,
+        status: 'ACTIVE',
+      },
+      memberTrackingRecords: [
+        {
+          id: 5,
+          traineeSignedDate: dayjs().toDate(),
+          authoritySignedDate: dayjs().toDate(),
+          authorityId: 4,
+          createdAt: dayjs().toDate(),
+          completedDate: dayjs().toDate(),
+          order: 1,
+          traineeId: bobJones.id,
+          trackingItemId: 3,
+        },
+      ],
+    },
+    {
+      status: 'ACTIVE',
+      userId: bobJones.id,
+      createdAt: '2021-08-27T19:28:10.525Z',
+      trackingItemId: 7,
+      trackingItem: {
+        id: 7,
+        title: 'MDG Training',
+        description: 'Random Training',
+        interval: 365,
+        status: 'ACTIVE',
+      },
+      memberTrackingRecords: [
+        {
+          id: 2,
+          traineeSignedDate: dayjs().toDate(),
+          authoritySignedDate: dayjs().toDate(),
+          authorityId: 4,
+          createdAt: dayjs().toDate(),
+          completedDate: dayjs()
+            .subtract(365 - 1, 'days')
+            .toDate(),
+          order: 2,
+          traineeId: bobJones.id,
+          trackingItemId: 7,
+        },
+      ],
+    },
+    {
+      status: 'ACTIVE',
+      userId: bobJones.id,
+      createdAt: '2021-08-27T19:28:10.548Z',
+      trackingItemId: 4,
+      trackingItem: {
+        id: 4,
+        title: 'Big Bug Safety',
+        description: 'There are big bugs in Hawaii!  Be careful!',
+        interval: 365,
+        status: 'ACTIVE',
+      },
+      memberTrackingRecords: [
+        {
+          id: 3,
+          traineeSignedDate: '2021-08-18T09:38:12.976Z',
+          authoritySignedDate: '2021-08-12T23:09:38.453Z',
+          authorityId: 'daf12fc8-65a2-416a-bbf1-662b3e52be85',
+          createdAt: '2021-08-27T19:28:10.568Z',
+          completedDate: '2021-08-10T13:37:20.770Z',
+          order: 3,
+          traineeId: bobJones.id,
+          trackingItemId: 4,
+        },
+      ],
+    },
+  ],
+};
 
 beforeAll(() => {
   server.listen({
@@ -34,6 +131,7 @@ beforeAll(() => {
 });
 beforeEach(() => {
   mockRouter.setCurrentUrl('/initial');
+  mockMethodAndReturn(useMemberTrackingItemsForUser, userWithTrackingItems);
 });
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
@@ -183,8 +281,75 @@ test('should do serverside rending and return user', async () => {
     role: { id: '22', name: 'monitor' },
   };
 
-  mockMethodAndReturn(findUserById, user);
+  mockMethodAndReturn(findUserByIdReturnAllIncludes, user);
   const value = await getServerSideProps({ context: { params: { id: 1 } } } as unknown as GetServerSidePropsContext);
 
   expect(value.props.initialMemberData).toStrictEqual(user);
+});
+
+test('should render report widget and show correct counts', async () => {
+  server.use(
+    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(userWithTrackingItems));
+    })
+  );
+
+  const screen = render(<MemberReport memberId={bobJones.id} />);
+
+  await waitFor(() => expect(screen.getByText(/readiness stats/i)).toBeInTheDocument());
+
+  const doneCountDiv = screen.getByTestId('report-done');
+  const doneCount = within(doneCountDiv).getByText(1);
+
+  expect(doneCount).toBeInTheDocument();
+
+  const upcomingCountDiv = screen.getByTestId('report-upcoming');
+  const upcomingCount = within(upcomingCountDiv).getByText(1);
+
+  expect(upcomingCount).toBeInTheDocument();
+
+  const overDueCountDiv = screen.getByTestId('report-overdue');
+  const overDueCount = within(overDueCountDiv).getByText(1);
+
+  expect(overDueCount).toBeInTheDocument();
+
+  expect(screen.getByText(/3 trainings/i)).toBeInTheDocument();
+});
+
+test('should render detailed report', async () => {
+  server.use(
+    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(userWithTrackingItems));
+    })
+  );
+
+  const screen = render(<MemberReport memberId={bobJones.id} />);
+
+  await waitForLoadingToFinish();
+
+  await waitFor(() => expect(screen.getByText(/readiness stats/i)).toBeInTheDocument());
+
+  const reportButton = screen.getByRole('button', { name: /reporting excel/i });
+
+  fireEvent.click(reportButton);
+
+  const banner = screen.getByRole('banner');
+
+  within(banner).getByText(/reporting excel/i);
+
+  const dialog = screen.getByRole('dialog');
+
+  const fireSafetyRow = within(dialog).getByText(/fire safety/i).parentElement?.parentNode;
+  within(fireSafetyRow).getByText(/done/i);
+
+  const mdgTrainingRow = within(dialog).getByText(/mdg training/i).parentElement?.parentNode;
+  within(mdgTrainingRow).getByText(/upcoming/i);
+
+  const bigBugSafetyRow = within(dialog).getByText(/big bug safety/i).parentElement?.parentNode;
+  within(bigBugSafetyRow).getByText(/overdue/i);
+
+  const doneButton = screen.getByRole('button', {
+    name: /done/i,
+  });
+  fireEvent.click(doneButton);
 });

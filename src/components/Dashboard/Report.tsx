@@ -44,7 +44,7 @@ const StatusPill = ({ variant, count }: { variant: EStatus; count: number }) => 
   );
 };
 
-const Transition = React.forwardRef(function Transition(
+export const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement;
   },
@@ -147,7 +147,6 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
         counts[nextMember.id].Upcoming === 0 && counts[nextMember.id].Overdue === 0 && counts[nextMember.id].Done > 0;
       const memberHasNoTraining =
         counts[nextMember.id].Upcoming === 0 && counts[nextMember.id].Overdue === 0 && counts[nextMember.id].Done === 0;
-
       return {
         Done: prevCount.Done + (memberIsDone ? 1 : 0),
         Overdue: prevCount.Overdue + (memberHasOverDueTraining ? 1 : 0),
