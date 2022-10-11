@@ -169,7 +169,7 @@ test('should update a users organization', async () => {
 
   expect(screen.getByText(/personal/i)).toBeInTheDocument();
 
-  const orgDropDown = await screen.findByRole('button', { name: /15th mdg/i });
+  const orgDropDown = await screen.findByRole('button', { name: /select-org/i });
 
   fireEvent.mouseDown(orgDropDown);
 
@@ -201,7 +201,7 @@ test('should update a users role', async () => {
 
   expect(screen.getByText(/personal/i)).toBeInTheDocument();
 
-  const roleDropDown = await screen.findByRole('button', { name: /monitor/i });
+  const roleDropDown = await screen.findByRole('button', { name: /select-roles/i });
 
   fireEvent.mouseDown(roleDropDown);
 
@@ -281,6 +281,16 @@ test('should detach user', async () => {
 
   server.use(getUsers([users[0]]));
   fireEvent.click(detachMemberButton);
+
+  expect(await screen.findByText(/warning/i)).toBeInTheDocument();
+  screen.getByRole('button', { name: /no/i }).click();
+  waitForElementToBeRemoved(() => screen.getByText(/warning/i));
+
+  fireEvent.click(detachMemberButton);
+
+  expect(await screen.findByText(/warning/i)).toBeInTheDocument();
+
+  screen.getByRole('button', { name: /yes/i }).click();
 
   const alert = await screen.findByText(/user detached/i);
 

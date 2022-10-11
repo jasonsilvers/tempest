@@ -279,7 +279,7 @@ test('should allow edit organization', async () => {
 
   expect(updateButton).toBeDisabled();
 
-  const nameInput = screen.getByRole('textbox', { name: 'name' });
+  const nameInput = screen.getByRole('textbox', { name: /org-name/i });
 
   fireEvent.change(nameInput, { target: { value: 'organization 3' } });
 

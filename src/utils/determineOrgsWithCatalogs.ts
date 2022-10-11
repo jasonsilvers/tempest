@@ -11,7 +11,7 @@ const findOrgsWithCatalog = (
   }
 
   for (const organization of orgBranch) {
-    if (organization.types.includes(OrganizationType.CATALOG)) {
+    if (organization.types?.includes(OrganizationType.CATALOG)) {
       orgsUserCanAddTrackingItems.push(organization);
     }
     const newBranch = orgsFromServer.filter((orgFromServer) => orgFromServer.parentId === organization.id);

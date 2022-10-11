@@ -35,7 +35,8 @@ const personalFormSchema = Joi.object({
 type UserDetailEditProps = { user: UserWithAll; closeEdit: () => void };
 
 export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit }) => {
-  const [modalState, setModalState] = useState(false);
+  const [deleteModalState, setDeleteModalState] = useState(false);
+  const [detachModalState, setDetachModalState] = useState(false);
   const { user: LoggedInUser } = usePermissions();
   const queryClient = useQueryClient();
 
@@ -110,7 +111,6 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
       },
     });
   };
-
   return (
     <>
       <div tw="flex flex-col pt-5 px-3 space-y-4">
@@ -145,6 +145,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
                           label="Organization"
                           inputProps={{
                             id: 'select-org',
+                            'aria-label': 'select-org',
                           }}
                         >
                           {orgsListQuery?.data?.map((org) => (
@@ -173,6 +174,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
                           label="Reporting Organization"
                           inputProps={{
                             id: 'select-report-org',
+                            'aria-label': 'select-report-org',
                           }}
                         >
                           <MenuItem key="noneselected" value="none">
@@ -214,6 +216,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
                         fullWidth
                         inputProps={{
                           id: 'select-roles',
+                          'aria-label': 'select-roles',
                         }}
                       >
                         {roles.map((role) => (
@@ -230,12 +233,12 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
           </div>
         </form>
 
-        <Button variant="outlined" color="primary" onClick={() => detachUser()}>
+        <Button variant="outlined" color="primary" onClick={() => setDetachModalState(true)}>
           DETACH MEMBER
         </Button>
 
         {LoggedInUser?.role.name === ERole.ADMIN ? (
-          <Button color="error" variant="outlined" onClick={() => setModalState(true)}>
+          <Button color="error" variant="outlined" onClick={() => setDeleteModalState(true)}>
             Delete
           </Button>
         ) : null}
@@ -250,10 +253,10 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
         </div>
       </div>
       <ConfirmDialog
-        open={modalState}
-        handleNo={() => setModalState(false)}
+        open={deleteModalState}
+        handleNo={() => setDeleteModalState(false)}
         handleYes={() => {
-          setModalState(false);
+          setDeleteModalState(false);
           deleteUser(user.id);
         }}
       >
@@ -261,6 +264,20 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
         <DialogContent>
           <div>This action is irreversible</div>
           <div tw="py-4 text-red-400">IT WILL DELETE THE USER AND ALL ASSOCIATED RECORDS</div>
+          <div>Are you sure you want to continue?</div>
+        </DialogContent>
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={detachModalState}
+        handleNo={() => setDetachModalState(false)}
+        handleYes={() => {
+          setDeleteModalState(false);
+          detachUser();
+        }}
+      >
+        <DialogTitle tw="text-red-400">WARNING!</DialogTitle>
+        <DialogContent>
+          <div tw="py-4 text-red-400">THIS ACTION WILL REMOVE THE USER FROM YOUR ORGANIZATION</div>
           <div>Are you sure you want to continue?</div>
         </DialogContent>
       </ConfirmDialog>

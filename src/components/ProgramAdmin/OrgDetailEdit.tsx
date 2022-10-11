@@ -79,6 +79,8 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, close
   const orgFromServerQuery = useOrg(orgFromList?.id);
   const orgsListQuery = useOrgsUserOrgAndDown();
 
+  const orgList = orgsListQuery?.data?.filter((org) => org.id !== orgFromList?.id);
+
   const { mutate: deleteOrg } = useDeleteOrganization();
   const { mutate: updateOrg } = useUpdateOrganization();
   const { enqueueSnackbar } = useSnackbar();
@@ -146,7 +148,7 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, close
                 fullWidth
                 size="small"
                 label="Name"
-                inputProps={{ ...register('name'), 'aria-label': 'name' }}
+                inputProps={{ ...register('name'), 'aria-label': 'org-name' }}
               />
             </FormControl>
             <FormControl fullWidth error={!!errors.shortName}>
@@ -155,7 +157,7 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, close
                 fullWidth
                 size="small"
                 label="Short Name"
-                inputProps={{ ...register('shortName'), 'aria-label': 'shortName' }}
+                inputProps={{ ...register('shortName'), 'aria-label': 'org-shortName' }}
               />
             </FormControl>
 
@@ -179,12 +181,15 @@ export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, close
                           label="Parent Organization"
                           inputProps={{
                             id: 'select-org',
+                            'aria-label': 'parent-select',
                           }}
                         >
-                          <MenuItem key="noneselected" value="none">
-                            No Org Selected
-                          </MenuItem>
-                          {orgsListQuery?.data?.map((orgItem) => (
+                          {orgList.length === 0 ? (
+                            <MenuItem key="noneselected" value="none">
+                              No Org Selected
+                            </MenuItem>
+                          ) : null}
+                          {orgList?.map((orgItem) => (
                             <MenuItem key={orgItem.id} value={orgItem.id}>
                               {orgItem.shortName}
                             </MenuItem>
