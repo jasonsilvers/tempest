@@ -284,7 +284,7 @@ test('should detach user', async () => {
 
   expect(await screen.findByText(/warning/i)).toBeInTheDocument();
   screen.getByRole('button', { name: /no/i }).click();
-  waitForElementToBeRemoved(() => screen.getByText(/warning/i));
+  await waitFor(() => expect(screen.queryByText(/warning/i)).not.toBeInTheDocument());
 
   fireEvent.click(detachMemberButton);
 
