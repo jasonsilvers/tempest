@@ -7,7 +7,7 @@ import { OrganizationWithChildrenAndUsers } from '../../repositories/organizatio
 import { OrgsDTO } from '../../types';
 
 export const organizationQueryKeys = {
-  organizations: (include: EOrganizationsIncludes = null) => ['organizations', include],
+  organizations: (include: EOrganizationsIncludes = EOrganizationsIncludes.USER_OWNED) => ['organizations', include],
   organization: (id: number) => ['organization', id],
 };
 

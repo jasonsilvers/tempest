@@ -117,6 +117,7 @@ export interface ITempestApiMessage {
 
 export enum EOrganizationsIncludes {
   ALL = 'all',
+  USER_OWNED = 'user_owned',
 }
 
 export enum EMtrVariant {
