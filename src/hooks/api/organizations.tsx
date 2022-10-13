@@ -2,24 +2,37 @@ import { Organization } from '.prisma/client';
 import axios, { AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { EUri } from '../../const/enums';
+import { EOrganizationsIncludes, EUri } from '../../const/enums';
+import { OrganizationWithChildrenAndUsers } from '../../repositories/organizationRepo';
 import { OrgsDTO } from '../../types';
 
 export const organizationQueryKeys = {
-  organizations: () => ['organizations'],
+  organizations: (include: EOrganizationsIncludes = EOrganizationsIncludes.USER_OWNED) => ['organizations', include],
   organization: (id: number) => ['organization', id],
 };
 
-export const useOrgs = () => {
+export const useOrgsUserOrgAndDown = () => {
   return useQuery<Organization[]>(organizationQueryKeys.organizations(), () =>
     axios.get<OrgsDTO>(EUri.ORGANIZATIONS).then((response) => response.data.organizations)
   );
 };
 
+export const useOrgsAll = () => {
+  return useQuery<Organization[]>(organizationQueryKeys.organizations(EOrganizationsIncludes.ALL), () =>
+    axios.get<OrgsDTO>('/api/organizations?include=all').then((response) => response.data.organizations)
+  );
+};
+
 export const useOrg = (organizationId: number) => {
-  return useQuery<Organization>(
+  return useQuery<OrganizationWithChildrenAndUsers>(
     organizationQueryKeys.organization(organizationId),
-    () => axios.get<Organization>(EUri.ORGANIZATIONS + organizationId).then((res) => res.data),
+    async () => {
+      return axios
+        .get<OrganizationWithChildrenAndUsers>(EUri.ORGANIZATIONS + organizationId + '/?include=users&include=children')
+        .then((res) => {
+          return res.data;
+        });
+    },
     { enabled: !!organizationId }
   );
 };

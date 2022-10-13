@@ -2,12 +2,10 @@ import React, { useEffect } from 'react';
 import NavBar from '../components/Navigation/Navbar';
 import GlobalStyles from '../styles/GlobalStyles';
 import AppProviders from '../components/AppProviders';
-import tw from 'twin.macro';
+import 'twin.macro';
 import Head from 'next/head';
 import { useNavLoading } from '../hooks/useNavLoading';
 import { LoadingOverlay } from '../lib/ui';
-
-const MainContent = tw.div`ml-[20rem] mt-9`;
 
 function MyApp({ Component, pageProps }) {
   const { navigating } = useNavLoading();
@@ -26,11 +24,15 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <AppProviders pageProps={pageProps}>
         <GlobalStyles />
-        <NavBar />
-        <MainContent>
-          {navigating ? <LoadingOverlay /> : null}
-          <Component {...pageProps} />
-        </MainContent>
+        <div tw="grid grid-cols-12 gap-4 md:ml-28">
+          <aside tw="col-span-2">
+            <NavBar />
+          </aside>
+          <main tw="col-span-10 pt-6 m-auto">
+            {navigating ? <LoadingOverlay /> : null}
+            <Component {...pageProps} />
+          </main>
+        </div>
       </AppProviders>
     </>
   );

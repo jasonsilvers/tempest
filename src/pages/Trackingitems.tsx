@@ -5,13 +5,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import 'twin.macro';
-import { a11yProps, TabPanel } from '../../src/components/Devtools/index';
 import { AddIcon } from '../assets/Icons';
+import { a11yProps, TabPanel } from '../components/Tabs';
 import { ActiveItems } from '../components/TrainingItems/ActiveItems';
 import { ArchivedItems } from '../components/TrainingItems/ArchivedItems';
 import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
 import { EFuncAction, EResource } from '../const/enums';
-import { useOrgs } from '../hooks/api/organizations';
+import { useOrgsUserOrgAndDown } from '../hooks/api/organizations';
 import { tiQueryKeys, useTrackingItems, useUpdateTrackingItem } from '../hooks/api/trackingItem';
 import { usePermissions } from '../hooks/usePermissions';
 import { getTrackingItems } from '../repositories/trackingItemRepo';
@@ -30,7 +30,7 @@ const filterRows = (trackingItems: TrackingItem[], selectedCatalog: number) => {
 
 const TrackingItems = () => {
   const { data: trackingItems } = useTrackingItems();
-  const { data: orgsFromServer } = useOrgs();
+  const { data: orgsFromServer } = useOrgsUserOrgAndDown();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCatalog, setSelectedCatalog] = useState<number>(0);
   const [orgsWithCatalogs, setOrgsWithCatalogs] = useState<Organization[]>([]);
@@ -79,7 +79,7 @@ const TrackingItems = () => {
   };
 
   return (
-    <div tw="flex flex-col max-width[1440px] min-width[800px] p-5">
+    <div tw="flex flex-col w-[1200px] p-5">
       <div tw="flex items-center pb-10">
         <Select
           tw="bg-white w-56"

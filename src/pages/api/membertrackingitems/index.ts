@@ -14,6 +14,7 @@ import {
 } from '../../../controllers/memberTrackingItemsController';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+
 export interface ITempestMemberTrackingItemApiRequest<T> extends NextApiRequestWithAuthorization<T> {
   query: {
     userId: string;

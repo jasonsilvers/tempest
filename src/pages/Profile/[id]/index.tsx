@@ -43,6 +43,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
       : permissionCheck(role, EFuncAction.READ_OWN, EResource.PROFILE_PAGE);
 
   const canViewDashboard = permissionCheck(user?.role.name, EFuncAction.READ_ANY, EResource.DASHBOARD_PAGE);
+
   const isOnOwnProfile = user.id === userId;
 
   if (!persmission?.granted) {

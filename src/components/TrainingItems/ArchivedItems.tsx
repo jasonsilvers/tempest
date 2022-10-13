@@ -82,6 +82,7 @@ export const ArchivedItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, se
   return (
     <>
       <DataGrid
+        sx={{ border: 'none' }}
         disableSelectionOnClick
         disableColumnSelector
         autoHeight

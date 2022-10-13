@@ -104,6 +104,7 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
   return (
     <>
       <DataGrid
+        sx={{ border: 'none' }}
         disableSelectionOnClick
         disableColumnSelector
         autoHeight

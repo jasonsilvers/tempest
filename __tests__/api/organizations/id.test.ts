@@ -11,7 +11,7 @@ import { testNextApi } from '../../testutils/NextAPIUtils';
 import {
   deleteOrganization,
   findOrganizationById,
-  OrganizationWithChildren,
+  OrganizationWithChildrenAndUsers,
   updateOrganization,
 } from '../../../src/repositories/organizationRepo';
 import { User } from '@prisma/client';
@@ -23,15 +23,16 @@ jest.mock('../../../src/repositories/grantsRepo.ts');
 jest.mock('../../../src/repositories/organizationRepo.ts');
 jest.mock('../../../src/utils/isOrgChildOf.ts');
 
-const organizationWithNoChildren: OrganizationWithChildren = {
+const organizationWithNoChildren: OrganizationWithChildrenAndUsers = {
   id: 2,
   name: '15th wing',
   shortName: '15wg',
   parentId: 1,
-  children: null,
-  users: null,
+  children: [],
+  users: [],
+  types: [],
 };
-const organizationWithChildren: OrganizationWithChildren = {
+const organizationWithChildren: OrganizationWithChildrenAndUsers = {
   id: 1,
   name: 'dental',
   shortName: '15wg',
@@ -44,6 +45,7 @@ const organizationWithChildren: OrganizationWithChildren = {
       organizationId: 2,
     } as User,
   ],
+  types: [],
 };
 
 beforeEach(() => {
@@ -123,21 +125,23 @@ test('should not allow user to get any organization - read any', async () => {
     organizationId: 'uiaewniwefnu',
   });
 
-  const organization2: OrganizationWithChildren = {
+  const organization2: OrganizationWithChildrenAndUsers = {
     id: 4,
     name: 'dental',
     shortName: 'dental',
     parentId: null,
-    children: null,
+    children: [],
     users: [],
+    types: [],
   };
-  const organization1: OrganizationWithChildren = {
+  const organization1: OrganizationWithChildrenAndUsers = {
     id: 2,
     name: '15th wing',
     shortName: '15th wg',
     parentId: 1,
     children: [organization2],
-    users: null,
+    users: [],
+    types: [],
   };
 
   mockMethodAndReturn(findOrganizationById, organization1);

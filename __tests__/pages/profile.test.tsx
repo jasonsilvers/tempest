@@ -153,6 +153,18 @@ it('renders the profile page with loading profile text', async () => {
   await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
 });
 
+it('renders the profile page with loading profile text 2', async () => {
+  singletonRouter.push({
+    query: { id: 123 },
+  });
+  const { getByText } = rtlRender(<Profile initialMemberData={bobJones} />, {
+    wrapper: function withWrapper(props) {
+      return <Wrapper {...props} />;
+    },
+  });
+  await waitFor(() => expect(getByText(/loading profile/i)).toBeInTheDocument());
+});
+
 it('renders the profile page with bad permissions', async () => {
   singletonRouter.push({
     query: { id: 321 },
