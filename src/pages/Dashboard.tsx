@@ -45,7 +45,7 @@ const applyNameFilter = (userList: UserWithAll[], nameFilter: string) => {
   }
 
   return userList.filter((user) => {
-    return user.firstName.toLowerCase().includes(nameFilter) || user.lastName.toLowerCase().includes(nameFilter);
+    return user?.firstName?.toLowerCase().includes(nameFilter) || user?.lastName?.toLowerCase().includes(nameFilter);
   });
 };
 

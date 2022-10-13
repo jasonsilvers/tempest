@@ -1,14 +1,43 @@
 import { Organization } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { Permission } from 'accesscontrol';
+import { AccessControl, Permission } from 'accesscontrol';
 import { NextApiResponse } from 'next';
-import { EResource, ITempestApiMessage } from '../const/enums';
+import { EFuncBaseAction, EResource, ITempestApiMessage } from '../const/enums';
 import { getAc } from '../middleware/utils';
-import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
+import { BadRequestError, NotFoundError, PermissionError } from '../middleware/withErrorHandling';
 import { deleteOrganization, findOrganizationById, updateOrganization } from '../repositories/organizationRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { getIncludesQueryArray } from '../utils/includeQuery';
 import { isOrgChildOf } from '../utils/isOrgChildOf';
+
+export const usersPermissionOnOrg = async (
+  requestingOrg: number,
+  usersOrg: number,
+  usersRole: string,
+  ac: AccessControl,
+  action: EFuncBaseAction
+) => {
+  let permission: Permission;
+
+  const ownAction = `${action}Own`;
+  const anyAction = `${action}Any`;
+
+  if (requestingOrg !== usersOrg) {
+    const isChild = await isOrgChildOf(requestingOrg, usersOrg);
+
+    //WHY! A role should be able to do any action on an org that is a child of the org they are requesting
+    //that means that the role just needs own on the organization not any.
+    if (isChild) {
+      permission = ac.can(usersRole)[ownAction](EResource.ORGANIZATION);
+    } else {
+      permission = ac.can(usersRole)[anyAction](EResource.ORGANIZATION);
+    }
+  } else {
+    permission = ac.can(usersRole)[ownAction](EResource.ORGANIZATION);
+  }
+
+  return permission;
+};
 
 export interface ITempestOrganizationIdApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -33,9 +62,9 @@ export const getOrganizationAction = async (
   const includesQuery = getIncludesQueryArray(include);
 
   const ac = await getAc();
-  const bodyOrgId = parseInt(id);
+  const organizationIdParam = parseInt(id);
 
-  const organization = await findOrganizationById(bodyOrgId, {
+  const organization = await findOrganizationById(organizationIdParam, {
     withChildren: includesQuery.includes(EOrganizationIdIncludes.CHILDREN),
     withUsers: includesQuery.includes(EOrganizationIdIncludes.USERS),
   });
@@ -44,18 +73,13 @@ export const getOrganizationAction = async (
     throw new NotFoundError();
   }
 
-  let permission: Permission;
-
-  if (bodyOrgId !== req.user.organizationId) {
-    const isChild = isOrgChildOf(bodyOrgId, req.user.organizationId);
-    if (isChild) {
-      permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
-    } else {
-      permission = ac.can(req.user.role.name).readAny(EResource.ORGANIZATION);
-    }
-  } else {
-    permission = ac.can(req.user.role.name).readOwn(EResource.ORGANIZATION);
-  }
+  const permission = await usersPermissionOnOrg(
+    organizationIdParam,
+    req.user.organizationId,
+    req.user.role.name,
+    ac,
+    EFuncBaseAction.READ
+  );
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -69,12 +93,19 @@ export const deleteOrganizationAction = async (
   req: ITempestOrganizationIdApiRequest<LoggedInUser>,
   res: NextApiResponse<Organization | ITempestApiMessage>
 ) => {
-  const { query, user } = req;
-  const organizationId = query.id;
-  const organizationIdParam = parseInt(organizationId);
+  const {
+    query: { id },
+  } = req;
+  const organizationIdParam = parseInt(id);
   const ac = await getAc();
 
-  const permission = ac.can(user.role.name).deleteAny(EResource.ORGANIZATION);
+  const permission = await usersPermissionOnOrg(
+    organizationIdParam,
+    req.user.organizationId,
+    req.user.role.name,
+    ac,
+    EFuncBaseAction.DELETE
+  );
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -103,12 +134,27 @@ export const putOrganizationAction = async (
   req: ITempestOrganizationIdApiRequest<LoggedInUser>,
   res: NextApiResponse<Organization | ITempestApiMessage>
 ) => {
-  const { query, body, user } = req;
-  const organizationId = query.id;
-  const organizationIdParam = parseInt(organizationId);
+  const {
+    query: { id },
+    body,
+  } = req;
+
+  const queryId = parseInt(id);
+  const organizationId = parseInt(body.id);
+
+  if (queryId !== organizationId) {
+    throw new BadRequestError();
+  }
+
   const ac = await getAc();
 
-  const permission = ac.can(user.role.name).updateAny(EResource.ORGANIZATION);
+  const permission = await usersPermissionOnOrg(
+    organizationId,
+    req.user.organizationId,
+    req.user.role.name,
+    ac,
+    EFuncBaseAction.UPDATE
+  );
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -116,7 +162,7 @@ export const putOrganizationAction = async (
 
   const filteredData = permission.filter(body);
 
-  const updatedOrganization = await updateOrganization(organizationIdParam, filteredData);
+  const updatedOrganization = await updateOrganization(organizationId, filteredData);
 
   res.status(200).json(updatedOrganization);
 };

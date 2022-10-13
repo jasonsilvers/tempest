@@ -24,11 +24,13 @@ export enum ERole {
   MEMBER = 'member',
   MONITOR = 'monitor',
   NOROLE = 'norole',
+  PROGRAM_MANAGER = 'programmanager',
 }
 
 export enum EResource {
   AUHTORITY_RECORDS = 'authorityrecords',
   ADMIN_PAGE = 'admin',
+  PROGRAM_ADMIN = 'programadmin',
   DASHBOARD_PAGE = 'dashboard',
   PROFILE_PAGE = 'profile',
   MATTERMOST = 'mattermost',
@@ -93,6 +95,13 @@ export enum EFuncAction {
   DELETE_OWN = 'deleteOwn',
 }
 
+export enum EFuncBaseAction {
+  READ = 'read',
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+}
+
 export enum ECategorie {
   ALL = 'All',
   DONE = 'Done',
@@ -104,6 +113,11 @@ export enum ECategorie {
 }
 export interface ITempestApiMessage {
   message: string;
+}
+
+export enum EOrganizationsIncludes {
+  ALL = 'all',
+  USER_OWNED = 'user_owned',
 }
 
 export enum EMtrVariant {

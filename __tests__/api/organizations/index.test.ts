@@ -3,16 +3,22 @@
  */
 
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import { findOrganizations, createOrganizations } from '../../../src/repositories/organizationRepo';
+import {
+  findOrganizations,
+  createOrganizations,
+  getOrganizationAndDown,
+} from '../../../src/repositories/organizationRepo';
 import organizationApiHandler from '../../../src/pages/api/organizations/index';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { testNextApi } from '../../testutils/NextAPIUtils';
+import { isOrgChildOf } from '../../../src/utils/isOrgChildOf';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/organizationRepo');
 jest.mock('../../../src/repositories/grantsRepo');
+jest.mock('../../../src/utils/isOrgChildOf');
 
 const globalUserId = 1;
 
@@ -49,10 +55,24 @@ afterEach(() => {
 });
 
 test('should return organizations', async () => {
-  mockMethodAndReturn(findOrganizations, testOrganizations);
+  mockMethodAndReturn(getOrganizationAndDown, testOrganizations);
   const { status, data } = await testNextApi.get(organizationApiHandler);
   expect(status).toBe(200);
   expect(data).toStrictEqual({ organizations: testOrganizations });
+});
+
+test('should return 403 if incorrect permissions - GET', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: globalUserId,
+    firstName: 'joe',
+    role: { id: '22', name: 'norole' },
+  });
+  mockMethodAndReturn(isOrgChildOf, Promise.resolve(false));
+  const getOrgMock = mockMethodAndReturn(getOrganizationAndDown, testOrganizations);
+  const { status } = await testNextApi.get(organizationApiHandler);
+
+  expect(getOrgMock).not.toBeCalled();
+  expect(status).toBe(403);
 });
 
 test('should return 401 if not authorized', async () => {

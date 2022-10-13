@@ -29,8 +29,8 @@ const ProfileHeader: React.FC<{
     <Card tw="relative min-w-min max-width[1440px] h-20 py-4 flex items-center justify-evenly">
       <div tw="flex items-center justify-around flex-grow">
         <Avatar sx={{ bgcolor: theme.palette.secondary.main }}>
-          {member?.firstName.charAt(0)}
-          {member?.lastName.charAt(0)}
+          {member?.firstName?.charAt(0)}
+          {member?.lastName?.charAt(0)}
         </Avatar>
         <Typography variant="h5" component="h5">
           {member?.firstName} {member?.lastName}

@@ -45,18 +45,6 @@ test('should return 401 if not authorized', async () => {
   expect(status).toBe(401);
 });
 
-test('should return 403 if permissions are incorrect -GET', async () => {
-  mockMethodAndReturn(findUserByEmail, {
-    id: globalUserId,
-    firstName: 'joe',
-    role: { id: '22', name: 'member' },
-  });
-
-  const { status } = await testNextApi.get(rolesHandler);
-
-  expect(status).toBe(403);
-});
-
 test('should return 405 if method is not allowed', async () => {
   const { status } = await testNextApi.put(rolesHandler, {
     customHeaders: { Authorization: `Bearer ${adminJWT}` },

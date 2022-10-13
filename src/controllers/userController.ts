@@ -10,7 +10,7 @@ import {
   deleteAllMemberTrackingItemsForUserId,
   deleteAllMemberTrackingRecordsForUserId,
 } from '../repositories/memberTrackingRepo';
-import { getRoleByName } from '../repositories/roleRepo';
+import { getRoleById, getRoleByName } from '../repositories/roleRepo';
 import { deleteUser, findUserById, LoggedInUser, updateUser } from '../repositories/userRepo';
 import { userWithinOrgOrChildOrg } from '../utils/userWithinOrgorChildOrg';
 
@@ -37,24 +37,24 @@ const setup = async (req: NextApiRequestWithAuthorization<LoggedInUser>) => {
   const { query, body } = req;
   const userId = query.id as string;
   const userIdParam = parseInt(userId);
-  const userFromRequest = await findUserById(userIdParam);
-  if (!userFromRequest) {
+  const userFromParam = await findUserById(userIdParam);
+  if (!userFromParam) {
     throw new NotFoundError();
   }
   const ac = await getAc();
 
-  return { body, userIdParam, userFromRequest, ac };
+  return { body, userIdParam, userFromParam, ac };
 };
 
 const getUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiMessage>
 ) => {
-  const { userIdParam, ac, userFromRequest } = await setup(req);
+  const { userIdParam, ac, userFromParam } = await setup(req);
   let permission: Permission;
 
   if (req.user.id !== userIdParam) {
-    if (await userWithinOrgOrChildOrg(req.user.organizationId, userFromRequest.organizationId)) {
+    if (await userWithinOrgOrChildOrg(req.user.organizationId, userFromParam.organizationId)) {
       permission = ac.can(req.user.role.name).readAny(EResource.USER);
     } else {
       throw new PermissionError();
@@ -67,19 +67,27 @@ const getUserAction = async (
     throw new PermissionError();
   }
 
-  res.status(200).json(userFromRequest);
+  res.status(200).json(userFromParam);
 };
 
 const putUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiMessage>
 ) => {
-  const { userIdParam, ac, userFromRequest, body } = await setup(req);
+  const { userIdParam, ac, userFromParam, body } = await setup(req);
+  const userMakingRequest = req.user;
+
+  if (body.roleId) {
+    const requestedRoleUpdate = await getRoleById(body.roleId);
+    if (requestedRoleUpdate.name === ERole.ADMIN) {
+      throw new PermissionError();
+    }
+  }
 
   let permission: Permission;
 
   if (req.user.id !== userIdParam) {
-    if (await userWithinOrgOrChildOrg(req.user.organizationId, userFromRequest.organizationId)) {
+    if (await userWithinOrgOrChildOrg(req.user.organizationId, userFromParam.organizationId)) {
       permission = ac.can(req.user.role.name).updateAny(EResource.USER);
     } else if (req.user.role.name === ERole.ADMIN) {
       permission = ac.can(req.user.role.name).updateAny(EResource.USER);
@@ -97,21 +105,21 @@ const putUserAction = async (
   let filteredData = permission.filter(body);
 
   const parsedOrganizationId = body.organizationId ? parseInt(body.organizationId) : null;
-  let finalOrganizationId = userFromRequest.organizationId;
 
-  // if check on change of orgId is needed
-  if (parsedOrganizationId && parsedOrganizationId !== userFromRequest.organizationId) {
+  const canNotUpdateRoleAndOrgAtSameTime =
+    userMakingRequest.role.name !== ERole.PROGRAM_MANAGER && userMakingRequest.role.name !== ERole.ADMIN;
+
+  // if orgId has changed and not a program admin. Set role to member
+  if (
+    parsedOrganizationId &&
+    parsedOrganizationId !== userFromParam.organizationId &&
+    canNotUpdateRoleAndOrgAtSameTime
+  ) {
     const memberRole = await getRoleByName(ERole.MEMBER);
     filteredData = { ...filteredData, roleId: memberRole.id };
-    finalOrganizationId = parsedOrganizationId;
   }
 
-  const preparedFilteredData = {
-    ...filteredData,
-    organizationId: finalOrganizationId,
-  };
-
-  const updatedUser = await updateUser(userIdParam, preparedFilteredData);
+  const updatedUser = await updateUser(userIdParam, filteredData);
 
   res.status(200).json(updatedUser);
 };

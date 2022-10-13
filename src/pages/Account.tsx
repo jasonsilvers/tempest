@@ -24,7 +24,7 @@ import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
 import { ERole } from '../const/enums';
 import { ranks } from '../const/ranks';
-import { useOrgs } from '../hooks/api/organizations';
+import { useOrgsAll } from '../hooks/api/organizations';
 import { useUpdateUser } from '../hooks/api/users';
 import { LoggedInUser } from '../repositories/userRepo';
 
@@ -74,7 +74,7 @@ const monitorFormSchema = Joi.object({
 });
 
 const MonitorForm = ({ user }: { user: LoggedInUser }) => {
-  const orgsQuery = useOrgs();
+  const orgsQuery = useOrgsAll();
   const snackbar = useSnackbar();
   const userMutation = useUpdateUser();
 
@@ -158,7 +158,7 @@ const workFormSchema = Joi.object({
 });
 
 const WorkForm = ({ user }: { user: LoggedInUser }) => {
-  const orgsQuery = useOrgs();
+  const orgsQuery = useOrgsAll();
   const snackbar = useSnackbar();
   const userMutation = useUpdateUser();
   const {
@@ -479,6 +479,9 @@ const AccountPage = () => {
     setTabValue(newValue);
   };
 
+  const canChangeReportingOrganization =
+    user?.role?.name === ERole.MONITOR || user?.role?.name === ERole.PROGRAM_MANAGER;
+
   if (isLoading) {
     return <div>...Loading</div>;
   }
@@ -488,8 +491,8 @@ const AccountPage = () => {
       <div tw="flex flex-col items-center space-y-4">
         <Avatar sx={{ height: 96, width: 96, bgcolor: theme.palette.secondary.main }}>
           <Typography variant="h4">
-            {user?.firstName.charAt(0)}
-            {user?.lastName.charAt(0)}
+            {user?.firstName?.charAt(0)}
+            {user?.lastName?.charAt(0)}
           </Typography>
         </Avatar>
         <Typography variant="h4">
@@ -501,7 +504,7 @@ const AccountPage = () => {
           <Tabs value={tabValue} onChange={handleTabChange}>
             <StyledTab label="PERSONAL" {...a11yProps(0)} />
             <StyledTab label="WORK" {...a11yProps(0)} />
-            {user.role.name === ERole.MONITOR ? <StyledTab label="MONITOR" {...a11yProps(0)} /> : null}
+            {canChangeReportingOrganization ? <StyledTab label="MONITOR" {...a11yProps(0)} /> : null}
           </Tabs>
         </div>
         <div tw="w-[720px] h-full border rounded-md">
@@ -511,7 +514,7 @@ const AccountPage = () => {
           <TabPanel value={tabValue} index={1}>
             <WorkForm user={user} />
           </TabPanel>
-          {user.role.name === ERole.MONITOR ? (
+          {canChangeReportingOrganization ? (
             <TabPanel value={tabValue} index={2}>
               <MonitorForm user={user} />
             </TabPanel>

@@ -81,4 +81,8 @@ const useUpdateUser = () => {
   );
 };
 
-export { useUsers, useUpdateUser, useMember, useMemberTrackingItemsForUser };
+const useDeleteUser = () => {
+  return useMutation((userId: number) => axios.delete(`${EUri.USERS}${userId}`).then((result) => result.data));
+};
+
+export { useUsers, useUpdateUser, useMember, useMemberTrackingItemsForUser, useDeleteUser };
