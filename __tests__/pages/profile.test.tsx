@@ -587,6 +587,6 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
     });
     expect(await screen.findByText(/jones/i)).toBeInTheDocument();
     await waitForLoadingToFinish();
-    expect(screen.getByText('All Training Has Been Added')).toBeInTheDocument();
+    expect(screen.getByText('Upcoming Training')).toBeInTheDocument();
   });
 });

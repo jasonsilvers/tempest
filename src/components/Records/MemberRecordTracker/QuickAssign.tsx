@@ -90,13 +90,18 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
   return (
     <>
       {memberTrackingItemsToAdd.length > 0 ? (
-        <Typography tw="text-xl text-center pt-4">{`${memberTrackingItemsToAdd?.length} Overdue/Upcoming Trainings`}</Typography>
+        <Typography
+          variant="h6"
+          tw=" pl-4 pt-4"
+        >{`${memberTrackingItemsToAdd?.length} Overdue/Upcoming Trainings`}</Typography>
       ) : (
-        <Typography tw="text-xl text-center pt-4">All Training Has Been Added</Typography>
+        <Typography variant="h6" tw="pl-4 pt-4">
+          Upcoming Training
+        </Typography>
       )}
-      <div tw="grid grid-flow-col overflow-auto px-5 py-4 gap-5 place-items-center">
+      <div tw="flex space-x-5 overflow-auto px-5 py-4 place-items-start">
         {memberTrackingItemsToAdd.map((memberTrackingItemToAdd) => (
-          <Card key={memberTrackingItemToAdd.id} tw="w-[170px] h-[150px] shadow-lg rounded-xl">
+          <Card key={memberTrackingItemToAdd.id} tw="min-w-[170px] h-[150px] shadow-lg rounded-xl">
             <CardContent tw="pb-0">
               <Typography tw="text-xs text-center font-bold truncate">
                 {memberTrackingItemToAdd.trainingTitle}
@@ -134,7 +139,7 @@ export const QuickAssign: React.FC<QuickAssignProps> = ({ memberId }) => {
   }
 
   return (
-    <div aria-label="quick-assign-widget" tw="flex flex-auto space-x-2 items-center max-w-5xl">
+    <div aria-label="quick-assign-widget" tw="flex flex-auto space-x-2 items-center max-w-3xl">
       <div tw="w-full items-center flex-wrap">
         <MemberUpcomingTrackingItemList memberTrackingItems={memberTrackingItemsQuery.data} forMemberId={memberId} />
       </div>

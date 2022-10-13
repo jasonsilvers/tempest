@@ -42,6 +42,8 @@ export const useCreateMemberTrackingRecord = () => {
     {
       onSettled: (data: MemberTrackingRecord) => {
         queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId, EMtrVariant.ALL));
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId, EMtrVariant.COMPLETED));
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId, EMtrVariant.IN_PROGRESS));
       },
     }
   );
@@ -62,6 +64,7 @@ export const useDeleteMemberTrackingRecord = () => {
       },
       onSettled: async (_data, _err, { userId }) => {
         queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(userId, EMtrVariant.IN_PROGRESS));
+        queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(userId, EMtrVariant.ALL));
         queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(userId, EMtrVariant.COMPLETED));
       },
     }
