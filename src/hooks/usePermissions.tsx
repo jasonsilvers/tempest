@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { LoggedInUser } from '../repositories/userRepo';
 import { EAction, EFuncAction, EResource } from '../const/enums';
 import { useGrants } from './api/grants';
+import { extendACRoles } from '../utils/AcRoleExtension';
 
 const usePermissions = () => {
   const { user, isLoading: userIsLoading } = useUser<LoggedInUser>();
@@ -14,9 +15,9 @@ const usePermissions = () => {
   let ac: AccessControl;
 
   const permissionCheck = useCallback(
-    (userRole: string, permission: EFuncAction, resource: EResource) => {
+    (userRole: string, action: EFuncAction, resource: EResource) => {
       try {
-        return ac?.can(userRole)[permission](resource);
+        return ac?.can(userRole)[action](resource);
       } catch (error) {
         return { granted: false };
       }
@@ -29,6 +30,7 @@ const usePermissions = () => {
   if (grantsQuery.data) {
     try {
       ac = new AccessControl(grantsQuery.data);
+      extendACRoles(ac);
     } catch (error) {
       console.log(error, 'error creating access control list, attempting to clean grants');
       const cleanedUpGrants = grantsQuery.data.filter((grant) =>

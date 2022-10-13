@@ -2,14 +2,14 @@ import { Autocomplete, TextField } from '@mui/material';
 import { Organization } from '@prisma/client';
 import { SyntheticEvent } from 'react';
 import 'twin.macro';
-import { useOrgs } from '../hooks/api/organizations';
+import { useOrgsAll } from '../hooks/api/organizations';
 
 type OrganizationSelectProps = {
   onChange: (event: SyntheticEvent<Element, Event>, value: Organization) => void;
 };
 
 export function OrganizationSelect({ onChange }: OrganizationSelectProps) {
-  const orgsQuery = useOrgs();
+  const orgsQuery = useOrgsAll();
   return (
     <Autocomplete
       size="small"

@@ -32,6 +32,12 @@ const pageGrants: Grants[] = [
     resource: EResource.ADMIN_PAGE,
     role: ERole.ADMIN,
   },
+  {
+    action: EAction.READ_ANY,
+    attributes: '*',
+    resource: EResource.PROGRAM_ADMIN,
+    role: ERole.PROGRAM_MANAGER,
+  },
 ];
 
 const memberTrackingItemGrants: Grants[] = [
@@ -180,11 +186,18 @@ const userGrants: Grants[] = [
     resource: EResource.USER,
     role: ERole.MONITOR,
   },
+  {
+    action: EAction.UPDATE_ANY,
+    attributes:
+      'organizationId, tags, afsc, rank, address, dutyTitle, firstName, lastName, reportingOrganizationId, organizationId, roleId',
+    resource: EResource.USER,
+    role: ERole.PROGRAM_MANAGER,
+  },
 ];
 
 const organizationGrants: Grants[] = [
   {
-    action: EAction.READ_ANY,
+    action: EAction.READ_OWN,
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.MONITOR,
@@ -203,16 +216,34 @@ const organizationGrants: Grants[] = [
     role: ERole.ADMIN,
   },
   {
+    action: EAction.CREATE_OWN,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.PROGRAM_MANAGER,
+  },
+  {
     action: EAction.UPDATE_ANY,
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.ADMIN,
   },
   {
+    action: EAction.UPDATE_OWN,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.PROGRAM_MANAGER,
+  },
+  {
     action: EAction.DELETE_ANY,
     attributes: '*',
     resource: EResource.ORGANIZATION,
     role: ERole.ADMIN,
+  },
+  {
+    action: EAction.DELETE_OWN,
+    attributes: '*',
+    resource: EResource.ORGANIZATION,
+    role: ERole.PROGRAM_MANAGER,
   },
   {
     action: EAction.READ_ANY,

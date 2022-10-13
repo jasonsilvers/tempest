@@ -16,8 +16,6 @@ export async function findOrganizationById(
   return prisma.organization.findUnique({ where: { id }, include: { children: withChildren, users: withUsers } });
 }
 
-export type OrganizationWithChildren = Prisma.PromiseReturnType<typeof findOrganizationById>;
-
 export async function createOrganizations(organization: Organization) {
   return prisma.organization.create({
     data: organization,
@@ -39,8 +37,9 @@ export async function getOrganizationAndDown(organizationId: number) {
     WITH RECURSIVE orgs AS (
       SELECT 
         id,
-        org_name,
-        org_short_name,
+        org_name AS name,
+        org_short_name AS "shortName",
+        parent_id AS "parentId",
         types
       FROM 
         organization
@@ -51,6 +50,7 @@ export async function getOrganizationAndDown(organizationId: number) {
           o.id,
           o.org_name,
           o.org_short_name,
+          o.parent_id,
           o.types
         FROM
           organization o
@@ -85,3 +85,12 @@ export async function getOrganizationAndUp(organizationId: number) {
       id;`
   );
 }
+
+export type OrganizationWithChildrenAndUsers = Prisma.PromiseReturnType<typeof findOrganizationById>;
+export type OrgsWithCounts = Prisma.PromiseReturnType<typeof findOrganizations>;
+export type OrgWithCounts = Organization & {
+  _count: {
+    children: number;
+    users: number;
+  };
+};
