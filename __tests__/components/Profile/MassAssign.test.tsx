@@ -594,3 +594,26 @@ test('mass assign result should close dialog and select retry members and tracki
   await screen.findByText(/selected member/i);
   await screen.findByText(/selected training/i);
 });
+
+test('should cancel mass assign when cancel button is click', async () => {
+  const screen = render(<MassAssign usersQuery={usersQuery} />);
+
+  await screen.findByText(/big bug safety/i);
+  const cancelButton = screen.getByRole('button', { name: 'cancel-button' });
+  expect(cancelButton).toBeDisabled();
+
+  const allCheckBox = screen.getByText(/item/i);
+
+  fireEvent.click(allCheckBox);
+
+  const fireExtinguisherCheckBox = screen.getByRole('checkbox', {
+    name: /fire extinguisher annually/i,
+  });
+  expect(fireExtinguisherCheckBox).toBeChecked();
+
+  expect(cancelButton).toBeEnabled();
+
+  fireEvent.click(cancelButton);
+
+  expect(fireExtinguisherCheckBox).not.toBeChecked();
+});
