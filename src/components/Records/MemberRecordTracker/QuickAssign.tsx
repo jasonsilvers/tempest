@@ -72,7 +72,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
         });
       });
   }, [memberTrackingItems]);
-  console.log(memberTrackingItems);
+
   const handleAddMemberTrackingItem = (memberTrackingItemToAdd: IMemberTrackingItemsToAdd, memberId: number) => {
     const newMemberTrackingRecord: Partial<MemberTrackingRecord> = {
       trackingItemId: memberTrackingItemToAdd.id,
