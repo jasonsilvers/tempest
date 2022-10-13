@@ -43,12 +43,9 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
           (mtr) => mtr.completedDate === null || mtr.traineeSignedDate === null || mtr.authoritySignedDate === null
         );
 
-        if (completedMemberTrackingRecord === undefined) {
-          return false
-        }
         const completedRecordState = getStatus(
           completedMemberTrackingRecord?.completedDate,
-          completedMemberTrackingRecord.trackingItem?.interval
+          completedMemberTrackingRecord?.trackingItem?.interval
         );
 
         if (completedRecordState === ECategorie.DONE) {
@@ -75,7 +72,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
         });
       });
   }, [memberTrackingItems]);
-  console.log(memberTrackingItems)
+  console.log(memberTrackingItems);
   const handleAddMemberTrackingItem = (memberTrackingItemToAdd: IMemberTrackingItemsToAdd, memberId: number) => {
     const newMemberTrackingRecord: Partial<MemberTrackingRecord> = {
       trackingItemId: memberTrackingItemToAdd.id,
@@ -92,7 +89,11 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
 
   return (
     <>
-      <Typography tw="text-xl text-center pt-2">{`${memberTrackingItemsToAdd?.length} Overdue/Upcoming Trainings`}</Typography>
+      {memberTrackingItemsToAdd.length > 0 ? (
+        <Typography tw="text-xl text-center pt-4">{`${memberTrackingItemsToAdd?.length} Overdue/Upcoming Trainings`}</Typography>
+      ) : (
+        <Typography tw="text-xl text-center pt-4">All Training Has Been Added</Typography>
+      )}
       <div tw="grid grid-flow-col overflow-auto px-5 py-4 gap-5 place-items-center">
         {memberTrackingItemsToAdd.map((memberTrackingItemToAdd) => (
           <Card key={memberTrackingItemToAdd.id} tw="w-[170px] h-[150px] shadow-lg rounded-xl">
@@ -110,6 +111,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
                 size="small"
                 tw="w-3/4"
                 data-testid="quickAddButton"
+                aria-label="quick-add-button"
               >
                 + Add
               </Button>
@@ -132,7 +134,7 @@ export const QuickAssign: React.FC<QuickAssignProps> = ({ memberId }) => {
   }
 
   return (
-    <div tw="flex flex-auto space-x-2 items-center max-w-5xl">
+    <div aria-label="quick-assign-widget" tw="flex flex-auto space-x-2 items-center max-w-5xl">
       <div tw="w-full items-center flex-wrap">
         <MemberUpcomingTrackingItemList memberTrackingItems={memberTrackingItemsQuery.data} forMemberId={memberId} />
       </div>

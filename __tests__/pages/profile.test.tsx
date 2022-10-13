@@ -1,4 +1,3 @@
-import { waitForElementToBeRemoved } from '@testing-library/react';
 import dayjs from 'dayjs';
 import mockRouter from 'next-router-mock';
 import singletonRouter from 'next/router';
@@ -12,7 +11,7 @@ import { findUserByIdReturnAllIncludes } from '../../src/repositories/userRepo';
 import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
 import { rest, server } from '../testutils/mocks/msw';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
-import { fireEvent, rtlRender, waitFor, within, Wrapper } from '../testutils/TempestTestUtils';
+import { fireEvent, rtlRender, waitFor, waitForLoadingToFinish, within, Wrapper } from '../testutils/TempestTestUtils';
 
 jest.mock('../../src/repositories/userRepo');
 jest.mock('../../src/repositories/memberTrackingRepo');
@@ -515,9 +514,13 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
     });
 
     await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
-    await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
-    const mdgTrainng = screen.queryAllByText(/mdg training/i);
-    expect(mdgTrainng[0]).toBeInTheDocument();
+    await waitForLoadingToFinish();
+
+    const quickAssignWidget = screen.getByLabelText('quick-assign-widget');
+    expect(quickAssignWidget).toBeInTheDocument();
+
+    const mdgTraining = within(quickAssignWidget).getByText('MDG Training');
+    expect(mdgTraining).toBeInTheDocument();
   });
 
   test('should not show done training items ', async () => {
@@ -543,7 +546,7 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
       },
     });
     await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
-    await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
+    await waitForLoadingToFinish();
 
     server.use(
       rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
@@ -583,7 +586,7 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
       },
     });
     expect(await screen.findByText(/jones/i)).toBeInTheDocument();
-    await waitForElementToBeRemoved(() => screen.getAllByText(/loading/i));
-    expect(screen.getByText('0 Overdue/Upcoming Trainings')).toBeInTheDocument();
+    await waitForLoadingToFinish();
+    expect(screen.getByText('All Training Has Been Added')).toBeInTheDocument();
   });
 });
