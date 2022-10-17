@@ -628,9 +628,9 @@ export const MassAssign = ({ usersQuery }: MassAssignProps) => {
   return (
     <>
       <Card tw="p-5">
-        <div tw="pb-8 pt-4 flex">
-          <div tw="ml-auto w-full px-8">
-            <Stepper activeStep={step}>
+        <div tw="pb-8 w-full flex pt-4">
+          <div tw="w-full flex">
+            <Stepper activeStep={step} tw="w-11/12">
               {steps.map((label, index) => {
                 const stepProps: { completed?: boolean } = {};
                 const labelProps: {
@@ -644,6 +644,21 @@ export const MassAssign = ({ usersQuery }: MassAssignProps) => {
                 );
               })}
             </Stepper>
+            <Button
+              variant="text"
+              color="secondary"
+              aria-label="cancel-button"
+              tw="pl-2"
+              disabled={selectedTrackingItemIds.length === 0}
+              onClick={() => {
+                setStep(0);
+                setSelectedTrackingItemIds([]);
+                setSelectedUserIds([]);
+                setCompleted({ ...completed, [0]: false, [1]: false });
+              }}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
 
