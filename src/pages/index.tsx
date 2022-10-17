@@ -38,7 +38,7 @@ function Home() {
     if (userQuery.user && userQuery.user.role?.name !== ERole.MEMBER && userQuery.user.organizationId) {
       router.push('/Dashboard');
     }
-  }, [userQuery]);
+  }, [userQuery.user, userQuery.isLoading]);
 
   return (
     <div>

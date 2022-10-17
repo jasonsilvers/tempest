@@ -7,7 +7,7 @@ it('routes the user to the Unauthenticated app', async () => {
   const push = jest.fn();
   render(<Index />, { push });
   //This is now 2 because react 18 renders twice in dev
-  expect(push).toBeCalledTimes(2);
+  expect(push).toBeCalledTimes(1);
   expect(push).toBeCalledWith('/Unauthenticated');
 });
 
