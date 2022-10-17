@@ -654,6 +654,7 @@ export const MassAssign = ({ usersQuery }: MassAssignProps) => {
                 setStep(0);
                 setSelectedTrackingItemIds([]);
                 setSelectedUserIds([]);
+                setCompleted({ ...completed, [0]: false });
               }}
             >
               Cancel
