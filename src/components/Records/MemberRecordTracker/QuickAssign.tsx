@@ -103,7 +103,7 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
         {memberTrackingItemsToAdd.map((memberTrackingItemToAdd) => (
           <Card key={memberTrackingItemToAdd.id} tw="min-w-[170px] h-[150px] shadow-lg rounded-xl">
             <CardContent tw="pb-0">
-              <Typography tw="text-xs text-center font-bold truncate">
+              <Typography tw="text-xs text-center font-bold truncate max-w-[150px]">
                 {memberTrackingItemToAdd.trainingTitle}
               </Typography>
               <Typography tw="text-xs text-center leading-6">{memberTrackingItemToAdd.recurrence}</Typography>
