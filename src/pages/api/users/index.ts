@@ -4,8 +4,22 @@ import { EResource } from '../../../const/enums';
 import { getAc } from '../../../middleware/utils';
 import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { findUserByEmail, getAllUsersFromUsersOrgCascade, LoggedInUser } from '../../../repositories/userRepo';
-const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
+import {
+  findUserByEmail,
+  getAllDetachedUsers,
+  getAllUsersFromUsersOrgCascade,
+  LoggedInUser,
+  UsersWithMemberTrackingRecords,
+} from '../../../repositories/userRepo';
+
+export interface ITempestUsersApiRequest<T> extends NextApiRequestWithAuthorization<T> {
+  query: {
+    detached: string;
+    [key: string]: string | string[];
+  };
+}
+
+const usersApiHandler = async (req: ITempestUsersApiRequest<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;
 
   if (method !== 'GET') {
@@ -20,7 +34,13 @@ const usersApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser
     throw new PermissionError();
   }
 
-  const users = await getAllUsersFromUsersOrgCascade(req.user.organizationId);
+  let users: UsersWithMemberTrackingRecords;
+
+  if (req.query.detached === 'true') {
+    users = await getAllDetachedUsers();
+  } else {
+    users = await getAllUsersFromUsersOrgCascade(req.user.organizationId);
+  }
 
   res.status(200).json({ users });
 };
