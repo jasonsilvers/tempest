@@ -4,7 +4,7 @@ import { OrganizationType } from '@prisma/client';
 import { useMemo, useState } from 'react';
 import 'twin.macro';
 import { AddIcon } from '../../assets/Icons';
-import { useOrgsUserOrgAndDown } from '../../hooks/api/organizations';
+import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
 import { OrgWithCounts } from '../../repositories/organizationRepo';
 import { LoggedInUser } from '../../repositories/userRepo';
 import { AddNewOrganizationDialog } from './AddNewOrganizationDialog';
@@ -15,7 +15,7 @@ type OrganizationListProps = {
 };
 
 export const OrganizationList: React.FC<OrganizationListProps> = ({ loggedInUser }) => {
-  const { data: orgs, isLoading } = useOrgsUserOrgAndDown();
+  const { data: orgs, isLoading } = useOrgsLoggedInUsersOrgAndDown();
   const [sidebarState, setSidebarState] = useState({ orgId: null, open: false });
 
   const [dialogIsOpen, setDialogIsOpen] = useState(false);

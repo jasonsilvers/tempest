@@ -7,9 +7,12 @@ import { usePermissions } from '../hooks/usePermissions';
 import 'twin.macro';
 import { OrganizationList } from '../components/ProgramAdmin/OrganizationList';
 import { UsersList } from '../components/ProgramAdmin/UsersList';
+import { useUsers } from '../hooks/api/users';
 
 function ProgramAdminPage() {
   const { user: loggedInUser, permissionCheck, isLoading } = usePermissions();
+  const usersAllListQuery = useUsers();
+  const usersDetachedListQuery = useUsers({ detached: true });
 
   const canViewAdminPage = permissionCheck(loggedInUser?.role.name, EFuncAction.READ_ANY, EResource.PROGRAM_ADMIN);
 
@@ -34,14 +37,18 @@ function ProgramAdminPage() {
           <div tw="border-b">
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
               <Tab label="Users" {...a11yProps(0)} />
+              <Tab label="Detached Users" {...a11yProps(1)} />
 
-              <Tab label="Organizations" {...a11yProps(1)} />
+              <Tab label="Organizations" {...a11yProps(2)} />
             </Tabs>
           </div>
           <TabPanel value={value} index={0}>
-            <UsersList />
+            <UsersList usersListQuery={usersAllListQuery} />
           </TabPanel>
           <TabPanel value={value} index={1}>
+            <UsersList usersListQuery={usersDetachedListQuery} />
+          </TabPanel>
+          <TabPanel value={value} index={2}>
             <OrganizationList loggedInUser={loggedInUser} />
           </TabPanel>
         </div>

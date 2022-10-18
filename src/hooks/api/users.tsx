@@ -10,7 +10,7 @@ import { removeOldCompletedRecords } from '../../utils';
 import { MEMBER_TRACKING_ITEM_RESOURCE, mtiQueryKeys } from './memberTrackingItem';
 
 export const usersQueryKeys = {
-  users: () => ['users'],
+  users: (detached: boolean) => (detached ? ['users', 'detached'] : ['users']),
   member: (id: number) => ['member', id],
 };
 
@@ -53,9 +53,11 @@ const sortUsers = (userList: UserWithAll[]) => {
   return userList.sort((userA, userB) => (userA.lastName >= userB.lastName ? 1 : -1));
 };
 
-const useUsers = () => {
-  return useQuery<UserWithAll[]>(usersQueryKeys.users(), async () => {
-    return axios.get<UsersDTO>(EUri.USERS).then((result) => sortUsers(result.data.users));
+const useUsers = ({ detached }: { detached?: boolean } = {}) => {
+  const uri = detached ? `${EUri.USERS}?detached=true` : EUri.USERS;
+
+  return useQuery<UserWithAll[]>(usersQueryKeys.users(detached), async () => {
+    return axios.get<UsersDTO>(uri).then((result) => sortUsers(result.data.users));
   });
 };
 

@@ -27,7 +27,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { determineOrgsWithCatalogs } from '../../../utils/determineOrgsWithCatalogs';
-import { useOrgsUserOrgAndDown } from '../../../hooks/api/organizations';
+import { useOrgsLoggedInUsersOrgAndDown } from '../../../hooks/api/organizations';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { LoggedInUser } from '../../../repositories/userRepo';
 import { ERole } from '../../../const/enums';
@@ -258,7 +258,7 @@ const AddTrackingItemDialog: React.FC<AddTrackingItemDialogProps> = ({ handleClo
   const [selectedCatalog, setSelectedCatalog] = useState<string | null>(defaultCatalog.toString());
   const [trackingItem, setTrackingItem] = useState<TrackingItemToAdd>(initialTrackingItemToAdd);
   const [catalogs, setCatalogs] = useState<Organization[]>([]);
-  const { data: orgsFromServer } = useOrgsUserOrgAndDown();
+  const { data: orgsFromServer } = useOrgsLoggedInUsersOrgAndDown();
   const { enqueueSnackbar } = useSnackbar();
 
   const fuse = useMemo(() => new Fuse(trackingItems ? trackingItems : [], fuseOptions), [trackingItems]);

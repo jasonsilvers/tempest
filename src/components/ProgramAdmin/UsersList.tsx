@@ -1,18 +1,21 @@
 import { Drawer } from '@mui/material';
 import { DataGrid, GridColumns, GridToolbar, GridValueGetterParams } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
-import { useOrgsUserOrgAndDown } from '../../hooks/api/organizations';
-import { useUsers } from '../../hooks/api/users';
+import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
 import { UserWithAll } from '../../repositories/userRepo';
 import { UserDetailEdit } from './UserDetailEdit';
 
 import 'twin.macro';
+import { UseQueryResult } from 'react-query';
 
-const UsersList = () => {
+type UserListProps = {
+  usersListQuery: UseQueryResult<UserWithAll[], unknown>;
+};
+
+const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
   const [sidebarState, setSidebarState] = useState({ userId: null, open: false });
 
-  const usersListQuery = useUsers();
-  const orgsListQuery = useOrgsUserOrgAndDown();
+  const orgsListQuery = useOrgsLoggedInUsersOrgAndDown();
 
   const columns: GridColumns<UserWithAll> = useMemo(
     () => [
