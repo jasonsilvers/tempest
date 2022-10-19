@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
 import React from 'react';
+import { UseQueryResult } from 'react-query';
 import 'whatwg-fetch';
 import { UsersList } from '../../../src/components/ProgramAdmin/UsersList';
 import { ERole, EUri } from '../../../src/const/enums';
+import { UserWithAll } from '../../../src/repositories/userRepo';
 import { rest, server } from '../../testutils/mocks/msw';
 import {
   fireEvent,
@@ -11,6 +13,7 @@ import {
   waitForElementToBeRemoved,
   waitForLoadingToFinish,
 } from '../../testutils/TempestTestUtils';
+import ProgramAdmin from '../../../src/pages/ProgramAdmin';
 
 const users = [
   {
@@ -31,7 +34,20 @@ const users = [
     roleId: 1,
     role: { id: 1, name: ERole.MONITOR },
   },
-];
+] as unknown as UserWithAll[];
+
+const detachedUsers = [
+  {
+    id: 468,
+    firstName: 'Jane',
+    lastName: 'Anderson',
+    organizationId: null,
+    reportingOrganizationId: null,
+    lastLogin: dayjs().toDate(),
+    roleId: 3,
+    role: { id: 3, name: ERole.MEMBER },
+  },
+] as unknown as UserWithAll[];
 
 const getUsers = (userList = users) =>
   rest.get(EUri.USERS, (req, res, ctx) => {
@@ -39,6 +55,16 @@ const getUsers = (userList = users) =>
       ctx.status(200),
       ctx.json({
         users: userList,
+      })
+    );
+  });
+
+const getDetachedUsers = () =>
+  rest.get(`${EUri.USERS}?detached=true`, (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        users: detachedUsers,
       })
     );
   });
@@ -122,11 +148,27 @@ afterEach(() => {
 // // Clean up after the tests are finished
 afterAll(() => server.close());
 test('should show list of users', async () => {
-  const screen = render(<UsersList />);
+  const screen = render(<ProgramAdmin />);
 
   await waitForLoadingToFinish();
+
   await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
   await waitFor(() => expect(screen.getByText(/smith/i)).toBeInTheDocument());
+});
+
+test('should show list of detached users', async () => {
+  server.use(getDetachedUsers());
+  const screen = render(<ProgramAdmin />);
+
+  await waitForLoadingToFinish();
+
+  const detachedUsersTab = screen.getByRole('tab', {
+    name: /detached users/i,
+  });
+
+  fireEvent.click(detachedUsersTab);
+
+  await waitFor(() => expect(screen.getByText(/anderson/i)).toBeInTheDocument());
 });
 
 test('should not show delete button if not admin', async () => {
@@ -143,9 +185,11 @@ test('should not show delete button if not admin', async () => {
       );
     })
   );
-  const screen = render(<UsersList />);
-
-  await waitForLoadingToFinish();
+  const screen = render(
+    <UsersList
+      usersListQuery={{ data: users, isLoading: false } as unknown as UseQueryResult<UserWithAll[], unknown>}
+    />
+  );
 
   await waitFor(() => expect(screen.getByText(/jones/i)).toBeInTheDocument());
 
@@ -159,7 +203,7 @@ test('should not show delete button if not admin', async () => {
 });
 
 test('should update a users organization', async () => {
-  const screen = render(<UsersList />);
+  const screen = render(<ProgramAdmin />);
 
   await waitForLoadingToFinish();
 
@@ -175,9 +219,9 @@ test('should update a users organization', async () => {
 
   const options = screen.getAllByRole('option');
 
-  server.use(getUsers([{ ...users[0], organizationId: '2' }]));
+  server.use(getUsers([{ ...users[0], organizationId: 2 }]));
 
-  fireEvent.click(options[1]);
+  fireEvent.click(options[0]);
 
   const updateButton = screen.getByRole('button', {
     name: /update/i,
@@ -191,7 +235,7 @@ test('should update a users organization', async () => {
   expect(alert).toBeInTheDocument();
 });
 test('should update a users role', async () => {
-  const screen = render(<UsersList />);
+  const screen = render(<ProgramAdmin />);
 
   await waitForLoadingToFinish();
 
@@ -223,7 +267,7 @@ test('should update a users role', async () => {
 });
 
 test('should delete user', async () => {
-  const screen = render(<UsersList />);
+  const screen = render(<ProgramAdmin />);
 
   await waitForLoadingToFinish();
 
@@ -267,7 +311,7 @@ test('should detach user', async () => {
       );
     })
   );
-  const screen = render(<UsersList />);
+  const screen = render(<ProgramAdmin />);
 
   await waitForLoadingToFinish();
 

@@ -10,7 +10,7 @@ import { removeOldCompletedRecords } from '../../utils';
 import { MEMBER_TRACKING_ITEM_RESOURCE, mtiQueryKeys } from './memberTrackingItem';
 
 export const usersQueryKeys = {
-  users: (detached: boolean) => (detached ? ['users', 'detached'] : ['users']),
+  users: (detached = false) => (detached ? ['users', 'detached'] : ['users']),
   member: (id: number) => ['member', id],
 };
 

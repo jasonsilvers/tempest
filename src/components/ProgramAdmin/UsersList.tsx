@@ -55,7 +55,7 @@ const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
     [orgsListQuery.data]
   );
 
-  if (usersListQuery.isLoading || orgsListQuery.isLoading) {
+  if (!usersListQuery || usersListQuery?.isLoading || orgsListQuery?.isLoading) {
     return <div>...Loading</div>;
   }
 
@@ -63,7 +63,7 @@ const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
     <div tw="h-[750px] pt-5">
       <DataGrid
         sx={{ border: 'none' }}
-        rows={usersListQuery.data}
+        rows={usersListQuery?.data}
         columns={columns}
         disableVirtualization
         onRowClick={(params) => setSidebarState({ userId: params.row.id, open: true })}
