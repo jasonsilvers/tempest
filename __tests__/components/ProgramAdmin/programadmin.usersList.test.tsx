@@ -13,7 +13,7 @@ import {
   waitForElementToBeRemoved,
   waitForLoadingToFinish,
 } from '../../testutils/TempestTestUtils';
-import ProgramAdmin from '../../../src/pages/ProgramAdmin';
+import ProgramAdmin from '../../../src/pages/Programadmin';
 
 const users = [
   {
