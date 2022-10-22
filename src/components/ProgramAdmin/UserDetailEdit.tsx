@@ -13,7 +13,7 @@ import { User } from '@prisma/client';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { useQueryClient } from 'react-query';
-import { useOrgsUserOrgAndDown } from '../../hooks/api/organizations';
+import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
 import { useDeleteUser, useUpdateUser } from '../../hooks/api/users';
 import { usePermissions } from '../../hooks/usePermissions';
 import { UserWithAll } from '../../repositories/userRepo';
@@ -47,8 +47,8 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
   } = useForm({
     resolver: joiResolver(personalFormSchema),
     defaultValues: {
-      organizationId: user?.organizationId.toString(),
-      reportingOrganizationId: user?.reportingOrganizationId ? user?.reportingOrganizationId.toString() : 'none',
+      organizationId: user?.organizationId ? user?.organizationId?.toString() : 'none',
+      reportingOrganizationId: user?.reportingOrganizationId ? user?.reportingOrganizationId?.toString() : 'none',
       roleId: user?.roleId,
     },
   });
@@ -58,7 +58,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
   const roles = rolesListQuery?.data?.filter((role) => role.name !== 'norole' && role.name !== 'admin');
 
   const deleteUserMutation = useDeleteUser();
-  const orgsListQuery = useOrgsUserOrgAndDown();
+  const orgsListQuery = useOrgsLoggedInUsersOrgAndDown();
 
   const mutateUser = useUpdateUser();
 
@@ -148,6 +148,9 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
                             'aria-label': 'select-org',
                           }}
                         >
+                          <MenuItem key="noneselected" value="none">
+                            No Organization Selected
+                          </MenuItem>
                           {orgsListQuery?.data?.map((org) => (
                             <MenuItem key={org.id} value={org.id}>
                               {org.shortName}
@@ -233,9 +236,11 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
           </div>
         </form>
 
-        <Button variant="outlined" color="primary" onClick={() => setDetachModalState(true)}>
-          DETACH MEMBER
-        </Button>
+        {user.organizationId !== null && (
+          <Button variant="outlined" color="primary" onClick={() => setDetachModalState(true)}>
+            DETACH MEMBER
+          </Button>
+        )}
 
         {LoggedInUser?.role.name === ERole.ADMIN ? (
           <Button color="error" variant="outlined" onClick={() => setDeleteModalState(true)}>

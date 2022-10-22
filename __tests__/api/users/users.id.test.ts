@@ -213,6 +213,7 @@ test('PUT - should return user - update own', async () => {
     organizationId: 123,
   });
   mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 123 });
+  mockMethodAndReturn(getRoleByName, { id: 2, name: 'member' });
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 2,
@@ -222,6 +223,7 @@ test('PUT - should return user - update own', async () => {
   expect(spy).toHaveBeenCalledWith(2, {
     organizationId: 123,
     dutyTitle: 'test Title',
+    roleId: 2,
   } as User);
 
   expect(status).toBe(200);
@@ -249,6 +251,8 @@ test('PUT - should filter data for member', async () => {
     organizationId: 123,
   });
   mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 123 });
+  mockMethodAndReturn(getRoleByName, { id: 2, name: 'member' });
+
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 2,
@@ -271,6 +275,7 @@ test('PUT - should filter data for member', async () => {
     afsc: 'afsc',
     dutyTitle: 'dutyTitle',
     address: 'address',
+    roleId: 2,
   });
 
   expect(status).toBe(200);
@@ -317,6 +322,8 @@ test('PUT - should set role to member when org changes', async () => {
 
 test('PUT - should return user - update any', async () => {
   mockMethodAndReturn(findUserById, userFromDb);
+  mockMethodAndReturn(getRoleByName, { id: 2, name: 'member' });
+
   mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   mockMethodAndReturn(userWithinOrgOrChildOrg, true);
 

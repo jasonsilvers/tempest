@@ -104,17 +104,15 @@ const putUserAction = async (
 
   let filteredData = permission.filter(body);
 
-  const parsedOrganizationId = body.organizationId ? parseInt(body.organizationId) : null;
+  const organizationIdFromBody = body.organizationId ? parseInt(body.organizationId) : null;
 
   const canNotUpdateRoleAndOrgAtSameTime =
     userMakingRequest.role.name !== ERole.PROGRAM_MANAGER && userMakingRequest.role.name !== ERole.ADMIN;
+  const changingOwnOrganization = userMakingRequest.id === userFromParam.id;
+  const userIsUpdatingOrg = organizationIdFromBody !== userFromParam.organizationId;
 
   // if orgId has changed and not a program admin. Set role to member
-  if (
-    parsedOrganizationId &&
-    parsedOrganizationId !== userFromParam.organizationId &&
-    canNotUpdateRoleAndOrgAtSameTime
-  ) {
+  if ((userIsUpdatingOrg && canNotUpdateRoleAndOrgAtSameTime) || changingOwnOrganization) {
     const memberRole = await getRoleByName(ERole.MEMBER);
     filteredData = { ...filteredData, roleId: memberRole.id };
   }

@@ -39,7 +39,7 @@ describe('Can use admin features', () => {
     //wait for dashboard to load
 
     cy.findByRole('navigation', { name: 'admin' }).click();
-    cy.findByRole('tab', { name: /users/i }).click();
+    cy.findAllByRole('tab', { name: /users/i }).first().click();
 
     //should only show 12 members
     cy.findByText(/1–16 of 16/i).should('exist')

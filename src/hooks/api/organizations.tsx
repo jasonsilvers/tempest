@@ -11,7 +11,7 @@ export const organizationQueryKeys = {
   organization: (id: number) => ['organization', id],
 };
 
-export const useOrgsUserOrgAndDown = () => {
+export const useOrgsLoggedInUsersOrgAndDown = () => {
   return useQuery<Organization[]>(organizationQueryKeys.organizations(), () =>
     axios.get<OrgsDTO>(EUri.ORGANIZATIONS).then((response) => response.data.organizations)
   );
