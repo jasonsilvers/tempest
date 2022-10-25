@@ -63,6 +63,7 @@ export enum EUri {
   PPE_ITEMS = '/api/ppeitems/',
   BULK_CREATE = '/api/bulk/tracking/create/',
   JOBS = '/api/jobs/',
+  ONBOARD = '/api/onboard/org/',
 }
 
 export enum EAttribute {
