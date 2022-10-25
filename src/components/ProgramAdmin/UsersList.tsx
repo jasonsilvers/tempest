@@ -28,6 +28,11 @@ const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
         },
       },
       {
+        field: 'email',
+        headerName: 'Email',
+        flex: 1,
+      },
+      {
         field: 'primaryOrg',
         headerName: 'Primary Org',
         flex: 1,
