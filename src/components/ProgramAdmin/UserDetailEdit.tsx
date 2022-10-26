@@ -201,7 +201,7 @@ export const UserDetailEdit: React.FC<UserDetailEditProps> = ({ user, closeEdit 
             <Typography>Permissions</Typography>
             <Divider />
             {rolesListQuery.isLoading ? (
-              <div>...loading</div>
+              <div>...loading roles</div>
             ) : (
               <FormControl fullWidth>
                 <Controller
