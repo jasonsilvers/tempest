@@ -15,9 +15,7 @@ const testPPEItem = {
   id: 1,
   name: 'Steel Toe',
   provided: true,
-  providedDetails: 'random details',
   inUse: false,
-  inUseDetails: 'not in use',
   userId: 5,
 };
 

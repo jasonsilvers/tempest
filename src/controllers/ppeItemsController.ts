@@ -27,9 +27,7 @@ export const postPpeItemSchema = {
     userId: Joi.number().required(),
     name: Joi.string().required(),
     provided: Joi.boolean().required(),
-    providedDetails: Joi.string().allow(''),
     inUse: Joi.boolean().required(),
-    inUseDetails: Joi.string().allow(''),
   }),
   query: Joi.object({
     userId: Joi.number(),
@@ -96,9 +94,7 @@ export const putPpeItemSchema = {
     userId: Joi.number().required(),
     name: Joi.string().required(),
     provided: Joi.boolean().required(),
-    providedDetails: Joi.string().allow(''),
     inUse: Joi.boolean().required(),
-    inUseDetails: Joi.string().allow(''),
   }),
   query: Joi.object({
     id: Joi.number(),

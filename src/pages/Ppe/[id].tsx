@@ -88,9 +88,9 @@ const PpeItem = ({
 
   return (
     <form onChange={handleSubmit(debouncedChangeHandler)} ref={formRef}>
-      <div tw="grid grid-cols-12 gap-1 text-[14px] w-[1400px] p-5">
+      <div tw="grid grid-cols-12 gap-1 text-[14px] w-[1200px] p-5">
         <input {...register('id')} hidden defaultValue={localPpeItem.id} readOnly />
-        <div tw="p-1 col-span-3 rounded-lg">
+        <div tw="p-1 col-span-9 rounded-lg">
           <TextField
             size="small"
             error={!!errors.name}
@@ -119,20 +119,6 @@ const PpeItem = ({
             )}
           />
         </div>
-        <div tw="p-1 col-span-3 rounded-lg ">
-          {/* remember to put in placeholder text */}
-          {/* shake animation when invalid */}
-          <TextField
-            size="small"
-            fullWidth
-            disabled={disabled}
-            placeholder="Enter Description"
-            multiline
-            defaultValue={localPpeItem.providedDetails}
-            error={!!errors.provided}
-            inputProps={{ ...register('providedDetails'), 'aria-label': 'providedDetails' }}
-          />
-        </div>
         <div tw="p-1 rounded-lg text-center">
           <Controller
             name="inUse"
@@ -148,18 +134,6 @@ const PpeItem = ({
                 {...props}
               />
             )}
-          />
-        </div>
-        <div tw="p-1 col-span-3 rounded-lg ">
-          <TextField
-            size="small"
-            fullWidth
-            multiline
-            disabled={disabled}
-            defaultValue={localPpeItem.inUseDetails}
-            placeholder="Enter Description"
-            error={!!errors.inUseDetails}
-            inputProps={{ ...register('inUseDetails'), 'aria-label': 'inUseDetails' }}
           />
         </div>
         <div tw="p-1 rounded-lg ">
@@ -222,18 +196,16 @@ const PpePage: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
   }
 
   return (
-    <div tw="relative min-w-min max-width[1440px] p-5">
+    <div tw="relative min-w-min max-width[1200px] p-5">
       <div tw="pb-5">
         <ProfileHeader member={member} />
       </div>
 
-      <Card tw="relative min-w-min max-width[1440px] h-auto flex flex-col">
-        <div tw="grid grid-cols-12 gap-1 text-[14px] font-bold w-[1400px] p-4">
-          <div tw="p-1 col-span-3 rounded-lg ">Personal Protective Equipment</div>
+      <Card tw="relative min-w-min max-width[1200px] h-auto flex flex-col">
+        <div tw="grid grid-cols-12 gap-1 text-[14px] font-bold w-[1200px] p-4">
+          <div tw="p-1 col-span-9 rounded-lg ">Personal Protective Equipment</div>
           <div tw="p-1 rounded-lg text-center">Provided</div>
-          <div tw="p-1 col-span-3 rounded-lg ">Details</div>
           <div tw="p-1 rounded-lg text-center">In-Use</div>
-          <div tw="p-1 col-span-3 rounded-lg ">Details</div>
           <div tw="p-1 rounded-lg "></div>
         </div>
         <Divider />
