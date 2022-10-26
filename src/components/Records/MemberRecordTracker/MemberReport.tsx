@@ -14,6 +14,8 @@ import { Transition } from '../../Dashboard/Report';
 import { addMemberCounts } from '../../Reports/reportsUtils';
 import { StatusDetailVariant, StatusPill } from '../../StatusVariants';
 import { TrackingItemInterval } from '../../../../src/utils/daysToString';
+import { usePpeItems } from '../../../hooks/api/ppe';
+import membertrackingitems from '../../../pages/api/membertrackingitems';
 
 type MemberTrainingReportProps = {
   memberId: number;
@@ -66,8 +68,117 @@ type MemberReportProps = {
   memberId: number;
 };
 
+type DetailedReportDialogProps = {
+  open: boolean;
+  handleClose: () => void;
+  memberId: number;
+  memberTrackingItems: MemberTrackingItemWithAll[];
+};
+
+const DetailedReportDialog: React.FC<DetailedReportDialogProps> = ({
+  open,
+  handleClose,
+  memberId,
+  memberTrackingItems,
+}) => {
+  return (
+    <Dialog
+      sx={{ '& .MuiDialog-paper': { backgroundColor: '#f8f8f8' } }}
+      fullScreen
+      open={open}
+      onClose={handleClose}
+      TransitionComponent={Transition}
+    >
+      <AppBar sx={{ position: 'relative', backgroundColor: 'white' }}>
+        <Toolbar>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color="primary">
+            Reporting Excel
+          </Typography>
+          <Button variant="contained" size="small" autoFocus color="primary" onClick={handleClose}>
+            Done
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <div tw="p-20">
+        <Card tw="h-96">
+          {<DetailedMemberTrainingReport memberId={memberId} memberTrackingItems={memberTrackingItems} />}
+        </Card>
+      </div>
+    </Dialog>
+  );
+};
+
+type ExportDialogProps = {
+  open: boolean;
+  handleClose: () => void;
+  memberId: number;
+  memberTrackingItems: MemberTrackingItemWithAll[];
+};
+
+const ExportDialog: React.FC<ExportDialogProps> = ({ open, handleClose, memberId, memberTrackingItems }) => {
+  const ppeQuery = usePpeItems(memberId);
+
+  const data = memberTrackingItems
+    ?.filter((member) => member.memberTrackingRecords.length !== 0)
+    .flatMap((mti) => {
+      return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
+        const isInactive = mti.status === MemberTrackingItemStatus.INACTIVE;
+        return {
+          id: `${memberId}-${mtr.id}`,
+          trainingTitle: mti.trackingItem.title,
+          recurrence: TrackingItemInterval[mti.trackingItem.interval],
+          status: isInactive ? 'Archived' : getStatus(mtr.completedDate, mti.trackingItem.interval),
+          dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
+        };
+      });
+    });
+
+  console.log(data);
+
+  if (ppeQuery.isLoading) {
+    return <div>...Loading</div>;
+  }
+
+  return (
+    <Dialog
+      sx={{ '& .MuiDialog-paper': { backgroundColor: '#f8f8f8' } }}
+      fullScreen
+      open={open}
+      onClose={handleClose}
+      TransitionComponent={Transition}
+    >
+      <AppBar sx={{ position: 'relative', backgroundColor: 'white' }}>
+        <Toolbar>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color="primary">
+            Detailed Report
+          </Typography>
+          <Button variant="contained" size="small" autoFocus color="primary" onClick={handleClose}>
+            Done
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <div tw="p-20">
+        <Card tw="h-96">
+          {ppeQuery.data.map((ppeItem) => (
+            <div key={ppeItem.id}>
+              {ppeItem.name}
+              {ppeItem.inUse}
+              {ppeItem.inUseDetails}
+              {ppeItem.providedDetails}
+            </div>
+          ))}
+          {data.map((mtr) => (
+            <div key={mtr.id}>{mtr.trainingTitle}</div>
+          ))}
+        </Card>
+      </div>
+    </Dialog>
+  );
+};
+
 export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
-  const [open, setOpen] = useState(false);
+  const [openDetailedReport, setOpenDetailedReport] = useState(false);
+  const [openExport, setOpenExport] = useState(false);
   const memberTrackingItemsQuery = useMemberTrackingItemsForUser(memberId);
 
   const counts = {
@@ -88,11 +199,11 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
     });
 
   const handleClickOpen = () => {
-    setOpen(true);
+    setOpenDetailedReport(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpenDetailedReport(false);
   };
 
   if (memberTrackingItemsQuery.isLoading) {
@@ -158,31 +269,23 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
           <Button variant="outlined" onClick={handleClickOpen}>
             Reporting Excel
           </Button>
+          <Button variant="outlined" onClick={() => setOpenExport(true)}>
+            Export
+          </Button>
         </div>
       </Card>
-      <Dialog
-        sx={{ '& .MuiDialog-paper': { backgroundColor: '#f8f8f8' } }}
-        fullScreen
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={Transition}
-      >
-        <AppBar sx={{ position: 'relative', backgroundColor: 'white' }}>
-          <Toolbar>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color="primary">
-              Reporting Excel
-            </Typography>
-            <Button variant="contained" size="small" autoFocus color="primary" onClick={handleClose}>
-              Done
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <div tw="p-20">
-          <Card tw="h-96">
-            {<DetailedMemberTrainingReport memberId={memberId} memberTrackingItems={memberTrackingItemsQuery.data} />}
-          </Card>
-        </div>
-      </Dialog>
+      <DetailedReportDialog
+        open={openDetailedReport}
+        handleClose={handleClose}
+        memberId={memberId}
+        memberTrackingItems={memberTrackingItemsQuery?.data}
+      />
+      <ExportDialog
+        open={openExport}
+        handleClose={() => setOpenExport(false)}
+        memberId={memberId}
+        memberTrackingItems={memberTrackingItemsQuery?.data}
+      />
     </>
   );
 };

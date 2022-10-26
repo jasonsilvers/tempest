@@ -38,7 +38,6 @@ function ProgramAdminPage() {
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
               <Tab label="Users" {...a11yProps(0)} />
               <Tab label="Detached Users" {...a11yProps(1)} />
-
               <Tab label="Organizations" {...a11yProps(2)} />
             </Tabs>
           </div>
