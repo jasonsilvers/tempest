@@ -15,9 +15,7 @@ const testPPEItem = {
   id: 1,
   name: 'Steel Toe',
   provided: true,
-  providedDetails: 'random details',
   inUse: false,
-  inUseDetails: 'not in use',
   userId: 5,
 };
 
@@ -25,9 +23,7 @@ const testPPEItem2 = {
   id: 1,
   name: 'gas mask',
   provided: true,
-  providedDetails: 'in kinda smells',
   inUse: false,
-  inUseDetails: 'i like it',
   userId: 5,
 };
 
