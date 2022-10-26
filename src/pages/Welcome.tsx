@@ -41,11 +41,7 @@ const WelcomePage = () => {
                       userOrganizationId={user?.organizationId ? user.organizationId : null}
                     />
                     <div>
-                      <UpdatePersonalInformation
-                        userId={user?.id}
-                        userRank={user?.rank ? user.rank : null}
-                        userAfsc={user?.afsc ? user.afsc : null}
-                      />
+                      <UpdatePersonalInformation userId={user?.id} />
                     </div>
                   </div>
                   <div tw="pl-6">

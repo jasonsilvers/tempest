@@ -28,7 +28,7 @@ export function OrganizationSelect({ onChange }: OrganizationSelectProps) {
         <TextField
           {...params}
           tw="w-full bg-white rounded"
-          variant="filled"
+          variant="standard"
           label="Organizations"
           name="organizations_textfield"
           id="organizations_textfield"

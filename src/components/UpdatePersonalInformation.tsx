@@ -1,54 +1,76 @@
+import { MenuItem, TextField } from '@mui/material';
 import { User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useSnackbar } from 'notistack';
+import { useState, ChangeEvent } from 'react';
+import { ranks } from '../const/ranks';
 import { useUpdateUser } from '../hooks/api/users';
-import { AfscInput } from './AfscInput';
-import { RankSelect } from './RankSelect';
-import 'twin.macro';
+import { LoggedInUser } from '../repositories/userRepo';
 
-export const UpdatePersonalInformation = ({
-  userId,
-  userRank,
-  userAfsc,
-  onChange = null,
-  onMouseLeave = null,
-}: {
-  userId: number;
-  userRank: string;
-  userAfsc: string;
-  onChange?: (rank: string) => void;
-  onMouseLeave?: (afsc: string) => void;
-}) => {
+
+
+export const UpdatePersonalInformation = ({userId} : {userId: number}) => {
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: updateUser } = useUpdateUser();
-  const { refreshUser } = useUser();
+  const { user, refreshUser } = useUser<LoggedInUser>(); 
+  const [rank, setRank] = useState('');
+  const [afsc, setAfsc] = useState('')
+  
+  const RankSelect = () => {
+  
+    const handleSelect = (event: ChangeEvent<HTMLInputElement>) => {
+     console.log(event?.target.value)
+    };
+    const updateUserRank = () => {
 
-  const updateRank = (_, selectedRank) => {
-    if (!selectedRank) {
-      return null;
+      if (user.rank !== rank) {
+  
+        const updatedUser = {
+          id: userId,
+          rank: rank,
+        } as User;
+        updateUser(updatedUser, {
+          onSuccess: () => {
+            refreshUser();
+            enqueueSnackbar('Rank Updated', { variant: 'success' });
+          },
+        });
+      }
     }
-    if (!onChange && selectedRank === userRank) {
-      const updatedUser = {
-        id: userId,
-        rank: selectedRank,
-      } as User;
-      updateUser(updatedUser, {
-        onSuccess: () => {
-          refreshUser();
-          enqueueSnackbar('Rank Updated', { variant: 'success' });
-        },
-      });
-    }
-    if (onChange) {
-      onChange(selectedRank);
-    }
+    return (
+    
+        <TextField
+          sx={{ width: 185 }}
+          id="rank_textfield"
+          name="rank_textfield"
+          select
+          label="Rank"
+          onChange={() => {
+            handleSelect()
+            updateUserRank()
+          }}
+          variant="standard"
+          size="small"
+        >
+          {ranks.map((rankOption) => (
+            <MenuItem key={rankOption.value} value={rankOption.value}>
+              {rankOption.value}
+            </MenuItem>
+          ))}
+        </TextField>
+      
+    );
   };
 
-  const updateAfsc = (_, afsc) => {
-    if (!afsc) {
-      return null;
+  const AfscInput = () => {
+    
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+      setAfsc(event?.target.value)
+      console.log(afsc)
     }
-    if (!onChange && afsc !== userAfsc) {
+
+    const updateUserAFSC = () => {if (user.afsc !== afsc) {
+
       const updatedUser = {
         id: userId,
         afsc: afsc,
@@ -60,15 +82,31 @@ export const UpdatePersonalInformation = ({
         },
       });
     }
-    if (onMouseLeave) {
-      onMouseLeave(afsc);
     }
-  };
+
+    return (
+    
+      <TextField
+        sx={{ width: 185 }}
+        id="afsc_textfield"
+        name='afsc_textfield'
+        label="AFSC"
+        defaultValue=''
+        onMouseLeave={() => {
+          handleChange()
+          updateUserAFSC()
+        }}
+        variant="standard"
+        size="small"
+      />
+    
+    )
+  }
 
   return (
-    <div tw='flex gap-4 mt-3'>
-      <RankSelect onChange={updateRank} />
-      <AfscInput onMouseLeave={updateAfsc} />
+    <div tw='gap-4 mt-3'>
+      <RankSelect />
+      <AfscInput />
     </div>
   );
 };

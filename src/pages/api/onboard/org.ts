@@ -1,11 +1,11 @@
+import { OrganizationType } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
-import { ERole } from '../../../const/enums';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { createOrganizations } from '../../../repositories/organizationRepo';
-import { findUserByEmail, LoggedInUser, updateUser, updateUserRole } from '../../../repositories/userRepo';
+import { createOrganizations, updateOrganization } from '../../../repositories/organizationRepo';
+import { findUserByEmail, LoggedInUser, updateUser } from '../../../repositories/userRepo';
 
 const onboardOrganizationPostSchema = {
   body: Joi.object({
@@ -24,11 +24,13 @@ const onboardOrgApiHandler = async (req: NextApiRequestWithAuthorization<LoggedI
   if (method !== 'POST') {
     throw new MethodNotAllowedError(method);
   }
-  const createOrgData = await createOrganizations(body);
-  updateUser(req.user.id, { roleId: 5, organizationId: createOrgData.id });
-  updateUserRole(req.user.id, ERole.PROGRAM_MANAGER);
-  res.status(200);
-  res.json(createOrgData);
+
+    const createOrgData = await createOrganizations(body);
+    const newOrgWithCatalog = await updateOrganization(createOrgData.id, {types: [OrganizationType.CATALOG]} )
+    updateUser(req.user.id, { roleId: 5, organizationId: createOrgData.id });
+    res.status(200);
+    res.json(newOrgWithCatalog);
+  
 };
 
 export default withTempestHandlers(onboardOrgApiHandler, findUserByEmail, onboardOrganizationSchema);
