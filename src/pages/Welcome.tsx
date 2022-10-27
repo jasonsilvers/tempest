@@ -7,12 +7,11 @@ import { usePageLogging } from '../hooks/usePageLogging';
 import { Dialog } from '../lib/ui';
 import { LoggedInUser } from '../repositories/userRepo';
 
-
 const WelcomePage = () => {
   const { user, isLoading } = useUser<LoggedInUser>();
   const router = useRouter();
   usePageLogging();
-  
+
   return (
     <>
       <Dialog fullScreen open={true}>
@@ -35,7 +34,6 @@ const WelcomePage = () => {
                       userId={user?.id}
                       userOrganizationId={user?.organizationId ? user.organizationId : null}
                     />
-                   
                   </div>
                   <div tw="pl-6">
                     <Button
@@ -55,7 +53,9 @@ const WelcomePage = () => {
             <div tw="flex flex-col text-sm text-center pt-5">
               <p>
                 Creating your own Organization?{' '}
-                <span tw="text-secondary cursor-pointer hover:underline" onClick={() => router.push('/Onboard')}>Start Here</span>
+                <span tw="text-secondary cursor-pointer hover:underline" onClick={() => router.push('/Onboard')}>
+                  Start Here
+                </span>
               </p>
             </div>
           </div>

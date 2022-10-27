@@ -26,11 +26,10 @@ const onboardOrgApiHandler = async (req: NextApiRequestWithAuthorization<LoggedI
   if (method !== 'POST') {
     throw new MethodNotAllowedError(method);
   }
-    const programManagerRole = await getRoleByName(ERole.PROGRAM_MANAGER)
-    const createdOrgData = await createOrganizations({...body, types: [OrganizationType.CATALOG]});
-    updateUser(req.user.id, { roleId: programManagerRole.id, organizationId: createdOrgData.id });
-    res.status(200).json(createdOrgData);
-  
+  const programManagerRole = await getRoleByName(ERole.PROGRAM_MANAGER);
+  const createdOrgData = await createOrganizations({ ...body, types: [OrganizationType.CATALOG] });
+  updateUser(req.user.id, { roleId: programManagerRole.id, organizationId: createdOrgData.id });
+  res.status(200).json(createdOrgData);
 };
 
 export default withTempestHandlers(onboardOrgApiHandler, findUserByEmail, onboardOrganizationSchema);
