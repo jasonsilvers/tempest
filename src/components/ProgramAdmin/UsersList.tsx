@@ -1,18 +1,21 @@
 import { Drawer } from '@mui/material';
 import { DataGrid, GridColumns, GridToolbar, GridValueGetterParams } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
-import { useOrgsUserOrgAndDown } from '../../hooks/api/organizations';
-import { useUsers } from '../../hooks/api/users';
+import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
 import { UserWithAll } from '../../repositories/userRepo';
 import { UserDetailEdit } from './UserDetailEdit';
 
 import 'twin.macro';
+import { UseQueryResult } from 'react-query';
 
-const UsersList = () => {
+type UserListProps = {
+  usersListQuery: UseQueryResult<UserWithAll[], unknown>;
+};
+
+const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
   const [sidebarState, setSidebarState] = useState({ userId: null, open: false });
 
-  const usersListQuery = useUsers();
-  const orgsListQuery = useOrgsUserOrgAndDown();
+  const orgsListQuery = useOrgsLoggedInUsersOrgAndDown();
 
   const columns: GridColumns<UserWithAll> = useMemo(
     () => [
@@ -23,6 +26,11 @@ const UsersList = () => {
         valueGetter: (params: GridValueGetterParams) => {
           return `${params.row.lastName}, ${params.row.firstName}`;
         },
+      },
+      {
+        field: 'email',
+        headerName: 'Email',
+        flex: 1,
       },
       {
         field: 'primaryOrg',
@@ -52,7 +60,7 @@ const UsersList = () => {
     [orgsListQuery.data]
   );
 
-  if (usersListQuery.isLoading || orgsListQuery.isLoading) {
+  if (!usersListQuery || usersListQuery?.isLoading || orgsListQuery?.isLoading) {
     return <div>...Loading</div>;
   }
 
@@ -60,7 +68,7 @@ const UsersList = () => {
     <div tw="h-[750px] pt-5">
       <DataGrid
         sx={{ border: 'none' }}
-        rows={usersListQuery.data}
+        rows={usersListQuery?.data}
         columns={columns}
         disableVirtualization
         onRowClick={(params) => setSidebarState({ userId: params.row.id, open: true })}

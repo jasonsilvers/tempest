@@ -184,6 +184,23 @@ export const getUsersWithMemberTrackingRecords = async () => {
   });
 };
 
+export const getAllDetachedUsers = async () => {
+  return prisma.user.findMany({
+    where: {
+      organizationId: null,
+    },
+    include: {
+      role: true,
+      memberTrackingItems: {
+        include: {
+          trackingItem: true,
+          memberTrackingRecords: true,
+        },
+      },
+    },
+  });
+};
+
 export const getAllUsersFromUsersOrgCascade = async (organizationId: number) => {
   let organizations: Organization[];
 

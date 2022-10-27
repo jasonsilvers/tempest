@@ -8,7 +8,7 @@ import { RecordRowActions } from '../../../src/components/Records/Actions/Record
 import { MemberItemTrackerContextProvider } from '../../../src/components/Records/MemberRecordTracker/providers/MemberItemTrackerContext';
 import * as MemberItemTrackerHooks from '../../../src/components/Records/MemberRecordTracker/providers/useMemberItemTrackerContext';
 import RecordRow from '../../../src/components/Records/MemberRecordTracker/RecordRow';
-import { ECategorie, EMtrVariant, EUri } from '../../../src/const/enums';
+import { ECategorie, EMtrVariant, ERole, EUri } from '../../../src/const/enums';
 import { mtiQueryKeys } from '../../../src/hooks/api/memberTrackingItem';
 import { andrewMonitor, joeAdmin, bobJones } from '../../testutils/mocks/fixtures';
 import { rest, server } from '../../testutils/mocks/msw';
@@ -651,6 +651,65 @@ test('Archive actions - on archive screen - should disable UNARCHIVE if tracking
   fireEvent.mouseLeave(unarchiveText);
 
   await waitForElementToBeRemoved(() => screen.getByText(/this item is no longer a requirement/i));
+});
+
+test('Archive actions - should show when program admin', async () => {
+  jest.spyOn(MemberItemTrackerHooks, 'useMemberItemTrackerContext').mockImplementation(() => ({
+    activeCategory: ECategorie.ALL,
+    categories: [ECategorie.ALL, ECategorie.TODO, ECategorie.DONE],
+    setActiveCategory: jest.fn(),
+    variant: EMtrVariant.COMPLETED,
+  }));
+  server.use(
+    rest.get(EUri.LOGIN, (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          ...joeAdmin,
+          roleId: 2,
+          role: {
+            id: 2,
+            name: ERole.PROGRAM_MANAGER,
+          },
+        })
+      );
+    }),
+
+    rest.put('*', (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          ...mtr1,
+          status: 'INACTIVE',
+        })
+      );
+    })
+  );
+
+  const date = new Date();
+
+  const screen = render(
+    <RecordRowActions
+      authoritySignedDate={date}
+      traineeSignedDate={date}
+      memberTrackingRecord={{
+        ...mtr1WithCompleteDate,
+        traineeId: bobJones.id,
+        traineeSignedDate: date,
+        authoritySignedDate: date,
+        authority: andrewMonitor,
+      }}
+      disabled={false}
+    />
+  );
+
+  await waitForLoadingToFinish();
+
+  expect(
+    await screen.findByRole('button', {
+      name: /archive-tracking-record/i,
+    })
+  ).toBeInTheDocument();
 });
 
 test('Archive actions - on completed screen', async () => {

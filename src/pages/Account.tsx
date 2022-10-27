@@ -170,7 +170,7 @@ const WorkForm = ({ user }: { user: LoggedInUser }) => {
   } = useForm({
     resolver: joiResolver(workFormSchema),
     defaultValues: {
-      organization: user.organization.id.toString(),
+      organization: user.organization ? user.organization?.id.toString() : 'none',
       dutyTitle: user.dutyTitle,
       afsc: user.afsc,
     },

@@ -142,8 +142,8 @@ describe('Can use program admin features', () => {
     cy.url().should('include', '/Dashboard') 
 
     cy.findByRole('navigation', { name: /admin/i }).click();
-    cy.findByRole('tab', { name: /users/i }).click();
-
+    cy.findAllByRole('tab', { name: /users/i }).first().click();
+    
     //should only show 12 members
     cy.findByText(/1–12 of 12/i).should('exist')
 
@@ -188,8 +188,8 @@ describe('Can use program admin features', () => {
     cy.url().should('include', '/Dashboard') 
 
     cy.findByRole('navigation', { name: /admin/i }).click();
-    cy.findByRole('tab', { name: /users/i }).click();
-
+    cy.findAllByRole('tab', { name: /users/i }).first().click();
+    
     //should only show 12 members
     cy.findByText(/1–12 of 12/i).should('exist')
 

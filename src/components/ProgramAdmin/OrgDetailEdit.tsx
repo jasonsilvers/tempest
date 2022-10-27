@@ -7,7 +7,7 @@ import 'twin.macro';
 import {
   useDeleteOrganization,
   useOrg,
-  useOrgsUserOrgAndDown,
+  useOrgsLoggedInUsersOrgAndDown,
   useUpdateOrganization,
 } from '../../hooks/api/organizations';
 import { useSnackbar } from 'notistack';
@@ -77,7 +77,7 @@ const formSchema = Joi.object({
 
 export const OrgDetailEdit: React.FC<OrgDetailEditProps> = ({ orgFromList, closeEdit }) => {
   const orgFromServerQuery = useOrg(orgFromList?.id);
-  const orgsListQuery = useOrgsUserOrgAndDown();
+  const orgsListQuery = useOrgsLoggedInUsersOrgAndDown();
 
   const orgList = orgsListQuery?.data?.filter((org) => org.id !== orgFromList?.id);
 

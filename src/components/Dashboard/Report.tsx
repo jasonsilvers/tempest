@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
 import tw from 'twin.macro';
 import { VictoryLabel, VictoryPie } from 'victory';
-import { useOrgsUserOrgAndDown } from '../../hooks/api/organizations';
+import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
 import { UserWithAll } from '../../repositories/userRepo';
 import { removeInProgressRecords, removeOldCompletedRecords } from '../../utils';
 import { getStatus } from '../../utils/status';
@@ -58,7 +58,7 @@ type DetailedReportProps = {
 };
 
 const DetailedReport: React.FC<DetailedReportProps> = ({ memberList }) => {
-  const { data: orgs, isLoading } = useOrgsUserOrgAndDown();
+  const { data: orgs, isLoading } = useOrgsLoggedInUsersOrgAndDown();
 
   const detailedReportData = memberList
     .filter((member) => member.memberTrackingItems.length !== 0)
