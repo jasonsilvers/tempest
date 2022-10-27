@@ -1,23 +1,18 @@
-import { useUser } from '@tron/nextjs-auth-p1';
-import { LoggedInUser } from '../repositories/userRepo';
-import { Dialog } from '../lib/ui';
-import { UpdateUsersOrg } from '../components/UpdateUsersOrg';
-import { useRouter } from 'next/router';
-
-import 'twin.macro';
-import { usePageLogging } from '../hooks/usePageLogging';
 import { Button } from '@mui/material';
-import { UpdatePersonalInformation } from '../components/UpdatePersonalInformation';
+import { useUser } from '@tron/nextjs-auth-p1';
+import { useRouter } from 'next/router';
+import 'twin.macro';
+import { UpdateUsersOrg } from '../components/UpdateUsersOrg';
+import { usePageLogging } from '../hooks/usePageLogging';
+import { Dialog } from '../lib/ui';
+import { LoggedInUser } from '../repositories/userRepo';
 
-import { useState } from 'react';
-import { CreateNewOrganizationDialog } from '../components/Onboard/CreatwNewOrganizationDialog';
 
 const WelcomePage = () => {
   const { user, isLoading } = useUser<LoggedInUser>();
-  const [dialogIsOpen, setDialogIsOpen] = useState(false);
   const router = useRouter();
   usePageLogging();
-  console.log(user);
+  
   return (
     <>
       <Dialog fullScreen open={true}>
@@ -40,9 +35,7 @@ const WelcomePage = () => {
                       userId={user?.id}
                       userOrganizationId={user?.organizationId ? user.organizationId : null}
                     />
-                    <div>
-                      <UpdatePersonalInformation userId={user?.id} />
-                    </div>
+                   
                   </div>
                   <div tw="pl-6">
                     <Button
@@ -61,8 +54,8 @@ const WelcomePage = () => {
             </div>
             <div tw="flex flex-col text-sm text-center pt-5">
               <p>
-                Creating your own Organization?
-                <span tw="text-secondary cursor-pointer hover:underline" onClick={() => setDialogIsOpen(true)}>Start Here</span>
+                Creating your own Organization?{' '}
+                <span tw="text-secondary cursor-pointer hover:underline" onClick={() => router.push('/Onboard')}>Start Here</span>
               </p>
             </div>
           </div>
@@ -72,7 +65,6 @@ const WelcomePage = () => {
           </div>
         </div>
       </Dialog>
-      <CreateNewOrganizationDialog dialogIsOpen={dialogIsOpen} setDialogIsOpen={setDialogIsOpen} />
     </>
   );
 };

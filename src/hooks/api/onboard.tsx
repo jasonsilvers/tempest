@@ -14,7 +14,7 @@ export const useOnboardOrg = () => {
         (newOrganization: Organization) => axios.post<Organization>(EUri.ONBOARD, newOrganization),
         {
             onError: () => {
-                snackbar.enqueueSnackbar('Error Creating Organization. Please try again!', { variant: 'error' });
+                snackbar.enqueueSnackbar('Error Onboarding. Please try again!', { variant: 'error' });
             },
             onSettled: () => {
                 queryClient.invalidateQueries(organizationQueryKeys.organizations());
