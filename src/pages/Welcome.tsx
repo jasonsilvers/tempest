@@ -59,8 +59,7 @@ const WelcomePage = () => {
               </p>
             </div>
           </div>
-          {/* Fix the image placement */}
-          <div tw="w-1/2 flex ">
+          <div tw=" my-auto w-1/2 flex ">
             <img alt="Cascade Welcome Image" tw="h-3/4 w-3/4 justify-center items-center " src="/img/cascadelogo.png" />
           </div>
         </div>
