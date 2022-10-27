@@ -47,7 +47,6 @@ describe('Onboard Org', () => {
     mockMethodAndReturn(createOrganizations, createdOrg);
     const updateUserSpy = mockMethodAndReturn(updateUser, updatedUser);
     const { status, data } = await testNextApi.post(onboardOrgApiHandler, { body: newOrg });
-    expect(updateUserSpy).toBeCalled();
     expect(updateUserSpy).toBeCalledWith(globalUserId, { organizationId: 1, roleId: 5 });
     expect(status).toBe(200);
     expect(data).toStrictEqual(createdOrg);
