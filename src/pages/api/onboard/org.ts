@@ -1,8 +1,8 @@
-import { OrganizationType } from '@prisma/client';
+import { OrganizationType, Organization } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
-import { ERole } from '../../../const/enums';
+import { ERole, ITempestApiMessage } from '../../../const/enums';
 import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
 import { createOrganizations } from '../../../repositories/organizationRepo';
@@ -20,7 +20,10 @@ const onboardOrganizationSchema = {
   post: onboardOrganizationPostSchema,
 };
 
-const onboardOrgApiHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
+const onboardOrgApiHandler = async (
+  req: NextApiRequestWithAuthorization<LoggedInUser>,
+  res: NextApiResponse<Organization | ITempestApiMessage>
+) => {
   const { body, method } = req;
 
   if (method !== 'POST') {

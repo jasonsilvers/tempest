@@ -41,7 +41,7 @@ const Onboard: FC = () => {
   };
   const createDisabled = Object.keys(dirtyFields).length === 0;
 
-  const submitForm = (data: Organization) => {
+  const submitForm = (data) => {
     const createdOrg = {
       name: data.name,
       shortName: data.shortName,
