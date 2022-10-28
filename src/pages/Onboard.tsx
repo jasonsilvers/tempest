@@ -58,8 +58,8 @@ const Onboard: FC = () => {
   };
 
   return (
-    <Dialog open={dialogIsOpen} maxWidth="sm" fullScreen aria-labelledby="create-org-dialog">
-      <div tw="pt-7 pl-6">
+    <Dialog open={true} maxWidth="sm" fullScreen aria-labelledby="create-org-dialog">
+      <div tw="absolute pt-7 pl-6">
         <IconButton
           size="small"
           tw="float-left relative"

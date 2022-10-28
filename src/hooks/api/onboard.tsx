@@ -1,8 +1,8 @@
 import { Organization } from '@prisma/client';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQueryClient } from 'react-query';
-import { EUri } from '../../const/enums';
+import { EUri, ITempestApiMessage } from '../../const/enums';
 import { organizationQueryKeys } from './organizations';
 
 export const useOnboardOrg = () => {
@@ -11,8 +11,8 @@ export const useOnboardOrg = () => {
   return useMutation<AxiosResponse<Organization>, unknown, Organization>(
     (newOrganization: Organization) => axios.post<Organization>(EUri.ONBOARD, newOrganization),
     {
-      onError: () => {
-        snackbar.enqueueSnackbar('Error Onboarding. Please try again!', { variant: 'error' });
+      onError: (error: AxiosError<ITempestApiMessage>) => {
+        snackbar.enqueueSnackbar(error.response.data.message, { variant: 'error' });
       },
       onSettled: () => {
         queryClient.invalidateQueries(organizationQueryKeys.organizations());

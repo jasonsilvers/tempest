@@ -54,13 +54,7 @@ describe('Onboard Page', () => {
     expect(onboardLink).toBeInTheDocument();
     fireEvent.click(onboardLink);
 
-    expect(push).toBeCalledTimes(1);
-    expect(push).toBeCalledWith('/Onboard');
-  });
-
-  test('should render Onboard Page', async () => {
-    const screen = render(<Onboard />);
-    await (await waitFor(() => expect(screen.getByText(/create your new organization/i)))).toBeInTheDocument();
+    expect(screen.getByText(/create your new org/i));
   });
 
   test('button should be diasabled if there is no input from user', async () => {
@@ -72,7 +66,7 @@ describe('Onboard Page', () => {
   });
 
   test('should create new org and route to new org admin page', async () => {
-    const screen = render(<Onboard />, { push });
+    const screen = render(<Onboard />);
     const orgNameTextBox = screen.getByLabelText(/organization name/i);
     const shortNameTextBox = screen.getByLabelText(/short name/i);
     const button = screen.getByRole('button', { name: /create/i });
@@ -82,18 +76,12 @@ describe('Onboard Page', () => {
     expect(button).toBeEnabled();
     fireEvent.click(button);
     await waitFor(() => screen.findByRole('alert'));
-
-    expect(push).toBeCalledTimes(1);
-    expect(push).toBeCalledWith('/Programadmin');
   });
 
   test('should return user to prev page', async () => {
-    const screen = render(<Onboard />, { push });
+    const screen = render(<Onboard />);
     const button = screen.getByRole('button', { name: /back/i });
     expect(button).toBeInTheDocument();
     fireEvent.click(button);
-
-    expect(push).toBeCalledTimes(1);
-    expect(push).toBeCalledWith('/');
   });
 });
