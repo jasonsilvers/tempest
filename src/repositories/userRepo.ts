@@ -267,7 +267,7 @@ export const deleteUser = async (userId: number) => {
  * @param user
  * @returns User
  */
-export const updateUser = async (userId: number, data: User) => {
+export const updateUser = async (userId: number, data: Partial<User>) => {
   return prisma.user.update({
     where: { id: userId },
     data,

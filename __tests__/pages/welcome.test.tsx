@@ -5,6 +5,7 @@ import { ERole, EUri } from '../../src/const/enums';
 import { bobJones } from '../testutils/mocks/fixtures';
 
 import 'whatwg-fetch';
+import React from 'react';
 
 beforeAll(() => {
   server.listen({
