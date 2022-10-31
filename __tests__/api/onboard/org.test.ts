@@ -1,5 +1,5 @@
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import { createOrganizations } from '../../../src/repositories/organizationRepo';
+import { createOrganizations, deleteOrganization } from '../../../src/repositories/organizationRepo';
 import onboardOrgApiHandler from '../../../src/pages/api/onboard/org';
 import { findUserByEmail, updateUser } from '../../../src/repositories/userRepo';
 import { findGrants } from '../../../src/repositories/grantsRepo';
@@ -45,6 +45,7 @@ beforeEach(() => {
 
 const programAdminRole = { id: 5, name: 'programadmin' };
 const updatedUserFromDb = { ...userFromDb, roleId: 5, organizationalId: createdOrg.id };
+const userWithNullId = { ...userFromDb, id: null };
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -65,5 +66,22 @@ describe('Onboard Org', () => {
   test('Should return 405 for method not allowed', async () => {
     const { status } = await testNextApi.get(onboardOrgApiHandler);
     expect(status).toBe(405);
+  });
+
+  test('onboard fails during update user and should call deleteOrg', async () => {
+    mockMethodAndReturn(getRoleByName, programAdminRole);
+    mockMethodAndReturn(createOrganizations, createdOrg);
+    mockMethodAndReturn(updateUser, userWithNullId);
+    mockMethodAndReturn(deleteOrganization, createdOrg);
+
+    const mockedUpdateUser = updateUser as jest.MockedFunction<typeof updateUser>;
+    const errorMsg = { message: 'There was a problem onboarding your organization, please try again' };
+    mockedUpdateUser.mockImplementation(() => {
+      throw new Error('There was a problem onboarding your organization, please try again');
+    });
+
+    const { status, data } = await testNextApi.post(onboardOrgApiHandler, { body: newOrg });
+    expect(status).toBe(500);
+    expect(data).toStrictEqual(errorMsg);
   });
 });

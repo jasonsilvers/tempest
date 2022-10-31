@@ -1,12 +1,11 @@
-import { render, waitFor, fireEvent, waitForLoadingToFinish } from '../testutils/TempestTestUtils';
-import { rest, server } from '../testutils/mocks/msw';
-import { ERole, EUri } from '../../src/const/enums';
-import 'whatwg-fetch';
-import React from 'react';
-import Onboard from '../../src/pages/Onboard';
-import WelcomePage from '../../src/pages/Welcome';
-import { bobJones } from '../testutils/mocks/fixtures';
 import { OrganizationType } from '@prisma/client';
+import React from 'react';
+import 'whatwg-fetch';
+import { ERole, EUri } from '../../src/const/enums';
+import Onboard from '../../src/pages/Onboard';
+import { bobJones } from '../testutils/mocks/fixtures';
+import { rest, server } from '../testutils/mocks/msw';
+import { fireEvent, render, waitFor } from '../testutils/TempestTestUtils';
 
 const createdOrg = {
   id: 1,
@@ -42,21 +41,8 @@ afterAll(() => {
 afterEach(() => {
   server.resetHandlers();
 });
-const push = jest.fn();
 
 describe('Onboard Page', () => {
-  test('render the onboard page from Welcome page', async () => {
-    const screen = render(<WelcomePage />, { push });
-
-    await waitForLoadingToFinish();
-
-    const onboardLink = screen.getByText(/start here/i);
-    expect(onboardLink).toBeInTheDocument();
-    fireEvent.click(onboardLink);
-
-    expect(screen.getByText(/create your new org/i));
-  });
-
   test('button should be diasabled if there is no input from user', async () => {
     const screen = render(<Onboard />);
 
@@ -65,7 +51,7 @@ describe('Onboard Page', () => {
     expect(button).toBeDisabled();
   });
 
-  test('should create new org and route to new org admin page', async () => {
+  test('should create new org', async () => {
     const screen = render(<Onboard />);
     const orgNameTextBox = screen.getByLabelText(/organization name/i);
     const shortNameTextBox = screen.getByLabelText(/short name/i);
