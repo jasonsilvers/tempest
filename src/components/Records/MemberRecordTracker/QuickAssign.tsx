@@ -1,5 +1,5 @@
 import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
-import { MemberTrackingRecord } from '@prisma/client';
+import { MemberTrackingItemStatus, MemberTrackingRecord } from '@prisma/client';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
 import React, { useMemo } from 'react';
@@ -34,6 +34,10 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
   const memberTrackingItemsToAdd: IMemberTrackingItemsToAdd[] = useMemo(() => {
     return memberTrackingItems
       ?.filter((mti) => {
+        if (mti.status === MemberTrackingItemStatus.INACTIVE) {
+          return false;
+        }
+
         //Need to have a completed record
         const lastCompletedRecordAndInprogress = removeOldCompletedRecords(mti.memberTrackingRecords);
         const completedMemberTrackingRecord = lastCompletedRecordAndInprogress.find(
