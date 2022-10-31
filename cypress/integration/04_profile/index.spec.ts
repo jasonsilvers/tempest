@@ -119,7 +119,7 @@ describe('Member role', () => {
     cy.findByText(oldDate).should('not.exist');
   });
 
-  it('should not be able to archive training', () => {
+  it.only('should not be able to archive training', () => {
     cy.loginAsMember();
 
     cy.findByRole('button', {name: /training in progress/i}).click()
@@ -127,7 +127,7 @@ describe('Member role', () => {
       name: /offical training record/i
     }).click()
 
-    cy.findByRole('button', {
+    cy.findAllByRole('button', {
         name: /archive-tracking-record/i
     }).should('not.exist')
   });

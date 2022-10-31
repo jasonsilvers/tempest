@@ -272,7 +272,7 @@ const ArchiveActions: React.FC<{
     );
   };
 
-  if (!canArchiveRecord) {
+  if (!canArchiveRecord.granted) {
     return null;
   }
 
