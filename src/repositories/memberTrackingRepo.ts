@@ -2,6 +2,7 @@ import { MemberTrackingItem, MemberTrackingRecord, Prisma } from '.prisma/client
 import prisma from '../prisma/prisma';
 import { ECategorie } from '../const/enums';
 import { filterObject } from '../utils/filterObject';
+import { TrackingItem, User } from '@prisma/client';
 
 export const updateMemberTrackingRecord = async (id: number, memberTrackingRecord: MemberTrackingRecord) => {
   return prisma.memberTrackingRecord.update({
@@ -192,6 +193,11 @@ export const findMemberTrackingItemByUserId = async (userId: number, trackingIte
  * GIVE ME EVERYTHING TYPE
  */
 export type MemberTrackingItemWithAll = Prisma.PromiseReturnType<typeof findMemberTrackingItemByIdAll>;
+export type MemberTrackingRecordWithAll = MemberTrackingRecord & {
+  trackingItem: TrackingItem;
+  authority: User;
+  trainee: User;
+};
 
 export const findMemberTrackingItemByIdAll = async (userId: number, trackingItemId: number) => {
   return prisma.memberTrackingItem.findUnique({

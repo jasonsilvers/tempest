@@ -265,12 +265,14 @@ const ArchiveActions: React.FC<{
         },
         onSettled: (data) => {
           queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.COMPLETED));
+          queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.ALL));
+          queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.IN_PROGRESS));
         },
       }
     );
   };
 
-  if (!canArchiveRecord) {
+  if (!canArchiveRecord.granted) {
     return null;
   }
 

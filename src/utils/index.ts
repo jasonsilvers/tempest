@@ -1,15 +1,25 @@
-import { MemberTrackingRecord, TrackingItem, User } from '.prisma/client';
+import { MemberTrackingRecordWithAll } from '../repositories/memberTrackingRepo';
 
-type MemberTrackingRecordWithAll = MemberTrackingRecord & {
-  trackingItem: TrackingItem;
-  authority: User;
-  trainee: User;
+export const findCompletedMemberTrackingRecord = (memberTrackingRecords: MemberTrackingRecordWithAll[]) => {
+  return memberTrackingRecords.find(
+    (mtr) => mtr.completedDate !== null && mtr.authoritySignedDate !== null && mtr.traineeSignedDate !== null
+  );
+};
+
+export const findInprogressMemberTrackingRecord = (memberTrackingRecords: MemberTrackingRecordWithAll[]) => {
+  return memberTrackingRecords.find(
+    (mtr) => mtr.completedDate === null || mtr.traineeSignedDate === null || mtr.authoritySignedDate === null
+  );
+};
+
+export const removeAllInProgressRecords = (memberTrackingRecords: MemberTrackingRecordWithAll[]) => {
+  return memberTrackingRecords.filter(
+    (mtr) => mtr.authoritySignedDate === null || mtr.traineeSignedDate === null || mtr.completedDate === null
+  );
 };
 
 export const removeOldCompletedRecords = (memberTrackingRecords: MemberTrackingRecordWithAll[]) => {
-  const inProgressMemberTrackingRecords = memberTrackingRecords.filter(
-    (mtr) => mtr.authoritySignedDate === null || mtr.traineeSignedDate === null || mtr.completedDate === null
-  );
+  const inProgressMemberTrackingRecords = removeAllInProgressRecords(memberTrackingRecords);
 
   const latestCompleteMemberTrackingRecord = memberTrackingRecords
     .filter((mtr) => mtr.authoritySignedDate !== null && mtr.traineeSignedDate !== null && mtr.completedDate !== null)
