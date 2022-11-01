@@ -245,8 +245,9 @@ const ArchiveActions: React.FC<{
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const { variant } = useMemberItemTrackerContext();
+  const { permissionCheck } = usePermissions();
 
-  const canArchiveRecord = loggedInUserRole === ERole.MONITOR || loggedInUserRole === ERole.ADMIN;
+  const canArchiveRecord = permissionCheck(loggedInUserRole, EFuncAction.UPDATE_ANY, EResource.MEMBER_TRACKING_ITEM);
 
   const archiveRecord = () => {
     updateMemberTrackingItem(
@@ -264,12 +265,14 @@ const ArchiveActions: React.FC<{
         },
         onSettled: (data) => {
           queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.COMPLETED));
+          queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.ALL));
+          queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.userId, EMtrVariant.IN_PROGRESS));
         },
       }
     );
   };
 
-  if (!canArchiveRecord) {
+  if (!canArchiveRecord.granted) {
     return null;
   }
 

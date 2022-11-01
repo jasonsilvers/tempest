@@ -1,5 +1,5 @@
 import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
-import { MemberTrackingRecord } from '@prisma/client';
+import { MemberTrackingItemStatus, MemberTrackingRecord } from '@prisma/client';
 import dayjs from 'dayjs';
 import { useSnackbar } from 'notistack';
 import React, { useMemo } from 'react';
@@ -9,7 +9,11 @@ import { ECategorie } from '../../../const/enums';
 import { useCreateMemberTrackingRecord } from '../../../hooks/api/memberTrackingRecord';
 import { useMemberTrackingItemsForUser } from '../../../hooks/api/users';
 import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
-import { removeOldCompletedRecords } from '../../../utils';
+import {
+  findCompletedMemberTrackingRecord,
+  findInprogressMemberTrackingRecord,
+  removeOldCompletedRecords,
+} from '../../../utils';
 import { getStatus } from '../../../utils/status';
 
 type UpcomingTrainingDetailsProps = {
@@ -24,6 +28,49 @@ type IMemberTrackingItemsToAdd = {
   dueDate: string;
 };
 
+const filterQuickAssignMemberTrackingItems = (memberTrackingItems: MemberTrackingItemWithAll[]) => {
+  return memberTrackingItems?.filter((mti) => {
+    if (mti.status === MemberTrackingItemStatus.INACTIVE) {
+      return false;
+    }
+    //Need to have a completed record
+    const lastCompletedRecordAndInprogress = removeOldCompletedRecords(mti.memberTrackingRecords);
+    const completedMemberTrackingRecord = findCompletedMemberTrackingRecord(lastCompletedRecordAndInprogress);
+    const inProgressMemberTrackingRecord = findInprogressMemberTrackingRecord(lastCompletedRecordAndInprogress);
+
+    const completedRecordState = getStatus(
+      completedMemberTrackingRecord?.completedDate,
+      completedMemberTrackingRecord?.trackingItem?.interval
+    );
+
+    if (completedRecordState === ECategorie.DONE) {
+      return false;
+    }
+    if (completedMemberTrackingRecord && inProgressMemberTrackingRecord) {
+      return false;
+    }
+
+    if (completedMemberTrackingRecord && inProgressMemberTrackingRecord === undefined) {
+      return true;
+    }
+    //I don't think it will ever reach this but keeping here just in case
+    return false;
+  });
+};
+
+const transformFilteredMemberTrackingItems = (memberTrackingItems: MemberTrackingItemWithAll[]) => {
+  return memberTrackingItems.flatMap((mti) => {
+    return mti.memberTrackingRecords.map((mtr) => {
+      return {
+        id: mti.trackingItem.id,
+        trainingTitle: mti.trackingItem.title,
+        recurrence: TrackingItemInterval[mti.trackingItem.interval],
+        dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
+      };
+    });
+  });
+};
+
 const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = ({
   memberTrackingItems,
   forMemberId,
@@ -31,47 +78,10 @@ const MemberUpcomingTrackingItemList: React.FC<UpcomingTrainingDetailsProps> = (
   const addMemberTrackingRecord = useCreateMemberTrackingRecord();
   const { enqueueSnackbar } = useSnackbar();
 
-  const memberTrackingItemsToAdd: IMemberTrackingItemsToAdd[] = useMemo(() => {
-    return memberTrackingItems
-      ?.filter((mti) => {
-        //Need to have a completed record
-        const lastCompletedRecordAndInprogress = removeOldCompletedRecords(mti.memberTrackingRecords);
-        const completedMemberTrackingRecord = lastCompletedRecordAndInprogress.find(
-          (mtr) => mtr.completedDate !== null && mtr.authoritySignedDate !== null && mtr.traineeSignedDate !== null
-        );
-        const inProgressMemberTrackingRecord = lastCompletedRecordAndInprogress.find(
-          (mtr) => mtr.completedDate === null || mtr.traineeSignedDate === null || mtr.authoritySignedDate === null
-        );
-
-        const completedRecordState = getStatus(
-          completedMemberTrackingRecord?.completedDate,
-          completedMemberTrackingRecord?.trackingItem?.interval
-        );
-
-        if (completedRecordState === ECategorie.DONE) {
-          return false;
-        }
-        if (completedMemberTrackingRecord && inProgressMemberTrackingRecord) {
-          return false;
-        }
-
-        if (completedMemberTrackingRecord && inProgressMemberTrackingRecord === undefined) {
-          return true;
-        }
-        //I don't think it will ever reach this but keeping here just in case
-        return false;
-      })
-      .flatMap((mti) => {
-        return mti.memberTrackingRecords.map((mtr) => {
-          return {
-            id: mti.trackingItem.id,
-            trainingTitle: mti.trackingItem.title,
-            recurrence: TrackingItemInterval[mti.trackingItem.interval],
-            dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
-          };
-        });
-      });
-  }, [memberTrackingItems]);
+  const memberTrackingItemsToAdd: IMemberTrackingItemsToAdd[] = useMemo(
+    () => transformFilteredMemberTrackingItems(filterQuickAssignMemberTrackingItems(memberTrackingItems)),
+    [memberTrackingItems]
+  );
 
   const handleAddMemberTrackingItem = (memberTrackingItemToAdd: IMemberTrackingItemsToAdd, memberId: number) => {
     const newMemberTrackingRecord: Partial<MemberTrackingRecord> = {

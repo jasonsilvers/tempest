@@ -26,7 +26,8 @@ postgres-data
 *.pem
 .tern-project
 tsconfig.tsbuildinfo
-git_commit_branch.zsh
+git_commit.zsh
+no_verify.zsh
 
 # debug
 npm-debug.log*

@@ -50,9 +50,9 @@ model PersonalProtectionEquipmentItem {
   id              Int     @id @default(autoincrement())
   name            String
   provided        Boolean
-  providedDetails String
+  providedDetails String?
   inUse           Boolean
-  inUseDetails    String
+  inUseDetails    String?
   user            User    @relation(fields: [userId], references: [id])
   userId          Int
 }

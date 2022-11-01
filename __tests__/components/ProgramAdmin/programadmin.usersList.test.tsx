@@ -245,6 +245,8 @@ test('should update a users role', async () => {
 
   expect(screen.getByText(/personal/i)).toBeInTheDocument();
 
+  await waitForElementToBeRemoved(screen.getByText(/..loading roles/i));
+
   const roleDropDown = await screen.findByRole('button', { name: /select-roles/i });
 
   fireEvent.mouseDown(roleDropDown);
