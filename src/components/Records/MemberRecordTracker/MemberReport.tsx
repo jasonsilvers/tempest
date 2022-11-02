@@ -78,12 +78,16 @@ const PrintMemberReport = ({ user, ppeItems, mtrs }: PrintMemberReportType, ref:
         <Typography variant="overline" color="primary" fontSize={16}>
           personal protective equipment
         </Typography>
-        <div tw="grid grid-cols-12 gap-1 text-[14px] font-bold w-[1200px] p-4">
-          <div tw="p-1 col-span-9 rounded-lg">Title</div>
-          <div tw="p-1 rounded-lg text-center">Provided</div>
-          <div tw="p-1 rounded-lg text-center">In-Use</div>
-        </div>
-        {ppeItems.map((ppeItem) => (
+        {ppeItems?.length > 0 ? (
+          <div tw="grid grid-cols-12 gap-1 text-[14px] font-bold w-[1200px] p-4">
+            <div tw="p-1 col-span-9 rounded-lg">Title</div>
+            <div tw="p-1 rounded-lg text-center">Provided</div>
+            <div tw="p-1 rounded-lg text-center">In-Use</div>
+          </div>
+        ) : (
+          <div>No Items</div>
+        )}
+        {ppeItems?.map((ppeItem) => (
           <>
             <Divider />
             <div key={ppeItem.id} tw="grid grid-cols-12 gap-1 text-[14px] w-[1200px] p-1 items-center">
@@ -109,14 +113,18 @@ const PrintMemberReport = ({ user, ppeItems, mtrs }: PrintMemberReportType, ref:
           <Typography variant="overline" color="primary" fontSize={16}>
             training record
           </Typography>
-          <div tw="grid grid-cols-12 text-[14px] font-bold w-[1200px] p-4">
-            <div tw="p-1 col-span-4 rounded-lg">Title</div>
-            <div tw="p-1 col-span-1 rounded-lg">Recurrence</div>
-            <div tw="p-1 col-span-1 rounded-lg">Completed</div>
-            <div tw="p-1 col-span-1 rounded-lg">Due</div>
-            <div tw="p-1 col-span-2 rounded-lg text-center">Trainer</div>
-            <div tw="p-1 col-span-2 rounded-lg text-center">Member</div>
-          </div>
+          {mtrs.length > 0 ? (
+            <div tw="grid grid-cols-12 text-[14px] font-bold w-[1200px] p-4">
+              <div tw="p-1 col-span-4 rounded-lg">Title</div>
+              <div tw="p-1 col-span-1 rounded-lg">Recurrence</div>
+              <div tw="p-1 col-span-1 rounded-lg">Completed</div>
+              <div tw="p-1 col-span-1 rounded-lg">Due</div>
+              <div tw="p-1 col-span-2 rounded-lg text-center">Trainer</div>
+              <div tw="p-1 col-span-2 rounded-lg text-center">Member</div>
+            </div>
+          ) : (
+            <div>No Records</div>
+          )}
           {mtrs.map((mtr) => (
             <>
               <Divider />
