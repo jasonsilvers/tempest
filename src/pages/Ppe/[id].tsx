@@ -203,7 +203,7 @@ const PpePage: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
 
       <Card tw="relative min-w-min max-width[1200px] h-auto flex flex-col">
         <div tw="grid grid-cols-12 gap-1 text-[14px] font-bold w-[1200px] p-4">
-          <div tw="p-1 col-span-9 rounded-lg ">Personal Protective Equipment</div>
+          <div tw="p-1 col-span-9 rounded-lg">Personal Protective Equipment </div>
           <div tw="p-1 rounded-lg text-center">Provided</div>
           <div tw="p-1 rounded-lg text-center">In-Use</div>
           <div tw="p-1 rounded-lg "></div>

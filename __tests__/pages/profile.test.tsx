@@ -18,6 +18,22 @@ jest.mock('../../src/repositories/memberTrackingRepo');
 jest.mock('next/router', () => require('next-router-mock'));
 jest.mock('next/dist/client/router', () => require('next-router-mock'));
 
+const testPPEItem = {
+  id: 1,
+  name: 'Steel Toe',
+  provided: true,
+  inUse: false,
+  userId: 5,
+};
+
+const testPPEItem2 = {
+  id: 1,
+  name: 'gas mask',
+  provided: true,
+  inUse: false,
+  userId: 5,
+};
+
 const userWithUpcomingAndInProgressTraining = {
   ...bobJones,
   memberTrackingItems: [
@@ -465,6 +481,15 @@ describe('Testing Member Report Widget on profile page', () => {
   });
 
   test('should render detailed report', async () => {
+    server.use(
+      rest.get('/api/ppeitems', (req, res, ctx) => {
+        return res(
+          ctx.json({
+            ppeItems: [testPPEItem, testPPEItem2],
+          })
+        );
+      })
+    );
     singletonRouter.push({
       query: { id: 123 },
     });
@@ -476,29 +501,23 @@ describe('Testing Member Report Widget on profile page', () => {
 
     await waitFor(() => expect(screen.getByText(/readiness stats/i)).toBeInTheDocument());
 
-    const reportButton = screen.getByRole('button', { name: /reporting excel/i });
+    const reportButton = screen.getByRole('button', { name: /export/i });
 
     fireEvent.click(reportButton);
 
-    const banner = screen.getByRole('banner');
-
-    within(banner).getByText(/reporting excel/i);
+    expect(await screen.findByText(/safety and health training record/i)).toBeInTheDocument();
 
     const dialog = screen.getByRole('dialog');
 
-    const fireSafetyRow = within(dialog).getByText(/fire safety/i).parentElement?.parentNode;
-    within(fireSafetyRow).getByText(/done/i);
+    expect(within(dialog).getByText(/steel toe/i)).toBeInTheDocument();
+    expect(within(dialog).getByText(/gas mask/i)).toBeInTheDocument();
+    expect(within(dialog).getByText(/big bug safety/i)).toBeInTheDocument();
+    expect(within(dialog).getByText(/fire safety/i)).toBeInTheDocument();
 
-    const mdgTrainingRow = within(dialog).getByText(/mdg training/i).parentElement?.parentNode;
-    within(mdgTrainingRow).getByText(/upcoming/i);
-
-    const bigBugSafetyRow = within(dialog).getByText(/big bug safety/i).parentElement?.parentNode;
-    within(bigBugSafetyRow).getByText(/overdue/i);
-
-    const doneButton = screen.getByRole('button', {
-      name: /done/i,
+    const closeButton = screen.getByRole('button', {
+      name: /close/i,
     });
-    fireEvent.click(doneButton);
+    fireEvent.click(closeButton);
   });
 });
 

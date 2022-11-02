@@ -9,7 +9,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { TrackingItemInterval } from '../../utils/daysToString';
 import 'twin.macro';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
-import { ItemsProps } from './TrainingItemUtils';
+import { ItemsProps } from './types';
 import { renderCellExpand } from '../GridCellExpand';
 
 export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, selectedCatalog }) => {
