@@ -23,7 +23,10 @@ type FilteredMTR = {
   recurrence: string;
   completed: string;
   dueDate: string;
-  traineer: string;
+  trainer: string;
+  member: string;
+  trainerSignedDate: string;
+  memberSignedDate: string;
 };
 
 type PrintMemberReportType = {
@@ -107,21 +110,29 @@ const PrintMemberReport = ({ user, ppeItems, mtrs }: PrintMemberReportType, ref:
             training record
           </Typography>
           <div tw="grid grid-cols-12 text-[14px] font-bold w-[1200px] p-4">
-            <div tw="p-1 col-span-6 rounded-lg">Title</div>
+            <div tw="p-1 col-span-4 rounded-lg">Title</div>
             <div tw="p-1 col-span-1 rounded-lg">Recurrence</div>
             <div tw="p-1 col-span-1 rounded-lg">Completed</div>
             <div tw="p-1 col-span-1 rounded-lg">Due</div>
-            <div tw="p-1 col-span-3 rounded-lg">Trainer</div>
+            <div tw="p-1 col-span-2 rounded-lg text-center">Trainer</div>
+            <div tw="p-1 col-span-2 rounded-lg text-center">Member</div>
           </div>
           {mtrs.map((mtr) => (
             <>
               <Divider />
               <div key={mtr.id} tw="grid grid-cols-12 text-[14px] w-[1200px] p-1 items-center">
-                <div tw="p-1 col-span-6 rounded-lg">{mtr.trainingTitle}</div>
+                <div tw="p-1 col-span-4 rounded-lg">{mtr.trainingTitle}</div>
                 <div tw="p-1 col-span-1 rounded-lg">{mtr.recurrence}</div>
                 <div tw="p-1 col-span-1 rounded-lg">{mtr.completed}</div>
                 <div tw="p-1 col-span-1 rounded-lg">{mtr.dueDate}</div>
-                <div tw="p-1 col-span-3 rounded-lg">{mtr.traineer}</div>
+                <div tw="p-1 col-span-2 rounded-lg flex flex-col items-center">
+                  <div>{mtr.trainer}</div>
+                  <div>{mtr.trainerSignedDate}</div>
+                </div>
+                <div tw="p-1 col-span-2 rounded-lg flex flex-col items-center">
+                  <div>{mtr.member}</div>
+                  <div>{mtr.memberSignedDate}</div>
+                </div>
               </div>
             </>
           ))}
@@ -159,9 +170,10 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ open, handleClose, memberId
           recurrence: TrackingItemInterval[mti.trackingItem.interval],
           completed: dayjs(mtr.completedDate).format('MMM D, YYYY'),
           dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
-          traineer: `${mtr.authority?.firstName} ${mtr.authority?.lastName} ${dayjs(mtr.authoritySignedDate).format(
-            'HH:MM MMM D, YYYY'
-          )}`,
+          trainer: `${mtr.authority?.firstName} ${mtr.authority?.lastName}`,
+          trainerSignedDate: `${dayjs(mtr.authoritySignedDate).format('HH:MM MMM D, YYYY')}`,
+          member: `${mtr.trainee?.firstName} ${mtr.trainee?.lastName}`,
+          memberSignedDate: `${dayjs(mtr.traineeSignedDate).format('HH:MM MMM D, YYYY')}`,
         };
       });
     });
