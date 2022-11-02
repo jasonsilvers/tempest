@@ -1,111 +1,140 @@
-import { AppBar, Button, Card, Dialog, Toolbar, Typography } from '@mui/material';
-import { DataGrid, GridColumns, GridToolbar } from '@mui/x-data-grid';
-import { MemberTrackingItemStatus } from '@prisma/client';
+import { Button, Card, Checkbox, Dialog, Divider, TextField, Typography } from '@mui/material';
+import { MemberTrackingItemStatus, PersonalProtectionEquipmentItem } from '@prisma/client';
+import { useUser } from '@tron/nextjs-auth-p1';
 import dayjs from 'dayjs';
-import React, { useMemo, useState } from 'react';
+import React, { ForwardedRef, useState } from 'react';
 import 'twin.macro';
 import { VictoryLabel, VictoryPie } from 'victory';
+import { TrackingItemInterval } from '../../../../src/utils/daysToString';
+import { usePpeItems } from '../../../hooks/api/ppe';
 import { useMemberTrackingItemsForUser } from '../../../hooks/api/users';
 import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
+import { LoggedInUser } from '../../../repositories/userRepo';
 import { removeInProgressRecords, removeOldCompletedRecords } from '../../../utils';
-import { getStatus } from '../../../utils/status';
 import { EStatus } from '../../Dashboard/Enums';
 import { Transition } from '../../Dashboard/Report';
 import { addMemberCounts } from '../../Reports/reportsUtils';
-import { StatusDetailVariant, StatusPill } from '../../StatusVariants';
-import { TrackingItemInterval } from '../../../../src/utils/daysToString';
-import { usePpeItems } from '../../../hooks/api/ppe';
-import membertrackingitems from '../../../pages/api/membertrackingitems';
+import { StatusPill } from '../../StatusVariants';
+import ReactToPrint from 'react-to-print';
 
-type MemberTrainingReportProps = {
-  memberId: number;
-  memberTrackingItems: MemberTrackingItemWithAll[];
+type FilteredMTR = {
+  id: string;
+  trainingTitle: string;
+  recurrence: string;
+  completed: string;
+  dueDate: string;
+  traineer: string;
 };
 
-const DetailedMemberTrainingReport: React.FC<MemberTrainingReportProps> = ({ memberId, memberTrackingItems }) => {
-  const detailedMemberTrainingReportData = memberTrackingItems
-    ?.filter((member) => member.memberTrackingRecords.length !== 0)
-    .flatMap((mti) => {
-      return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
-        const isInactive = mti.status === MemberTrackingItemStatus.INACTIVE;
-        return {
-          id: `${memberId}-${mtr.id}`,
-          trainingTitle: mti.trackingItem.title,
-          recurrence: TrackingItemInterval[mti.trackingItem.interval],
-          status: isInactive ? 'Archived' : getStatus(mtr.completedDate, mti.trackingItem.interval),
-          dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
-        };
-      });
-    });
+type PrintMemberReportType = {
+  user: LoggedInUser;
+  ppeItems: PersonalProtectionEquipmentItem[];
+  mtrs: FilteredMTR[];
+};
 
-  const columns: GridColumns = useMemo(
-    () => [
-      { field: 'trainingTitle', headerName: 'Training Title', flex: 1 },
-      { field: 'recurrence', headerName: 'Recurrence', flex: 1 },
-      {
-        field: 'status',
-        headerName: 'Status',
-        flex: 1,
-        renderCell: (params) => {
-          return <Typography sx={{ color: StatusDetailVariant[params.value].textColor }}>{params.value}</Typography>;
-        },
-      },
-      { field: 'dueDate', headerName: 'Due Date', flex: 1 },
-    ],
-    []
-  );
+const PrintMemberReport = ({ user, ppeItems, mtrs }: PrintMemberReportType, ref: ForwardedRef<HTMLDivElement>) => {
   return (
-    <DataGrid
-      components={{ Toolbar: GridToolbar }}
-      rows={detailedMemberTrainingReportData}
-      columns={columns}
-      disableVirtualization
-      disableSelectionOnClick
-    />
+    <div ref={ref} tw="p-10">
+      <div tw="h-32 flex">
+        <img alt="Cascade logo without text" tw="h-32 w-28" src="/img/cascade_logo_no_text.svg" />
+        <div tw="flex flex-col self-end">
+          <img alt="Cascade logo without text" tw="h-8 w-24" src="/img/cascade_logo_text.svg" />
+          <Typography variant="overline" color="primary" fontSize={16}>
+            safety and health training record
+          </Typography>
+        </div>
+      </div>
+      <div tw="py-10">
+        <Divider />
+      </div>
+      <div tw="flex flex-col w-full">
+        <div tw="flex space-x-6">
+          <TextField
+            id="outlined-helperText"
+            label="Name"
+            variant="standard"
+            value={`${user.firstName} ${user.lastName}`}
+            fullWidth
+          />
+          <TextField id="outlined-helperText" label="Rank" variant="standard" value={user.rank} fullWidth />
+          <TextField id="outlined-helperText" label="Job Code/AFSC" variant="standard" value={user.afsc} fullWidth />
+        </div>
+        <div tw="flex space-x-6 pt-4">
+          <TextField
+            id="outlined-helperText"
+            label="Organization"
+            variant="standard"
+            value={user.organization.name}
+            fullWidth
+          />
+          <TextField id="outlined-helperText" label="Duty Title" variant="standard" value={user.dutyTitle} fullWidth />
+        </div>
+      </div>
+
+      <div tw="pt-10">
+        <Typography variant="overline" color="primary" fontSize={16}>
+          personal protective equipment
+        </Typography>
+        <div tw="grid grid-cols-12 gap-1 text-[14px] font-bold w-[1200px] p-4">
+          <div tw="p-1 col-span-9 rounded-lg">Title</div>
+          <div tw="p-1 rounded-lg text-center">Provided</div>
+          <div tw="p-1 rounded-lg text-center">In-Use</div>
+        </div>
+        {ppeItems.map((ppeItem) => (
+          <>
+            <Divider />
+            <div key={ppeItem.id} tw="grid grid-cols-12 gap-1 text-[14px] w-[1200px] p-1 items-center">
+              <div tw="p-1 col-span-9 rounded-lg">{ppeItem.name}</div>
+              <div tw="p-1 rounded-lg text-center">
+                <Checkbox
+                  inputProps={{ 'aria-label': 'checkbox-provided' }}
+                  checked={ppeItem.inUse}
+                  color="secondary"
+                />
+              </div>
+              <div tw="p-1 rounded-lg text-center">
+                <Checkbox
+                  inputProps={{ 'aria-label': 'checkbox-provided' }}
+                  checked={ppeItem.provided}
+                  color="secondary"
+                />
+              </div>
+            </div>
+          </>
+        ))}
+        <div tw="pt-10">
+          <Typography variant="overline" color="primary" fontSize={16}>
+            training record
+          </Typography>
+          <div tw="grid grid-cols-12 text-[14px] font-bold w-[1200px] p-4">
+            <div tw="p-1 col-span-6 rounded-lg">Title</div>
+            <div tw="p-1 col-span-1 rounded-lg">Recurrence</div>
+            <div tw="p-1 col-span-1 rounded-lg">Completed</div>
+            <div tw="p-1 col-span-1 rounded-lg">Due</div>
+            <div tw="p-1 col-span-3 rounded-lg">Trainer</div>
+          </div>
+          {mtrs.map((mtr) => (
+            <>
+              <Divider />
+              <div key={mtr.id} tw="grid grid-cols-12 text-[14px] w-[1200px] p-1 items-center">
+                <div tw="p-1 col-span-6 rounded-lg">{mtr.trainingTitle}</div>
+                <div tw="p-1 col-span-1 rounded-lg">{mtr.recurrence}</div>
+                <div tw="p-1 col-span-1 rounded-lg">{mtr.completed}</div>
+                <div tw="p-1 col-span-1 rounded-lg">{mtr.dueDate}</div>
+                <div tw="p-1 col-span-3 rounded-lg">{mtr.traineer}</div>
+              </div>
+            </>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
+
+const PrintableMemberReport = React.forwardRef(PrintMemberReport);
+
 type MemberReportProps = {
   memberId: number;
-};
-
-type DetailedReportDialogProps = {
-  open: boolean;
-  handleClose: () => void;
-  memberId: number;
-  memberTrackingItems: MemberTrackingItemWithAll[];
-};
-
-const DetailedReportDialog: React.FC<DetailedReportDialogProps> = ({
-  open,
-  handleClose,
-  memberId,
-  memberTrackingItems,
-}) => {
-  return (
-    <Dialog
-      sx={{ '& .MuiDialog-paper': { backgroundColor: '#f8f8f8' } }}
-      fullScreen
-      open={open}
-      onClose={handleClose}
-      TransitionComponent={Transition}
-    >
-      <AppBar sx={{ position: 'relative', backgroundColor: 'white' }}>
-        <Toolbar>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color="primary">
-            Reporting Excel
-          </Typography>
-          <Button variant="contained" size="small" autoFocus color="primary" onClick={handleClose}>
-            Done
-          </Button>
-        </Toolbar>
-      </AppBar>
-      <div tw="p-20">
-        <Card tw="h-96">
-          {<DetailedMemberTrainingReport memberId={memberId} memberTrackingItems={memberTrackingItems} />}
-        </Card>
-      </div>
-    </Dialog>
-  );
 };
 
 type ExportDialogProps = {
@@ -116,24 +145,26 @@ type ExportDialogProps = {
 };
 
 const ExportDialog: React.FC<ExportDialogProps> = ({ open, handleClose, memberId, memberTrackingItems }) => {
+  const componentRef = React.useRef();
   const ppeQuery = usePpeItems(memberId);
+  const { user } = useUser<LoggedInUser>();
 
-  const data = memberTrackingItems
+  const filteredMTRs = memberTrackingItems
     ?.filter((member) => member.memberTrackingRecords.length !== 0)
     .flatMap((mti) => {
       return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
-        const isInactive = mti.status === MemberTrackingItemStatus.INACTIVE;
         return {
           id: `${memberId}-${mtr.id}`,
           trainingTitle: mti.trackingItem.title,
           recurrence: TrackingItemInterval[mti.trackingItem.interval],
-          status: isInactive ? 'Archived' : getStatus(mtr.completedDate, mti.trackingItem.interval),
+          completed: dayjs(mtr.completedDate).format('MMM D, YYYY'),
           dueDate: dayjs(mtr.completedDate).add(mti.trackingItem.interval, 'days').format('MMM D, YYYY'),
+          traineer: `${mtr.authority?.firstName} ${mtr.authority?.lastName} ${dayjs(mtr.authoritySignedDate).format(
+            'HH:MM MMM D, YYYY'
+          )}`,
         };
       });
     });
-
-  console.log(data);
 
   if (ppeQuery.isLoading) {
     return <div>...Loading</div>;
@@ -147,37 +178,24 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ open, handleClose, memberId
       onClose={handleClose}
       TransitionComponent={Transition}
     >
-      <AppBar sx={{ position: 'relative', backgroundColor: 'white' }}>
-        <Toolbar>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color="primary">
-            Detailed Report
-          </Typography>
-          <Button variant="contained" size="small" autoFocus color="primary" onClick={handleClose}>
-            Done
+      <div tw="w-4/6 mr-auto ml-auto relative">
+        <div tw="absolute top-6 right-6 flex space-x-6">
+          <ReactToPrint
+            trigger={() => <Button variant="contained">Print</Button>}
+            content={() => componentRef.current}
+          />
+          <Button variant="outlined" onClick={handleClose}>
+            Close
           </Button>
-        </Toolbar>
-      </AppBar>
-      <div tw="p-20">
-        <Card tw="h-96">
-          {ppeQuery.data.map((ppeItem) => (
-            <div key={ppeItem.id}>
-              {ppeItem.name}
-              {ppeItem.inUse}
-              {ppeItem.inUseDetails}
-              {ppeItem.providedDetails}
-            </div>
-          ))}
-          {data.map((mtr) => (
-            <div key={mtr.id}>{mtr.trainingTitle}</div>
-          ))}
-        </Card>
+        </div>
+
+        <PrintableMemberReport ref={componentRef} user={user} ppeItems={ppeQuery.data} mtrs={filteredMTRs} />
       </div>
     </Dialog>
   );
 };
 
 export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
-  const [openDetailedReport, setOpenDetailedReport] = useState(false);
   const [openExport, setOpenExport] = useState(false);
   const memberTrackingItemsQuery = useMemberTrackingItemsForUser(memberId);
 
@@ -197,14 +215,6 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
         addMemberCounts(mti, mtr, counts);
       });
     });
-
-  const handleClickOpen = () => {
-    setOpenDetailedReport(true);
-  };
-
-  const handleClose = () => {
-    setOpenDetailedReport(false);
-  };
 
   if (memberTrackingItemsQuery.isLoading) {
     return <div>...Loading</div>;
@@ -266,20 +276,11 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
           </div>
         </div>
         <div tw="absolute bottom-4 left-4">
-          <Button variant="outlined" onClick={handleClickOpen}>
-            Reporting Excel
-          </Button>
           <Button variant="outlined" onClick={() => setOpenExport(true)}>
             Export
           </Button>
         </div>
       </Card>
-      <DetailedReportDialog
-        open={openDetailedReport}
-        handleClose={handleClose}
-        memberId={memberId}
-        memberTrackingItems={memberTrackingItemsQuery?.data}
-      />
       <ExportDialog
         open={openExport}
         handleClose={() => setOpenExport(false)}
