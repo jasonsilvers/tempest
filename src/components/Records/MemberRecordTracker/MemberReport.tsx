@@ -1,6 +1,5 @@
 import { Button, Card, Checkbox, Dialog, Divider, TextField, Typography } from '@mui/material';
 import { MemberTrackingItemStatus, PersonalProtectionEquipmentItem } from '@prisma/client';
-import { useUser } from '@tron/nextjs-auth-p1';
 import dayjs from 'dayjs';
 import React, { ForwardedRef, useState } from 'react';
 import 'twin.macro';
@@ -9,7 +8,7 @@ import { TrackingItemInterval } from '../../../../src/utils/daysToString';
 import { usePpeItems } from '../../../hooks/api/ppe';
 import { useMemberTrackingItemsForUser } from '../../../hooks/api/users';
 import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
-import { LoggedInUser, UserWithAll } from '../../../repositories/userRepo';
+import { UserWithAll } from '../../../repositories/userRepo';
 import { removeInProgressRecords, removeOldCompletedRecords } from '../../../utils';
 import { EStatus } from '../../Dashboard/Enums';
 import { Transition } from '../../Dashboard/Report';
