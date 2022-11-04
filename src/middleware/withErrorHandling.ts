@@ -47,7 +47,7 @@ export class PermissionError extends Error {
     super('PermissionError');
     this.status = 403;
     this.name = 'PermissionError';
-    console.log(message);
+
     this.message = message ?? 'You do not have permission to perform this action';
   }
 }

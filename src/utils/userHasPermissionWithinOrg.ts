@@ -1,15 +1,19 @@
+import { getOrganizationAndDown } from '../repositories/organizationRepo';
 import { FindUserById, LoggedInUser } from '../repositories/userRepo';
 import { userWithinOrgOrChildOrg } from './userWithinOrgorChildOrg';
 
-const userFromParamIsInOrgOrReportingOrgOfRequestUser = async (
+const userIsInOrgOrReportingOrgOfRequestingUser = async (
   requestUserOrgId: number,
-  userFromParamOrgId: number,
-  userFromParamReportingOrgId: number
+  userOrgId: number,
+  userReportingOrgId: number
 ) => {
-  return (
-    (await userWithinOrgOrChildOrg(requestUserOrgId, userFromParamOrgId)) ||
-    (await userWithinOrgOrChildOrg(requestUserOrgId, userFromParamReportingOrgId))
-  );
+  const requestUserOrgAndDown = await getOrganizationAndDown(requestUserOrgId);
+
+  const test =
+    userWithinOrgOrChildOrg(requestUserOrgAndDown, userOrgId) ||
+    userWithinOrgOrChildOrg(requestUserOrgAndDown, userReportingOrgId);
+
+  return test;
 };
 
 export async function loggedInUserHasPermissionOnUser(requestUser: LoggedInUser, forUser: FindUserById) {
@@ -17,15 +21,9 @@ export async function loggedInUserHasPermissionOnUser(requestUser: LoggedInUser,
     return true;
   }
 
-  if (
-    await userFromParamIsInOrgOrReportingOrgOfRequestUser(
-      requestUser.organizationId,
-      forUser.organizationId,
-      forUser.reportingOrganizationId
-    )
-  ) {
-    return true;
-  }
-
-  return false;
+  return await userIsInOrgOrReportingOrgOfRequestingUser(
+    requestUser.organizationId,
+    forUser.organizationId,
+    forUser.reportingOrganizationId
+  );
 }

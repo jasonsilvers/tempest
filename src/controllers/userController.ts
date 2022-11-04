@@ -37,6 +37,7 @@ const setup = async (req: NextApiRequestWithAuthorization<LoggedInUser>) => {
   const userId = query.id as string;
   const userIdParam = parseInt(userId);
   const userFromParam: FindUserById = await findUserById(userIdParam);
+
   if (!userFromParam) {
     throw new NotFoundError();
   }
