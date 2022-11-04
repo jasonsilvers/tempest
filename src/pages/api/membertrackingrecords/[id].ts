@@ -1,6 +1,6 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, findUserById, LoggedInUser } from '../../../repositories/userRepo';
 import {
   countMemberTrackingRecordsForMemberTrackingItem,
   deleteMemberTrackingItem,
@@ -11,7 +11,7 @@ import { getAc } from '../../../middleware/utils';
 import { EResource } from '../../../const/enums';
 import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { userHasPermissionWithinOrg } from '../../../utils/userHasPermissionWithinOrg';
+import { loggedInUserHasPermissionOnUser } from '../../../utils/userHasPermissionWithinOrg';
 
 interface ITempestMemberTrackingRecordApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {
@@ -39,16 +39,9 @@ async function memberTrackingRecordIdHandler(
     throw new NotFoundError();
   }
 
-  //A monitor should not be able to retrieve a MTR for a member not in their organization
-  if (
-    !(await userHasPermissionWithinOrg(
-      { id: req.user.id, orgId: req.user.organizationId },
-      {
-        id: memberTrackingRecord.memberTrackingItem.user.id,
-        orgId: memberTrackingRecord.memberTrackingItem.user.organizationId,
-      }
-    ))
-  ) {
+  const userFromBody = await findUserById(memberTrackingRecord.memberTrackingItem.user.id);
+
+  if (!(await loggedInUserHasPermissionOnUser(req.user, userFromBody))) {
     throw new PermissionError();
   }
 

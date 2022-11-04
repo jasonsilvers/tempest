@@ -214,9 +214,18 @@ export const getAllUsersFromUsersOrgCascade = async (organizationId: number) => 
 
   return prisma.user.findMany({
     where: {
-      organizationId: {
-        in: organizationIds,
-      },
+      OR: [
+        {
+          organizationId: {
+            in: organizationIds,
+          },
+        },
+        {
+          reportingOrganizationId: {
+            in: organizationIds,
+          },
+        },
+      ],
     },
     orderBy: {
       lastName: 'asc',

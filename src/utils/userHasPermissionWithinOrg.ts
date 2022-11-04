@@ -1,27 +1,29 @@
-import { findUserById } from '../repositories/userRepo';
+import { FindUserById, LoggedInUser } from '../repositories/userRepo';
 import { userWithinOrgOrChildOrg } from './userWithinOrgorChildOrg';
 
-type UserHasPermissionWithinOrgParam = {
-  id: number;
-  orgId: number;
+const userFromParamIsInOrgOrReportingOrgOfRequestUser = async (
+  requestUserOrgId: number,
+  userFromParamOrgId: number,
+  userFromParamReportingOrgId: number
+) => {
+  return (
+    (await userWithinOrgOrChildOrg(requestUserOrgId, userFromParamOrgId)) ||
+    (await userWithinOrgOrChildOrg(requestUserOrgId, userFromParamReportingOrgId))
+  );
 };
 
-export async function userHasPermissionWithinOrg(
-  monitor: UserHasPermissionWithinOrgParam,
-  member: UserHasPermissionWithinOrgParam
-) {
-  if (monitor.id === member.id) {
+export async function loggedInUserHasPermissionOnUser(requestUser: LoggedInUser, forUser: FindUserById) {
+  if (requestUser.id === forUser.id) {
     return true;
   }
 
-  let memberOrgId = member.orgId;
-
-  if (!member.orgId) {
-    const user = await findUserById(member.id);
-    memberOrgId = user.organizationId;
-  }
-
-  if (monitor.id !== member.id && (await userWithinOrgOrChildOrg(monitor.orgId, memberOrgId))) {
+  if (
+    await userFromParamIsInOrgOrReportingOrgOfRequestUser(
+      requestUser.organizationId,
+      forUser.organizationId,
+      forUser.reportingOrganizationId
+    )
+  ) {
     return true;
   }
 
