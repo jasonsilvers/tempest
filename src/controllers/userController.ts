@@ -79,6 +79,7 @@ const putUserAction = async (
 
   if (body.roleId) {
     const requestedRoleUpdate = await getRoleById(body.roleId);
+
     if (requestedRoleUpdate.name === ERole.ADMIN) {
       throw new PermissionError();
     }
@@ -102,22 +103,24 @@ const putUserAction = async (
     throw new PermissionError();
   }
 
-  let filteredData = permission.filter(body);
+  const filteredData = permission.filter(body);
 
   const organizationIdFromBody = body.organizationId ? parseInt(body.organizationId) : null;
+  let userDataToUpdateFinal = { ...filteredData, organizationId: organizationIdFromBody };
 
   const canNotUpdateRoleAndOrgAtSameTime =
     userMakingRequest.role.name !== ERole.PROGRAM_MANAGER && userMakingRequest.role.name !== ERole.ADMIN;
-  const changingOwnOrganization = userMakingRequest.id === userFromParam.id;
+
   const userIsUpdatingOrg = organizationIdFromBody !== userFromParam.organizationId;
+  const changingOwnOrganization = userIsUpdatingOrg && userMakingRequest.id === userFromParam.id;
 
   // if orgId has changed and not a program admin. Set role to member
   if ((userIsUpdatingOrg && canNotUpdateRoleAndOrgAtSameTime) || changingOwnOrganization) {
     const memberRole = await getRoleByName(ERole.MEMBER);
-    filteredData = { ...filteredData, roleId: memberRole.id };
+    userDataToUpdateFinal = { ...userDataToUpdateFinal, roleId: memberRole.id };
   }
 
-  const updatedUser = await updateUser(userIdParam, filteredData);
+  const updatedUser = await updateUser(userIdParam, userDataToUpdateFinal);
 
   res.status(200).json(updatedUser);
 };

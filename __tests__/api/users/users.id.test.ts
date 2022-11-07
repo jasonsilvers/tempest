@@ -209,21 +209,20 @@ test('PUT - should return user - update own', async () => {
   mockMethodAndReturn(findUserByEmail, {
     id: 2,
     firstName: 'joe',
-    role: { id: '22', name: 'member' },
+    role: { id: 22, name: 'member' },
     organizationId: 123,
   });
-  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 123 });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: 22, name: 'member' }, organizationId: 123 });
   mockMethodAndReturn(getRoleByName, { id: 2, name: 'member' });
   const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 2,
-    body: { organizationId: 123, dutyTitle: 'test Title', roleId: 1 } as User,
+    body: { organizationId: 123, dutyTitle: 'test Title', roleId: 22 } as User,
   });
 
   expect(spy).toHaveBeenCalledWith(2, {
     organizationId: 123,
     dutyTitle: 'test Title',
-    roleId: 2,
   } as User);
 
   expect(status).toBe(200);
@@ -243,17 +242,18 @@ test('PUT - should return user - update own', async () => {
       address: Joi.string().optional().allow(null, ''),
  * 
  */
+
 test('PUT - should filter data for member', async () => {
   mockMethodAndReturn(findUserByEmail, {
     id: 2,
     firstName: 'joe',
-    role: { id: '22', name: 'member' },
+    role: { id: 22, name: 'member' },
     organizationId: 123,
   });
-  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: '22', name: 'member' }, organizationId: 123 });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: 22, name: 'member' }, organizationId: 123 });
   mockMethodAndReturn(getRoleByName, { id: 2, name: 'member' });
 
-  const spy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  const updateUserSpy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
   const { data, status } = await testNextApi.put(userQueryHandler, {
     urlId: 2,
     body: {
@@ -268,14 +268,50 @@ test('PUT - should filter data for member', async () => {
     },
   });
 
-  expect(spy).toHaveBeenCalledWith(2, {
+  expect(updateUserSpy).toHaveBeenCalledWith(2, {
     organizationId: 123,
     tags: ['tags'],
     rank: 'rank',
     afsc: 'afsc',
     dutyTitle: 'dutyTitle',
     address: 'address',
-    roleId: 2,
+  });
+
+  expect(status).toBe(200);
+  expect(data).toStrictEqual({ name: 'bob', id: 123 });
+});
+test('PUT - should filter data for member', async () => {
+  mockMethodAndReturn(findUserByEmail, {
+    id: 2,
+    firstName: 'joe',
+    role: { id: 22, name: 'member' },
+    organizationId: 123,
+  });
+  mockMethodAndReturn(findUserById, { ...userFromDb, role: { id: 22, name: 'member' }, organizationId: 123 });
+  mockMethodAndReturn(getRoleByName, { id: 2, name: 'member' });
+
+  const updateUserSpy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+  const { data, status } = await testNextApi.put(userQueryHandler, {
+    urlId: 2,
+    body: {
+      organizationId: 123,
+      email: 'email@email.com',
+      roleId: 1,
+      rank: 'rank',
+      tags: ['tags'],
+      afsc: 'afsc',
+      dutyTitle: 'dutyTitle',
+      address: 'address',
+    },
+  });
+
+  expect(updateUserSpy).toHaveBeenCalledWith(2, {
+    organizationId: 123,
+    tags: ['tags'],
+    rank: 'rank',
+    afsc: 'afsc',
+    dutyTitle: 'dutyTitle',
+    address: 'address',
   });
 
   expect(status).toBe(200);
@@ -334,6 +370,22 @@ test('PUT - should return user - update any', async () => {
 
   expect(status).toBe(200);
   expect(data).toStrictEqual({ name: 'bob', id: 123 });
+});
+
+test('PUT - should return permission denied if trying to update role to SUPER ADMIN - update any', async () => {
+  mockMethodAndReturn(findUserById, userFromDb);
+  mockMethodAndReturn(getRoleById, { id: 2, name: 'admin' });
+
+  const updateUserSpy = mockMethodAndReturn(updateUser, { name: 'bob', id: 123 });
+
+  const { status } = await testNextApi.put(userQueryHandler, {
+    urlId: 2,
+    body: { rank: 'bob', roleId: 2 },
+  });
+
+  expect(updateUserSpy).not.toBeCalled();
+
+  expect(status).toBe(403);
 });
 
 test('PUT - should return user if not in org and requesting user has adminrole - update any', async () => {

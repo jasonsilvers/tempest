@@ -32,7 +32,7 @@ describe('Member Role', () => {
     cy.wait(2000);
     cy.url().should('include', '/Profile');
 
-    cy.contains(/dashboad/i).should('not.exist');
+    cy.contains(/dashboard/i).should('not.exist');
     cy.contains(/global-training-catalog/).should('not.exist');
     cy.contains(/admin/).should('not.exist');
     cy.contains(/super admin/).should('not.exist');
