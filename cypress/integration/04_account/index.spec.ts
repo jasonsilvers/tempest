@@ -38,7 +38,7 @@ describe('Member role', () => {
   });
 })
 
-describe.only('Montior role', () => {
+describe('Montior role', () => {
   it('should update work fields', () => {
     cy.loginAsMonitor();
     cy.url().should('include', '/Dashboard');
@@ -65,7 +65,44 @@ describe.only('Montior role', () => {
     
   });
 
-  it.only('should set role to member if organization is changed', () => {
+  it('should not set role to member if reporting organization is changed', () => {
+    cy.loginAsMonitor();
+    cy.url().should('include', '/Dashboard');
+
+    cy.contains(/dashboard/i).should('exist');
+    cy.findByRole('navigation', {
+      name: /global\-training\-catalog/i
+    }).should('exist');
+
+    cy.findByRole('navigation', { name: /account-settings/ }).click();
+
+    cy.findByRole('tab', {
+      name: /monitor/i
+    }).click()
+    
+    cy.findByRole('button', {
+      name: /15th medical group/i
+    }).click()
+
+    cy.findByRole('option', {
+      name: /lrs/i
+    }).click()
+    
+    cy.findByRole('button', {
+      name: /update/i
+    }).click()
+
+
+    cy.findByText(/profile updated!/i).should('be.visible')
+
+    cy.contains(/dashboard/i).should('exist');
+    cy.findByRole('navigation', {
+      name: /global\-training\-catalog/i
+    }).should('exist');
+
+  });
+
+  it('should set role to member if organization is changed', () => {
     cy.loginAsMonitor();
     cy.url().should('include', '/Dashboard');
 
@@ -100,4 +137,5 @@ describe.only('Montior role', () => {
     }).should('not.exist');
     
   });
+
 })
