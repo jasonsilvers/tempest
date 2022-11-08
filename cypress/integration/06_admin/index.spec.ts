@@ -41,8 +41,8 @@ describe('Can use admin features', () => {
     cy.findByRole('navigation', { name: 'admin' }).click();
     cy.findAllByRole('tab', { name: /users/i }).first().click();
 
-    //should only show 12 members
-    cy.findByText(/1–16 of 16/i).should('exist')
+    
+    cy.findByText(/1–15 of 15/i).should('exist')
 
     cy.findAllByText(/15th medical group/i).eq(4).click()
 
@@ -64,7 +64,7 @@ describe('Can use admin features', () => {
 
     cy.findByRole('button', {name: /yes/i}).click()
 
-    cy.findByText(/1–15 of 15/i).should('exist')
+    cy.findByText(/1–14 of 14/i).should('exist')
 
   });
 

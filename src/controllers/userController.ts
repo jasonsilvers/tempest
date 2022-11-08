@@ -9,9 +9,16 @@ import {
   deleteAllMemberTrackingItemsForUserId,
   deleteAllMemberTrackingRecordsForUserId,
 } from '../repositories/memberTrackingRepo';
-import { getRoleById, getRoleByName } from '../repositories/roleRepo';
-import { deleteUser, FindUserById, findUserById, LoggedInUser, updateUser } from '../repositories/userRepo';
+import { getRoleById } from '../repositories/roleRepo';
 import { loggedInUserHasPermissionOnUser } from '../utils/userHasPermissionWithinOrg';
+import {
+  deleteUser,
+  FindUserById,
+  findUserById,
+  LoggedInUser,
+  updateUser,
+  updateUserRole,
+} from '../repositories/userRepo';
 
 const userSchema = {
   put: {
@@ -32,7 +39,11 @@ const userSchema = {
   },
 };
 
-const setup = async (req: NextApiRequestWithAuthorization<LoggedInUser>) => {
+interface ITempestUserPostRequest extends NextApiRequestWithAuthorization<LoggedInUser> {
+  body: Partial<User>;
+}
+
+const setup = async (req: ITempestUserPostRequest) => {
   const { query, body } = req;
   const userId = query.id as string;
   const userIdParam = parseInt(userId);
@@ -44,6 +55,26 @@ const setup = async (req: NextApiRequestWithAuthorization<LoggedInUser>) => {
   const ac = await getAc();
 
   return { body, userIdParam, userFromParam, ac };
+};
+
+const resetUsersRoleToMemberIfOrgChanges = async (
+  req: NextApiRequestWithAuthorization<LoggedInUser>,
+  userFromParam: FindUserById,
+  user: Partial<User>
+) => {
+  const userMakingRequest = req.user;
+  const organizationIdFromBody = user.organizationId;
+
+  const canNotUpdateRoleAndOrgAtSameTime =
+    userMakingRequest.role.name !== ERole.PROGRAM_MANAGER && userMakingRequest.role.name !== ERole.ADMIN;
+
+  const userIsUpdatingOrg = organizationIdFromBody && organizationIdFromBody !== userFromParam.organizationId;
+  const changingOwnOrganization = userIsUpdatingOrg && userMakingRequest.id === userFromParam.id;
+
+  // if orgId has changed and not a program admin. Set role to member
+  if ((userIsUpdatingOrg && canNotUpdateRoleAndOrgAtSameTime) || changingOwnOrganization) {
+    await updateUserRole(user.id, ERole.MEMBER);
+  }
 };
 
 const getUserAction = async (
@@ -73,10 +104,10 @@ const putUserAction = async (
   res: NextApiResponse<User | ITempestApiMessage>
 ) => {
   const { userIdParam, ac, userFromParam, body } = await setup(req);
-  const userMakingRequest = req.user;
 
   if (body.roleId) {
     const requestedRoleUpdate = await getRoleById(body.roleId);
+
     if (requestedRoleUpdate.name === ERole.ADMIN) {
       throw new PermissionError('You cannot update your role to admin');
     }
@@ -95,20 +126,8 @@ const putUserAction = async (
     throw new PermissionError('You do not have update permissions for that resource');
   }
 
-  let filteredData = permission.filter(body);
-
-  const organizationIdFromBody = body.organizationId ? parseInt(body.organizationId) : null;
-
-  const canNotUpdateRoleAndOrgAtSameTime =
-    userMakingRequest.role.name !== ERole.PROGRAM_MANAGER && userMakingRequest.role.name !== ERole.ADMIN;
-  const changingOwnOrganization = userMakingRequest.id === userFromParam.id;
-  const userIsUpdatingOrg = organizationIdFromBody !== userFromParam.organizationId;
-
-  // if orgId has changed and not a program admin. Set role to member
-  if ((userIsUpdatingOrg && canNotUpdateRoleAndOrgAtSameTime) || changingOwnOrganization) {
-    const memberRole = await getRoleByName(ERole.MEMBER);
-    filteredData = { ...filteredData, roleId: memberRole.id };
-  }
+  await resetUsersRoleToMemberIfOrgChanges(req, userFromParam, body);
+  const filteredData = permission.filter(body);
 
   const updatedUser = await updateUser(userIdParam, filteredData);
 
