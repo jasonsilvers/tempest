@@ -163,7 +163,7 @@ export const Report: React.FC<ReportProps> = ({ memberList, counts }) => {
     <>
       <Card data-testid="report-widget" tw="h-52 relative">
         <Typography variant="h6" tw="absolute top-4 left-4">
-          Readiness Stats
+          Training Stats
         </Typography>
         <div tw="flex items-center">
           <div tw="w-1/2 pl-4 flex space-x-4">

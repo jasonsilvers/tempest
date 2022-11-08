@@ -1,4 +1,4 @@
-import { findOrganizationById, OrganizationWithChildren } from '../../src/repositories/organizationRepo';
+import { findOrganizationById, OrganizationWithChildrenAndUsers } from '../../src/repositories/organizationRepo';
 import { isOrgChildOf } from '../../src/utils/isOrgChildOf';
 
 jest.mock('../../src/repositories/organizationRepo.ts');
@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 test('should return true if parentId matches', async () => {
-  const organization: OrganizationWithChildren = {
+  const organization: OrganizationWithChildrenAndUsers = {
     id: '1',
     name: 'organization1',
     parentId: '2',
@@ -25,7 +25,7 @@ test('should return true if parentId matches', async () => {
 });
 
 test('should return false if no parentId', async () => {
-  const organization: OrganizationWithChildren = {
+  const organization: OrganizationWithChildrenAndUsers = {
     id: '1',
     name: 'organization1',
     parentId: null,
@@ -41,7 +41,7 @@ test('should return false if no parentId', async () => {
 });
 
 test('should return true if orgId is found on parent of parent', async () => {
-  const organization1: OrganizationWithChildren = {
+  const organization1: OrganizationWithChildrenAndUsers = {
     id: '1',
     name: 'organization1',
     parentId: null,
@@ -49,7 +49,7 @@ test('should return true if orgId is found on parent of parent', async () => {
     users: null,
   };
 
-  const organization2: OrganizationWithChildren = {
+  const organization2: OrganizationWithChildrenAndUsers = {
     id: '2',
     name: 'organization2',
     parentId: '1',
@@ -65,7 +65,7 @@ test('should return true if orgId is found on parent of parent', async () => {
 });
 
 test('should return true if orgId is found on parent of parent of parent', async () => {
-  const organization1: OrganizationWithChildren = {
+  const organization1: OrganizationWithChildrenAndUsers = {
     id: '1',
     name: 'organization1',
     parentId: null,
@@ -73,7 +73,7 @@ test('should return true if orgId is found on parent of parent of parent', async
     users: null,
   };
 
-  const organization2: OrganizationWithChildren = {
+  const organization2: OrganizationWithChildrenAndUsers = {
     id: '2',
     name: 'organization2',
     parentId: '1',
@@ -81,7 +81,7 @@ test('should return true if orgId is found on parent of parent of parent', async
     users: null,
   };
 
-  const organization3: OrganizationWithChildren = {
+  const organization3: OrganizationWithChildrenAndUsers = {
     id: '3',
     name: 'organization3',
     parentId: '2',
@@ -94,7 +94,7 @@ test('should return true if orgId is found on parent of parent of parent', async
     .mockResolvedValueOnce(organization2)
     .mockResolvedValueOnce(organization1);
 
-  const isChild = await isOrgChildOf('3', '1');
+  const isChild = await isOrgChildOf('3', '1', mockedFindOrganizationById);
 
   expect(mockedFindOrganizationById).toBeCalledTimes(2);
   expect(isChild).toBe(true);
