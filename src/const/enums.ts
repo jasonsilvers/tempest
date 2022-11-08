@@ -64,6 +64,7 @@ export enum EUri {
   BULK_CREATE = '/api/bulk/tracking/create/',
   JOBS = '/api/jobs/',
   ONBOARD = '/api/onboard/org/',
+  MERGE = '/api/account/merge/',
 }
 
 export enum EAttribute {
