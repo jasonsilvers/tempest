@@ -21,8 +21,10 @@ model User {
   lastLogin                DateTime?                         @map("last_login")
   role                     Role?                             @relation(fields: [roleId], references: [id])
   roleId                   Int?                              @map("role_id")
+  //Used for administration (first check to determine who a user reports to)
   organization             Organization?                     @relation(fields: [organizationId], references: [id])
   organizationId           Int?                              @map("organization_id")
+  //Used to override orgId (second check to determine who a user reports to)
   reportingOrganization    Organization?                     @relation(fields: [reportingOrganizationId], references: [id], name: "reportingOrganization")
   reportingOrganizationId  Int?                              @map("reporting_organization_id")
   tags                     Tag[]

@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import { useUser } from '@tron/nextjs-auth-p1';
+import { useUser, withPageAuth } from '@tron/nextjs-auth-p1';
 import { useRouter } from 'next/router';
 import 'twin.macro';
 import { UpdateUsersOrg } from '../components/UpdateUsersOrg';
@@ -68,4 +68,4 @@ const WelcomePage = () => {
   );
 };
 
-export default WelcomePage;
+export default withPageAuth(WelcomePage);

@@ -1,6 +1,5 @@
 import { User } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
-import { Permission } from 'accesscontrol';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
 import { EResource, ERole, ITempestApiMessage } from '../const/enums';
@@ -11,6 +10,7 @@ import {
   deleteAllMemberTrackingRecordsForUserId,
 } from '../repositories/memberTrackingRepo';
 import { getRoleById } from '../repositories/roleRepo';
+import { loggedInUserHasPermissionOnUser } from '../utils/userHasPermissionWithinOrg';
 import {
   deleteUser,
   FindUserById,
@@ -19,7 +19,6 @@ import {
   updateUser,
   updateUserRole,
 } from '../repositories/userRepo';
-import { userWithinOrgOrChildOrg } from '../utils/userWithinOrgorChildOrg';
 
 const userSchema = {
   put: {
@@ -48,7 +47,8 @@ const setup = async (req: ITempestUserPostRequest) => {
   const { query, body } = req;
   const userId = query.id as string;
   const userIdParam = parseInt(userId);
-  const userFromParam = await findUserById(userIdParam);
+  const userFromParam: FindUserById = await findUserById(userIdParam);
+
   if (!userFromParam) {
     throw new NotFoundError();
   }
@@ -81,21 +81,19 @@ const getUserAction = async (
   req: NextApiRequestWithAuthorization<LoggedInUser>,
   res: NextApiResponse<User | ITempestApiMessage>
 ) => {
-  const { userIdParam, ac, userFromParam } = await setup(req);
-  let permission: Permission;
+  const { ac, userFromParam } = await setup(req);
 
-  if (req.user.id !== userIdParam) {
-    if (await userWithinOrgOrChildOrg(req.user.organizationId, userFromParam.organizationId)) {
-      permission = ac.can(req.user.role.name).readAny(EResource.USER);
-    } else {
-      throw new PermissionError();
-    }
-  } else {
-    permission = ac.can(req.user.role.name).readOwn(EResource.USER);
+  if (!(await loggedInUserHasPermissionOnUser(req.user, userFromParam))) {
+    throw new PermissionError('You do not have permissions to update that user');
   }
 
+  const permission =
+    req.user.id !== userFromParam.id
+      ? ac.can(req.user.role.name).readAny(EResource.USER)
+      : ac.can(req.user.role.name).readOwn(EResource.USER);
+
   if (!permission.granted) {
-    throw new PermissionError();
+    throw new PermissionError('You do not have read permissions for that resource');
   }
 
   res.status(200).json(userFromParam);
@@ -111,26 +109,21 @@ const putUserAction = async (
     const requestedRoleUpdate = await getRoleById(body.roleId);
 
     if (requestedRoleUpdate.name === ERole.ADMIN) {
-      throw new PermissionError();
+      throw new PermissionError('You cannot update your role to admin');
     }
   }
 
-  let permission: Permission;
-
-  if (req.user.id !== userIdParam) {
-    if (await userWithinOrgOrChildOrg(req.user.organizationId, userFromParam.organizationId)) {
-      permission = ac.can(req.user.role.name).updateAny(EResource.USER);
-    } else if (req.user.role.name === ERole.ADMIN) {
-      permission = ac.can(req.user.role.name).updateAny(EResource.USER);
-    } else {
-      throw new PermissionError();
-    }
-  } else {
-    permission = ac.can(req.user.role.name).updateOwn(EResource.USER);
+  if (!(await loggedInUserHasPermissionOnUser(req.user, userFromParam))) {
+    throw new PermissionError('You do not have permissions to update that user');
   }
+
+  const permission =
+    req.user.id !== userFromParam.id
+      ? ac.can(req.user.role.name).updateAny(EResource.USER)
+      : ac.can(req.user.role.name).updateOwn(EResource.USER);
 
   if (!permission.granted) {
-    throw new PermissionError();
+    throw new PermissionError('You do not have update permissions for that resource');
   }
 
   await resetUsersRoleToMemberIfOrgChanges(req, userFromParam, body);

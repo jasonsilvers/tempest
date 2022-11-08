@@ -17,7 +17,10 @@ beforeEach(() => {
   server.use(
     // return a user with the right permissions
     rest.get(EUri.LOGIN, (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 0, name: ERole.MONITOR } }));
+      return res(
+        ctx.status(200),
+        ctx.json({ ...bobJones, role: { id: 0, name: ERole.MONITOR }, organizationId: null })
+      );
     }),
     rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
       return res(
@@ -57,10 +60,10 @@ it('renders the welcome page', async () => {
 });
 
 it('should disable Get Started button if no organization id', async () => {
-  const { getByText, getByRole } = render(<WelcomePage />);
-  await waitFor(() => expect(getByText(/loading/i)).toBeInTheDocument());
+  const screen = render(<WelcomePage />);
+  await waitFor(() => expect(screen.getByText(/loading/i)).toBeInTheDocument());
 
-  const button = getByRole('button', { name: /get started/i });
+  const button = await screen.findByRole('button', { name: /get started/i });
 
   expect(button).toBeDisabled();
 });
@@ -82,8 +85,8 @@ it('should route to index when clicking get started', async () => {
   );
   const push = jest.fn();
 
-  const { getByRole } = render(<WelcomePage />, { push });
-  const button = getByRole('button', { name: /get started/i });
+  const screen = render(<WelcomePage />, { push });
+  const button = await screen.findByRole('button', { name: /get started/i });
 
   await waitForLoadingToFinish();
 

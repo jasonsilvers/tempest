@@ -119,7 +119,7 @@ describe('Member role', () => {
     cy.findByText(oldDate).should('not.exist');
   });
 
-  it.only('should not be able to archive training', () => {
+  it('should not be able to archive training', () => {
     cy.loginAsMember();
 
     cy.findByRole('button', {name: /training in progress/i}).click()
