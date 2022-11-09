@@ -394,7 +394,7 @@ it('should render report widget and show correct counts', async () => {
 
   await waitForLoadingToFinish();
 
-  await waitFor(() => expect(screen.getByText(/readiness stats/i)).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText(/training stats/i)).toBeInTheDocument());
 
   const doneCountDiv = screen.getByTestId('report-done');
   const doneCount = within(doneCountDiv).getByText(1);
@@ -419,7 +419,7 @@ it('should render detailed report', async () => {
 
   await waitForLoadingToFinish();
 
-  await waitFor(() => expect(screen.getByText(/readiness stats/i)).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText(/training stats/i)).toBeInTheDocument());
 
   const reportButton = screen.getByRole('button', { name: /detailed report/i });
 
