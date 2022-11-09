@@ -17,10 +17,9 @@ import { useOrgsLoggedInUsersOrgAndDown } from '../hooks/api/organizations';
 import { useUsers } from '../hooks/api/users';
 import { usePermissions } from '../hooks/usePermissions';
 import { Card } from '../lib/ui';
-import { findOrganizationById } from '../repositories/organizationRepo';
 import { UserWithAll } from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
-import { isOrgChildOf, isOrgChildOfClient } from '../utils/isOrgChildOf';
+import { isOrgChildOfClient } from '../utils/isOrgChildOf';
 
 const initialCounts: StatusCounts = {
   All: 0,
@@ -56,7 +55,7 @@ const applyNameFilter = (userList: UserWithAll[], nameFilter: string) => {
 
 function findOrganizationByIdClient(id: number, organizationList: Organization[]) {
   if (!organizationList) {
-    throw new Error('Organization List is empty');
+    return null;
   }
 
   return organizationList?.find((org) => org.id === id);
@@ -71,32 +70,27 @@ const applyOrganizationFilter = (
     return userList;
   }
 
-  console.log(userList, organizationIdFilter, organizationList);
-
   const filteredUserList = userList?.filter((user) => {
     if (user.organizationId === organizationIdFilter) {
       return true;
     }
 
-    if (isOrgChildOfClient(user.organizationId, organizationIdFilter, organizationList, findOrganizationByIdClient)) {
+    if (
+      isOrgChildOfClient(user.organizationId, organizationIdFilter, organizationList, findOrganizationByIdClient) ||
+      isOrgChildOfClient(
+        user.reportingOrganizationId,
+        organizationIdFilter,
+        organizationList,
+        findOrganizationByIdClient
+      )
+    ) {
       return true;
     }
 
     return false;
   });
 
-  console.log(filteredUserList);
-
   return filteredUserList;
-
-  // return userList.filter((user) => {
-  //   //reporting org is only for monitors. Members should be filtered by their organization
-  //   if (user.reportingOrganizationId === null) {
-  //     return user.organizationId === organizationIdFilter;
-  //   }
-
-  //   return user.reportingOrganizationId === organizationIdFilter;
-  // });
 };
 
 const applyFilters = (userList: UserWithAll[], filters: IFilters, organizationList: Organization[]) => {
@@ -190,7 +184,7 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     dispatch({ type: 'setUserList', userList: usersQuery.data });
     dispatch({ type: 'filterByOrganization', organizationIdFilter: loggedInUser?.organizationId });
-  }, [usersQuery.data]);
+  }, [usersQuery.data, loggedInUser]);
 
   useEffect(() => {
     const membersCount = { ...initialCounts };

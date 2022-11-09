@@ -2,8 +2,6 @@ import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { Organization } from '@prisma/client';
 import { useState } from 'react';
 import 'twin.macro';
-import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
-import { LoadingSpinner } from '../../lib/ui';
 import { Actions } from './Types';
 
 type DashboardFilterProps = {
@@ -16,7 +14,6 @@ export const DashboardFilter = ({ dispatch, initOrg, orgList }: DashboardFilterP
   const [prevOrgList, setPrevOrgList] = useState<Organization[] | []>([]);
 
   if (orgList !== prevOrgList) {
-    console.log('it is in here');
     setPrevOrgList(orgList);
     dispatch({ type: 'setOrganizationList', Organizations: orgList });
   }
@@ -26,6 +23,7 @@ export const DashboardFilter = ({ dispatch, initOrg, orgList }: DashboardFilterP
       <div tw="w-full">
         <Select
           fullWidth
+          label="Organizations"
           variant="standard"
           size="small"
           value={initOrg ? initOrg.toString() : ''}

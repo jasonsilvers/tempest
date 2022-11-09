@@ -179,7 +179,7 @@ export const AddNewOrganizationDialog: React.FC<AddNewOrganizationDialogProps> =
         </DialogContent>
 
         <DialogActions>
-          <Button type="submit" size="medium" color="secondary" variant="contained">
+          <Button type="submit" size="medium" color="secondary" variant="contained" disabled={orgs === null}>
             Create
           </Button>
         </DialogActions>

@@ -42,8 +42,13 @@ export function isOrgChildOfClient(
     return false;
   }
 
-  // const childOrganization = await findOrganizationById(childOrganizationId);
   const childOrganization = functionToGetOrg(childOrganizationId, list);
+
+  //This might happen if a user's org is different than their reporting org
+  if (!childOrganization) {
+    return false;
+  }
+
   let parentId = childOrganization.parentId;
 
   while (parentId) {

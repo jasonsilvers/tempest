@@ -84,7 +84,7 @@ const users = {
       updatedAt: '2021-08-30T18:00:03.660Z',
       lastLogin: '2021-08-28T00:43:56.579Z',
       roleId: 1,
-      organizationId: 2,
+      organizationId: 1,
       reportingOrganizationId: 2,
       rank: 'SSgt/E5',
       afsc: '3P3X3',
@@ -268,15 +268,15 @@ beforeEach(() => {
     rest.get(EUri.USERS, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(users));
     }),
-    rest.get(EUri.ORGANIZATIONS, (req, res, ctx) => {
+    rest.get(EUri.ORGANIZATIONS + '*', (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
           organizations: [
             { id: 1, name: '15th Medical Group', shortName: '15th MDG', parentId: null },
-            { id: 2, name: 'organization 2', shortName: 'org 2', parentId: null },
+            { id: 2, name: 'organization 2', shortName: 'org 2', parentId: 1 },
             { id: 3, name: 'organization 3', shortName: 'org 3', parentId: 1 },
-            { id: 4, name: 'organization 4', shortName: 'org 4', parentId: 1 },
+            { id: 4, name: 'organization 4', shortName: 'org 4', parentId: 2 },
           ],
         })
       );
@@ -320,19 +320,29 @@ it('should filter by name', async () => {
 });
 
 it('should filter by organization', async () => {
-  const { getByText, queryByText, getByLabelText, findByText } = render(<Dashboard />);
+  const screen = render(<Dashboard />);
 
-  expect(await findByText(/clark, sandra/i)).toBeInTheDocument();
-  expect(getByText(/smith, joe/i)).toBeInTheDocument();
+  expect(await screen.findByText(/clark, sandra/i)).toBeInTheDocument();
+  expect(screen.getByText(/smith, joe/i)).toBeInTheDocument();
+  expect(screen.queryByText(/lastname3, firstname3/i)).toBeInTheDocument();
+  expect(screen.queryByText(/lastname4, firstname4/i)).toBeInTheDocument();
 
-  const searchInput = getByLabelText(/organizations/i);
+  const filterButton = screen.getByRole('button', {
+    name: /15th medical group/i,
+  });
 
-  userEvent.type(searchInput, '15');
+  fireEvent.mouseDown(filterButton);
 
-  fireEvent.click(await findByText('15th Medical Group'));
+  const option = await screen.findByRole('option', {
+    name: /organization 2/i,
+  });
 
-  expect(getByText(/clark, sandra/i)).toBeInTheDocument();
-  expect(queryByText(/smith, joe/i)).not.toBeInTheDocument();
+  fireEvent.click(option);
+
+  expect(screen.queryByText(/clark, sandra/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/smith, joe/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/lastname3, firstname3/i)).toBeInTheDocument();
+  expect(screen.queryByText(/lastname4, firstname4/i)).toBeInTheDocument();
 });
 
 it('should show error on query failure', async () => {
@@ -417,9 +427,7 @@ it('should render report widget and show correct counts', async () => {
 it('should render detailed report', async () => {
   const screen = render(<Dashboard />);
 
-  await waitForLoadingToFinish();
-
-  await waitFor(() => expect(screen.getByText(/training stats/i)).toBeInTheDocument());
+  await waitFor(async () => expect(await screen.findByText(/training stats/i)).toBeInTheDocument());
 
   const reportButton = screen.getByRole('button', { name: /detailed report/i });
 
@@ -429,9 +437,7 @@ it('should render detailed report', async () => {
 
   within(banner).getByText(/detailed report/i);
 
-  await waitForLoadingToFinish();
-
-  const dialog = screen.getByRole('dialog');
+  const dialog = await screen.findByRole('dialog');
 
   await waitFor(() => within(dialog).getByText(/sandra/i));
 
