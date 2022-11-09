@@ -18,11 +18,12 @@ import { User } from '@prisma/client';
 import { getRoleById, getRoleByName } from '../../../src/repositories/roleRepo';
 import { EAction, EResource, ERole } from '../../../src/const/enums';
 import { userWithinOrgOrChildOrg } from '../../../src/utils/userWithinOrgorChildOrg';
+import { loggedInUserHasPermissionOnUser } from '../../../src/utils/userHasPermissionWithinOrg';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/roleRepo');
 jest.mock('../../../src/repositories/grantsRepo.ts');
-jest.mock('../../../src/utils/userWithinOrgorChildOrg');
+jest.mock('../../../src/utils/userHasPermissionWithinOrg');
 jest.mock('../../../src/repositories/memberTrackingRepo');
 
 const userFromDb = {
@@ -32,15 +33,17 @@ const userFromDb = {
   role: { id: '22', name: 'monitor' },
 };
 
-beforeEach(() => {
-  mockMethodAndReturn(findUserByEmail, {
-    id: 1,
-    firstName: 'joe',
-    role: { id: '22', name: 'monitor' },
-  });
+const loggedInUser = {
+  id: 1,
+  firstName: 'joe',
+  role: { id: '22', name: 'monitor' },
+};
 
+beforeEach(() => {
+  mockMethodAndReturn(findUserByEmail, loggedInUser);
   mockMethodAndReturn(findGrants, grants);
   mockMethodAndReturn(getRoleById, { id: '22', name: 'monitor' });
+  mockMethodAndReturn(loggedInUserHasPermissionOnUser, true);
 });
 
 afterEach(() => {
@@ -71,16 +74,18 @@ test('GET - should return user - read any', async () => {
 });
 
 test('GET - should return user - read own', async () => {
-  mockMethodAndReturn(findUserByEmail, {
+  const userReadOwnLoggedInUser = {
     id: 1,
     firstName: 'joe',
     role: { id: '22', name: 'member' },
-  });
-  mockMethodAndReturn(findUserById, userFromDb);
+  };
+  mockMethodAndReturn(findUserByEmail, userReadOwnLoggedInUser);
+  mockMethodAndReturn(findUserById, userReadOwnLoggedInUser);
+
   const { data, status } = await testNextApi.get(userQueryHandler, { urlId: '1' });
 
   expect(status).toBe(200);
-  expect(data).toStrictEqual(userFromDb);
+  expect(data).toStrictEqual(userReadOwnLoggedInUser);
 });
 
 test('GET - should return 403 - read any', async () => {
@@ -100,7 +105,7 @@ test('GET - should return 403 - read any', async () => {
   };
 
   mockMethodAndReturn(findUserById, userFromDbReadAny);
-  mockMethodAndReturn(userWithinOrgOrChildOrg, false);
+  mockMethodAndReturn(loggedInUserHasPermissionOnUser, false);
 
   const { status } = await testNextApi.get(userQueryHandler, { urlId: 2 });
 

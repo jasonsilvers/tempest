@@ -12,11 +12,11 @@ import {
   findMemberTrackingRecords,
   deleteMemberTrackingItem,
 } from '../repositories/memberTrackingRepo';
-import { LoggedInUser } from '../repositories/userRepo';
+import { findUserById, LoggedInUser } from '../repositories/userRepo';
 import { ITempestApiMessage, EResource } from '../const/enums';
 import { getIncludesQueryArray } from '../utils/includeQuery';
 import { NotFoundError, PermissionError } from '../middleware/withErrorHandling';
-import { userHasPermissionWithinOrg } from '../utils/userHasPermissionWithinOrg';
+import { loggedInUserHasPermissionOnUser } from '../utils/userHasPermissionWithinOrg';
 
 export enum EMemberTrackingItemIncludes {
   MEMBER_TRACKING_RECORDS = 'membertrackingrecords',
@@ -45,12 +45,22 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
   } = req;
 
   const includesQuery = getIncludesQueryArray(include);
-  const userIdParam = parseInt(userId);
+  const userIdQuery = parseInt(userId);
   const trackingItemIdParam = parseInt(trackingItemId);
+
+  const userFromQuery = await findUserById(userIdQuery);
+
+  if (!userFromQuery) {
+    throw new NotFoundError();
+  }
+
+  if (!(await loggedInUserHasPermissionOnUser(req.user, userFromQuery))) {
+    throw new PermissionError();
+  }
 
   const ac = await getAc();
 
-  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userIdParam, {
+  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userIdQuery, {
     withMemberTrackingRecords: includesQuery.includes(EMemberTrackingItemIncludes.MEMBER_TRACKING_RECORDS),
     withTrackingItems: includesQuery.includes(EMemberTrackingItemIncludes.TRACKING_ITEMS),
   });
@@ -63,18 +73,6 @@ export const getMemberTrackingItemAction: IMemberTrackingItemController = async 
     memberTrackingItem?.userId !== req.user.id
       ? ac.can(req.user.role.name).readAny(EResource.MEMBER_TRACKING_ITEM)
       : ac.can(req.user.role.name).readOwn(EResource.MEMBER_TRACKING_ITEM);
-
-  if (
-    !(await userHasPermissionWithinOrg(
-      { id: req.user.id, orgId: req.user.organizationId },
-      {
-        id: memberTrackingItem.user.id,
-        orgId: memberTrackingItem.user.organizationId,
-      }
-    ))
-  ) {
-    throw new PermissionError();
-  }
 
   if (!permission.granted) {
     throw new PermissionError();
@@ -103,10 +101,16 @@ export const putMemberTrackingItemAction: IMemberTrackingItemController = async 
   } = req;
 
   const trackingItemIdParam = parseInt(trackingItemId);
-  const userIdParam = parseInt(userId);
+  const userIdQuery = parseInt(userId);
   const ac = await getAc();
 
-  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userIdParam);
+  const userFromQuery = await findUserById(userIdQuery);
+
+  if (!(await loggedInUserHasPermissionOnUser(req.user, userFromQuery))) {
+    throw new PermissionError();
+  }
+
+  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userIdQuery);
 
   if (!memberTrackingItem) {
     throw new NotFoundError();
@@ -114,25 +118,13 @@ export const putMemberTrackingItemAction: IMemberTrackingItemController = async 
 
   const permission = ac.can(req.user.role.name).updateAny(EResource.MEMBER_TRACKING_ITEM);
 
-  if (
-    !(await userHasPermissionWithinOrg(
-      { id: req.user.id, orgId: req.user.organizationId },
-      {
-        id: memberTrackingItem.user.id,
-        orgId: memberTrackingItem.user.organizationId,
-      }
-    ))
-  ) {
-    throw new PermissionError();
-  }
-
   if (!permission.granted) {
     throw new PermissionError();
   }
 
   const filteredBody = permission.filter(body);
 
-  const updatedMemberTrackingItem = await updateMemberTrackingItem(trackingItemIdParam, userIdParam, filteredBody);
+  const updatedMemberTrackingItem = await updateMemberTrackingItem(trackingItemIdParam, userIdQuery, filteredBody);
   res.status(200).json(updatedMemberTrackingItem);
 };
 
@@ -156,6 +148,12 @@ export const postMemberTrackingItemAction: IMemberTrackingItemController = async
     body,
   } = req;
 
+  const userFromBody = await findUserById(body.userId);
+
+  if (!(await loggedInUserHasPermissionOnUser(req.user, userFromBody))) {
+    throw new PermissionError();
+  }
+
   const memberTrackingRecordCompleteDate = complete_date?.toString();
 
   const ac = await getAc();
@@ -165,18 +163,6 @@ export const postMemberTrackingItemAction: IMemberTrackingItemController = async
       : ac.can(req.user.role.name).createOwn(EResource.MEMBER_TRACKING_ITEM);
 
   if (!permission.granted) {
-    throw new PermissionError();
-  }
-
-  if (
-    !(await userHasPermissionWithinOrg(
-      { id: req.user.id, orgId: req.user.organizationId },
-      {
-        id: body.userId,
-        orgId: null,
-      }
-    ))
-  ) {
     throw new PermissionError();
   }
 
@@ -205,10 +191,16 @@ export const deleteMemberTrackingItemAction: IMemberTrackingItemController = asy
   } = req;
 
   const trackingItemIdParam = parseInt(trackingItemId);
-  const userIdParam = parseInt(userId);
+  const userIdQuery = parseInt(userId);
+
+  const userFromBody = await findUserById(userIdQuery);
+
+  if (!(await loggedInUserHasPermissionOnUser(req.user, userFromBody))) {
+    throw new PermissionError();
+  }
 
   const ac = await getAc();
-  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userIdParam);
+  const memberTrackingItem = await findMemberTrackingItemById(trackingItemIdParam, userIdQuery);
 
   if (!memberTrackingItem) {
     throw new NotFoundError();
@@ -222,19 +214,7 @@ export const deleteMemberTrackingItemAction: IMemberTrackingItemController = asy
     throw new PermissionError();
   }
 
-  if (
-    !(await userHasPermissionWithinOrg(
-      { id: req.user.id, orgId: req.user.organizationId },
-      {
-        id: memberTrackingItem.user.id,
-        orgId: memberTrackingItem.user.organizationId,
-      }
-    ))
-  ) {
-    throw new PermissionError();
-  }
-
-  const memberTrackingRecords = await findMemberTrackingRecords(trackingItemIdParam, userIdParam);
+  const memberTrackingRecords = await findMemberTrackingRecords(trackingItemIdParam, userIdQuery);
 
   if (memberTrackingRecords.length > 0) {
     return res.status(409).json({
@@ -242,7 +222,7 @@ export const deleteMemberTrackingItemAction: IMemberTrackingItemController = asy
     });
   }
 
-  await deleteMemberTrackingItem(trackingItemIdParam, userIdParam);
+  await deleteMemberTrackingItem(trackingItemIdParam, userIdQuery);
 
   res.status(204).json({ message: 'Record deleted' });
 };

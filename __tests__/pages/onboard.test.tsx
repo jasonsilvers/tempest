@@ -46,14 +46,14 @@ describe('Onboard Page', () => {
   test('button should be diasabled if there is no input from user', async () => {
     const screen = render(<Onboard />);
 
-    const button = screen.getByRole('button', { name: /create/i });
+    const button = await screen.findByRole('button', { name: /create/i });
 
     expect(button).toBeDisabled();
   });
 
   test('should create new org', async () => {
     const screen = render(<Onboard />);
-    const orgNameTextBox = screen.getByLabelText(/organization name/i);
+    const orgNameTextBox = await screen.findByLabelText(/organization name/i);
     const shortNameTextBox = screen.getByLabelText(/short name/i);
     const button = screen.getByRole('button', { name: /create/i });
 
@@ -66,7 +66,7 @@ describe('Onboard Page', () => {
 
   test('should return user to prev page', async () => {
     const screen = render(<Onboard />);
-    const button = screen.getByRole('button', { name: /back/i });
+    const button = await screen.findByRole('button', { name: /back/i });
     expect(button).toBeInTheDocument();
     fireEvent.click(button);
   });

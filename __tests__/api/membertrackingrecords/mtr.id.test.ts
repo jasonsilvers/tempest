@@ -3,7 +3,7 @@
  */
 
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByEmail } from '../../../src/repositories/userRepo';
+import { findUserByEmail, findUserById } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import memberTrackingRecordIdHandler from '../../../src/pages/api/membertrackingrecords/[id]';
@@ -14,7 +14,7 @@ import {
   countMemberTrackingRecordsForMemberTrackingItem,
   deleteMemberTrackingItem,
 } from '../../../src/repositories/memberTrackingRepo';
-import { userHasPermissionWithinOrg } from '../../../src/utils/userHasPermissionWithinOrg';
+import { loggedInUserHasPermissionOnUser } from '../../../src/utils/userHasPermissionWithinOrg';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
@@ -49,14 +49,17 @@ const trackingItemFromDb = {
   interval: 365,
 };
 
+const loggedInUser = {
+  id: 2,
+  firstName: 'joe',
+  role: { id: '22', name: 'monitor' },
+};
+
 beforeEach(() => {
-  mockMethodAndReturn(findUserByEmail, {
-    id: 2,
-    firstName: 'joe',
-    role: { id: '22', name: 'monitor' },
-  });
+  mockMethodAndReturn(findUserByEmail, loggedInUser);
   mockMethodAndReturn(findGrants, grants);
-  mockMethodAndReturn(userHasPermissionWithinOrg, true);
+  mockMethodAndReturn(loggedInUserHasPermissionOnUser, true);
+  mockMethodAndReturn(findUserById, loggedInUser);
 });
 
 afterEach(() => {
@@ -92,7 +95,7 @@ test('GET - should return membertrackingrecord - read any', async () => {
 test('GET - should return 403 if member not in monitors organization - read any', async () => {
   const expectedResult = { ...memberTrackingRecordFromDb, trackingItem: trackingItemFromDb };
   mockMethodAndReturn(findMemberTrackingRecordById, expectedResult);
-  mockMethodAndReturn(userHasPermissionWithinOrg, false);
+  mockMethodAndReturn(loggedInUserHasPermissionOnUser, false);
   const { status } = await testNextApi.get(memberTrackingRecordIdHandler, { urlId: 1 });
 
   expect(status).toBe(403);

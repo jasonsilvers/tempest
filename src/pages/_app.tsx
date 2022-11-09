@@ -24,11 +24,11 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <AppProviders pageProps={pageProps}>
         <GlobalStyles />
-        <div tw="grid grid-cols-12 gap-4 md:ml-28">
-          <aside tw="col-span-2">
+        <div tw="grid grid-cols-12 gap-20">
+          <aside tw="md:col-span-4 lg:col-span-3 col-span-4">
             <NavBar />
           </aside>
-          <main tw="col-span-10 pt-6 m-auto">
+          <main tw="md:col-span-8 lg:col-span-9 col-span-8">
             {navigating ? <LoadingOverlay /> : null}
             <Component {...pageProps} />
           </main>

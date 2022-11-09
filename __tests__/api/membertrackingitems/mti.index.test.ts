@@ -5,7 +5,7 @@
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { findUserByEmail } from '../../../src/repositories/userRepo';
+import { findUserByEmail, findUserById } from '../../../src/repositories/userRepo';
 import {
   createMemberTrackingItem,
   createMemberTrackingRecord,
@@ -17,7 +17,7 @@ import {
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import memberTrackingItemHandler from '../../../src/pages/api/membertrackingitems';
 import dayjs from 'dayjs';
-import { userHasPermissionWithinOrg } from '../../../src/utils/userHasPermissionWithinOrg';
+import { loggedInUserHasPermissionOnUser } from '../../../src/utils/userHasPermissionWithinOrg';
 
 jest.mock('../../../src/repositories/userRepo.ts');
 jest.mock('../../../src/repositories/grantsRepo.ts');
@@ -56,14 +56,17 @@ const memberTrackingRecordFromDb = {
   completedDate: dayjs('2020-5-14').toISOString(),
 };
 
+const loggedInUser = {
+  id: globalUserId,
+  firstName: 'joe',
+  role: { id: '22', name: 'monitor' },
+};
+
 beforeEach(() => {
-  mockMethodAndReturn(findUserByEmail, {
-    id: globalUserId,
-    firstName: 'joe',
-    role: { id: '22', name: 'monitor' },
-  });
+  mockMethodAndReturn(findUserByEmail, loggedInUser);
   mockMethodAndReturn(findGrants, grants);
-  mockMethodAndReturn(userHasPermissionWithinOrg, true);
+  mockMethodAndReturn(loggedInUserHasPermissionOnUser, true);
+  mockMethodAndReturn(findUserById, loggedInUser);
 });
 
 afterEach(() => {

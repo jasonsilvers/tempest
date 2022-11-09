@@ -15,7 +15,7 @@ export const mockMethodAndReturn = <E>(method: any, data: Partial<E> | null) => 
   try {
     method.mockResolvedValue(data);
   } catch (e) {
-    console.error(`\x1b[47m Please mock the repository that owns ${method.name} \x1b[0m`);
+    console.error(`\x1b[47m Please mock the repository that owns ${method?.name} \x1b[0m`);
   }
   return method;
 };
