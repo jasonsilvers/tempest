@@ -1,5 +1,5 @@
 
-FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.17.1  AS builder
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.18.0  AS builder
 USER node
 WORKDIR /home/node
 COPY --chown=node:node . .
@@ -9,7 +9,7 @@ RUN npm prune --production --legacy-peer-deps
 
 
 # Nextjs server
-FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.17.1 AS application
+FROM registry1.dso.mil/ironbank/opensource/nodejs/nodejs16:16.18.0 AS application
 USER node
 WORKDIR /app
 
