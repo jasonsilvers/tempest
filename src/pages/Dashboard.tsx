@@ -71,9 +71,23 @@ const applyOrganizationFilter = (
     return userList;
   }
 
-  return userList.filter((user) => {
-    return isOrgChildOfClient(user.organizationId, organizationIdFilter, organizationList, findOrganizationByIdClient);
+  console.log(userList, organizationIdFilter, organizationList);
+
+  const filteredUserList = userList?.filter((user) => {
+    if (user.organizationId === organizationIdFilter) {
+      return true;
+    }
+
+    if (isOrgChildOfClient(user.organizationId, organizationIdFilter, organizationList, findOrganizationByIdClient)) {
+      return true;
+    }
+
+    return false;
   });
+
+  console.log(filteredUserList);
+
+  return filteredUserList;
 
   // return userList.filter((user) => {
   //   //reporting org is only for monitors. Members should be filtered by their organization
@@ -174,11 +188,8 @@ const DashboardPage: React.FC = () => {
   const permission = permissionCheck(loggedInUser?.role?.name, EFuncAction.READ_ANY, EResource.USER);
 
   useEffect(() => {
-    dispatch({ type: 'setOrganizationList', Organizations: orgsQuery.data });
-  }, [orgsQuery.data]);
-
-  useEffect(() => {
     dispatch({ type: 'setUserList', userList: usersQuery.data });
+    dispatch({ type: 'filterByOrganization', organizationIdFilter: loggedInUser?.organizationId });
   }, [usersQuery.data]);
 
   useEffect(() => {

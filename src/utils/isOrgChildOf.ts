@@ -52,7 +52,7 @@ export function isOrgChildOfClient(
     }
 
     // const organization = await findOrganizationById(parentId);
-    const organization = functionToGetOrg(childOrganizationId, list);
+    const organization = functionToGetOrg(parentId, list);
 
     if (organization) {
       parentId = organization.parentId;
