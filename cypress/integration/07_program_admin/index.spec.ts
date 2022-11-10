@@ -98,7 +98,7 @@ describe('Can use program admin features', () => {
     cy.findByText(/changed short name/i).should('exist')
     cy.findAllByText(/catalog/i).should('have.length', 3)
 
-    cy.findByText(/platform one/i).click()
+    cy.findByText(/p1/i).click()
 
     cy.findByRole('button', {name: /delete/i}).should('be.disabled')
 

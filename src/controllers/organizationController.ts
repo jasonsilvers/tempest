@@ -23,7 +23,7 @@ export const usersPermissionOnOrg = async (
   const anyAction = `${action}Any`;
 
   if (requestingOrg !== usersOrg) {
-    const isChild = await isOrgChildOf(requestingOrg, usersOrg);
+    const isChild = await isOrgChildOf(requestingOrg, usersOrg, findOrganizationById);
 
     //WHY! A role should be able to do any action on an org that is a child of the org they are requesting
     //that means that the role just needs own on the organization not any.
