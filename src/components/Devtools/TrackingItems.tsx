@@ -60,9 +60,9 @@ export const TrackingItemsList = () => {
   }
 
   return (
-    <div>
+    <ul>
       {tiQuery.data.map((ti) => (
-        <div key={ti.id} tw="flex space-x-5 p-2">
+        <li key={ti.id} tw="flex space-x-5 p-2" aria-label={`${ti.id}-ti-div`}>
           <div>{ti.title}</div>
           <OrganizationSelect
             callback={updateOrganization}
@@ -70,8 +70,8 @@ export const TrackingItemsList = () => {
             initOrg={ti.organizationId?.toString()}
             trackingItemId={ti.id}
           />
-        </div>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 };
