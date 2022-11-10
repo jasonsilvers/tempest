@@ -1,6 +1,6 @@
-import { Resources } from '../../src/components/Devtools/Resources';
-import { ERole, EUri } from '../../src/const/enums';
-import { rest, server } from '../testutils/mocks/msw';
+import { Resources } from '../../../src/components/Devtools/Resources';
+import { ERole, EUri } from '../../../src/const/enums';
+import { rest, server } from '../../testutils/mocks/msw';
 import {
   fireEvent,
   render,
@@ -9,7 +9,7 @@ import {
   waitForElementToBeRemoved,
   waitForLoadingToFinish,
   within,
-} from '../testutils/TempestTestUtils';
+} from '../../testutils/TempestTestUtils';
 
 import 'whatwg-fetch';
 import React from 'react';

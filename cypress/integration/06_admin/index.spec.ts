@@ -18,7 +18,7 @@ describe('Can use admin features', () => {
     cy.url().should('include', '/Dashboard') 
     cy.findByRole('navigation', { name: /super/i }).click();
 
-    cy.findAllByText(/frank monitor/i).should('be.visible');
+    cy.findAllByText(/lrs/i).should('be.visible');
   });
 
   it('should be able to view logs', () => {
@@ -66,6 +66,60 @@ describe('Can use admin features', () => {
 
     cy.findByText(/1–14 of 14/i).should('exist')
 
+  });
+
+  it.only('should be able to move tracking item to different org or to global', () => {
+    cy.findByRole('navigation', { name: /super/i }).should('be.visible');
+    //wait for dashboard to load
+    //then route to admin page
+    cy.url().should('include', '/Dashboard') 
+    cy.url().should('include', '/Dashboard');
+    cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
+
+    cy.findByRole('button', { name: /create/i }).click();
+
+    const newTrainingItemTitle = 'Ti move';
+    const newTrainingItemDescription = 'New training item to test admin org change';
+    const newTrainingItemLocation = 'New training item location';
+
+    cy.findByRole('textbox', { name: 'training-title-input' }).type(newTrainingItemTitle);
+    cy.findByRole('textbox', { name: 'training-description-input' }).type(newTrainingItemDescription);
+    cy.findByRole('textbox', { name: 'training-location-input' }).type(newTrainingItemLocation);
+    cy.findByRole('button', { name: /recurrance-select/i }).click();
+
+    cy.findByRole('option', { name: /monthly/i }).click();
+
+    cy.findByRole('button', { name: /create/i }).click();
+
+    cy.contains(newTrainingItemTitle)
+
+    cy.findByRole('button', { name: /global training catalog/i }).click();
+    cy.findByRole('option', { name: /pharmacy/i }).click();
+
+    cy.contains(newTrainingItemTitle).should('not.exist')
+
+    cy.findByRole('navigation', { name: 'super-admin' }).click();
+
+    cy.findByRole('listitem', {
+      name: /9\-ti\-div/i
+    }).within(() => {
+      cy.findByRole('button', {name: /none/i}).click()
+    });
+
+    cy.findByRole('option', { name: /pharmacy/i }).click()
+
+    cy.findByRole('alert').should('be.visible');
+
+    cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
+
+    cy.contains(newTrainingItemTitle).should('not.exist')
+
+    cy.findByRole('button', { name: /global training catalog/i }).click();
+    cy.findByRole('option', { name: /pharmacy/i }).click();
+
+    cy.contains(newTrainingItemTitle).should('exist')
+
+    
   });
 
 });

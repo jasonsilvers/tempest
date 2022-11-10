@@ -1,9 +1,9 @@
 import React from 'react';
 import 'whatwg-fetch';
-import { Logs } from '../../src/components/Devtools/Logs';
-import { ERole, EUri } from '../../src/const/enums';
-import { rest, server } from '../testutils/mocks/msw';
-import { render, waitForLoadingToFinish } from '../testutils/TempestTestUtils';
+import { Logs } from '../../../src/components/Devtools/Logs';
+import { ERole, EUri } from '../../../src/const/enums';
+import { rest, server } from '../../testutils/mocks/msw';
+import { render, waitForLoadingToFinish } from '../../testutils/TempestTestUtils';
 
 // Establish API mocking before tests.
 beforeEach(() => {
