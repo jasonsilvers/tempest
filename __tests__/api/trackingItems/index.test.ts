@@ -8,7 +8,11 @@ import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import trackingItemHandler from '../../../src/pages/api/trackingitems';
 import { testNextApi } from '../../testutils/NextAPIUtils';
-import { createTrackingItem, getGlobalTrackingItemsAndThoseByOrgId } from '../../../src/repositories/trackingItemRepo';
+import {
+  createTrackingItem,
+  getGlobalTrackingItemsAndThoseByOrgId,
+  getTrackingItems,
+} from '../../../src/repositories/trackingItemRepo';
 import { getOrganizationAndDown, getOrganizationAndUp } from '../../../src/repositories/organizationRepo';
 
 jest.mock('../../../src/repositories/userRepo.ts');
@@ -105,7 +109,7 @@ test('should return tracking items - ADMIN - GET', async () => {
     role: { id: '22', name: 'admin' },
     organizationId: '2',
   });
-  mockMethodAndReturn(getGlobalTrackingItemsAndThoseByOrgId, [trackingItemFromDb]);
+  mockMethodAndReturn(getTrackingItems, [trackingItemFromDb]);
 
   const { status, data } = await testNextApi.get(trackingItemHandler);
 

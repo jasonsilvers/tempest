@@ -15,6 +15,7 @@ const trackingItemSchema = {
       id: Joi.number().required(),
       location: Joi.string().optional().allow(null, ''),
       status: Joi.string().optional(),
+      organizationId: Joi.number().optional().allow(null),
     }),
   },
 };

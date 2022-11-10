@@ -1,9 +1,9 @@
 import { Grant } from '@prisma/client';
-import { AddGrantDialog, Grants } from '../../src/components/Devtools/Grants';
-import { ERole, EUri } from '../../src/const/enums';
-import { grants } from '../../src/const/grants';
-import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, waitFor, waitForLoadingToFinish, within } from '../testutils/TempestTestUtils';
+import { AddGrantDialog, Grants } from '../../../src/components/Devtools/Grants';
+import { ERole, EUri } from '../../../src/const/enums';
+import { grants } from '../../../src/const/grants';
+import { rest, server } from '../../testutils/mocks/msw';
+import { fireEvent, render, waitFor, waitForLoadingToFinish, within } from '../../testutils/TempestTestUtils';
 
 import React from 'react';
 import 'whatwg-fetch';

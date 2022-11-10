@@ -18,7 +18,7 @@ describe('Can use admin features', () => {
     cy.url().should('include', '/Dashboard') 
     cy.findByRole('navigation', { name: /super/i }).click();
 
-    cy.findAllByText(/frank monitor/i).should('be.visible');
+    cy.findAllByText(/lrs/i).should('be.visible');
   });
 
   it('should be able to view logs', () => {
