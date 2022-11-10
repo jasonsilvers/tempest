@@ -51,7 +51,7 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
         field: 'location',
         renderCell: renderCellExpand,
         flex: 0.8,
-        editable: true,
+        editable: selectedCatalog !== 0,
       },
       {
         field: 'actions',
