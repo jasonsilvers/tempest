@@ -101,7 +101,7 @@ describe('Can use admin features', () => {
     cy.findByRole('navigation', { name: 'super-admin' }).click();
 
     cy.findByRole('listitem', {
-      name: /9\-ti\-div/i
+      name: /11\-ti\-div/i
     }).within(() => {
       cy.findByRole('button', {name: /none/i}).click()
     });

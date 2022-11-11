@@ -10,9 +10,9 @@ import { getOrganizationAndDown } from '../../../repositories/organizationRepo';
 import { deleteTrackingItem, findTrackingItemById, updateTrackingItem } from '../../../repositories/trackingItemRepo';
 import { LoggedInUser } from '../../../repositories/userRepo';
 
-const isTrackingItemInRequetingUsersOrg = async (requestingUser: LoggedInUser, trackingItemOrgId: number) => {
+const isTrackingItemInRequestingUsersOrg = async (requestingUser: LoggedInUser, trackingItemOrgId: number) => {
   if (requestingUser.role.name === ERole.ADMIN) {
-    true;
+    return true;
   }
 
   if (requestingUser.organizationId === trackingItemOrgId) {
@@ -52,7 +52,7 @@ async function trackingItemHandler(
 
     const permission = ac.can(req.user.role.name).updateAny(EResource.TRACKING_ITEM);
 
-    const trackingItemIsInUsersOrg = await isTrackingItemInRequetingUsersOrg(req.user, trackingItem.organizationId);
+    const trackingItemIsInUsersOrg = await isTrackingItemInRequestingUsersOrg(req.user, trackingItem.organizationId);
 
     if (!permission.granted || !trackingItemIsInUsersOrg) {
       throw new PermissionError();
