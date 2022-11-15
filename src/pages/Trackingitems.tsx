@@ -57,13 +57,20 @@ const TrackingItems = () => {
   }, [orgsFromServer, user]);
 
   const processRowUpdate = useCallback((newRow: GridRowModel<TrackingItem>, oldRow: GridRowModel<TrackingItem>) => {
-    const { id, location } = newRow;
+    const { id, location, description } = newRow;
     if (oldRow.location !== newRow.location) {
-      const newLocation = { id, location };
-      updateTrackingItem.mutate(newLocation);
-      return newLocation;
+      const newTi = { id, location };
+      updateTrackingItem.mutate(newTi);
+      return { ...oldRow, newTi };
     }
-    return oldRow.location;
+
+    if (oldRow.description !== newRow.description) {
+      const newTi = { id, description };
+      updateTrackingItem.mutate(newTi);
+      return { ...oldRow, newTi };
+    }
+
+    return oldRow;
   }, []);
 
   if (isLoading) {

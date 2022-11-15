@@ -45,6 +45,7 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
         field: 'description',
         renderCell: renderCellExpand,
         flex: 0.8,
+        editable: selectedCatalog !== 0,
       },
       {
         headerName: 'Location',
