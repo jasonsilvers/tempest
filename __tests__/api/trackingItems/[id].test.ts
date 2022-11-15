@@ -8,7 +8,11 @@ import { grants } from '../../testutils/mocks/fixtures';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import { deleteTrackingItem, updateTrackingItem } from '../../../src/repositories/trackingItemRepo';
+import {
+  deleteTrackingItem,
+  findTrackingItemById,
+  updateTrackingItem,
+} from '../../../src/repositories/trackingItemRepo';
 
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo');
@@ -83,6 +87,8 @@ test('should return 403 if incorrect permission - PUT', async () => {
     firstName: 'joe',
     role: { id: '22', name: 'member' },
   });
+
+  mockMethodAndReturn(findTrackingItemById, item);
   const { status } = await testNextApi.put(trackingItemQueryHandler, { urlId: '/1', body: { id: 2 } });
 
   expect(status).toBe(403);
@@ -92,6 +98,8 @@ test('should return correct status for put', async () => {
   const expectedReturnData = { ...item, location: 'share drive' };
 
   mockMethodAndReturn(updateTrackingItem, expectedReturnData);
+  mockMethodAndReturn(findTrackingItemById, item);
+
   const { status, data } = await testNextApi.put(trackingItemQueryHandler, {
     urlId: 2,
     body: { id: 2, location: 'share drive' },
