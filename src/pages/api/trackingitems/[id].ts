@@ -55,8 +55,6 @@ async function trackingItemHandler(
 
     const trackingItemIsInUsersOrg = await isTrackingItemInRequestingUsersOrg(req.user, trackingItem.organizationId);
 
-    console.log(trackingItemIsInUsersOrg, permission.granted);
-
     if (!permission.granted || !trackingItemIsInUsersOrg) {
       throw new PermissionError();
     }
