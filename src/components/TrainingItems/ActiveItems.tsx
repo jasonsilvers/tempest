@@ -23,6 +23,7 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
 
   const canDeleteTrackingItem = permissionCheck(user?.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
   const canUpdateTrackingItem = permissionCheck(user?.role.name, EFuncAction.UPDATE_ANY, EResource.TRACKING_ITEM);
+  const isAdmin = user.role.name === ERole.ADMIN;
 
   const columns = useMemo(
     () => [
@@ -45,14 +46,14 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
         field: 'description',
         renderCell: renderCellExpand,
         flex: 0.8,
-        editable: selectedCatalog !== 0,
+        editable: selectedCatalog !== 0 || isAdmin,
       },
       {
         headerName: 'Location',
         field: 'location',
         renderCell: renderCellExpand,
         flex: 0.8,
-        editable: selectedCatalog !== 0,
+        editable: selectedCatalog !== 0 || isAdmin,
       },
       {
         field: 'actions',
