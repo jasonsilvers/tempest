@@ -15,7 +15,7 @@ import { UserDetailEdit } from './UserDetailEdit';
 
 import { UseQueryResult } from 'react-query';
 import 'twin.macro';
-import { MergeAccount } from '../MergeAccount';
+import { MergeAccount } from '../Devtools/MergeAccount';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { ERole } from '../../const/enums';
 

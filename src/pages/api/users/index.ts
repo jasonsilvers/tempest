@@ -39,7 +39,6 @@ const usersApiHandler = async (req: ITempestUsersApiRequest<LoggedInUser>, res: 
     throw new PermissionError();
   }
 
-
   let users: UsersWithMemberTrackingRecords;
 
   if (isAdmin) {

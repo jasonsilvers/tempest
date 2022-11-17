@@ -10,8 +10,8 @@ import { jwtParser } from '../../../utils/jwtUtils';
 
 const mergeUserAccountsPostSchema = {
   body: Joi.object({
-    winningAccountEmail: Joi.string().email().required(),
-    losingAccountEmail: Joi.string().email().required(),
+    winningAccountEmail: Joi.string().email().required().disallow('', null),
+    losingAccountEmail: Joi.string().email().required().disallow('' , null),
   }),
 };
 
@@ -24,27 +24,24 @@ const mergeUserAccountApiHandler = async (
   res: NextApiResponse<User | ITempestApiMessage>
 ) => {
   const { body, method } = req;
-  
+
   if (method !== 'POST') {
     throw new MethodNotAllowedError(method);
   }
-  
+
   const jwt = jwtParser(req);
-  
+
   const isAdmin =
-  jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
-  
+    jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
+
   if (!isAdmin) {
     throw new PermissionError();
   }
-  console.log(body.losingAccountEmail, body.winningAccountEmail)
 
   const winningAccount = await findUserByEmail(body.winningAccountEmail);
   const losingAccount = await findUserByEmail(body.losingAccountEmail);
   const newEmailFromLosingAccount = losingAccount.email;
 
-  console.log(winningAccount, losingAccount, newEmailFromLosingAccount);
-  
   try {
     await updateUser(losingAccount.id, { email: `Archive_${losingAccount.email}` });
   } catch (e) {
@@ -54,10 +51,10 @@ const mergeUserAccountApiHandler = async (
     await updateUser(winningAccount.id, { email: newEmailFromLosingAccount });
     await deleteUser(losingAccount.id);
   } catch (e) {
-    await updateUser(losingAccount.id, {email: losingAccount.email})
+    await updateUser(losingAccount.id, { email: losingAccount.email });
     throw new AppError(500, 'There was a problem merging the accounts, please try again.');
   }
-  
+
   return res.status(200).json({ message: 'ok' });
 };
 

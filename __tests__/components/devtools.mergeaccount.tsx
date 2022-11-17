@@ -1,12 +1,10 @@
-
 import React from 'react';
 import 'whatwg-fetch';
 import { ERole, EUri } from '../../src/const/enums';
 import { bobJones } from '../testutils/mocks/fixtures';
 import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, waitFor } from '../testutils/TempestTestUtils';
-import { MergeAccount } from '../../src/components/MergeAccount';
-
+import { fireEvent, render, waitFor, waitForLoadingToFinish } from '../testutils/TempestTestUtils';
+import { MergeAccount } from '../../src/components/Devtools/MergeAccount';
 
 beforeAll(() => {
   server.listen({
@@ -21,7 +19,7 @@ beforeEach(() => {
       return res(ctx.status(200), ctx.json({ ...bobJones, role: { id: 2, name: ERole.ADMIN } }));
     }),
     rest.post(EUri.MERGE, (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json({'message' : 'ok'}));
+      return res(ctx.status(200), ctx.json({ message: 'ok' }));
     })
   );
 });
@@ -36,25 +34,16 @@ afterEach(() => {
 });
 
 describe('Merge Account', () => {
-  test('Should Open Merge dialog', async () => {
-    const screen = render(<Onboard />);
-
-    const button = screen.getByRole('button', { name: /create/i });
-
-    expect(button).toBeDisabled();
-  });
-
   test('should merge accont', async () => {
-    const screen = render(<MergeAccount />);
-    const orgNameTextBox = screen.getByLabelText(/organization name/i);
-    const shortNameTextBox = screen.getByLabelText(/short name/i);
-    const button = screen.getByRole('button', { name: /create/i });
+    const screen = render(<MergeAccount isOpen={true} setIsOpen={() => true} />);
+    const winnerAccountTextBox = screen.getByLabelText(/winnerAccount/i);
+    const loserAccountTextTextBox = screen.getByLabelText(/loserAccount/i);
+    const button = screen.getByRole('button', { name: /merge/i });
 
-    fireEvent.change(orgNameTextBox, { target: { value: 'New Org' } });
-    fireEvent.change(shortNameTextBox, { target: { value: 'Org' } });
+    fireEvent.change(winnerAccountTextBox, { target: { value: 'test@email.com' } });
+    fireEvent.change(loserAccountTextTextBox, { target: { value: 'test2@gmail.com' } });
     expect(button).toBeEnabled();
     fireEvent.click(button);
     await waitFor(() => screen.findByRole('alert'));
   });
-
 });

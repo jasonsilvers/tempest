@@ -6,14 +6,15 @@ import {
   CircularProgress,
   Dialog,
   DialogContent,
-  DialogTitle, TextField
+  DialogTitle,
+  TextField,
 } from '@mui/material';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useSnackbar } from 'notistack';
 import React, { Dispatch, SetStateAction } from 'react';
 import 'twin.macro';
-import { MergeUsersBody, useMergeAccount } from '../hooks/api/merge';
-import { useUsers } from '../hooks/api/users';
+import { MergeUsersBody, useMergeAccount } from '../../hooks/api/merge';
+import { useUsers } from '../../hooks/api/users';
 
 type MergeAccountProps = {
   isOpen: boolean;
@@ -27,18 +28,24 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
   const { enqueueSnackbar } = useSnackbar();
   const [openWinner, setOpenWinner] = React.useState(false);
   const [openLoser, setOpenLoser] = React.useState(false);
-  const [options] = React.useState<string[]>(userList.map((user) => user.email));
+  const [options] = React.useState<string[]>(userList?.map((user) => user.email));
 
-  const [formState, setFormState] = React.useState<MergeUsersBody>({ loserAccountEmail: '', winnerAccountEmail: '' });
+  const [formState, setFormState] = React.useState<MergeUsersBody>({ winningAccountEmail: '', losingAccountEmail: '' });
 
   const submitForm = () => {
-    
-    mergeAccount(formState, {
+    const mergeBody = {
+      winningAccountEmail: formState.winningAccountEmail,
+      losingAccountEmail: formState.losingAccountEmail,
+    };
+
+    mergeAccount(mergeBody, {
       onSuccess: () => {
         enqueueSnackbar('Accounts have successfully been merged', { variant: 'success' });
         refreshUser();
       },
     });
+    setIsOpen(false);
+    setFormState({winningAccountEmail: '', losingAccountEmail: ''})
   };
 
   return (
@@ -47,7 +54,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
         <Box tw="min-w-[500px] min-h-[275px] border shadow rounded-lg justify-center mx-auto my-auto">
           <DialogTitle tw="text-3xl text-secondary text-center pt-10">Merge Accounts</DialogTitle>
           <DialogContent tw="min-height[220px]">
-            <form id="merge-form" onSubmit={() => submitForm} tw="flex flex-col space-y-5 pt-4 items-center">
+            <form id="merge-form" tw="flex flex-col space-y-5 pt-4 items-center">
               <Autocomplete
                 id="winner-email"
                 sx={{ width: 300 }}
@@ -68,10 +75,10 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                       tw="w-full mx-auto"
                       {...params}
                       onBlur={(event) => {
-                        event.preventDefault()
-                        setFormState({...formState, winnerAccountEmail: event.target.value})}
-                      }
-                      label="Winner Account"
+                        event.preventDefault();
+                        setFormState({ ...formState, winningAccountEmail: event.target.value });
+                      }}
+                      label="winnerAccount"
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (
@@ -106,10 +113,10 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                       tw="w-full mx-auto"
                       {...params}
                       onBlur={(event) => {
-                        event.preventDefault()
-                        setFormState({...formState, loserAccountEmail: event.target.value })}
-                      }
-                      label="Loser Account"
+                        event.preventDefault();
+                        setFormState({ ...formState, losingAccountEmail: event.target.value });
+                      }}
+                      label="loserAccount"
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (
@@ -128,10 +135,10 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                 <Button
                   variant="contained"
                   color="secondary"
-                  type="submit"
+                  type="button"
+                  onClick={submitForm}
                   form="merge-form"
                   data-testid="mergeButton"
-                  // disabled={createDisabled}
                 >
                   Merge
                 </Button>

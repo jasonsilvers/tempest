@@ -6,8 +6,8 @@ import { EUri, ITempestApiMessage } from '../../const/enums';
 import { usersQueryKeys } from './users';
 
 export type MergeUsersBody = {
-  winnerAccountEmail: string;
-  loserAccountEmail: string;
+  winningAccountEmail: string;
+  losingAccountEmail: string;
 };
 
 export const useMergeAccount = () => {
