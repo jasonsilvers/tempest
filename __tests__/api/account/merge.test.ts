@@ -64,24 +64,7 @@ describe('Merge User Account', () => {
     expect(status).toBe(405);
   });
 
-  test('merge fails and reverts the merge changes', async () => {
-    mockMethodAndReturn(findUserByEmail, userFromDb);
-    mockMethodAndReturn(findUserByEmail, secondUserAccountFromDb);
-    const mockedUpdateUser = updateUser as jest.MockedFunction<typeof updateUser>;
-    const errorMsg = 'There was a problem merging the accounts, please try again.';
-    mockedUpdateUser.mockImplementation(() => {
-      throw new Error(errorMsg);
-    });
-
-    const { status, data } = await testNextApi.post(mergeUserAccountApiHandler, {
-      customHeaders: { Authorization: `Bearer ${adminJWT}` },
-      body: undefined,
-    });
-    expect(status).toBe(500);
-    expect(data).toStrictEqual({ message: errorMsg });
-  });
-
-  test('should not allow non-admin to merge', async () => {
+  test('should return 403, when non-admin tries to merge', async () => {
     const { status } = await testNextApi.post(mergeUserAccountApiHandler, {
       customHeaders: { Authorization: `Bearer ${memberJWT}` },
       body: {
@@ -90,5 +73,25 @@ describe('Merge User Account', () => {
       },
     });
     expect(status).toBe(403);
+  });
+
+  test('should return 500, when error occurs', async () => {
+    mockMethodAndReturn(findUserByEmail, userFromDb);
+    mockMethodAndReturn(findUserByEmail, userWithNullEmail);
+    const mockedUpdateUser = updateUser as jest.MockedFunction<typeof updateUser>;
+    const errorMsg = 'There was a problem merging the accounts, please try again.';
+    mockedUpdateUser.mockImplementation(() => {
+      throw new Error(errorMsg);
+    });
+
+    const { status, data } = await testNextApi.post(mergeUserAccountApiHandler, {
+      customHeaders: { Authorization: `Bearer ${adminJWT}` },
+      body: {
+        winningAccountEmail: 'test1@gmail.com',
+        losingAccountEmail: 'test2@gmail.com',
+      },
+    });
+    expect(status).toBe(500);
+    expect(data).toStrictEqual({ message: errorMsg });
   });
 });

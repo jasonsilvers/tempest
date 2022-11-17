@@ -46,6 +46,7 @@ const usersApiHandler = async (req: ITempestUsersApiRequest<LoggedInUser>, res: 
       users = await getAllDetachedUsers();
     } else {
       users = await getUsers();
+      console.log('get all users')
     }
   }
 

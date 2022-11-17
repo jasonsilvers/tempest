@@ -56,7 +56,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
           <DialogContent tw="min-height[220px]">
             <form id="merge-form" tw="flex flex-col space-y-5 pt-4 items-center">
               <Autocomplete
-                id="winner-email"
+                id="winnerAccount"
                 sx={{ width: 300 }}
                 open={openWinner}
                 onOpen={() => {
@@ -78,7 +78,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                         event.preventDefault();
                         setFormState({ ...formState, winningAccountEmail: event.target.value });
                       }}
-                      label="winnerAccount"
+                      label="Winner Account"
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (
@@ -94,7 +94,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
               />
 
               <Autocomplete
-                id="loser-email"
+                id="loserAccount"
                 sx={{ width: 300 }}
                 open={openLoser}
                 onOpen={() => {
@@ -116,7 +116,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                         event.preventDefault();
                         setFormState({ ...formState, losingAccountEmail: event.target.value });
                       }}
-                      label="loserAccount"
+                      label="Loser Account"
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (
