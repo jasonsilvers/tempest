@@ -1,12 +1,23 @@
-import { Drawer } from '@mui/material';
-import { DataGrid, GridColumns, GridToolbar, GridValueGetterParams } from '@mui/x-data-grid';
+import CallMergeIcon from '@mui/icons-material/CallMerge';
+import { Drawer, IconButton, Typography } from '@mui/material';
+import {
+  DataGrid,
+  GridColumns,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridToolbarFilterButton,
+  GridValueGetterParams,
+} from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
 import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
-import { UserWithAll } from '../../repositories/userRepo';
+import { LoggedInUser, UserWithAll } from '../../repositories/userRepo';
 import { UserDetailEdit } from './UserDetailEdit';
 
-import 'twin.macro';
 import { UseQueryResult } from 'react-query';
+import 'twin.macro';
+import { MergeAccount } from '../MergeAccount';
+import { useUser } from '@tron/nextjs-auth-p1';
+import { ERole } from '../../const/enums';
 
 type UserListProps = {
   usersListQuery: UseQueryResult<UserWithAll[], unknown>;
@@ -14,8 +25,9 @@ type UserListProps = {
 
 const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
   const [sidebarState, setSidebarState] = useState({ userId: null, open: false });
-
+  const [dialogisOpen, setDialogIsOpen] = useState<boolean>(false);
   const orgsListQuery = useOrgsLoggedInUsersOrgAndDown();
+  const { user } = useUser<LoggedInUser>();
 
   const columns: GridColumns<UserWithAll> = useMemo(
     () => [
@@ -63,9 +75,36 @@ const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
   if (!usersListQuery || usersListQuery?.isLoading || orgsListQuery?.isLoading) {
     return <div>...Loading</div>;
   }
+  const GridToolBarMerge = (): JSX.Element => {
+    return (
+      <IconButton onClick={() => setDialogIsOpen(true)} tw="text-primary border leading-relaxed">
+        <CallMergeIcon fontSize="small" />
+        <Typography tw="font-normal font-light uppercase text-sm">Merge</Typography>
+      </IconButton>
+    );
+  };
+
+  const CustomToolBar = (loggedInUser: LoggedInUser) => {
+    if (loggedInUser.role.name !== ERole.ADMIN) {
+      return (
+        <GridToolbarContainer>
+          <GridToolbarFilterButton />
+          <GridToolbarExport />
+        </GridToolbarContainer>
+      );
+    }
+    return (
+      <GridToolbarContainer>
+        <GridToolbarFilterButton />
+        <GridToolbarExport />
+        <GridToolBarMerge />
+      </GridToolbarContainer>
+    );
+  };
 
   return (
     <div tw="h-[750px] pt-5">
+      <MergeAccount isOpen={dialogisOpen} setIsOpen={setDialogIsOpen} />
       <DataGrid
         sx={{ border: 'none' }}
         rows={usersListQuery?.data}
@@ -73,10 +112,8 @@ const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
         disableVirtualization
         onRowClick={(params) => setSidebarState({ userId: params.row.id, open: true })}
         components={{
-          Toolbar: GridToolbar,
+          Toolbar: () => CustomToolBar(user),
         }}
-        disableDensitySelector
-        disableColumnSelector
       />
       <Drawer
         sx={{
@@ -95,7 +132,7 @@ const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
           <UserDetailEdit
             key={sidebarState.userId}
             closeEdit={() => setSidebarState({ userId: null, open: false })}
-            user={usersListQuery?.data?.find((user) => user.id === sidebarState.userId)}
+            user={usersListQuery?.data?.find((member) => member.id === sidebarState.userId)}
           />
         )}
       </Drawer>

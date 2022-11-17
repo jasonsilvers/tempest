@@ -6,6 +6,9 @@ import { Resources } from './Resources';
 import { Roles } from './Roles';
 import 'twin.macro';
 import { a11yProps, TabPanel } from '../Tabs';
+import { useUsers } from '../../hooks/api/users';
+import { UsersList } from '../ProgramAdmin/UsersList';
+
 
 export const Devtools = () => {
   const [value, setValue] = useState(0);
@@ -13,6 +16,7 @@ export const Devtools = () => {
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+  const usersAllQueryData = useUsers();
 
   return (
     <div tw="w-full">
@@ -22,6 +26,7 @@ export const Devtools = () => {
           <Tab label="Grants" {...a11yProps(1)} />
           <Tab label="Resources" {...a11yProps(2)} />
           <Tab label="Roles" {...a11yProps(3)} />
+          <Tab label="Users" {...a11yProps(4)} />
         </Tabs>
       </div>
       <TabPanel value={value} index={0}>
@@ -35,6 +40,9 @@ export const Devtools = () => {
       </TabPanel>
       <TabPanel value={value} index={3}>
         <Roles />
+      </TabPanel>
+      <TabPanel value={value} index={4}>
+        <UsersList usersListQuery={usersAllQueryData} />
       </TabPanel>
     </div>
   );
