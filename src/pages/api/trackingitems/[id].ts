@@ -29,6 +29,7 @@ const trackingItemSchema = {
     body: Joi.object({
       id: Joi.number().required(),
       location: Joi.string().optional().allow(null, ''),
+      description: Joi.string().optional(),
       status: Joi.string().optional(),
       organizationId: Joi.number().optional().allow(null),
     }),

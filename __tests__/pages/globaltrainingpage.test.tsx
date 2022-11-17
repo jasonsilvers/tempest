@@ -333,6 +333,44 @@ test('should allow edit location', async () => {
   ).toBeInTheDocument();
 });
 
+test('should allow edit description', async () => {
+  const testTrackingItem = {
+    id: '2',
+    title: 'test',
+    description: 'training',
+    interval: 365,
+    location: 'trainingLocation',
+    organizationId: null,
+  };
+
+  server.use(
+    rest.put(EUri.TRACKING_ITEMS + '2', (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json({ testTrackingItem }));
+    })
+  );
+  const screen = render(<TrackingItemPage />);
+
+  const descriptionCell = await screen.findByRole('cell', {
+    name: /test description/i,
+  });
+
+  screen.debug(descriptionCell);
+
+  fireEvent.doubleClick(descriptionCell);
+
+  const input = screen.getAllByRole('textbox');
+
+  fireEvent.change(input[0], { target: { value: 'trainingDescription' } });
+
+  userEvent.keyboard('{Enter}');
+
+  // expect(
+  //   screen.getByRole('cell', {
+  //     name: /trainingDescription/i,
+  //   })
+  // ).toBeInTheDocument();
+});
+
 test('monitior should be able to archive training item', async () => {
   server.use(
     rest.get(EUri.LOGIN, (req, res, ctx) => {
