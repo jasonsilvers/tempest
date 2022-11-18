@@ -5,13 +5,13 @@ import { NextApiResponse } from 'next';
 import { ITempestApiMessage } from '../../../const/enums';
 import { AppError, MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
 import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { deleteUser, findUserByEmail, LoggedInUser, updateUser } from '../../../repositories/userRepo';
+import { deleteUser, findUserByEmail, findUserById, LoggedInUser, updateUser } from '../../../repositories/userRepo';
 import { jwtParser } from '../../../utils/jwtUtils';
 
 const mergeUserAccountsPostSchema = {
   body: Joi.object({
-    winningAccountEmail: Joi.string().email().required().disallow('', null),
-    losingAccountEmail: Joi.string().email().required().disallow('' , null),
+    winningAccountId: Joi.number().required(),
+    losingAccountId: Joi.number().required(),
   }),
 };
 
@@ -38,8 +38,8 @@ const mergeUserAccountApiHandler = async (
     throw new PermissionError();
   }
 
-  const winningAccount = await findUserByEmail(body.winningAccountEmail);
-  const losingAccount = await findUserByEmail(body.losingAccountEmail);
+  const winningAccount = await findUserById(body.winningAccountId);
+  const losingAccount = await findUserById(body.losingAccountId);
   const newEmailFromLosingAccount = losingAccount.email;
 
   try {

@@ -1,6 +1,6 @@
 import mergeUserAccountApiHandler from '../../../src/pages/api/account/merge';
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { deleteUser, findUserByEmail, updateUser } from '../../../src/repositories/userRepo';
+import { deleteUser, findUserByEmail, findUserById, updateUser } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { adminJWT, memberJWT } from '../../testutils/mocks/mockJwt';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
@@ -43,16 +43,16 @@ afterEach(() => {
 
 describe('Merge User Account', () => {
   test('Should merge account and delete the loser account', async () => {
-    mockMethodAndReturn(findUserByEmail, userFromDb);
-    mockMethodAndReturn(findUserByEmail, secondUserAccountFromDb);
+    mockMethodAndReturn(findUserById, userFromDb);
+    mockMethodAndReturn(findUserById, secondUserAccountFromDb);
     mockMethodAndReturn(updateUser, userWithUpdatedEmail);
     mockMethodAndReturn(deleteUser, secondUserAccountFromDb);
 
     const { status, data } = await testNextApi.post(mergeUserAccountApiHandler, {
       customHeaders: { Authorization: `Bearer ${adminJWT}` },
       body: {
-        winningAccountEmail: userFromDb.email,
-        losingAccountEmail: secondUserAccountFromDb.email,
+        winningAccountId: userFromDb.id,
+        losingAccountId: secondUserAccountFromDb.id,
       },
     });
     expect(status).toBe(200);
@@ -68,15 +68,15 @@ describe('Merge User Account', () => {
     const { status } = await testNextApi.post(mergeUserAccountApiHandler, {
       customHeaders: { Authorization: `Bearer ${memberJWT}` },
       body: {
-        winningAccountEmail: userFromDb.email,
-        losingAccountEmail: secondUserAccountFromDb.email,
+        winningAccountId: userFromDb.id,
+        losingAccountId: secondUserAccountFromDb.id,
       },
     });
     expect(status).toBe(403);
   });
 
   test('should return 500, when error occurs', async () => {
-    mockMethodAndReturn(findUserByEmail, userFromDb);
+    mockMethodAndReturn(findUserById, userFromDb);
     mockMethodAndReturn(findUserByEmail, userWithNullEmail);
     const mockedUpdateUser = updateUser as jest.MockedFunction<typeof updateUser>;
     const errorMsg = 'There was a problem merging the accounts, please try again.';
@@ -87,8 +87,8 @@ describe('Merge User Account', () => {
     const { status, data } = await testNextApi.post(mergeUserAccountApiHandler, {
       customHeaders: { Authorization: `Bearer ${adminJWT}` },
       body: {
-        winningAccountEmail: 'test1@gmail.com',
-        losingAccountEmail: 'test2@gmail.com',
+        winningAccountId: 1,
+        losingAccountId: 2,
       },
     });
     expect(status).toBe(500);

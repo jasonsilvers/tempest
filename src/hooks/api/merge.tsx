@@ -1,4 +1,3 @@
-import { User } from '@prisma/client';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { useSnackbar } from 'notistack';
 import { useMutation, useQueryClient } from 'react-query';
@@ -6,15 +5,15 @@ import { EUri, ITempestApiMessage } from '../../const/enums';
 import { usersQueryKeys } from './users';
 
 export type MergeUsersBody = {
-  winningAccountEmail: string;
-  losingAccountEmail: string;
+  winningAccountId: number;
+  losingAccountId: number;
 };
 
 export const useMergeAccount = () => {
   const queryClient = useQueryClient();
   const snackbar = useSnackbar();
 
-  return useMutation<AxiosResponse<User>, unknown, MergeUsersBody>(
+  return useMutation<AxiosResponse<MergeUsersBody>, unknown, MergeUsersBody>(
     (mergeUsersBody: MergeUsersBody) => axios.post(EUri.MERGE, mergeUsersBody),
     {
       onError: (error: AxiosError<ITempestApiMessage>) => {

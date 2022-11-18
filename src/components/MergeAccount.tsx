@@ -9,12 +9,13 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
+import { User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
 import { useSnackbar } from 'notistack';
 import React, { Dispatch, SetStateAction } from 'react';
 import 'twin.macro';
-import { MergeUsersBody, useMergeAccount } from '../../hooks/api/merge';
-import { useUsers } from '../../hooks/api/users';
+import { MergeUsersBody, useMergeAccount } from '../hooks/api/merge';
+import { useUsers } from '../hooks/api/users';
 
 type MergeAccountProps = {
   isOpen: boolean;
@@ -28,14 +29,13 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
   const { enqueueSnackbar } = useSnackbar();
   const [openWinner, setOpenWinner] = React.useState(false);
   const [openLoser, setOpenLoser] = React.useState(false);
-  const [options] = React.useState<string[]>(userList?.map((user) => user.email));
 
-  const [formState, setFormState] = React.useState<MergeUsersBody>({ winningAccountEmail: '', losingAccountEmail: '' });
+  const [formState, setFormState] = React.useState<MergeUsersBody>({ winningAccountId: 0, losingAccountId: 0 });
 
   const submitForm = () => {
     const mergeBody = {
-      winningAccountEmail: formState.winningAccountEmail,
-      losingAccountEmail: formState.losingAccountEmail,
+      winningAccountId: formState.winningAccountId,
+      losingAccountId: formState.losingAccountId,
     };
 
     mergeAccount(mergeBody, {
@@ -45,7 +45,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
       },
     });
     setIsOpen(false);
-    setFormState({winningAccountEmail: '', losingAccountEmail: ''})
+    setFormState({ winningAccountId: 0, losingAccountId: 0 });
   };
 
   return (
@@ -65,19 +65,20 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                 onClose={() => {
                   setOpenWinner(false);
                 }}
-                isOptionEqualToValue={(option, value) => option === value}
-                getOptionLabel={(option) => option}
-                options={options}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                getOptionLabel={(option: User) => option.email}
+                options={userList ?? []}
                 loading={isLoading}
+                onChange={(_event, user: User) => {
+                  const userId = user.id;
+                  setFormState({ ...formState, winningAccountId: userId });
+                }}
                 renderInput={(params: AutocompleteRenderInputParams) => {
                   return (
                     <TextField
+                      data-testid="winner-account"
                       tw="w-full mx-auto"
                       {...params}
-                      onBlur={(event) => {
-                        event.preventDefault();
-                        setFormState({ ...formState, winningAccountEmail: event.target.value });
-                      }}
                       label="Winner Account"
                       InputProps={{
                         ...params.InputProps,
@@ -103,19 +104,20 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                 onClose={() => {
                   setOpenLoser(false);
                 }}
-                isOptionEqualToValue={(option, value) => option === value}
-                getOptionLabel={(option) => option}
-                options={options}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                getOptionLabel={(option: User) => option.email}
+                options={userList ?? []}
                 loading={isLoading}
+                onChange={(_event, user: User) => {
+                  const userId = user.id;
+                  setFormState({ ...formState, losingAccountId: userId });
+                }}
                 renderInput={(params) => {
                   return (
                     <TextField
+                      data-testid="loser-account"
                       tw="w-full mx-auto"
                       {...params}
-                      onBlur={(event) => {
-                        event.preventDefault();
-                        setFormState({ ...formState, losingAccountEmail: event.target.value });
-                      }}
                       label="Loser Account"
                       InputProps={{
                         ...params.InputProps,

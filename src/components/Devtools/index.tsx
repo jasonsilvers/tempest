@@ -1,13 +1,13 @@
 import { Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
+import 'twin.macro';
+import { useUsers } from '../../hooks/api/users';
+import { a11yProps, TabPanel } from '../Tabs';
+import { AdminUsersList } from './AdminUsersList';
 import { Grants } from './Grants';
 import { Logs } from './Logs';
 import { Resources } from './Resources';
 import { Roles } from './Roles';
-import 'twin.macro';
-import { a11yProps, TabPanel } from '../Tabs';
-import { useUsers } from '../../hooks/api/users';
-import { UsersList } from '../ProgramAdmin/UsersList';
 
 export const Devtools = () => {
   const [value, setValue] = useState(0);
@@ -41,7 +41,7 @@ export const Devtools = () => {
         <Roles />
       </TabPanel>
       <TabPanel value={value} index={4}>
-        <UsersList usersListQuery={usersAllQueryData} />
+        <AdminUsersList usersListQuery={usersAllQueryData} />
       </TabPanel>
     </div>
   );
