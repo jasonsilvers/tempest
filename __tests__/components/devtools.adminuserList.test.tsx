@@ -9,6 +9,7 @@ import { rest, server } from '../testutils/mocks/msw';
 import {
   fireEvent,
   render,
+  userEvent,
   waitFor,
   waitForElementToBeRemoved,
   waitForLoadingToFinish,
@@ -40,6 +41,7 @@ const users = [
     firstName: 'Sam,',
     lastName: 'Member',
     organizationId: '1',
+    email: 'sam.member@gmail.com',
     roleId: 2,
     role: { id: 2, name: ERole.MEMBER },
   },
@@ -48,6 +50,7 @@ const users = [
     firstName: 'Sam',
     lastName: 'Member',
     organizationId: '1',
+    email: 'sam.member2@gmail.com',
     roleId: 2,
     role: { id: 2, name: ERole.MEMBER },
   },
@@ -66,11 +69,12 @@ const getUsers = (userList = users) =>
 // Establish API mocking before tests.
 beforeEach(() => {
   server.listen({
-    onUnhandledRequest: 'warn',
+    onUnhandledRequest: 'error',
   });
 
   server.use(
     getUsers(),
+
     rest.delete(`${EUri.USERS}321`, (req, res, ctx) => {
       return res(ctx.status(200), ctx.json({ message: 'ok' }));
     }),
@@ -153,7 +157,6 @@ const UsersList = () => {
   );
 };
 
-console.log(users)
 test('should show list of users', async () => {
   const screen = render(<UsersList />);
 
@@ -257,79 +260,39 @@ test('should update a users role', async () => {
   expect(alert).toBeInTheDocument();
 });
 
-test('should delete user', async () => {
+test('should merge account', async () => {
   const screen = render(<UsersList />);
 
   await waitForLoadingToFinish();
+  const openMergeDialogButton = screen.getByRole('button', { name: /merge/i });
+  expect(openMergeDialogButton).toBeInTheDocument();
 
-  await waitFor(() => expect(screen.getByText(/smith/i)).toBeInTheDocument());
+  fireEvent.click(openMergeDialogButton);
+  const dialog = screen.getByRole('dialog');
+  expect(dialog).toBeInTheDocument();
 
-  fireEvent.click(screen.getByText(/smith/i));
+  userEvent.keyboard('{Escape}');
 
-  expect(screen.getByText(/personal/i)).toBeInTheDocument();
+  fireEvent.click(openMergeDialogButton);
 
-  const deleteButton = await screen.findByRole('button', { name: /delete/i });
+  expect(within(dialog).getByText(/merge account/i)).toBeInTheDocument();
 
-  fireEvent.click(deleteButton);
+  const comboBoxes = within(dialog).getAllByRole('combobox');
+  const winnerAccountTextBox = comboBoxes[0];
+  const loserAccountTextBox = comboBoxes[1];
 
-  expect(screen.getByText(/warning/i)).toBeInTheDocument();
+  
+  fireEvent.change(winnerAccountTextBox, { target: 'sam.member@gmail.com' });
+  fireEvent.keyDown(winnerAccountTextBox, { key: 'ArrowDown' });
+  fireEvent.keyDown(winnerAccountTextBox, { key: 'Enter' });
 
-  const noButton = await screen.findByRole('button', { name: 'No' });
+ 
+  fireEvent.change(loserAccountTextBox, { target: 'sam.member2@gmail.com' });
+  fireEvent.keyDown(loserAccountTextBox, { key: 'ArrowDown' });
+  fireEvent.keyDown(loserAccountTextBox, { key: 'Enter' });
 
-  fireEvent.click(noButton);
-
-  await waitFor(() => expect(screen.queryByText(/warning/i)).not.toBeInTheDocument());
-
-  server.use(getUsers([users[0]]));
-  fireEvent.click(deleteButton);
-  fireEvent.click(screen.getByRole('button', { name: /yes/i }));
-
-  await waitFor(() => expect(screen.queryByText(/warning/i)).not.toBeInTheDocument());
-
-  await waitForElementToBeRemoved(() => screen.getByText(/smith, joe/i));
-});
-
-test('should detach user', async () => {
-  server.use(
-    rest.put(`${EUri.USERS}321`, (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          id: 321,
-          organizationId: null,
-          reportingOrganizationId: null,
-        })
-      );
-    })
-  );
-  const screen = render(<UsersList />);
-
-  await waitForLoadingToFinish();
-
-  await waitFor(() => expect(screen.getByText(/smith/i)).toBeInTheDocument());
-
-  fireEvent.click(screen.getByText(/smith/i));
-
-  expect(screen.getByText(/personal/i)).toBeInTheDocument();
-
-  const detachMemberButton = await screen.findByRole('button', { name: /detach member/i });
-
-  server.use(getUsers([users[0]]));
-  fireEvent.click(detachMemberButton);
-
-  expect(await screen.findByText(/warning/i)).toBeInTheDocument();
-  screen.getByRole('button', { name: /no/i }).click();
-  await waitFor(() => expect(screen.queryByText(/warning/i)).not.toBeInTheDocument());
-
-  fireEvent.click(detachMemberButton);
-
-  expect(await screen.findByText(/warning/i)).toBeInTheDocument();
-
-  screen.getByRole('button', { name: /yes/i }).click();
-
-  const alert = await screen.findByText(/user detached/i);
-
-  expect(alert).toBeInTheDocument();
-
-  await waitForElementToBeRemoved(() => screen.getByText(/smith, joe/i));
+  const mergeButton = within(dialog).getByTestId('mergeButton');
+  expect(mergeButton).toBeInTheDocument();
+  fireEvent.click(mergeButton);
+  await waitFor(() => screen.findByRole('alert'));
 });

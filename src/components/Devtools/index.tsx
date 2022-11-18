@@ -22,7 +22,7 @@ export const Devtools = () => {
     <div tw="w-full">
       <div tw="border-b">
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label='Tracking Items' {...a11yProps(0)} />
+          <Tab label="Tracking Items" {...a11yProps(0)} />
           <Tab label="Log Data" {...a11yProps(1)} />
           <Tab label="Grants" {...a11yProps(2)} />
           <Tab label="Resources" {...a11yProps(3)} />

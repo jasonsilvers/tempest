@@ -27,9 +27,6 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
   const { refreshUser } = useUser();
   const { mutate: mergeAccount } = useMergeAccount();
   const { enqueueSnackbar } = useSnackbar();
-  const [openWinner, setOpenWinner] = React.useState(false);
-  const [openLoser, setOpenLoser] = React.useState(false);
-
   const [formState, setFormState] = React.useState<MergeUsersBody>({ winningAccountId: 0, losingAccountId: 0 });
 
   const submitForm = () => {
@@ -57,15 +54,9 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
             <form id="merge-form" tw="flex flex-col space-y-5 pt-4 items-center">
               <Autocomplete
                 id="winnerAccount"
+                data-testid="winner-account"
+                aria-labelledby="winner-account"
                 sx={{ width: 300 }}
-                open={openWinner}
-                onOpen={() => {
-                  setOpenWinner(true);
-                }}
-                onClose={() => {
-                  setOpenWinner(false);
-                }}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
                 getOptionLabel={(option: User) => option.email}
                 options={userList ?? []}
                 loading={isLoading}
@@ -76,7 +67,6 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                 renderInput={(params: AutocompleteRenderInputParams) => {
                   return (
                     <TextField
-                      data-testid="winner-account"
                       tw="w-full mx-auto"
                       {...params}
                       label="Winner Account"
@@ -96,15 +86,9 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
 
               <Autocomplete
                 id="loserAccount"
+                data-testid="loser-account"
+                aria-labelledby="loser-account"
                 sx={{ width: 300 }}
-                open={openLoser}
-                onOpen={() => {
-                  setOpenLoser(true);
-                }}
-                onClose={() => {
-                  setOpenLoser(false);
-                }}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
                 getOptionLabel={(option: User) => option.email}
                 options={userList ?? []}
                 loading={isLoading}
@@ -115,7 +99,6 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                 renderInput={(params) => {
                   return (
                     <TextField
-                      data-testid="loser-account"
                       tw="w-full mx-auto"
                       {...params}
                       label="Loser Account"
@@ -142,7 +125,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                   form="merge-form"
                   data-testid="mergeButton"
                 >
-                  Merge
+                  Merge Accounts
                 </Button>
               </div>
             </form>

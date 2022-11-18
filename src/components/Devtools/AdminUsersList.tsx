@@ -6,7 +6,7 @@ import {
   GridToolbarContainer,
   GridToolbarExport,
   GridToolbarFilterButton,
-  GridValueGetterParams
+  GridValueGetterParams,
 } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
 import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
@@ -80,7 +80,7 @@ const AdminUsersList: React.FC<AdminUserListProps> = ({ usersListQuery }) => {
     );
   };
 
-  const CustomToolBar = () => {   
+  const CustomToolBar = () => {
     return (
       <GridToolbarContainer>
         <GridToolbarFilterButton />

@@ -1,11 +1,5 @@
-
 import { Drawer } from '@mui/material';
-import {
-  DataGrid,
-  GridColumns,
-  GridToolbar,
-  GridValueGetterParams
-} from '@mui/x-data-grid';
+import { DataGrid, GridColumns, GridToolbar, GridValueGetterParams } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
 import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
 import { UserWithAll } from '../../repositories/userRepo';
@@ -71,7 +65,6 @@ const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
 
   return (
     <div tw="h-[750px] pt-5">
-      
       <DataGrid
         sx={{ border: 'none' }}
         rows={usersListQuery?.data}
@@ -79,7 +72,7 @@ const UsersList: React.FC<UserListProps> = ({ usersListQuery }) => {
         disableVirtualization
         onRowClick={(params) => setSidebarState({ userId: params.row.id, open: true })}
         components={{
-          Toolbar: GridToolbar
+          Toolbar: GridToolbar,
         }}
       />
       <Drawer

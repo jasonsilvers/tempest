@@ -222,6 +222,14 @@ async function seedDev() {
 
   await addUserToDb(user5, p1.id, ProgramManagerRole ? ProgramManagerRole.id : 5);
 
+  const user6 = createUser('Austin', 'Powers', 'austin.powers@gmail.com');
+
+  await addUserToDb(user6, omrs.id, memberRole ? memberRole.id : 2);
+
+  const user7 = createUser('Austin', 'Powers', 'austin.powers2@gmail.com');
+
+  await addUserToDb(user7, omrs.id, memberRole ? memberRole.id : 2);
+
   await addPPEItem(createdUser2.id);
   await addPPEItem(createdUser2.id);
   await addPPEItem(createdUser2.id);
