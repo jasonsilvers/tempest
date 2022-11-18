@@ -1,9 +1,5 @@
-import { isOrgChildOf } from './isOrgChildOf';
+import { Organization } from '@prisma/client';
 
-export async function userWithinOrgOrChildOrg(reqUserOrganizationId: number, userOrganizationId: number) {
-  if (reqUserOrganizationId === userOrganizationId || (await isOrgChildOf(userOrganizationId, reqUserOrganizationId))) {
-    return true;
-  }
-
-  return false;
+export function userWithinOrgOrChildOrg(reqUsersOrgAndDown: Organization[], userOrganizationId: number) {
+  return reqUsersOrgAndDown.some((org) => org.id === userOrganizationId);
 }

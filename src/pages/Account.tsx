@@ -180,7 +180,7 @@ const WorkForm = ({ user }: { user: LoggedInUser }) => {
     userMutation.mutate(
       {
         id: user.id,
-        organizationId: data.organization,
+        organizationId: data.organization ? parseInt(data.organization) : null,
         dutyTitle: data.dutyTitle,
         afsc: data.afsc,
       } as User,

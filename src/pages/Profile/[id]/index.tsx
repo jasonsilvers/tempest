@@ -70,7 +70,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
           <QuickAssign memberId={userId} />
         </Card>
         <Card tw="w-1/3">
-          <MemberReport memberId={userId} />
+          <MemberReport member={member} />
         </Card>
       </div>
       <Card tw="p-8 relative">

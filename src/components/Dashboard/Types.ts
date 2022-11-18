@@ -1,3 +1,4 @@
+import { Organization } from '@prisma/client';
 import { UserWithAll } from '../../repositories/userRepo';
 import { EStatus } from './Enums';
 
@@ -26,4 +27,5 @@ export type Actions =
   | { type: 'filterByOrganization'; organizationIdFilter: number }
   | { type: 'clearOrganization' }
   | { type: 'setUserList'; userList: UserWithAll[] }
+  | { type: 'setOrganizationList'; Organizations: Organization[] }
   | { type: 'setCounts'; counts: StatusCounts };

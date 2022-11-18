@@ -9,20 +9,19 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { TrackingItemInterval } from '../../utils/daysToString';
 import 'twin.macro';
 import ConfirmDialog from '../Dialog/ConfirmDialog';
-import { ItemsProps } from './TrainingItemUtils';
+import { ActiveItemsListProps, ItemsProps } from './types';
 import { renderCellExpand } from '../GridCellExpand';
 
-export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, selectedCatalog }) => {
-  const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, trackingItemId: null });
-  const [archiveConfirmation, setArchiveConfirmation] = useState({ isOpen: false, trackingItemId: null });
-
-  const { user, permissionCheck, isLoading } = usePermissions();
-  const { mutate: del } = useDeleteTrackingItem();
-  const { mutate: archive } = useUpdateTrackingItemStatus(ETrackingItemVerb.ARCHIVE);
-  const { enqueueSnackbar } = useSnackbar();
-
+const ActiveItemsList: React.FC<ActiveItemsListProps> = ({
+  rows,
+  processRowUpdate,
+  selectedCatalog,
+  actionCallBacks,
+}) => {
+  const { user, permissionCheck } = usePermissions();
   const canDeleteTrackingItem = permissionCheck(user?.role.name, EFuncAction.DELETE_ANY, EResource.TRACKING_ITEM);
   const canUpdateTrackingItem = permissionCheck(user?.role.name, EFuncAction.UPDATE_ANY, EResource.TRACKING_ITEM);
+  const isAdmin = user.role.name === ERole.ADMIN;
 
   const columns = useMemo(
     () => [
@@ -45,13 +44,14 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
         field: 'description',
         renderCell: renderCellExpand,
         flex: 0.8,
+        editable: selectedCatalog !== 0 || isAdmin,
       },
       {
         headerName: 'Location',
         field: 'location',
         renderCell: renderCellExpand,
         flex: 0.8,
-        editable: true,
+        editable: selectedCatalog !== 0 || isAdmin,
       },
       {
         field: 'actions',
@@ -72,7 +72,7 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
                 icon={<ArchiveIcon tw="text-secondary" />}
                 label="Archive"
                 onClick={() => {
-                  setArchiveConfirmation({ isOpen: true, trackingItemId: params.row.id });
+                  actionCallBacks.archive({ isOpen: true, trackingItemId: params.row.id });
                 }}
               />,
             ];
@@ -85,7 +85,7 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
                 icon={<DeleteIcon tw="text-secondary" />}
                 label="Delete"
                 onClick={() => {
-                  setDeleteConfirmation({ isOpen: true, trackingItemId: params.row.id });
+                  actionCallBacks.delete({ isOpen: true, trackingItemId: params.row.id });
                 }}
               />,
             ];
@@ -98,24 +98,48 @@ export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, sele
 
     [canDeleteTrackingItem, canUpdateTrackingItem, selectedCatalog]
   );
+
+  return (
+    <DataGrid
+      sx={{ border: 'none' }}
+      disableSelectionOnClick
+      disableColumnSelector
+      autoHeight
+      columns={columns}
+      //Uses the select organizationsWithCatalog to filter list of data
+      rows={rows}
+      experimentalFeatures={{ newEditingApi: true }}
+      processRowUpdate={processRowUpdate}
+      disableVirtualization
+      components={{
+        Toolbar: GridToolbar,
+      }}
+    />
+  );
+};
+
+export const ActiveItems: React.FC<ItemsProps> = ({ rows, processRowUpdate, selectedCatalog }) => {
+  const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, trackingItemId: null });
+  const [archiveConfirmation, setArchiveConfirmation] = useState({ isOpen: false, trackingItemId: null });
+  const { isLoading } = usePermissions();
+
+  const { mutate: del } = useDeleteTrackingItem();
+  const { mutate: archive } = useUpdateTrackingItemStatus(ETrackingItemVerb.ARCHIVE);
+  const { enqueueSnackbar } = useSnackbar();
+
   if (isLoading) {
     return <div>...loading</div>;
   }
+
   return (
     <>
-      <DataGrid
-        sx={{ border: 'none' }}
-        disableSelectionOnClick
-        disableColumnSelector
-        autoHeight
-        columns={columns}
-        //Uses the select organizationsWithCatalog to filter list of data
+      <ActiveItemsList
         rows={rows}
-        experimentalFeatures={{ newEditingApi: true }}
+        selectedCatalog={selectedCatalog}
         processRowUpdate={processRowUpdate}
-        disableVirtualization
-        components={{
-          Toolbar: GridToolbar,
+        actionCallBacks={{
+          delete: setDeleteConfirmation,
+          archive: setArchiveConfirmation,
         }}
       />
       {deleteConfirmation.isOpen && (

@@ -378,9 +378,18 @@ test('should return list of organizations and their children', async () => {
 
   expect(spy).toBeCalledWith({
     where: {
-      organizationId: {
-        in: [1, 2],
-      },
+      OR: [
+        {
+          organizationId: {
+            in: [1, 2],
+          },
+        },
+        {
+          reportingOrganizationId: {
+            in: [1, 2],
+          },
+        },
+      ],
     },
     orderBy: {
       lastName: 'asc',

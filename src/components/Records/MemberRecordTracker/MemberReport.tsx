@@ -1,6 +1,5 @@
 import { Button, Card, Checkbox, Dialog, Divider, TextField, Typography } from '@mui/material';
 import { MemberTrackingItemStatus, PersonalProtectionEquipmentItem } from '@prisma/client';
-import { useUser } from '@tron/nextjs-auth-p1';
 import dayjs from 'dayjs';
 import React, { ForwardedRef, useState } from 'react';
 import 'twin.macro';
@@ -9,7 +8,7 @@ import { TrackingItemInterval } from '../../../../src/utils/daysToString';
 import { usePpeItems } from '../../../hooks/api/ppe';
 import { useMemberTrackingItemsForUser } from '../../../hooks/api/users';
 import { MemberTrackingItemWithAll } from '../../../repositories/memberTrackingRepo';
-import { LoggedInUser } from '../../../repositories/userRepo';
+import { UserWithAll } from '../../../repositories/userRepo';
 import { removeInProgressRecords, removeOldCompletedRecords } from '../../../utils';
 import { EStatus } from '../../Dashboard/Enums';
 import { Transition } from '../../Dashboard/Report';
@@ -30,7 +29,7 @@ type FilteredMTR = {
 };
 
 type PrintMemberReportType = {
-  user: LoggedInUser;
+  user: UserWithAll;
   ppeItems: PersonalProtectionEquipmentItem[];
   mtrs: FilteredMTR[];
 };
@@ -48,29 +47,47 @@ const PrintMemberReport = ({ user, ppeItems, mtrs }: PrintMemberReportType, ref:
         </div>
       </div>
       <div tw="py-10">
-        <Divider />
+        <Divider variant="fullWidth" tw="w-[1200px]" />
       </div>
-      <div tw="flex flex-col w-full">
+      <div tw="flex flex-col w-[1200px]">
         <div tw="flex space-x-6">
           <TextField
             id="outlined-helperText"
             label="Name"
             variant="standard"
-            value={`${user.firstName} ${user.lastName}`}
+            value={`${user?.firstName} ${user?.lastName}`}
             fullWidth
           />
-          <TextField id="outlined-helperText" label="Rank" variant="standard" value={user.rank} fullWidth />
-          <TextField id="outlined-helperText" label="Job Code/AFSC" variant="standard" value={user.afsc} fullWidth />
+          <TextField
+            id="outlined-helperText"
+            label="Rank"
+            variant="standard"
+            value={user?.rank ? user?.rank : 'No Rank'}
+            fullWidth
+          />
+          <TextField
+            id="outlined-helperText"
+            label="Job Code/AFSC"
+            variant="standard"
+            value={user.afsc ? user.afsc : 'No AFSC'}
+            fullWidth
+          />
         </div>
         <div tw="flex space-x-6 pt-4">
           <TextField
             id="outlined-helperText"
             label="Organization"
             variant="standard"
-            value={user.organization.name}
+            value={user.organization.name ? user.organization.name : 'No Organization'}
             fullWidth
           />
-          <TextField id="outlined-helperText" label="Duty Title" variant="standard" value={user.dutyTitle} fullWidth />
+          <TextField
+            id="outlined-helperText"
+            label="Duty Title"
+            variant="standard"
+            value={user.dutyTitle ? user.dutyTitle : 'No Duty Title'}
+            fullWidth
+          />
         </div>
       </div>
 
@@ -78,24 +95,28 @@ const PrintMemberReport = ({ user, ppeItems, mtrs }: PrintMemberReportType, ref:
         <Typography variant="overline" color="primary" fontSize={16}>
           personal protective equipment
         </Typography>
-        <div tw="grid grid-cols-12 gap-1 text-[14px] font-bold w-[1200px] p-4">
-          <div tw="p-1 col-span-9 rounded-lg">Title</div>
-          <div tw="p-1 rounded-lg text-center">Provided</div>
-          <div tw="p-1 rounded-lg text-center">In-Use</div>
-        </div>
-        {ppeItems.map((ppeItem) => (
+        {ppeItems?.length > 0 ? (
+          <div tw="grid grid-cols-12 gap-1 text-[14px] font-bold w-[1200px] pb-4">
+            <div tw="p-1 col-span-10 rounded-lg">Title</div>
+            <div tw="p-1 col-span-1 rounded-lg text-center">Provided</div>
+            <div tw="p-1 col-span-1 rounded-lg text-center">In-Use</div>
+          </div>
+        ) : (
+          <div>No Items</div>
+        )}
+        {ppeItems?.map((ppeItem) => (
           <>
-            <Divider />
+            <Divider variant="fullWidth" tw="w-[1200px]" />
             <div key={ppeItem.id} tw="grid grid-cols-12 gap-1 text-[14px] w-[1200px] p-1 items-center">
-              <div tw="p-1 col-span-9 rounded-lg">{ppeItem.name}</div>
-              <div tw="p-1 rounded-lg text-center">
+              <div tw="p-1 col-span-10 rounded-lg">{ppeItem.name}</div>
+              <div tw="p-1 col-span-1 rounded-lg text-center">
                 <Checkbox
                   inputProps={{ 'aria-label': 'checkbox-provided' }}
                   checked={ppeItem.inUse}
                   color="secondary"
                 />
               </div>
-              <div tw="p-1 rounded-lg text-center">
+              <div tw="p-1 col-span-1 rounded-lg text-center">
                 <Checkbox
                   inputProps={{ 'aria-label': 'checkbox-provided' }}
                   checked={ppeItem.provided}
@@ -109,19 +130,23 @@ const PrintMemberReport = ({ user, ppeItems, mtrs }: PrintMemberReportType, ref:
           <Typography variant="overline" color="primary" fontSize={16}>
             training record
           </Typography>
-          <div tw="grid grid-cols-12 text-[14px] font-bold w-[1200px] p-4">
-            <div tw="p-1 col-span-4 rounded-lg">Title</div>
-            <div tw="p-1 col-span-1 rounded-lg">Recurrence</div>
-            <div tw="p-1 col-span-1 rounded-lg">Completed</div>
-            <div tw="p-1 col-span-1 rounded-lg">Due</div>
-            <div tw="p-1 col-span-2 rounded-lg text-center">Trainer</div>
-            <div tw="p-1 col-span-2 rounded-lg text-center">Member</div>
-          </div>
+          {mtrs.length > 0 ? (
+            <div tw="grid grid-cols-12 text-[14px] font-bold w-[1200px] pb-4">
+              <div tw="p-1 col-span-5 rounded-lg">Title</div>
+              <div tw="p-1 col-span-1 rounded-lg">Recurrence</div>
+              <div tw="p-1 col-span-1 rounded-lg">Completed</div>
+              <div tw="p-1 col-span-1 rounded-lg">Due</div>
+              <div tw="p-1 col-span-2 rounded-lg text-center">Trainer</div>
+              <div tw="p-1 col-span-2 rounded-lg text-center">Member</div>
+            </div>
+          ) : (
+            <div>No Records</div>
+          )}
           {mtrs.map((mtr) => (
             <>
-              <Divider />
+              <Divider variant="fullWidth" tw="w-[1200px]" />
               <div key={mtr.id} tw="grid grid-cols-12 text-[14px] w-[1200px] p-1 items-center">
-                <div tw="p-1 col-span-4 rounded-lg">{mtr.trainingTitle}</div>
+                <div tw="p-1 col-span-5 rounded-lg">{mtr.trainingTitle}</div>
                 <div tw="p-1 col-span-1 rounded-lg">{mtr.recurrence}</div>
                 <div tw="p-1 col-span-1 rounded-lg">{mtr.completed}</div>
                 <div tw="p-1 col-span-1 rounded-lg">{mtr.dueDate}</div>
@@ -144,28 +169,23 @@ const PrintMemberReport = ({ user, ppeItems, mtrs }: PrintMemberReportType, ref:
 
 const PrintableMemberReport = React.forwardRef(PrintMemberReport);
 
-type MemberReportProps = {
-  memberId: number;
-};
-
 type ExportDialogProps = {
   open: boolean;
   handleClose: () => void;
-  memberId: number;
+  member: UserWithAll;
   memberTrackingItems: MemberTrackingItemWithAll[];
 };
 
-const ExportDialog: React.FC<ExportDialogProps> = ({ open, handleClose, memberId, memberTrackingItems }) => {
+const ExportDialog: React.FC<ExportDialogProps> = ({ open, handleClose, member, memberTrackingItems }) => {
   const componentRef = React.useRef();
-  const ppeQuery = usePpeItems(memberId);
-  const { user } = useUser<LoggedInUser>();
+  const ppeQuery = usePpeItems(member?.id);
 
   const filteredMTRs = memberTrackingItems
-    ?.filter((member) => member.memberTrackingRecords.length !== 0)
+    ?.filter((memberFilter) => memberFilter.memberTrackingRecords.length !== 0)
     .flatMap((mti) => {
       return removeOldCompletedRecords(removeInProgressRecords(mti.memberTrackingRecords)).map((mtr) => {
         return {
-          id: `${memberId}-${mtr.id}`,
+          id: `${member.id}-${mtr.id}`,
           trainingTitle: mti.trackingItem.title,
           recurrence: TrackingItemInterval[mti.trackingItem.interval],
           completed: dayjs(mtr.completedDate).format('MMM D, YYYY'),
@@ -190,7 +210,7 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ open, handleClose, memberId
       onClose={handleClose}
       TransitionComponent={Transition}
     >
-      <div tw="w-4/6 mr-auto ml-auto relative">
+      <div tw="mr-auto ml-auto relative w-[1200px]">
         <div tw="absolute top-6 right-6 flex space-x-6">
           <ReactToPrint
             trigger={() => <Button variant="contained">Print</Button>}
@@ -201,15 +221,19 @@ const ExportDialog: React.FC<ExportDialogProps> = ({ open, handleClose, memberId
           </Button>
         </div>
 
-        <PrintableMemberReport ref={componentRef} user={user} ppeItems={ppeQuery.data} mtrs={filteredMTRs} />
+        <PrintableMemberReport ref={componentRef} user={member} ppeItems={ppeQuery.data} mtrs={filteredMTRs} />
       </div>
     </Dialog>
   );
 };
 
-export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
+type MemberReportProps = {
+  member: UserWithAll;
+};
+
+export const MemberReport: React.FC<MemberReportProps> = ({ member }) => {
   const [openExport, setOpenExport] = useState(false);
-  const memberTrackingItemsQuery = useMemberTrackingItemsForUser(memberId);
+  const memberTrackingItemsQuery = useMemberTrackingItemsForUser(member?.id);
 
   const counts = {
     Done: 0,
@@ -296,7 +320,7 @@ export const MemberReport: React.FC<MemberReportProps> = ({ memberId }) => {
       <ExportDialog
         open={openExport}
         handleClose={() => setOpenExport(false)}
-        memberId={memberId}
+        member={member}
         memberTrackingItems={memberTrackingItemsQuery?.data}
       />
     </>

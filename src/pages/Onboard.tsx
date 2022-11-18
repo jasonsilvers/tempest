@@ -9,7 +9,7 @@ import { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import 'twin.macro';
 import { useOnboardOrg } from '../hooks/api/onboard';
-import { useUser } from '@tron/nextjs-auth-p1';
+import { useUser, withPageAuth } from '@tron/nextjs-auth-p1';
 
 const formSchema = Joi.object({
   name: Joi.string().required(),
@@ -117,4 +117,4 @@ const Onboard: FC = () => {
     </>
   );
 };
-export default Onboard;
+export default withPageAuth(Onboard);

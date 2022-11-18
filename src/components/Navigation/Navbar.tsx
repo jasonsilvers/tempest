@@ -68,7 +68,7 @@ const AdminNavigation = ({
       ) : null}
       {canViewProgramAdminPage ? (
         <Link goToUrl="/Programadmin" icon={<SecurityIcon fontSize="medium" />}>
-          <div role="navigation" aria-label="admin">
+          <div role="navigation" aria-label="program-admin">
             Admin
           </div>
         </Link>

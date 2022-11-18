@@ -6,7 +6,11 @@ import { EResource, ERole, ITempestApiMessage } from '../const/enums';
 import { getAc } from '../middleware/utils';
 import { PermissionError } from '../middleware/withErrorHandling';
 import { getOrganizationAndDown, getOrganizationAndUp } from '../repositories/organizationRepo';
-import { createTrackingItem, getGlobalTrackingItemsAndThoseByOrgId } from '../repositories/trackingItemRepo';
+import {
+  createTrackingItem,
+  getGlobalTrackingItemsAndThoseByOrgId,
+  getTrackingItems,
+} from '../repositories/trackingItemRepo';
 import { LoggedInUser } from '../repositories/userRepo';
 import { TrackingItemsDTO } from '../types';
 
@@ -23,11 +27,11 @@ export const getTrackingItemAction = async (
     throw new PermissionError();
   }
 
-  if (
-    req.user.role.name === ERole.MONITOR ||
-    req.user.role.name === ERole.ADMIN ||
-    req.user.role.name === ERole.PROGRAM_MANAGER
-  ) {
+  if (req.user.role.name === ERole.ADMIN) {
+    trackingItems = await getTrackingItems();
+  }
+
+  if (req.user.role.name === ERole.MONITOR || req.user.role.name === ERole.PROGRAM_MANAGER) {
     const orgsAndUp = await getOrganizationAndUp(req.user.organizationId);
     const orgsAndDown = await getOrganizationAndDown(req.user.organizationId);
     orgIds = [...orgsAndUp, ...orgsAndDown].map((org) => org.id);

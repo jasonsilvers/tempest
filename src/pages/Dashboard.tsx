@@ -1,5 +1,5 @@
 import { InputAdornment, TextField } from '@mui/material';
-import { MemberTrackingItemStatus } from '@prisma/client';
+import { MemberTrackingItemStatus, Organization } from '@prisma/client';
 import React, { useEffect, useReducer } from 'react';
 import 'twin.macro';
 import { SearchIcon } from '../assets/Icons';
@@ -10,13 +10,16 @@ import { MassSign } from '../components/Dashboard/MassSign';
 import { Report } from '../components/Dashboard/Report';
 import { Actions, StatusCounts } from '../components/Dashboard/Types';
 import { UserList } from '../components/Dashboard/UserList';
+import { OrganizationList } from '../components/ProgramAdmin/OrganizationList';
 import { addMemberCounts, addOverallCounts } from '../components/Reports/reportsUtils';
 import { EFuncAction, EResource } from '../const/enums';
+import { useOrgsLoggedInUsersOrgAndDown } from '../hooks/api/organizations';
 import { useUsers } from '../hooks/api/users';
 import { usePermissions } from '../hooks/usePermissions';
 import { Card } from '../lib/ui';
 import { UserWithAll } from '../repositories/userRepo';
 import { removeOldCompletedRecords } from '../utils';
+import { isOrgChildOfClient } from '../utils/isOrgChildOf';
 
 const initialCounts: StatusCounts = {
   All: 0,
@@ -32,11 +35,12 @@ export interface IDashboardState {
   nameFilter: string;
   statusFilter: EStatus;
   organizationIdFilter: number;
+  organizationList: Organization[];
 }
 
 interface IFilters {
   nameFilter: string;
-  OrganizationIdFilter: number;
+  organizationIdFilter: number;
 }
 
 const applyNameFilter = (userList: UserWithAll[], nameFilter: string) => {
@@ -49,23 +53,51 @@ const applyNameFilter = (userList: UserWithAll[], nameFilter: string) => {
   });
 };
 
-const applyOrganizationFilter = (userList: UserWithAll[], organizationIdFilter: number) => {
-  if (!organizationIdFilter) {
+function findOrganizationByIdClient(id: number, organizationList: Organization[]) {
+  if (!organizationList) {
+    return null;
+  }
+
+  return organizationList?.find((org) => org.id === id);
+}
+
+const applyOrganizationFilter = (
+  userList: UserWithAll[],
+  organizationIdFilter: number,
+  organizationList: Organization[]
+) => {
+  if (!organizationIdFilter || !OrganizationList || OrganizationList.length === 0) {
     return userList;
   }
 
-  return userList.filter((user) => {
-    //reporting org is only for monitors. Members should be filtered by their organization
-    if (user.reportingOrganizationId === null) {
-      return user.organizationId === organizationIdFilter;
+  const filteredUserList = userList?.filter((user) => {
+    if (user.organizationId === organizationIdFilter) {
+      return true;
     }
 
-    return user.reportingOrganizationId === organizationIdFilter;
+    if (
+      isOrgChildOfClient(user.organizationId, organizationIdFilter, organizationList, findOrganizationByIdClient) ||
+      isOrgChildOfClient(
+        user.reportingOrganizationId,
+        organizationIdFilter,
+        organizationList,
+        findOrganizationByIdClient
+      )
+    ) {
+      return true;
+    }
+
+    return false;
   });
+
+  return filteredUserList;
 };
 
-const applyFilters = (userList: UserWithAll[], filters: IFilters) => {
-  return applyNameFilter(applyOrganizationFilter(userList, filters.OrganizationIdFilter), filters.nameFilter);
+const applyFilters = (userList: UserWithAll[], filters: IFilters, organizationList: Organization[]) => {
+  return applyNameFilter(
+    applyOrganizationFilter(userList, filters.organizationIdFilter, organizationList),
+    filters.nameFilter
+  );
 };
 
 const filterReducer = (state: IDashboardState, action: Actions): IDashboardState => {
@@ -74,30 +106,49 @@ const filterReducer = (state: IDashboardState, action: Actions): IDashboardState
       return {
         ...state,
         nameFilter: action.nameFilter,
-        filteredUserList: applyFilters(state.userList, {
-          nameFilter: action.nameFilter,
-          OrganizationIdFilter: state.organizationIdFilter,
-        }),
+        filteredUserList: applyFilters(
+          state.userList,
+          {
+            nameFilter: action.nameFilter,
+            organizationIdFilter: state.organizationIdFilter,
+          },
+          state.organizationList
+        ),
       };
     }
     case 'filterByOrganization': {
       return {
         ...state,
         organizationIdFilter: action.organizationIdFilter,
-        filteredUserList: applyFilters(state.userList, {
-          nameFilter: state.nameFilter,
-          OrganizationIdFilter: action.organizationIdFilter,
-        }),
+        filteredUserList: applyFilters(
+          state.userList,
+          {
+            nameFilter: state.nameFilter,
+            organizationIdFilter: action.organizationIdFilter,
+          },
+          state.organizationList
+        ),
       };
     }
     case 'setUserList': {
       return {
         ...state,
         userList: action.userList,
-        filteredUserList: applyFilters(action.userList, {
-          nameFilter: state.nameFilter,
-          OrganizationIdFilter: state.organizationIdFilter,
-        }),
+        filteredUserList: applyFilters(
+          action.userList,
+          {
+            nameFilter: state.nameFilter,
+            organizationIdFilter: state.organizationIdFilter,
+          },
+          state.organizationList
+        ),
+      };
+    }
+
+    case 'setOrganizationList': {
+      return {
+        ...state,
+        organizationList: action.Organizations,
       };
     }
 
@@ -116,6 +167,7 @@ const filterReducer = (state: IDashboardState, action: Actions): IDashboardState
 const DashboardPage: React.FC = () => {
   const { user: loggedInUser, permissionCheck, isLoading } = usePermissions();
   const usersQuery = useUsers();
+  const orgsQuery = useOrgsLoggedInUsersOrgAndDown();
 
   const [dashboardState, dispatch] = useReducer(filterReducer, {
     userList: usersQuery.data,
@@ -123,6 +175,7 @@ const DashboardPage: React.FC = () => {
     counts: initialCounts,
     nameFilter: '',
     organizationIdFilter: null,
+    organizationList: null,
     statusFilter: EStatus.ALL,
   });
 
@@ -130,7 +183,8 @@ const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     dispatch({ type: 'setUserList', userList: usersQuery.data });
-  }, [usersQuery.data]);
+    dispatch({ type: 'filterByOrganization', organizationIdFilter: loggedInUser?.organizationId });
+  }, [usersQuery.data, loggedInUser]);
 
   useEffect(() => {
     const membersCount = { ...initialCounts };
@@ -192,7 +246,11 @@ const DashboardPage: React.FC = () => {
 
       <div tw="col-span-4 row-span-3 pb-[19em] space-y-4">
         <Card tw="h-16 px-4">
-          <DashboardFilter dispatch={dispatch} />
+          <DashboardFilter
+            dispatch={dispatch}
+            initOrg={dashboardState.organizationIdFilter ?? loggedInUser.organizationId}
+            orgList={orgsQuery.data}
+          />
         </Card>
         <Report memberList={dashboardState.filteredUserList} counts={dashboardState.counts} />
         <MassSign usersQuery={usersQuery} />
