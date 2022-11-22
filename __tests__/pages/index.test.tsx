@@ -2,6 +2,7 @@ import { render } from '../testutils/TempestTestUtils';
 import Index from '../../src/pages/index';
 import { useTestUser } from '../testutils/mocks/NextMocks';
 import { ERole } from '../../src/const/enums';
+import React from 'react';
 
 it('routes the user to the Unauthenticated app', async () => {
   const push = jest.fn();
@@ -14,7 +15,7 @@ it('routes the user to the Unauthenticated app', async () => {
 it('routes the user to the Welcom page if they do not have an organization', () => {
   useTestUser.mockImplementationOnce(() => ({
     isLoading: true,
-    user: { firstName: 'bob', id: '1', role: { name: ERole.MEMBER, id: 1 } },
+    user: { firstName: 'bob', id: 1, role: { name: ERole.MEMBER, id: 1 } },
     // eslint-disable-next-line
     refreshUser: () => {},
   }));

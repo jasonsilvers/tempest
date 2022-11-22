@@ -12,7 +12,7 @@ import {
   render,
   waitFor,
   waitForElementToBeRemoved,
-  waitForLoadingToFinish
+  waitForLoadingToFinish,
 } from '../../testutils/TempestTestUtils';
 
 const users = [
@@ -343,5 +343,4 @@ test('should detach user', async () => {
   expect(alert).toBeInTheDocument();
 
   await waitForElementToBeRemoved(() => screen.getByText(/smith, joe/i));
-
 });

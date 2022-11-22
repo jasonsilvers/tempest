@@ -11,11 +11,11 @@ import {
 } from '@mui/material';
 import { User } from '@prisma/client';
 import { useUser } from '@tron/nextjs-auth-p1';
-import { useSnackbar } from 'notistack';
 import React, { Dispatch, SetStateAction } from 'react';
+import { useQueryClient } from 'react-query';
 import 'twin.macro';
 import { MergeUsersBody, useMergeAccount } from '../hooks/api/merge';
-import { useUsers } from '../hooks/api/users';
+import { usersQueryKeys, useUsers } from '../hooks/api/users';
 
 type MergeAccountProps = {
   isOpen: boolean;
@@ -25,8 +25,8 @@ type MergeAccountProps = {
 export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen }): JSX.Element => {
   const { isLoading, data: userList } = useUsers();
   const { refreshUser } = useUser();
+  const queryClient = useQueryClient();
   const { mutate: mergeAccount } = useMergeAccount();
-  const { enqueueSnackbar } = useSnackbar();
   const [formState, setFormState] = React.useState<MergeUsersBody>({ winningAccountId: 0, losingAccountId: 0 });
 
   const submitForm = () => {
@@ -36,8 +36,8 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
     };
 
     mergeAccount(mergeBody, {
-      onSuccess: () => {
-        enqueueSnackbar('Accounts have successfully been merged', { variant: 'success' });
+      onSettled: () => {
+        queryClient.invalidateQueries(usersQueryKeys.users());
         refreshUser();
       },
     });
