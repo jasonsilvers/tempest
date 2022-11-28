@@ -97,10 +97,9 @@ describe('Can use admin features', () => {
 
     cy.findByRole('button', { name: /merge/i }).click();
     cy.get('form').within(($form) => {
-
-    cy.get('input#winnerAccount').type(`${emailToChange}{downArrow}{enter}`, {delay: 100})
-    cy.get('input#loserAccount').type(`${newEmail}{downArrow}{enter}`, {delay: 100})
-  })
+      cy.get('input#winnerAccount').type(`${emailToChange}{downArrow}{enter}`, {delay: 100})
+      cy.get('input#loserAccount').type(`${newEmail}{downArrow}{enter}`, {delay: 100})
+    })
 
     cy.findByRole('button', { name: /merge accounts/i }).should('exist');
     cy.findByRole('button', { name: /merge accounts/i }).click();

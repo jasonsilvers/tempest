@@ -40,20 +40,29 @@ const mergeUserAccountApiHandler = async (
 
   const winningAccount = await findUserById(body.winningAccountId);
   const losingAccount = await findUserById(body.losingAccountId);
+
   const newEmailFromLosingAccount = losingAccount.email;
 
   try {
     await updateUser(losingAccount.id, { email: `Archive_${losingAccount.email}` });
   } catch (e) {
-    throw new AppError(500, 'There was a problem merging the accounts, please try again.');
+    throw new AppError(
+      500,
+      'There was a problem merging the accounts, unable to update losing account, please try again.'
+    );
   }
+
   try {
     await updateUser(winningAccount.id, { email: newEmailFromLosingAccount });
-    await deleteUser(losingAccount.id);
   } catch (e) {
     await updateUser(losingAccount.id, { email: losingAccount.email });
-    throw new AppError(500, 'There was a problem merging the accounts, please try again.');
+    throw new AppError(
+      500,
+      'There was a problem merging the accounts, unable to update winning account, please try again.'
+    );
   }
+
+  await deleteUser(losingAccount.id);
 
   return res.status(200).json({ message: 'ok' });
 };

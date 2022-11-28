@@ -39,21 +39,18 @@ const usersApiHandler = async (req: ITempestUsersApiRequest<LoggedInUser>, res: 
     throw new PermissionError();
   }
 
-  let users: UsersWithMemberTrackingRecords;
-
-  if (isAdmin) {
-    if (req.query.detached === 'true') {
-      users = await getAllDetachedUsers();
-    } else {
-      users = await getUsers();
-    }
+  if (req.query.detached) {
+    const detachedUsers = await getAllDetachedUsers();
+    return res.status(200).json({ users: detachedUsers });
   }
 
-  if (req.query.detached === 'true') {
-    users = await getAllDetachedUsers();
+  let users: UsersWithMemberTrackingRecords;
+  if (isAdmin) {
+    users = await getUsers();
   } else {
     users = await getAllUsersFromUsersOrgCascade(req.user.organizationId);
   }
+
   res.status(200).json({ users });
 };
 

@@ -1,6 +1,13 @@
+import { User } from '@prisma/client';
 import mergeUserAccountApiHandler from '../../../src/pages/api/account/merge';
 import { findGrants } from '../../../src/repositories/grantsRepo';
-import { deleteUser, findUserByEmail, findUserById, updateUser } from '../../../src/repositories/userRepo';
+import {
+  deleteUser,
+  findUserByEmail,
+  FindUserById,
+  findUserById,
+  updateUser,
+} from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { adminJWT, memberJWT } from '../../testutils/mocks/mockJwt';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
@@ -9,21 +16,24 @@ import { testNextApi } from '../../testutils/NextAPIUtils';
 jest.mock('../../../src/repositories/userRepo');
 jest.mock('../../../src/repositories/grantsRepo');
 
+const mockedFindByUserId = findUserById as jest.MockedFunction<typeof findUserById>;
+const mockedUpdateUser = updateUser as jest.MockedFunction<typeof updateUser>;
+
 const globalUserId = 1;
 
 const userFromDb = {
   id: globalUserId,
   firstName: 'joe',
   lastName: 'anderson',
-  email: 'anderson@gmail.com',
-};
+  email: 'winninganderson@gmail.com',
+} as unknown as FindUserById;
 
 const secondUserAccountFromDb = {
   id: 2,
   firstName: 'joe',
   lastName: 'anderson',
-  email: 'anderson2@gmail.com',
-};
+  email: 'losinganderson2@gmail.com',
+} as unknown as FindUserById;
 
 beforeEach(() => {
   mockMethodAndReturn(findUserByEmail, {
@@ -34,27 +44,33 @@ beforeEach(() => {
   mockMethodAndReturn(findGrants, grants);
 });
 
-const userWithUpdatedEmail = { ...userFromDb, email: secondUserAccountFromDb.email };
-const userWithNullEmail = { ...userFromDb, email: null };
-
 afterEach(() => {
   jest.resetAllMocks();
 });
 
 describe('Merge User Account', () => {
   test('Should merge account and delete the loser account', async () => {
-    mockMethodAndReturn(findUserById, userFromDb);
-    mockMethodAndReturn(findUserById, secondUserAccountFromDb);
-    mockMethodAndReturn(updateUser, userWithUpdatedEmail);
+    mockedFindByUserId.mockResolvedValueOnce(userFromDb).mockResolvedValueOnce(secondUserAccountFromDb);
+
+    mockedUpdateUser
+      .mockResolvedValueOnce({
+        ...secondUserAccountFromDb,
+        email: `Archive_${secondUserAccountFromDb?.email}`,
+      } as unknown as User)
+      .mockResolvedValueOnce({ ...userFromDb, email: 'winninganderson@gmail.com' } as unknown as User);
     mockMethodAndReturn(deleteUser, secondUserAccountFromDb);
 
     const { status, data } = await testNextApi.post(mergeUserAccountApiHandler, {
       customHeaders: { Authorization: `Bearer ${adminJWT}` },
       body: {
-        winningAccountId: userFromDb.id,
-        losingAccountId: secondUserAccountFromDb.id,
+        winningAccountId: userFromDb?.id,
+        losingAccountId: secondUserAccountFromDb?.id,
       },
     });
+
+    expect(mockedUpdateUser).toHaveBeenNthCalledWith(1, 2, { email: `Archive_${secondUserAccountFromDb?.email}` });
+    expect(mockedUpdateUser).toHaveBeenNthCalledWith(2, 1, { email: secondUserAccountFromDb?.email });
+
     expect(status).toBe(200);
     expect(data).toStrictEqual({ message: 'ok' });
   });
@@ -68,8 +84,8 @@ describe('Merge User Account', () => {
     const { status } = await testNextApi.post(mergeUserAccountApiHandler, {
       customHeaders: { Authorization: `Bearer ${memberJWT}` },
       body: {
-        winningAccountId: userFromDb.id,
-        losingAccountId: secondUserAccountFromDb.id,
+        winningAccountId: userFromDb?.id,
+        losingAccountId: secondUserAccountFromDb?.id,
       },
     });
     expect(status).toBe(403);
@@ -77,9 +93,7 @@ describe('Merge User Account', () => {
 
   test('should return 500, when error occurs', async () => {
     mockMethodAndReturn(findUserById, userFromDb);
-    mockMethodAndReturn(findUserByEmail, userWithNullEmail);
-    const mockedUpdateUser = updateUser as jest.MockedFunction<typeof updateUser>;
-    const errorMsg = 'There was a problem merging the accounts, please try again.';
+    const errorMsg = 'There was a problem merging the accounts, unable to update losing account, please try again.';
     mockedUpdateUser.mockImplementation(() => {
       throw new Error(errorMsg);
     });
