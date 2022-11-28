@@ -4,7 +4,7 @@ import 'whatwg-fetch';
 import { ERole, EUri } from '../../src/const/enums';
 import { UserWithAll } from '../../src/repositories/userRepo';
 import { rest, server } from '../testutils/mocks/msw';
-import { fireEvent, render, waitFor, waitForLoadingToFinish, within } from '../testutils/TempestTestUtils';
+import { act, fireEvent, render, waitFor, waitForLoadingToFinish, within } from '../testutils/TempestTestUtils';
 
 import { MergeAccount } from '../../src/components/MergeAccount';
 
@@ -101,17 +101,33 @@ test('should merge account', async () => {
 
   expect(within(dialog).getByRole('heading', { name: /merge accounts/i })).toBeInTheDocument();
 
-  const comboBoxes = within(dialog).getAllByRole('combobox');
-  const winnerAccountTextBox = comboBoxes[0];
-  const loserAccountTextBox = comboBoxes[1];
+  const winnerAccountTextBox = screen.getByRole('combobox', {
+    name: /winner account/i,
+  });
+  const loserAccountTextBox = screen.getByRole('combobox', {
+    name: /loser account/i,
+  });
 
-  fireEvent.change(winnerAccountTextBox, { target: 'sam.member@gmail.com' });
+  const deleteButton = screen.getByRole('button', { name: /merge accounts/i });
+  expect(deleteButton).toBeDisabled();
+
+  act(() => {
+    winnerAccountTextBox.focus();
+    fireEvent.change(document.activeElement, { target: { value: 'sam.member@gmail.com' } });
+  });
+
   fireEvent.keyDown(winnerAccountTextBox, { key: 'ArrowDown' });
   fireEvent.keyDown(winnerAccountTextBox, { key: 'Enter' });
 
-  fireEvent.change(loserAccountTextBox, { target: 'sam.member2@gmail.com' });
+  act(() => {
+    loserAccountTextBox.focus();
+    fireEvent.change(document.activeElement, { target: { value: 'sam.member2@gmail.com' } });
+  });
   fireEvent.keyDown(loserAccountTextBox, { key: 'ArrowDown' });
   fireEvent.keyDown(loserAccountTextBox, { key: 'Enter' });
+
+  const deleteButtonAfter = screen.getByRole('button', { name: /merge accounts/i });
+  expect(deleteButtonAfter).not.toBeDisabled();
 
   const mergeButton = within(dialog).getByTestId('mergeButton');
   expect(mergeButton).toBeInTheDocument();

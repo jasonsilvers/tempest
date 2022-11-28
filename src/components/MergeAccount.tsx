@@ -61,8 +61,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                 options={userList ?? []}
                 loading={isLoading}
                 onChange={(_event, user: User) => {
-                  const userId = user.id;
-                  setFormState({ ...formState, winningAccountId: userId });
+                  setFormState({ ...formState, winningAccountId: user ? user.id : 0 });
                 }}
                 renderInput={(params: AutocompleteRenderInputParams) => {
                   return (
@@ -93,8 +92,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                 options={userList ?? []}
                 loading={isLoading}
                 onChange={(_event, user: User) => {
-                  const userId = user.id;
-                  setFormState({ ...formState, losingAccountId: userId });
+                  setFormState({ ...formState, losingAccountId: user ? user.id : 0 });
                 }}
                 renderInput={(params) => {
                   return (
@@ -124,6 +122,7 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                   onClick={submitForm}
                   form="merge-form"
                   data-testid="mergeButton"
+                  disabled={formState.losingAccountId === 0 || formState.winningAccountId === 0}
                 >
                   Merge Accounts
                 </Button>
