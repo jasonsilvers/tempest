@@ -1,6 +1,0 @@
-{
-  "video": false,
-  "baseUrl":"https://tempest.staging.dso.mil/",
-  "chromeWebSecurity": false,
-  "pluginsFile":false
-}
