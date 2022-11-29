@@ -91,18 +91,39 @@ describe('Merge User Account', () => {
     expect(status).toBe(403);
   });
 
-  test('should return 500, when error occurs', async () => {
-    mockMethodAndReturn(findUserById, userFromDb);
+  test('should return 500, when error occurs updating the losing account', async () => {
     const errorMsg = 'There was a problem merging the accounts, unable to update losing account, please try again.';
-    mockedUpdateUser.mockImplementation(() => {
-      throw new Error(errorMsg);
-    });
+    mockedFindByUserId.mockResolvedValueOnce(userFromDb).mockResolvedValueOnce(secondUserAccountFromDb);
+
+    mockedUpdateUser.mockRejectedValueOnce(new Error(errorMsg));
 
     const { status, data } = await testNextApi.post(mergeUserAccountApiHandler, {
       customHeaders: { Authorization: `Bearer ${adminJWT}` },
       body: {
-        winningAccountId: 1,
-        losingAccountId: 2,
+        winningAccountId: userFromDb?.id,
+        losingAccountId: secondUserAccountFromDb?.id,
+      },
+    });
+    expect(status).toBe(500);
+    expect(data).toStrictEqual({ message: errorMsg });
+  });
+
+  test('should return 500, when error occurs updating winnng account', async () => {
+    const errorMsg = 'There was a problem merging the accounts, unable to update winning account, please try again.';
+    mockedFindByUserId.mockResolvedValueOnce(userFromDb).mockResolvedValueOnce(secondUserAccountFromDb);
+
+    mockedUpdateUser
+      .mockResolvedValueOnce({
+        ...secondUserAccountFromDb,
+        email: `Archive_${secondUserAccountFromDb?.email}`,
+      } as unknown as User)
+      .mockRejectedValueOnce(new Error(errorMsg));
+
+    const { status, data } = await testNextApi.post(mergeUserAccountApiHandler, {
+      customHeaders: { Authorization: `Bearer ${adminJWT}` },
+      body: {
+        winningAccountId: userFromDb?.id,
+        losingAccountId: secondUserAccountFromDb?.id,
       },
     });
     expect(status).toBe(500);

@@ -224,11 +224,11 @@ async function seedDev() {
 
   const user6 = createUser('Austin', 'Powers', 'austin.powers@gmail.com');
 
-  await addUserToDb(user6, omrs.id, memberRole.id);
+  const createdUser6 = await addUserToDb(user6, omrs.id, memberRole.id);
 
   const user7 = createUser('Austin', 'Powers', 'austin.powers2@gmail.com');
 
-  await addUserToDb(user7, omrs.id, memberRole.id);
+  await addUserToDb(user7, null, memberRole.id);
 
   await addPPEItem(createdUser2.id);
   await addPPEItem(createdUser2.id);
@@ -265,6 +265,18 @@ async function seedDev() {
     trackingItemId: trackingItem2.id,
   };
 
+  const newMemberTrackingItem6 = {
+    userId: createdUser6.id,
+
+    trackingItemId: trackingItem2.id,
+  };
+
+  const newMemberTrackingItem7 = {
+    userId: createdUser6.id,
+
+    trackingItemId: trackingItem3.id,
+  };
+
   const memberTrackingItem1 = await prisma.memberTrackingItem.create({
     data: newMemberTrackingItem1,
   });
@@ -283,6 +295,14 @@ async function seedDev() {
 
   const memberTrackingItem5 = await prisma.memberTrackingItem.create({
     data: newMemberTrackingItem5,
+  });
+
+  const memberTrackingItem6 = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem6,
+  });
+
+  const memberTrackingItem7 = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem7,
   });
 
   await prisma.memberTrackingRecord.create({
@@ -413,6 +433,51 @@ async function seedDev() {
           userId_trackingItemId: {
             userId: createdUser2.id,
             trackingItemId: memberTrackingItem1.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 3,
+      memberTrackingItem: {
+        connect: {
+          userId_trackingItemId: {
+            userId: createdUser2.id,
+            trackingItemId: memberTrackingItem1.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 3,
+      memberTrackingItem: {
+        connect: {
+          userId_trackingItemId: {
+            userId: createdUser6.id,
+            trackingItemId: memberTrackingItem6.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 1,
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
+      memberTrackingItem: {
+        connect: {
+          userId_trackingItemId: {
+            userId: createdUser6.id,
+            trackingItemId: memberTrackingItem7.trackingItemId,
           },
         },
       },

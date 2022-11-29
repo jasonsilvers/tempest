@@ -83,25 +83,32 @@ describe('Can use admin features', () => {
     cy.contains(newTrainingItemTitle).should('exist');
   });
 
-  it('should be able to merge user accounts', () => {
+  it.only('should be able to merge user accounts', () => {
     cy.url().should('include', '/Dashboard');
 
     cy.findByRole('navigation', { name: /super/i }).should('be.visible');
     //wait for dashboard to load
 
     cy.findByRole('navigation', { name: /super/i }).click();
+    cy.wait(200);
     cy.findByRole('tab', { name: /users/i }).click();
 
     const emailToChange = 'austin.powers@gmail.com';
     const newEmail = 'austin.powers2@gmail.com';
 
-    cy.findByRole('button', { name: /merge/i }).click();
-    cy.get('form').within(($form) => {
-      cy.get('input#winnerAccount').type(`${emailToChange}{downArrow}{enter}`, {delay: 100})
-      cy.get('input#loserAccount').type(`${newEmail}{downArrow}{enter}`, {delay: 100})
-    })
+    cy.wait(200);
 
-    cy.findByRole('button', { name: /merge accounts/i }).should('exist');
+    cy.findByRole('button', { name: /merge/i }).click({ force: true });
+    cy.findByRole('button', { name: /merge accounts/i }).should('be.disabled');
+    cy.get('form').within(($form) => {
+      cy.get('input#winnerAccount').type(`${emailToChange}{downArrow}{enter}`, { delay: 100 });
+      cy.get('input#loserAccount').type(`${newEmail}{downArrow}{enter}`, { delay: 100 });
+    });
+
+    cy.findByRole('button', { name: /merge accounts/i }).should('be.enabled');
     cy.findByRole('button', { name: /merge accounts/i }).click();
+    cy.findByText('Accounts have successfully been merged').should('exist');
+    cy.findByText(emailToChange).should('not.exist');
+    cy.findByText(newEmail).should('exist');
   });
 });
