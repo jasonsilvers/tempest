@@ -60,7 +60,9 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                 getOptionLabel={(option: User) => option.email}
                 options={userList ?? []}
                 loading={isLoading}
-                onChange={(_event, user: User) => {
+                onChange={(_event, value) => {
+                  const user = value as unknown as User;
+
                   setFormState({ ...formState, winningAccountId: user ? user.id : 0 });
                 }}
                 renderInput={(params: AutocompleteRenderInputParams) => {
@@ -91,7 +93,8 @@ export const MergeAccount: React.FC<MergeAccountProps> = ({ isOpen, setIsOpen })
                 getOptionLabel={(option: User) => option.email}
                 options={userList ?? []}
                 loading={isLoading}
-                onChange={(_event, user: User) => {
+                onChange={(_event, value) => {
+                  const user = value as unknown as User;
                   setFormState({ ...formState, losingAccountId: user ? user.id : 0 });
                 }}
                 renderInput={(params) => {

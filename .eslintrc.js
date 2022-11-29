@@ -44,6 +44,12 @@ const lintReact = {
     'react/prop-types': 'off', // from react: Prevent missing props validation in a React component definition
     'react/jsx-props-no-spreading': 'off',
     'react/no-unescaped-entities': 'warn', // Turning on to catch possible mistakes
+    'react/no-unknown-property': [
+      'error',
+      {
+        ignore: ['tw', 'css'],
+      },
+    ],
   },
   settings: {
     pragma: 'React',
