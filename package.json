@@ -73,7 +73,6 @@
     "crypto-js": "^4.1.1",
     "dayjs": "^1.10.7",
     "file-to-array-buffer": "^1.0.0",
-    "formidable": "^2.0.1",
     "fuse.js": "^6.5.3",
     "jest-environment-jsdom": "^28.1.2",
     "joi": "^17.5.0",
