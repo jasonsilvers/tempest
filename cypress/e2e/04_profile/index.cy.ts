@@ -1,4 +1,4 @@
-import { getToday } from '../../support/utils';
+import { getToday, getTodayDay } from '../../support/utils';
 
 describe('Member role', () => {
   it('should show No items', () => {
@@ -7,7 +7,7 @@ describe('Member role', () => {
     cy.findAllByText(/nothing to show/i).should('have.length', 1);
   });
 
-  it('should add new training and be able to sign', () => {
+  it.only('should add new training and be able to sign', () => {
     cy.loginAsMember();
 
     const trackingItemName = 'GLOBAL - Fire Extinguisher';
@@ -20,7 +20,7 @@ describe('Member role', () => {
     cy.findByText(/no options/i).should('exist')
     cy.get('[data-testid="CloseIcon"]').click()
 
-    cy.addMemberTrackingRecord(trackingItemName, getToday());
+    cy.addMemberTrackingRecord(trackingItemName, getTodayDay());
     cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).click();

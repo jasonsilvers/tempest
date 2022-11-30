@@ -8,9 +8,11 @@ import {
   findUserByEmail,
   getAllDetachedUsers,
   getAllUsersFromUsersOrgCascade,
+  getUsers,
   LoggedInUser,
   UsersWithMemberTrackingRecords,
 } from '../../../repositories/userRepo';
+import { jwtParser } from '../../../utils/jwtUtils';
 
 export interface ITempestUsersApiRequest<T> extends NextApiRequestWithAuthorization<T> {
   query: {
@@ -25,6 +27,9 @@ const usersApiHandler = async (req: ITempestUsersApiRequest<LoggedInUser>, res: 
   if (method !== 'GET') {
     throw new MethodNotAllowedError(method);
   }
+  const jwt = jwtParser(req);
+  const isAdmin =
+    jwt['group-full'].includes('/tron/roles/admin') || jwt['group-full'].includes('/Product-Teams/Tempest');
 
   const ac = await getAc();
 
@@ -34,10 +39,14 @@ const usersApiHandler = async (req: ITempestUsersApiRequest<LoggedInUser>, res: 
     throw new PermissionError();
   }
 
-  let users: UsersWithMemberTrackingRecords;
+  if (req.query.detached) {
+    const detachedUsers = await getAllDetachedUsers();
+    return res.status(200).json({ users: detachedUsers });
+  }
 
-  if (req.query.detached === 'true') {
-    users = await getAllDetachedUsers();
+  let users: UsersWithMemberTrackingRecords;
+  if (isAdmin) {
+    users = await getUsers();
   } else {
     users = await getAllUsersFromUsersOrgCascade(req.user.organizationId);
   }

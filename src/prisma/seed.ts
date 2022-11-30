@@ -199,28 +199,36 @@ async function seedDev() {
   }
 
   for (let i = 0; i <= 10; i++) {
-    await createRandomUser(p1.id, memberRole ? memberRole.id : 2);
+    await createRandomUser(p1.id, memberRole.id);
   }
 
   const user1 = createUser('Joe', 'Admin', 'joe.admin@gmail.com');
 
-  await addUserToDb(user1, mdg.id, adminRole ? adminRole.id : 2);
+  await addUserToDb(user1, mdg.id, adminRole.id);
 
   const user2 = createUser('Sam', 'Member', 'sam.member@gmail.com');
 
-  const createdUser2 = await addUserToDb(user2, execStaff.id, memberRole ? memberRole.id : 2);
+  const createdUser2 = await addUserToDb(user2, execStaff.id, memberRole.id);
 
   const user3 = createUser('Frank', 'Monitor', 'frank.monitor@gmail.com');
 
-  const createdUser3 = await addUserToDb(user3, mdg.id, monitorRole ? monitorRole.id : 3);
+  const createdUser3 = await addUserToDb(user3, mdg.id, monitorRole.id);
 
   const user4 = createUser('Scarlet', 'Member', 'scarlet.member@gmail.com');
 
-  const createdUser4 = await addUserToDb(user4, omrs.id, memberRole ? memberRole.id : 2);
+  const createdUser4 = await addUserToDb(user4, omrs.id, memberRole.id);
 
   const user5 = createUser('Tom', 'ProgramManager', 'tom.ProgramManager@gmail.com');
 
-  await addUserToDb(user5, p1.id, ProgramManagerRole ? ProgramManagerRole.id : 5);
+  await addUserToDb(user5, p1.id, ProgramManagerRole.id);
+
+  const user6 = createUser('Austin', 'Powers', 'austin.powers@gmail.com');
+
+  const createdUser6 = await addUserToDb(user6, omrs.id, memberRole.id);
+
+  const user7 = createUser('Austin', 'Powers', 'austin.powers2@gmail.com');
+
+  await addUserToDb(user7, null, memberRole.id);
 
   await addPPEItem(createdUser2.id);
   await addPPEItem(createdUser2.id);
@@ -257,6 +265,18 @@ async function seedDev() {
     trackingItemId: trackingItem2.id,
   };
 
+  const newMemberTrackingItem6 = {
+    userId: createdUser6.id,
+
+    trackingItemId: trackingItem2.id,
+  };
+
+  const newMemberTrackingItem7 = {
+    userId: createdUser6.id,
+
+    trackingItemId: trackingItem3.id,
+  };
+
   const memberTrackingItem1 = await prisma.memberTrackingItem.create({
     data: newMemberTrackingItem1,
   });
@@ -275,6 +295,14 @@ async function seedDev() {
 
   const memberTrackingItem5 = await prisma.memberTrackingItem.create({
     data: newMemberTrackingItem5,
+  });
+
+  const memberTrackingItem6 = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem6,
+  });
+
+  const memberTrackingItem7 = await prisma.memberTrackingItem.create({
+    data: newMemberTrackingItem7,
   });
 
   await prisma.memberTrackingRecord.create({
@@ -405,6 +433,51 @@ async function seedDev() {
           userId_trackingItemId: {
             userId: createdUser2.id,
             trackingItemId: memberTrackingItem1.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 3,
+      memberTrackingItem: {
+        connect: {
+          userId_trackingItemId: {
+            userId: createdUser2.id,
+            trackingItemId: memberTrackingItem1.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 3,
+      memberTrackingItem: {
+        connect: {
+          userId_trackingItemId: {
+            userId: createdUser6.id,
+            trackingItemId: memberTrackingItem6.trackingItemId,
+          },
+        },
+      },
+    },
+  });
+
+  await prisma.memberTrackingRecord.create({
+    data: {
+      order: 1,
+      completedDate: getDate(5),
+      authoritySignedDate: getDate(2),
+      traineeSignedDate: getDate(2),
+      memberTrackingItem: {
+        connect: {
+          userId_trackingItemId: {
+            userId: createdUser6.id,
+            trackingItemId: memberTrackingItem7.trackingItemId,
           },
         },
       },

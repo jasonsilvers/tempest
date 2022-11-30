@@ -37,6 +37,7 @@ const bulkTrackingCreateHandler = async (req: IExtendedNextApiRequest, res: Next
   const mtiPermission = ac?.can(req.user.role?.name).createAny(EResource.MEMBER_TRACKING_ITEM);
   const mtrPermission = ac?.can(req.user.role?.name).createAny(EResource.MEMBER_TRACKING_RECORD);
 
+  //TODO: This should be an AND
   if (!mtiPermission.granted || !mtrPermission.granted) {
     throw new PermissionError();
   }

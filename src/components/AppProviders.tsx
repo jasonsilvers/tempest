@@ -3,8 +3,8 @@ import { UserContextProvider } from '@tron/nextjs-auth-p1'; // auth lib
 import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import { Button } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import AdapterDateFns from '@mui/lab/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 import { QueryProvider } from './QueryProvider';
 import { AppProps } from 'next/dist/shared/lib/router/router';
@@ -29,7 +29,7 @@ function AppProviders({ children, pageProps }: { children: React.ReactNode; page
   return (
     <ThemeProvider theme={theme}>
       <StyledEngineProvider injectFirst>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
           <SnackbarProvider
             maxSnack={3}
             ref={notistackRef}

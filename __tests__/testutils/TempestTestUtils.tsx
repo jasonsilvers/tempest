@@ -7,8 +7,8 @@ import { SnackbarProvider } from 'notistack';
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import userEvent from '@testing-library/user-event';
 import { EUri } from '../../src/const/enums';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import AdapterDateFns from '@mui/lab/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import { Button } from '@mui/material';
 
@@ -64,7 +64,7 @@ const createWrapper = (queryClient?: QueryClient) => {
     return (
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
             <SnackbarProvider
               maxSnack={3}
               ref={notistackRef}
@@ -86,7 +86,7 @@ const Wrapper: React.FC<IWrapperProps> = (props) => {
   return (
     <ThemeProvider theme={theme}>
       <StyledEngineProvider injectFirst>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
           <SnackbarProvider
             maxSnack={3}
             ref={notistackRef}

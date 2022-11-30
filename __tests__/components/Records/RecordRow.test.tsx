@@ -178,8 +178,8 @@ test('should change completion date', async () => {
 
   const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
   userEvent.type(datePicker, todayDate);
-  const chosenDate = await screen.findByRole('button', { name: todayDate }); // choose any date that the calender shows
-  fireEvent.click(chosenDate);
+  const chosenDate = await screen.findAllByRole('gridcell', { name: /1/i }); // choose any date that the calender shows
+  fireEvent.click(chosenDate[0]);
 
   const naDiv = screen.getByText(/n\/a/i);
 
@@ -222,8 +222,8 @@ test('should alert user that signatures will be removed', async () => {
 
   const datePicker = await screen.findByRole('button', { name: 'calendar-open-button' });
   userEvent.type(datePicker, date);
-  const chosenDate = await screen.findByRole('button', { name: date }); // choose any date that the calender shows
-  fireEvent.click(chosenDate);
+  const chosenDate = await screen.findAllByRole('gridcell', { name: /1/i }); // choose any date that the calender shows
+  fireEvent.click(chosenDate[0]);
 
   const naDiv = screen.getByText(/n\/a/i);
 

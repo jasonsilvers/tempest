@@ -5,7 +5,7 @@ import 'twin.macro';
 import { useOrgsAll } from '../hooks/api/organizations';
 
 type OrganizationSelectProps = {
-  onChange: (event: SyntheticEvent<Element, Event>, value: Organization) => void;
+  onChange: (event: SyntheticEvent<Element, Event>, value: (string | Organization)[]) => void;
 };
 
 export function OrganizationSelect({ onChange }: OrganizationSelectProps) {
@@ -18,8 +18,10 @@ export function OrganizationSelect({ onChange }: OrganizationSelectProps) {
       getOptionLabel={(option: Organization) => option.name}
       onChange={onChange}
       groupBy={(option) => {
-        if (option.parentId) {
-          return orgsQuery.data.find((org) => org.id === option.parentId).shortName;
+        if (typeof option !== 'string') {
+          if (option.parentId) {
+            return orgsQuery.data.find((org) => org.id === option.parentId).shortName;
+          }
         }
 
         return '';
