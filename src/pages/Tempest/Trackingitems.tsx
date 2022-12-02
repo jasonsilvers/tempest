@@ -5,17 +5,17 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { QueryClient } from 'react-query';
 import { dehydrate } from 'react-query/hydration';
 import 'twin.macro';
-import { AddIcon } from '../assets/Icons';
-import { a11yProps, TabPanel } from '../components/Tabs';
-import { ActiveItems } from '../components/TrainingItems/ActiveItems';
-import { ArchivedItems } from '../components/TrainingItems/ArchivedItems';
-import { AddTrackingItemDialog } from '../components/TrainingItems/Dialog/AddTrackingItemDialog';
-import { EFuncAction, EResource } from '../const/enums';
-import { useOrgsLoggedInUsersOrgAndDown } from '../hooks/api/organizations';
-import { tiQueryKeys, useTrackingItems, useUpdateTrackingItem } from '../hooks/api/trackingItem';
-import { usePermissions } from '../hooks/usePermissions';
-import { getTrackingItems } from '../repositories/trackingItemRepo';
-import { determineOrgsWithCatalogs } from '../utils/determineOrgsWithCatalogs';
+import { AddIcon } from '../../assets/Icons';
+import { a11yProps, TabPanel } from '../../components/Tabs';
+import { ActiveItems } from '../../components/TrainingItems/ActiveItems';
+import { ArchivedItems } from '../../components/TrainingItems/ArchivedItems';
+import { AddTrackingItemDialog } from '../../components/TrainingItems/Dialog/AddTrackingItemDialog';
+import { EFuncAction, EResource } from '../../const/enums';
+import { useOrgsLoggedInUsersOrgAndDown } from '../../hooks/api/organizations';
+import { tiQueryKeys, useTrackingItems, useUpdateTrackingItem } from '../../hooks/api/trackingItem';
+import { usePermissions } from '../../hooks/usePermissions';
+import { getTrackingItems } from '../../repositories/trackingItemRepo';
+import { determineOrgsWithCatalogs } from '../../utils/determineOrgsWithCatalogs';
 
 const filterRows = (trackingItems: TrackingItem[], selectedCatalog: number) => {
   return trackingItems.filter((ti) => {

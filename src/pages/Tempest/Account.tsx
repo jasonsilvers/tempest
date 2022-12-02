@@ -22,11 +22,11 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
-import { ERole } from '../const/enums';
-import { ranks } from '../const/ranks';
-import { useOrgsAll } from '../hooks/api/organizations';
-import { useUpdateUser } from '../hooks/api/users';
-import { LoggedInUser } from '../repositories/userRepo';
+import { ERole } from '../../const/enums';
+import { ranks } from '../../const/ranks';
+import { useOrgsAll } from '../../hooks/api/organizations';
+import { useUpdateUser } from '../../hooks/api/users';
+import { LoggedInUser } from '../../repositories/userRepo';
 
 interface IStyledTabProps {
   label: string;

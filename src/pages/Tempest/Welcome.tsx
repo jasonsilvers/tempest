@@ -2,10 +2,10 @@ import { Button } from '@mui/material';
 import { useUser, withPageAuth } from '@tron/nextjs-auth-p1';
 import { useRouter } from 'next/router';
 import 'twin.macro';
-import { UpdateUsersOrg } from '../components/UpdateUsersOrg';
-import { usePageLogging } from '../hooks/usePageLogging';
-import { Dialog } from '../lib/ui';
-import { LoggedInUser } from '../repositories/userRepo';
+import { UpdateUsersOrg } from '../../components/UpdateUsersOrg';
+import { usePageLogging } from '../../hooks/usePageLogging';
+import { Dialog } from '../../lib/ui';
+import { LoggedInUser } from '../../repositories/userRepo';
 
 const WelcomePage = () => {
   const { user, isLoading } = useUser<LoggedInUser>();

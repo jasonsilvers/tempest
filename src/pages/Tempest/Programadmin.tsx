@@ -1,13 +1,13 @@
 import { Card, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
-import { a11yProps, TabPanel } from '../components/Tabs';
-import { EFuncAction, EResource } from '../const/enums';
-import { usePermissions } from '../hooks/usePermissions';
+import { a11yProps, TabPanel } from '../../components/Tabs';
+import { EFuncAction, EResource } from '../../const/enums';
+import { usePermissions } from '../../hooks/usePermissions';
 
 import 'twin.macro';
-import { OrganizationList } from '../components/ProgramAdmin/OrganizationList';
-import { UsersList } from '../components/ProgramAdmin/UsersList';
-import { useUsers } from '../hooks/api/users';
+import { OrganizationList } from '../../components/ProgramAdmin/OrganizationList';
+import { UsersList } from '../../components/ProgramAdmin/UsersList';
+import { useUsers } from '../../hooks/api/users';
 
 function ProgramAdminPage() {
   const { user: loggedInUser, permissionCheck, isLoading } = usePermissions();

@@ -2,7 +2,7 @@ import { TablePagination } from '@mui/material';
 import React, { useEffect } from 'react';
 import { UseQueryResult } from 'react-query';
 import tw from 'twin.macro';
-import { IDashboardState } from '../../pages/Dashboard';
+import { IDashboardState } from '../../pages/Tempest/Dashboard';
 import { LoggedInUser, UserWithAll } from '../../repositories/userRepo';
 import DashboardPopMenu from './DashboardPopMenu';
 import { EStatus } from './Enums';

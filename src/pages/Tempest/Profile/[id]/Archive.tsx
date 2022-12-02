@@ -1,17 +1,17 @@
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
-import { ProfileHeader } from '../../../components/Profile/ProfileHeader';
-import { useMember } from '../../../hooks/api/users';
-import { findUserById, UserWithAll } from '../../../repositories/userRepo';
+import { ProfileHeader } from '../../../../components/Profile/ProfileHeader';
+import { useMember } from '../../../../hooks/api/users';
+import { findUserById, UserWithAll } from '../../../../repositories/userRepo';
 import 'twin.macro';
 import { Button, Card, Typography } from '@mui/material';
-import MemberItemTracker from '../../../components/Records/MemberRecordTracker/MemberItemTracker';
-import { ECategorie, EFuncAction, EMtrVariant, EResource } from '../../../const/enums';
-import Tab from '../../../components/Records/MemberRecordTracker/Tab';
-import { BreadCrumbs } from '../../../components/Breadcrumbs';
-import { usePermissions } from '../../../hooks/usePermissions';
-import { FolderSharedIcon } from '../../../assets/Icons';
+import MemberItemTracker from '../../../../components/Records/MemberRecordTracker/MemberItemTracker';
+import { ECategorie, EFuncAction, EMtrVariant, EResource } from '../../../../const/enums';
+import Tab from '../../../../components/Records/MemberRecordTracker/Tab';
+import { BreadCrumbs } from '../../../../components/Breadcrumbs';
+import { usePermissions } from '../../../../hooks/usePermissions';
+import { FolderSharedIcon } from '../../../../assets/Icons';
 
 const Archive: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
   const {

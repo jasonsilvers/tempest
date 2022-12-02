@@ -4,18 +4,18 @@ import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import 'twin.macro';
-import { AddIcon, ArchiveIcon } from '../../../assets/Icons';
-import { BreadCrumbs } from '../../../components/Breadcrumbs';
-import { ProfileHeader } from '../../../components/Profile/ProfileHeader';
-import { AddMemberTrackingItemDialog } from '../../../components/Records/Dialog/AddMemberTrackingItemDialog';
-import MemberItemTracker from '../../../components/Records/MemberRecordTracker/MemberItemTracker';
-import { MemberReport } from '../../../components/Records/MemberRecordTracker/MemberReport';
-import Tab from '../../../components/Records/MemberRecordTracker/Tab';
-import { ECategorie, EFuncAction, EMtrVariant, EResource } from '../../../const/enums';
-import { useMember } from '../../../hooks/api/users';
-import { usePermissions } from '../../../hooks/usePermissions';
-import { findUserByIdReturnAllIncludes, UserWithAll } from '../../../repositories/userRepo';
-import { QuickAssign } from '../../../components/Records/MemberRecordTracker/QuickAssign';
+import { AddIcon, ArchiveIcon } from '../../../../assets/Icons';
+import { BreadCrumbs } from '../../../../components/Breadcrumbs';
+import { ProfileHeader } from '../../../../components/Profile/ProfileHeader';
+import { AddMemberTrackingItemDialog } from '../../../../components/Records/Dialog/AddMemberTrackingItemDialog';
+import MemberItemTracker from '../../../../components/Records/MemberRecordTracker/MemberItemTracker';
+import { MemberReport } from '../../../../components/Records/MemberRecordTracker/MemberReport';
+import Tab from '../../../../components/Records/MemberRecordTracker/Tab';
+import { ECategorie, EFuncAction, EMtrVariant, EResource } from '../../../../const/enums';
+import { useMember } from '../../../../hooks/api/users';
+import { usePermissions } from '../../../../hooks/usePermissions';
+import { findUserByIdReturnAllIncludes, UserWithAll } from '../../../../repositories/userRepo';
+import { QuickAssign } from '../../../../components/Records/MemberRecordTracker/QuickAssign';
 
 const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberData }) => {
   const {

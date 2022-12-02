@@ -1,8 +1,8 @@
 import { Card, Checkbox, Divider, Fab, IconButton, TextField } from '@mui/material';
 import { withPageAuth } from '@tron/nextjs-auth-p1';
 import debounce from 'lodash.debounce';
-import { ProfileHeader } from '../../components/Profile/ProfileHeader';
-import { findUserById, UserWithAll } from '../../repositories/userRepo';
+import { ProfileHeader } from '../../../components/Profile/ProfileHeader';
+import { findUserById, UserWithAll } from '../../../repositories/userRepo';
 
 import { joiResolver } from '@hookform/resolvers/joi';
 import { PersonalProtectionEquipmentItem } from '@prisma/client';
@@ -12,10 +12,10 @@ import { useRouter } from 'next/router';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import 'twin.macro';
-import { AddIcon, DeleteIcon } from '../../assets/Icons';
-import { useCreatePpeItem, useDeletePpeItem, usePpeItems, useUpdatePpeItem } from '../../hooks/api/ppe';
-import { useMember } from '../../hooks/api/users';
-import { LoadingSpinner } from '../../lib/ui';
+import { AddIcon, DeleteIcon } from '../../../assets/Icons';
+import { useCreatePpeItem, useDeletePpeItem, usePpeItems, useUpdatePpeItem } from '../../../hooks/api/ppe';
+import { useMember } from '../../../hooks/api/users';
+import { LoadingSpinner } from '../../../lib/ui';
 
 const ppeItemSchema = Joi.object({
   id: Joi.number(),
