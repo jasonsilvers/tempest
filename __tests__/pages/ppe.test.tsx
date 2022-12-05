@@ -2,7 +2,7 @@ import mockRouter from 'next-router-mock';
 import singletonRouter from 'next/router';
 import React from 'react';
 import 'whatwg-fetch';
-import PpePage from '../../src/pages/Ppe/[id]';
+import PpePage from '../../src/pages/Tempest/Ppe/[id]';
 import { bobJones } from '../testutils/mocks/fixtures';
 import { rest, server } from '../testutils/mocks/msw';
 import { fireEvent, rtlRender, waitFor, Wrapper } from '../testutils/TempestTestUtils';

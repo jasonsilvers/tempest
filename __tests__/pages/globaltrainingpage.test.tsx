@@ -1,4 +1,4 @@
-import TrackingItemPage, { getServerSideProps } from '../../src/pages/Trackingitems';
+import TrackingItemPage, { getServerSideProps } from '../../src/pages/Tempest/Trackingitems';
 import {
   fireEvent,
   render,
@@ -353,8 +353,6 @@ test('should allow edit description', async () => {
   const descriptionCell = await screen.findByRole('cell', {
     name: /test description/i,
   });
-
-  screen.debug(descriptionCell);
 
   fireEvent.doubleClick(descriptionCell);
 

@@ -6,7 +6,7 @@ import { rtlRender, waitFor, Wrapper } from '../testutils/TempestTestUtils';
 import React from 'react';
 import 'whatwg-fetch';
 
-import Archive, { getServerSideProps } from '../../src/pages/Profile/[id]/Archive';
+import Archive, { getServerSideProps } from '../../src/pages/Tempest/Profile/[id]/Archive';
 import { mockMethodAndReturn } from '../testutils/mocks/repository';
 import { findUserById } from '../../src/repositories/userRepo';
 import { GetServerSidePropsContext } from 'next';

@@ -1,7 +1,7 @@
 import React from 'react';
 import 'whatwg-fetch';
 import { EUri } from '../../src/const/enums';
-import Accountpage from '../../src/pages/Account';
+import Accountpage from '../../src/pages/Tempest/Account';
 import { andrewMonitor } from '../testutils/mocks/fixtures';
 import { rest, server } from '../testutils/mocks/msw';
 import { fireEvent, render, screen, userEvent, waitFor } from '../testutils/TempestTestUtils';

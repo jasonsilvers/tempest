@@ -6,7 +6,7 @@ import React from 'react';
 import 'whatwg-fetch';
 import { EUri } from '../../src/const/enums';
 import { useMemberTrackingItemsForUser } from '../../src/hooks/api/users';
-import Profile, { getServerSideProps } from '../../src/pages/Profile/[id]';
+import Profile, { getServerSideProps } from '../../src/pages/Tempest/Profile/[id]';
 import { findUserByIdReturnAllIncludes } from '../../src/repositories/userRepo';
 import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
 import { rest, server } from '../testutils/mocks/msw';
