@@ -52,7 +52,7 @@ const Onboard: FC = () => {
         enqueueSnackbar('Organization Created', { variant: 'success' });
         setDialogIsOpen(false);
         refreshUser();
-        router.push('/Programadmin');
+        router.push('/Tempest/Programadmin');
       },
     });
   };
@@ -69,7 +69,7 @@ const Onboard: FC = () => {
             onClick={() => {
               resetValues();
               setDialogIsOpen(false);
-              router.push('/');
+              router.push('/Tempest');
             }}
           >
             <ArrowBackIcon tw="pr-1" /> BACK

@@ -45,7 +45,7 @@ const Archive: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
         <div tw="pb-10 flex items-center">
           <BreadCrumbs text="Archives" />
           <div tw="mr-auto"></div>
-          <Button color="secondary" size="medium" onClick={() => push(`/Profile/${userId}`)}>
+          <Button color="secondary" size="medium" onClick={() => push(`/Tempest/Profile/${userId}`)}>
             <FolderSharedIcon sx={{ mr: 1 }} />
             View Training Record
           </Button>

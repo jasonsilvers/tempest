@@ -56,7 +56,7 @@ const Profile: React.FC<{ initialMemberData: UserWithAll }> = ({ initialMemberDa
         <div tw="pb-10 flex items-center">
           <BreadCrumbs text="Training Record" />
           <div tw="mr-auto"></div>
-          <Button color="secondary" size="medium" onClick={() => push(`/Profile/${userId}/Archive`)}>
+          <Button color="secondary" size="medium" onClick={() => push(`/Tempest/Profile/${userId}/Archive`)}>
             <ArchiveIcon sx={{ mr: 1 }} />
             View Archive
           </Button>
