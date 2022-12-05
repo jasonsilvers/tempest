@@ -39,7 +39,7 @@ const WelcomePage = () => {
                     <Button
                       sx={{ height: '56px' }}
                       disabled={!user?.organizationId}
-                      onClick={() => router.push('/')}
+                      onClick={() => router.push('/Tempest')}
                       size="large"
                       color="secondary"
                       variant="outlined"

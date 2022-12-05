@@ -36,29 +36,29 @@ Cypress.Commands.add('cleanUpRecords', () => {
 
 Cypress.Commands.add('loginAsMonitor', () => {
   const baseUrl = Cypress.config('baseUrl');
-  cy.intercept(baseUrl + 'api/**', (req) => {
+  cy.intercept(baseUrl + '*/api/**', (req) => {
     req.headers['Authorization'] = `Bearer ${monitorJWT}`;
   });
 
-  cy.visit(baseUrl);
+  cy.visit(baseUrl + '/Tempest');
 });
 
 Cypress.Commands.add('loginAsMember', () => {
   const baseUrl = Cypress.config('baseUrl');
-  cy.intercept(baseUrl + 'api/**', (req) => {
+  cy.intercept(baseUrl + '*/api/**', (req) => {
     req.headers['Authorization'] = `Bearer ${memberJWT}`;
   });
 
-  cy.visit(baseUrl);
+  cy.visit(baseUrl + '/Tempest');
 });
 
 Cypress.Commands.add('loginAsMemberWithRecords', () => {
   const baseUrl = Cypress.config('baseUrl');
-  cy.intercept(baseUrl + 'api/**', (req) => {
+  cy.intercept(baseUrl + '*/api/**', (req) => {
     req.headers['Authorization'] = `Bearer ${memberWithRecordsJWT}`;
   });
 
-  cy.visit(baseUrl);
+  cy.visit(baseUrl + '/Tempest');
 });
 
 Cypress.Commands.add('addMemberTrackingRecord', (trackingItemName: string, date: string) => {

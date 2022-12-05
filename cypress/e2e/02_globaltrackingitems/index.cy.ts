@@ -3,11 +3,11 @@ import { monitorJWT } from '../../fixtures/jwt';
 describe('Can view Global Tracking Items', () => {
   beforeEach(() => {
     const baseUrl = Cypress.config('baseUrl');
-    cy.intercept(baseUrl + 'api/*', (req) => {
+    cy.intercept(baseUrl + '*/api/*', (req) => {
       req.headers['Authorization'] = `Bearer ${monitorJWT}`;
     });
 
-    cy.visit(baseUrl);
+    cy.visit(baseUrl + '/Tempest');
     cy.url().should('include', '/Dashboard');
     cy.findByRole('navigation', { name: /global-training-catalog/ }).click();
     cy.url().should('include', '/Trackingitems');
