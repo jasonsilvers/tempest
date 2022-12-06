@@ -60,13 +60,13 @@ export default function DashboardPopMenu({ userId }: { userId: number }) {
         onClose={handleClose}
       >
         <MenuItem aria-label="view-member-profile" onClick={handleClose}>
-          <span onClick={() => router.push(`/Profile/${userId}`)}>Training Record</span>
+          <span onClick={() => router.push(`/Tempest/Profile/${userId}`)}>Training Record</span>
         </MenuItem>
         <MenuItem aria-label="view-member-profile-archive" onClick={handleClose}>
-          <span onClick={() => router.push(`/Profile/${userId}/Archive`)}>Archives</span>
+          <span onClick={() => router.push(`/Tempest/Profile/${userId}/Archive`)}>Archives</span>
         </MenuItem>
         <MenuItem aria-label="view-member-ppe" onClick={handleClose}>
-          <span onClick={() => router.push(`/Ppe/${userId}`)}>View PPE</span>
+          <span onClick={() => router.push(`/Tempest/Ppe/${userId}`)}>View PPE</span>
         </MenuItem>
       </Menu>
     </div>

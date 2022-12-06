@@ -21,6 +21,15 @@ module.exports = withBundleAnalyzer({
 
     return config;
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/Tempest',
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

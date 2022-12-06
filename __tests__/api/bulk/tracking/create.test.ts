@@ -3,7 +3,7 @@ import { findUserByEmail } from '../../../../src/repositories/userRepo';
 import { grants } from '../../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../../testutils/mocks/repository';
 import { testNextApi } from '../../../testutils/NextAPIUtils';
-import bulkTrackingCreateHandler from '../../../../src/pages/api/bulk/tracking/create';
+import bulkTrackingCreateHandler from '../../../../src/pages/api/tempest/bulk/tracking/create';
 import { createJob, createJobResults, findJobResultsByJobId } from '../../../../src/repositories/jobRepo';
 import { trackingCreate } from '../../../../src/utils/bulk';
 

@@ -4,7 +4,7 @@ import { UseQueryResult } from 'react-query';
 import 'whatwg-fetch';
 import { UsersList } from '../../../src/components/ProgramAdmin/UsersList';
 import { ERole, EUri } from '../../../src/const/enums';
-import ProgramAdmin from '../../../src/pages/Programadmin';
+import ProgramAdmin from '../../../src/pages/Tempest/Programadmin';
 import { UserWithAll } from '../../../src/repositories/userRepo';
 import { rest, server } from '../../testutils/mocks/msw';
 import {

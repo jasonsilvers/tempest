@@ -6,7 +6,7 @@ import React from 'react';
 import 'whatwg-fetch';
 import { EUri } from '../../src/const/enums';
 import { useMemberTrackingItemsForUser } from '../../src/hooks/api/users';
-import Profile, { getServerSideProps } from '../../src/pages/Profile/[id]';
+import Profile, { getServerSideProps } from '../../src/pages/Tempest/Profile/[id]';
 import { findUserByIdReturnAllIncludes } from '../../src/repositories/userRepo';
 import { andrewMonitor, bobJones } from '../testutils/mocks/fixtures';
 import { rest, server } from '../testutils/mocks/msw';
@@ -289,16 +289,16 @@ beforeAll(() => {
     onUnhandledRequest: 'warn',
   });
   server.use(
-    rest.get('/api/users/123', (req, res, ctx) => {
+    rest.get('/api/tempest/users/123', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(bobJones));
     }),
-    rest.get('/api/users/321', (req, res, ctx) => {
+    rest.get('/api/tempest/users/321', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
     }),
-    rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
+    rest.get('/api/tempest/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(userWithCompletedTrainings));
     }),
-    rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+    rest.get('/api/tempest/users/123/membertrackingitems/all', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(userWithUpcomingAndInProgressTraining));
     })
   );
@@ -398,7 +398,7 @@ describe('Testing profile page', () => {
 
   it('opens the add new training dialog modal', async () => {
     server.use(
-      rest.get('/api/users/123', (req, res, ctx) => {
+      rest.get('/api/tempest/users/123', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(bobJones));
       }),
 
@@ -482,7 +482,7 @@ describe('Testing Member Report Widget on profile page', () => {
 
   test('should render detailed report', async () => {
     server.use(
-      rest.get('/api/ppeitems', (req, res, ctx) => {
+      rest.get('/api/tempest/ppeitems', (req, res, ctx) => {
         return res(
           ctx.json({
             ppeItems: [testPPEItem, testPPEItem2],
@@ -568,10 +568,10 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
     await waitForLoadingToFinish();
 
     server.use(
-      rest.get('/api/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
+      rest.get('/api/tempest/users/123/membertrackingitems/in_progress', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(userWithCompletedTrainings));
       }),
-      rest.post('/api/membertrackingrecords', (req, res, ctx) => {
+      rest.post('/api/tempest/membertrackingrecords', (req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.json({
@@ -592,7 +592,7 @@ describe('Testing the Quick Assign Wigdet on the profile page', () => {
 
   test('should show zero training if user has no upcoming/overdue trainings', async () => {
     server.use(
-      rest.get('/api/users/123/membertrackingitems/all', (req, res, ctx) => {
+      rest.get('/api/tempest/users/123/membertrackingitems/all', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(userWithCompletedTrainings));
       })
     );

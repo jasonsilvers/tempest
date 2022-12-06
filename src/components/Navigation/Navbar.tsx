@@ -45,7 +45,7 @@ const AdminNavigation = ({
         <h3 tw="text-[#7B7B7B]">Monitor tools</h3>
       </div>
       {canViewDashboard ? (
-        <Link goToUrl="/Dashboard" icon={<DashboardIcon fontSize="medium" />}>
+        <Link goToUrl="/Tempest/Dashboard" icon={<DashboardIcon fontSize="medium" />}>
           <div role="navigation" aria-label="dashboard">
             Dashboard
           </div>
@@ -53,7 +53,7 @@ const AdminNavigation = ({
       ) : null}
 
       {canCreateGlobalTrackingItem ? (
-        <Link goToUrl="/Trackingitems" icon={<AssignmentIcon fontSize="medium" />}>
+        <Link goToUrl="/Tempest/Trackingitems" icon={<AssignmentIcon fontSize="medium" />}>
           <div role="navigation" aria-label="global-training-catalog">
             Training Catalog
           </div>
@@ -67,7 +67,7 @@ const AdminNavigation = ({
         </Link>
       ) : null}
       {canViewProgramAdminPage ? (
-        <Link goToUrl="/Programadmin" icon={<SecurityIcon fontSize="medium" />}>
+        <Link goToUrl="/Tempest/Programadmin" icon={<SecurityIcon fontSize="medium" />}>
           <div role="navigation" aria-label="program-admin">
             Admin
           </div>
@@ -116,23 +116,23 @@ const Navbar: React.FC = () => {
       <div tw="text-secondary">
         {canViewMyProfile?.granted ? (
           <>
-            <Link goToUrl={`/Profile/${user.id}`} icon={<FolderSharedIcon fontSize="medium" />}>
+            <Link goToUrl={`/Tempest/Profile/${user.id}`} icon={<FolderSharedIcon fontSize="medium" />}>
               <div role="navigation" aria-label="training-record">
                 Training Record
               </div>
             </Link>
-            <Link goToUrl={`/Profile/${user.id}/Archive`} icon={<ArchiveIcon fontSize="medium" />}>
+            <Link goToUrl={`/Tempest/Profile/${user.id}/Archive`} icon={<ArchiveIcon fontSize="medium" />}>
               <div role="navigation" aria-label="training-record-archive">
                 Archive
               </div>
             </Link>
-            <Link goToUrl={`/Ppe/${user.id}`} icon={<MasksIcon fontSize="medium" />}>
+            <Link goToUrl={`/Tempest/Ppe/${user.id}`} icon={<MasksIcon fontSize="medium" />}>
               <div role="navigation" aria-label="ppe">
                 Personal Protection Equipment
               </div>
             </Link>
 
-            <Link goToUrl={`/Account`} icon={<SettingsIcon fontSize="medium" />}>
+            <Link goToUrl={`/Tempest/Account`} icon={<SettingsIcon fontSize="medium" />}>
               <div role="navigation" aria-label="account-settings">
                 Account Settings
               </div>

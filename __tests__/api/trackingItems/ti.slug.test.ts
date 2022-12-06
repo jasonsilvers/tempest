@@ -2,7 +2,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import trackingItemSlugHandler from '../../../src/pages/api/trackingitems/[...slug]';
+import trackingItemSlugHandler from '../../../src/pages/api/tempest/trackingitems/[...slug]';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import { findTrackingByIdIncludeCount, updateTrackingItem } from '../../../src/repositories/trackingItemRepo';
 import { updateManyMemberTrackingItemsByTrackingItemId } from '../../../src/repositories/memberTrackingRepo';

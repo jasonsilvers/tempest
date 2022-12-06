@@ -7,7 +7,7 @@ import React from 'react';
 import 'whatwg-fetch';
 import { QueryProvider } from '../../src/components/QueryProvider';
 import { ERole, EUri } from '../../src/const/enums';
-import Dashboard from '../../src/pages/Dashboard';
+import Dashboard from '../../src/pages/Tempest/Dashboard';
 
 import { LoggedInUser } from '../../src/repositories/userRepo';
 import { bobJones } from '../testutils/mocks/fixtures';

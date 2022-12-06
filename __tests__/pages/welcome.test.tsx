@@ -1,5 +1,5 @@
 import { render, waitFor, fireEvent, waitForLoadingToFinish } from '../testutils/TempestTestUtils';
-import WelcomePage from '../../src/pages/Welcome';
+import WelcomePage from '../../src/pages/Tempest/Welcome';
 import { rest, server } from '../testutils/mocks/msw';
 import { ERole, EUri } from '../../src/const/enums';
 import { bobJones } from '../testutils/mocks/fixtures';
@@ -95,5 +95,5 @@ it('should route to index when clicking get started', async () => {
   fireEvent.click(button);
 
   expect(push).toBeCalledTimes(1);
-  expect(push).toBeCalledWith('/');
+  expect(push).toBeCalledWith('/Tempest');
 });

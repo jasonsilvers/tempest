@@ -4,11 +4,11 @@ describe('Monitor Role', () => {
   it('Visits the site, should show dashboard and Global Training Catalog', () => {
     const baseUrl = Cypress.config('baseUrl');
 
-    cy.intercept(baseUrl + 'api/*', (req) => {
+    cy.intercept(baseUrl + '*/api/**', (req) => {
       req.headers['Authorization'] = `Bearer ${monitorJWT}`;
     });
 
-    cy.visit(baseUrl);
+    cy.visit(baseUrl + '/Tempest');
 
     cy.url().should('include', '/Dashboard');
 
@@ -23,11 +23,11 @@ describe('Member Role', () => {
   it('Visits the site, should not show dashboard and Global Training Catalog', () => {
     const baseUrl = Cypress.config('baseUrl');
 
-    cy.intercept(baseUrl + 'api/**', (req) => {
+    cy.intercept(baseUrl + '*/api/**', (req) => {
       req.headers['Authorization'] = `Bearer ${memberJWT}`;
     });
 
-    cy.visit(baseUrl);
+    cy.visit(baseUrl + '/Tempest');
 
     cy.wait(2000);
     cy.url().should('include', '/Profile');
@@ -41,11 +41,11 @@ describe('Member Role', () => {
   it('vists the site and redirect to welcome page, if user has no organization', () => {
     const baseUrl = Cypress.config('baseUrl');
 
-    cy.intercept(baseUrl + 'api/**', (req) => {
+    cy.intercept(baseUrl + '*/api/**', (req) => {
       req.headers['Authorization'] = `Bearer ${member2JWTNoOrg}`;
     });
 
-    cy.visit(baseUrl);
+    cy.visit(baseUrl + '/Tempest');
 
     cy.wait(2000);
     cy.url().should('include', '/Welcome');
@@ -55,6 +55,6 @@ describe('Member Role', () => {
 
     cy.findByRole('button', { name: /get started/i }).click();
 
-    cy.url().should('include', '/Profile');
+    cy.url().should('include', '/Tempest/Profile');
   });
 });

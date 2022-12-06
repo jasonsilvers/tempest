@@ -19,7 +19,7 @@ const useCreateMemberTrackingItemAndRecord = () => {
   return useMutation<MemberTrackingItem, unknown, { newMemberTrackingItem: MemberTrackingItem; completedDate: string }>(
     ({ newMemberTrackingItem, completedDate }) =>
       axios
-        .post(`/api/${MEMBER_TRACKING_ITEM_RESOURCE}`, newMemberTrackingItem, {
+        .post(EUri.MEMBER_TRACKING_ITEMS, newMemberTrackingItem, {
           params: {
             create_member_tracking_record: true,
             complete_date: completedDate,

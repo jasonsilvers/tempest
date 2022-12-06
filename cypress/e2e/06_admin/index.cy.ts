@@ -4,11 +4,11 @@ describe('Can use admin features', () => {
   beforeEach(() => {
     const baseUrl = Cypress.config('baseUrl');
 
-    cy.intercept(baseUrl + 'api/**', (req) => {
+    cy.intercept(baseUrl + '*/api/**', (req) => {
       req.headers['Authorization'] = `Bearer ${adminJWT}`;
     });
 
-    cy.visit(baseUrl);
+    cy.visit(baseUrl + '/Tempest');
   });
 
   it('should navigate to admin page', () => {

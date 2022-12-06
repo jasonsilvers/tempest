@@ -7,7 +7,7 @@ import { findMemberTrackingRecordById, updateMemberTrackingRecord } from '../../
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import memberTrackingRecordSlugHandler from '../../../src/pages/api/membertrackingrecords/[...slug]';
+import memberTrackingRecordSlugHandler from '../../../src/pages/api/tempest/membertrackingrecords/[...slug]';
 import dayjs from 'dayjs';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import MockDate from 'mockdate';

@@ -4,7 +4,7 @@ import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import { createPPEItemForUser, findPPEItemsByUserId } from '../../../src/repositories/ppeItemsRepo';
-import ppeItemsHandler from '../../../src/pages/api/ppeitems';
+import ppeItemsHandler from '../../../src/pages/api/tempest/ppeitems';
 import { EAction, EResource, ERole } from '../../../src/const/enums';
 
 jest.mock('../../../src/repositories/grantsRepo.ts');

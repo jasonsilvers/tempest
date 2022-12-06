@@ -4,11 +4,11 @@ describe('Can use program admin features', () => {
   beforeEach(() => {
     const baseUrl = Cypress.config('baseUrl');
 
-    cy.intercept(baseUrl + 'api/**', (req) => {
+    cy.intercept(baseUrl + '*/api/**', (req) => {
       req.headers['Authorization'] = `Bearer ${programManagerJWT}`;
     });
 
-    cy.visit(baseUrl);
+    cy.visit(baseUrl + '/Tempest');
   });
 
   it('should navigate to admin page', () => {

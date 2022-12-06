@@ -7,7 +7,7 @@ describe('Member role', () => {
     cy.findAllByText(/nothing to show/i).should('have.length', 1);
   });
 
-  it.only('should add new training and be able to sign', () => {
+  it('should add new training and be able to sign', () => {
     cy.loginAsMember();
 
     const trackingItemName = 'GLOBAL - Fire Extinguisher';
@@ -32,7 +32,7 @@ describe('Member role', () => {
   it('should be able to complete record if already signed by training monitor - part 1', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
-    cy.visit(baseUrl + 'Dashboard');
+    cy.visit(baseUrl + '/Tempest/Dashboard');
     cy.findAllByRole('button', {
       name: /rows per page: 5/i
     }).first().click()
@@ -47,7 +47,7 @@ describe('Member role', () => {
       });
     const trackingItemName = 'GLOBAL - Fire Extinguisher';
 
-    cy.addMemberTrackingRecord(trackingItemName, getToday());
+    cy.addMemberTrackingRecord(trackingItemName, getTodayDay());
     cy.findByRole('button', { name: 'signature_button' }).click();
 
     cy.findByRole('alert').should('be.visible');
@@ -69,7 +69,7 @@ describe('Member role', () => {
     cy.loginAsMember();
     const trackingItemName = 'GLOBAL - Fire Extinguisher';
 
-    cy.addMemberTrackingRecord(trackingItemName, getToday());
+    cy.addMemberTrackingRecord(trackingItemName, getTodayDay());
     cy.findByText(/fire extinguisher/i).should('be.visible');
     cy.findAllByRole('button', { name: /delete-tracking-record/i }).click({ multiple: true });
     cy.contains(/fire extinguisher/i).should('not.exist');
@@ -77,7 +77,7 @@ describe('Member role', () => {
   it('should not be able to delete record if signed by monitor - part 1', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
-    cy.visit(baseUrl + 'Dashboard');
+    cy.visit(baseUrl + '/Tempest/Dashboard');
     cy.findAllByRole('button', {
       name: /rows per page: 5/i
     }).first().click()
@@ -93,7 +93,7 @@ describe('Member role', () => {
     const trackingItemName = 'GLOBAL - Fire Extinguisher';
 
     //This tracking record is used in (should complete record and replace the old one)
-    cy.addMemberTrackingRecord(trackingItemName, getToday(1));
+    cy.addMemberTrackingRecord(trackingItemName, getTodayDay(1));
     cy.findByRole('button', { name: 'signature_button' }).click();
     cy.findByRole('alert').should('be.visible');
 
@@ -151,7 +151,7 @@ describe('Monitor role', () => {
 
     const trackingItemName = 'GLOBAL - Fire Extinguisher';
 
-    cy.addMemberTrackingRecord(trackingItemName, getToday());
+    cy.addMemberTrackingRecord(trackingItemName, getTodayDay());
 
     cy.findByRole('button', { name: /awaiting signature/i }).should('exist');
     cy.findByRole('button', { name: 'signature_button' }).should('exist');
@@ -163,7 +163,7 @@ describe('Monitor role', () => {
   it('should be able to delete record even if signed but not complete', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
-    cy.visit(baseUrl + 'Dashboard');
+    cy.visit(baseUrl + '/Tempest/Dashboard');
     cy.findAllByRole('button', {
       name: /rows per page: 5/i
     }).first().click()
@@ -179,7 +179,7 @@ describe('Monitor role', () => {
 
     const trackingItemName = 'GLOBAL - Fire Safety';
 
-    cy.addMemberTrackingRecord(trackingItemName, getToday());
+    cy.addMemberTrackingRecord(trackingItemName, getTodayDay());
     cy.findByRole('button', { name: 'signature_button' }).click();
     cy.findAllByRole('button', { name: /delete-tracking-record-/i }).should('not.be.disabled');
     cy.findAllByTestId('DeleteIcon').click({multiple: true})
@@ -190,7 +190,7 @@ describe('Monitor role', () => {
   it('should be able to archive record', () => {
     const baseUrl = Cypress.config('baseUrl');
     cy.loginAsMonitor();
-    cy.visit(baseUrl + 'Dashboard');
+    cy.visit(baseUrl + '/Tempest/Dashboard');
     cy.findAllByRole('button', {
       name: /rows per page: 5/i
     }).first().click()
