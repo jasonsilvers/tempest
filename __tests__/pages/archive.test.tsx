@@ -21,13 +21,13 @@ beforeAll(() => {
     onUnhandledRequest: 'warn',
   });
   server.use(
-    rest.get('/api/users/123', (req, res, ctx) => {
+    rest.get('/api/tempest/users/123', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(bobJones));
     }),
-    rest.get('/api/users/321', (req, res, ctx) => {
+    rest.get('/api/tempest/users/321', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
     }),
-    rest.get('/api/users/123/membertrackingitems/archived', (req, res, ctx) => {
+    rest.get('/api/tempest/users/123/membertrackingitems/archived', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(andrewMonitor));
     })
   );
@@ -88,7 +88,7 @@ it('should not show breadcrumbs if member', async () => {
 
 it('should show breadcrumbs if monitor and not on own profile', async () => {
   server.use(
-    rest.get('/api/users/123', (req, res, ctx) => {
+    rest.get('/api/tempest/users/123', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(bobJones));
     }),
     rest.get(EUri.LOGIN, (req, res, ctx) => {

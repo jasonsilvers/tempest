@@ -6,7 +6,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import memberTrackingRecordIndexHandler from '../../../src/pages/api/membertrackingrecords/index';
+import memberTrackingRecordIndexHandler from '../../../src/pages/api/tempest/membertrackingrecords/index';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import dayjs from 'dayjs';
 import { createMemberTrackingRecord } from '../../../src/repositories/memberTrackingRepo';

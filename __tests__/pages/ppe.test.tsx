@@ -39,14 +39,14 @@ beforeEach(() => {
     query: { id: 123 },
   });
   server.use(
-    rest.get('/api/ppeitems', (req, res, ctx) => {
+    rest.get('/api/tempest/ppeitems', (req, res, ctx) => {
       return res(
         ctx.json({
           ppeItems: [testPPEItem, testPPEItem2],
         })
       );
     }),
-    rest.get('/api/users/123', (req, res, ctx) => {
+    rest.get('/api/tempest/users/123', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json(bobJones));
     })
   );
@@ -75,7 +75,7 @@ it('renders the ppe page', async () => {
 
 it('Can add new PPE Item', async () => {
   server.use(
-    rest.post('/api/ppeitems', (req, res, ctx) => {
+    rest.post('/api/tempest/ppeitems', (req, res, ctx) => {
       return res(ctx.json(req.body));
     })
   );
@@ -104,7 +104,7 @@ it('Can add new PPE Item', async () => {
 
 it('Can update ppe item', async () => {
   server.use(
-    rest.put('/api/ppeitems/1', (req, res, ctx) => {
+    rest.put('/api/tempest/ppeitems/1', (req, res, ctx) => {
       return res(ctx.json(req.body));
     })
   );
@@ -133,7 +133,7 @@ it('Can update ppe item', async () => {
 
 it('Can delete ppe item', async () => {
   server.use(
-    rest.delete('/api/ppeitems/1', (req, res, ctx) => {
+    rest.delete('/api/tempest/ppeitems/1', (req, res, ctx) => {
       return res(ctx.json(req.body));
     })
   );
@@ -156,7 +156,7 @@ it('Can delete ppe item', async () => {
 
 it('Can remove new ppe item before saving', async () => {
   server.use(
-    rest.delete('/api/ppeitems/1', (req, res, ctx) => {
+    rest.delete('/api/tempest/ppeitems/1', (req, res, ctx) => {
       return res(ctx.json(req.body));
     })
   );
@@ -181,7 +181,7 @@ it('Can remove new ppe item before saving', async () => {
 
 it('Can only add one new item at a time', async () => {
   server.use(
-    rest.delete('/api/ppeitems/1', (req, res, ctx) => {
+    rest.delete('/api/tempest/ppeitems/1', (req, res, ctx) => {
       return res(ctx.json(req.body));
     })
   );

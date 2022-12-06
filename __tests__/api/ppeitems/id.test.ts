@@ -3,7 +3,7 @@ import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { testNextApi } from '../../testutils/NextAPIUtils';
-import ppeItemsIdHandler from '../../../src/pages/api/ppeitems/[id]';
+import ppeItemsIdHandler from '../../../src/pages/api/tempest/ppeitems/[id]';
 import { EAction, EResource, ERole } from '../../../src/const/enums';
 import { deletePPEItemById, findPPEItemById, updatePPEItemById } from '../../../src/repositories/ppeItemsRepo';
 

@@ -3,7 +3,7 @@ import Joi from 'joi';
 const dayjs = require('dayjs');
 import { NextApiResponse } from 'next';
 import { getAc } from '../middleware/utils';
-import { ITempestMemberTrackingItemApiRequest } from '../pages/api/membertrackingitems';
+import { ITempestMemberTrackingItemApiRequest } from '../pages/api/tempest/membertrackingitems';
 import {
   findMemberTrackingItemById,
   updateMemberTrackingItem,

@@ -1,13 +1,13 @@
 import { MemberTrackingRecord } from '.prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { memberTrackingRecordPostSchema } from '../../../controllers/memberTrackingRecordsController';
-import { getAc } from '../../../middleware/utils';
-import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { createMemberTrackingRecord } from '../../../repositories/memberTrackingRepo';
-import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { EResource } from '../../../const/enums';
+import { memberTrackingRecordPostSchema } from '../../../../controllers/memberTrackingRecordsController';
+import { getAc } from '../../../../middleware/utils';
+import { MethodNotAllowedError, PermissionError } from '../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
+import { createMemberTrackingRecord } from '../../../../repositories/memberTrackingRepo';
+import { findUserByEmail, LoggedInUser } from '../../../../repositories/userRepo';
+import { EResource } from '../../../../const/enums';
 
 const memberTrackingRecordSchema = {
   post: memberTrackingRecordPostSchema,

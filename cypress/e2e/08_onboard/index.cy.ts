@@ -12,7 +12,7 @@ describe('Member That Has An Org', () => {
 
     cy.wait(2000);
   
-    cy.visit(baseUrl + '/Onboard');
+    cy.visit(baseUrl + '/Tempest/Onboard');
 
     const orgName = 'New Org';
     const orgShortName = 'Org';

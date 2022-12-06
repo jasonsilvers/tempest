@@ -1,7 +1,7 @@
 import { MemberTrackingItem } from '.prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, LoggedInUser } from '../../../../repositories/userRepo';
 import {
   getMemberTrackingItemAction,
   putMemberTrackingItemAction,
@@ -11,9 +11,9 @@ import {
   memberTrackingItemPostSchema,
   memberTrackingItemPutSchema,
   memberTrackingItemGetSchema,
-} from '../../../controllers/memberTrackingItemsController';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+} from '../../../../controllers/memberTrackingItemsController';
+import { MethodNotAllowedError } from '../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
 
 export interface ITempestMemberTrackingItemApiRequest<T> extends NextApiRequestWithAuthorization<T> {
   query: {

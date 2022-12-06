@@ -3,7 +3,7 @@ import { monitorJWT } from '../../fixtures/jwt';
 describe('Can view Global Tracking Items', () => {
   beforeEach(() => {
     const baseUrl = Cypress.config('baseUrl');
-    cy.intercept(baseUrl + '*/api/*', (req) => {
+    cy.intercept(baseUrl + '*/api/**', (req) => {
       req.headers['Authorization'] = `Bearer ${monitorJWT}`;
     });
 

@@ -1,9 +1,9 @@
 import { rest } from 'msw';
-import { EUri } from '../../../src/const/enums';
 import { server } from '../../testutils/mocks/msw';
 import { usersQuery } from '../../testutils/mocks/fixtures';
 import { fireEvent, render, waitFor } from '../../testutils/TempestTestUtils';
 import { MassSign } from '../../../src/components/Dashboard/MassSign';
+import React from 'react';
 
 beforeAll(() => {
   server.listen({
@@ -45,7 +45,7 @@ test('should filter list of users', async () => {
 
 test('should sign record for user', async () => {
   server.use(
-    rest.post(EUri.MEMBER_TRACKING_RECORDS + '21/SIGN_AUTHORITY', (req, res, ctx) => {
+    rest.post('*/21/SIGN_AUTHORITY', (req, res, ctx) => {
       return res(ctx.status(200), ctx.json({ message: 'ok' }));
     })
   );
@@ -60,7 +60,7 @@ test('should sign record for user', async () => {
 
 test('should show snackbar if error signing record', async () => {
   server.use(
-    rest.post(EUri.MEMBER_TRACKING_RECORDS + '21/SIGN_AUTHORITY', (req, res, ctx) => {
+    rest.post('*/21/SIGN_AUTHORITY', (req, res, ctx) => {
       return res(ctx.status(500), ctx.json({ message: 'Error' }));
     })
   );

@@ -6,7 +6,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByEmail, findUserById } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import memberTrackingRecordIdHandler from '../../../src/pages/api/membertrackingrecords/[id]';
+import memberTrackingRecordIdHandler from '../../../src/pages/api/tempest/membertrackingrecords/[id]';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import {
   findMemberTrackingRecordById,

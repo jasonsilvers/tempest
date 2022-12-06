@@ -4,11 +4,11 @@ import {
   getTrackingItemAction,
   postTrackingItemAction,
   trackingItemPostSchema,
-} from '../../../controllers/trackingItemsController';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { returnUser } from '../../../repositories/loginRepo';
-import { LoggedInUser } from '../../../repositories/userRepo';
+} from '../../../../controllers/trackingItemsController';
+import { MethodNotAllowedError } from '../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
+import { returnUser } from '../../../../repositories/loginRepo';
+import { LoggedInUser } from '../../../../repositories/userRepo';
 
 const trackingItemHandler = async (req: NextApiRequestWithAuthorization<LoggedInUser>, res: NextApiResponse) => {
   const { method } = req;

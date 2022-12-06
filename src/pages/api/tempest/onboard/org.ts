@@ -2,12 +2,12 @@ import { OrganizationType, Organization } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
-import { ERole, ITempestApiMessage } from '../../../const/enums';
-import { AppError, MethodNotAllowedError } from '../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { createOrganizations, deleteOrganization } from '../../../repositories/organizationRepo';
-import { getRoleByName } from '../../../repositories/roleRepo';
-import { findUserByEmail, LoggedInUser, updateUser } from '../../../repositories/userRepo';
+import { ERole, ITempestApiMessage } from '../../../../const/enums';
+import { AppError, MethodNotAllowedError } from '../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
+import { createOrganizations, deleteOrganization } from '../../../../repositories/organizationRepo';
+import { getRoleByName } from '../../../../repositories/roleRepo';
+import { findUserByEmail, LoggedInUser, updateUser } from '../../../../repositories/userRepo';
 
 const onboardOrganizationPostSchema = {
   body: Joi.object({

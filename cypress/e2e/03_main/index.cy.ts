@@ -4,7 +4,7 @@ describe('Monitor Role', () => {
   it('Visits the site, should show dashboard and Global Training Catalog', () => {
     const baseUrl = Cypress.config('baseUrl');
 
-    cy.intercept(baseUrl + '*/api/*', (req) => {
+    cy.intercept(baseUrl + '*/api/**', (req) => {
       req.headers['Authorization'] = `Bearer ${monitorJWT}`;
     });
 

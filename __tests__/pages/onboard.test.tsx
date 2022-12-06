@@ -2,7 +2,7 @@ import { OrganizationType } from '@prisma/client';
 import React from 'react';
 import 'whatwg-fetch';
 import { ERole, EUri } from '../../src/const/enums';
-import Onboard from '../../src/pages/Onboard';
+import Onboard from '../../src/pages/Tempest/Onboard';
 import { bobJones } from '../testutils/mocks/fixtures';
 import { rest, server } from '../testutils/mocks/msw';
 import { fireEvent, render, waitFor } from '../testutils/TempestTestUtils';

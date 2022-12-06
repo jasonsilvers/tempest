@@ -6,7 +6,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByEmail } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import trackingItemHandler from '../../../src/pages/api/trackingitems';
+import trackingItemHandler from '../../../src/pages/api/tempest/trackingitems';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import {
   createTrackingItem,

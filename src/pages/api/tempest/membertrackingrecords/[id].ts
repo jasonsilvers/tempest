@@ -1,17 +1,17 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { findUserByEmail, findUserById, LoggedInUser } from '../../../repositories/userRepo';
+import { findUserByEmail, findUserById, LoggedInUser } from '../../../../repositories/userRepo';
 import {
   countMemberTrackingRecordsForMemberTrackingItem,
   deleteMemberTrackingItem,
   deleteMemberTrackingRecord,
   findMemberTrackingRecordById,
-} from '../../../repositories/memberTrackingRepo';
-import { getAc } from '../../../middleware/utils';
-import { EResource } from '../../../const/enums';
-import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { loggedInUserHasPermissionOnUser } from '../../../utils/userHasPermissionWithinOrg';
+} from '../../../../repositories/memberTrackingRepo';
+import { getAc } from '../../../../middleware/utils';
+import { EResource } from '../../../../const/enums';
+import { MethodNotAllowedError, NotFoundError, PermissionError } from '../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
+import { loggedInUserHasPermissionOnUser } from '../../../../utils/userHasPermissionWithinOrg';
 
 interface ITempestMemberTrackingRecordApiRequest<T, B = unknown> extends NextApiRequestWithAuthorization<T, B> {
   query: {

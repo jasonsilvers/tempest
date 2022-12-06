@@ -10,7 +10,7 @@ import {
   updateUser,
   updateUserRole,
 } from '../../../src/repositories/userRepo';
-import userQueryHandler from '../../../src/pages/api/users/[id]';
+import userQueryHandler from '../../../src/pages/api/tempest/users/[id]';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { testNextApi } from '../../testutils/NextAPIUtils';

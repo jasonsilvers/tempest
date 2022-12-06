@@ -50,20 +50,20 @@ export enum EResource {
 
 // All must begin and end in a slash
 export enum EUri {
-  TRACKING_ITEMS = '/api/trackingitems/',
+  TRACKING_ITEMS = '/api/tempest/trackingitems/',
   PERMISSIONS = '/api/grants/',
   LOGIN = '/api/login/',
-  MEMBER_TRACKING_RECORDS = '/api/membertrackingrecords/',
-  MEMBER_TRACKING_ITEMS = '/api/membertrackingitems/',
-  USERS = '/api/users/',
+  MEMBER_TRACKING_RECORDS = '/api/tempest/membertrackingrecords/',
+  MEMBER_TRACKING_ITEMS = '/api/tempest/membertrackingitems/',
+  USERS = '/api/tempest/users/',
   ROLES = '/api/roles/',
   ORGANIZATIONS = '/api/organizations/',
   LOGS = '/api/logs',
   RESOURCES = '/api/resource/',
-  PPE_ITEMS = '/api/ppeitems/',
-  BULK_CREATE = '/api/bulk/tracking/create/',
+  PPE_ITEMS = '/api/tempest/ppeitems/',
+  BULK_CREATE = '/api/tempest/bulk/tracking/create/',
   JOBS = '/api/jobs/',
-  ONBOARD = '/api/onboard/org/',
+  ONBOARD = '/api/tempest/onboard/org/',
   MERGE = '/api/account/merge/',
 }
 

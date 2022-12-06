@@ -132,7 +132,7 @@ const memberTrackingItems: MemberTrackingItemWithAll[] = [
 
 // use member tracking record
 const memberTrackingItemsGet = (user) =>
-  rest.get(EUri.USERS + '*/membertrackingitems/all', (req, res, ctx) => {
+  rest.get('*/membertrackingitems/all', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(user));
   });
 
@@ -154,7 +154,7 @@ const trackingRecordPost = () =>
   });
 
 const trackingItemAndRecordPost = () =>
-  rest.post(EUri.MEMBER_TRACKING_ITEMS, (req, res, ctx) => {
+  rest.post('*/membertrackingitems', (req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json({

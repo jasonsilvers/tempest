@@ -1,10 +1,10 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import Joi from 'joi';
 import { NextApiResponse } from 'next';
-import { postMemberTrackingRecordsAction } from '../../../controllers/memberTrackingRecordsController';
-import { MethodNotAllowedError } from '../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
+import { postMemberTrackingRecordsAction } from '../../../../controllers/memberTrackingRecordsController';
+import { MethodNotAllowedError } from '../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
+import { findUserByEmail, LoggedInUser } from '../../../../repositories/userRepo';
 
 const memberTrackingRecordSlugPostSchema = {
   body: Joi.object({

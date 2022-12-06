@@ -6,7 +6,7 @@ import { findGrants } from '../../../src/repositories/grantsRepo';
 import { findUserByEmail, findUserById, findUserByIdWithMemberTrackingItems } from '../../../src/repositories/userRepo';
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
-import userSlugHandler from '../../../src/pages/api/users/[...slug]';
+import userSlugHandler from '../../../src/pages/api/tempest/users/[...slug]';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import dayjs from 'dayjs';
 import { EMtrVariant, EUserResources } from '../../../src/const/enums';

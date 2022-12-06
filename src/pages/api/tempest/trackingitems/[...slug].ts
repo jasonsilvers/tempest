@@ -6,14 +6,14 @@ import {
   MethodNotAllowedError,
   NotFoundError,
   PermissionError,
-} from '../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
-import { findUserByEmail, LoggedInUser } from '../../../repositories/userRepo';
-import { ETrackingItemVerb, EResource, ERole } from '../../../const/enums';
-import { findTrackingByIdIncludeCount, updateTrackingItem } from '../../../repositories/trackingItemRepo';
+} from '../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
+import { findUserByEmail, LoggedInUser } from '../../../../repositories/userRepo';
+import { ETrackingItemVerb, EResource, ERole } from '../../../../const/enums';
+import { findTrackingByIdIncludeCount, updateTrackingItem } from '../../../../repositories/trackingItemRepo';
 import { TrackingItem, MemberTrackingItemStatus, TrackingItemStatus } from '@prisma/client';
-import { getAc } from '../../../middleware/utils';
-import { updateManyMemberTrackingItemsByTrackingItemId } from '../../../repositories/memberTrackingRepo';
+import { getAc } from '../../../../middleware/utils';
+import { updateManyMemberTrackingItemsByTrackingItemId } from '../../../../repositories/memberTrackingRepo';
 
 const trackingItemSlugPostSchema = {
   query: Joi.object({

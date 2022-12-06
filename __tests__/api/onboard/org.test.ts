@@ -1,6 +1,6 @@
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { createOrganizations, deleteOrganization } from '../../../src/repositories/organizationRepo';
-import onboardOrgApiHandler from '../../../src/pages/api/onboard/org';
+import onboardOrgApiHandler from '../../../src/pages/api/tempest/onboard/org';
 import { findUserByEmail, updateUser } from '../../../src/repositories/userRepo';
 import { findGrants } from '../../../src/repositories/grantsRepo';
 import { grants } from '../../testutils/mocks/fixtures';

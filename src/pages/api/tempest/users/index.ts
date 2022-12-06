@@ -1,9 +1,9 @@
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { EResource } from '../../../const/enums';
-import { getAc } from '../../../middleware/utils';
-import { MethodNotAllowedError, PermissionError } from '../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+import { EResource } from '../../../../const/enums';
+import { getAc } from '../../../../middleware/utils';
+import { MethodNotAllowedError, PermissionError } from '../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
 import {
   findUserByEmail,
   getAllDetachedUsers,
@@ -11,8 +11,8 @@ import {
   getUsers,
   LoggedInUser,
   UsersWithMemberTrackingRecords,
-} from '../../../repositories/userRepo';
-import { jwtParser } from '../../../utils/jwtUtils';
+} from '../../../../repositories/userRepo';
+import { jwtParser } from '../../../../utils/jwtUtils';
 
 export interface ITempestUsersApiRequest<T> extends NextApiRequestWithAuthorization<T> {
   query: {

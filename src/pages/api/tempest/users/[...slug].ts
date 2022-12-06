@@ -1,14 +1,14 @@
 import { User } from '@prisma/client';
 import { NextApiRequestWithAuthorization } from '@tron/nextjs-auth-p1';
 import { NextApiResponse } from 'next';
-import { getAc } from '../../../middleware/utils';
+import { getAc } from '../../../../middleware/utils';
 import {
   BadRequestError,
   MethodNotAllowedError,
   NotFoundError,
   PermissionError,
-} from '../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../middleware/withTempestHandlers';
+} from '../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
 import {
   findUserByEmail,
   findUserByIdWithMemberTrackingItems,
@@ -16,8 +16,8 @@ import {
   LoggedInUser,
   findUserById,
   FindUserById,
-} from '../../../repositories/userRepo';
-import { EResource, EMtrVariant, EUserResources, ITempestApiMessage } from '../../../const/enums';
+} from '../../../../repositories/userRepo';
+import { EResource, EMtrVariant, EUserResources, ITempestApiMessage } from '../../../../const/enums';
 
 async function userSlugHandler(
   req: NextApiRequestWithAuthorization<LoggedInUser>,

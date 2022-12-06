@@ -29,7 +29,7 @@ it('renders the account page', async () => {
 
 it('should update personal fields', async () => {
   server.use(
-    rest.put(`/api/users/123`, (req, res, ctx) => {
+    rest.put(`/api/tempest/users/123`, (req, res, ctx) => {
       return res(ctx.json(req.body));
     })
   );
@@ -81,7 +81,7 @@ it('should update work fields', async () => {
       );
     }),
 
-    rest.put(`/api/users/123`, (req, res, ctx) => {
+    rest.put(`/api/tempest/users/123`, (req, res, ctx) => {
       return res(ctx.json(req.body));
     })
   );
@@ -144,7 +144,7 @@ it('should update monitor fields only if monitor', async () => {
       );
     }),
 
-    rest.put(`/api/users/321`, (req, res, ctx) => {
+    rest.put(`/api/tempest/users/321`, (req, res, ctx) => {
       return res(ctx.json(req.body));
     })
   );

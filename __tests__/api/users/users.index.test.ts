@@ -7,7 +7,7 @@ import { findUserByEmail, getAllUsersFromUsersOrgCascade, getUsers } from '../..
 import { grants } from '../../testutils/mocks/fixtures';
 import { mockMethodAndReturn } from '../../testutils/mocks/repository';
 import { testNextApi } from '../../testutils/NextAPIUtils';
-import userHandler from '../../../src/pages/api/users/index';
+import userHandler from '../../../src/pages/api/tempest/users/index';
 import { ERole } from '../../../src/const/enums';
 import { getOrganizationAndDown } from '../../../src/repositories/organizationRepo';
 

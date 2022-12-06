@@ -154,7 +154,7 @@ test('should change completion date', async () => {
   }));
 
   server.use(
-    rest.post(EUri.MEMBER_TRACKING_RECORDS + '1/update_completion', (req, res, ctx) => {
+    rest.post('*/1/update_completion', (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({
@@ -197,7 +197,7 @@ test('should alert user that signatures will be removed', async () => {
   }));
 
   server.use(
-    rest.post(EUri.MEMBER_TRACKING_RECORDS + '1/update_completion', (req, res, ctx) => {
+    rest.post('*/1/update_completion', (req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.json({

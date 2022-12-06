@@ -1,12 +1,12 @@
 import Joi from 'joi';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { EResource, ITempestApiMessage } from '../../../../const/enums';
-import { getAc } from '../../../../middleware/utils';
-import { MethodNotAllowedError, PermissionError } from '../../../../middleware/withErrorHandling';
-import { withTempestHandlers } from '../../../../middleware/withTempestHandlers';
-import { createJob, createJobResults, findJobResultsByJobId } from '../../../../repositories/jobRepo';
-import { findUserByEmail, LoggedInUser } from '../../../../repositories/userRepo';
-import { BulkTrackingBodyItem, trackingCreate } from '../../../../utils/bulk';
+import { EResource, ITempestApiMessage } from '../../../../../const/enums';
+import { getAc } from '../../../../../middleware/utils';
+import { MethodNotAllowedError, PermissionError } from '../../../../../middleware/withErrorHandling';
+import { withTempestHandlers } from '../../../../../middleware/withTempestHandlers';
+import { createJob, createJobResults, findJobResultsByJobId } from '../../../../../repositories/jobRepo';
+import { findUserByEmail, LoggedInUser } from '../../../../../repositories/userRepo';
+import { BulkTrackingBodyItem, trackingCreate } from '../../../../../utils/bulk';
 
 const bulkTrackingCreateSchema = {
   post: {

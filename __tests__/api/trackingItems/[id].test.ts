@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import trackingItemQueryHandler from '../../../src/pages/api/trackingitems/[id]';
+import trackingItemQueryHandler from '../../../src/pages/api/tempest/trackingitems/[id]';
 import { testNextApi } from '../../testutils/NextAPIUtils';
 import { grants } from '../../testutils/mocks/fixtures';
 import { findGrants } from '../../../src/repositories/grantsRepo';

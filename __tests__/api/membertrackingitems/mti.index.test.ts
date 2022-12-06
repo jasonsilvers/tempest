@@ -15,7 +15,7 @@ import {
   updateMemberTrackingItem,
 } from '../../../src/repositories/memberTrackingRepo';
 import { testNextApi } from '../../testutils/NextAPIUtils';
-import memberTrackingItemHandler from '../../../src/pages/api/membertrackingitems';
+import memberTrackingItemHandler from '../../../src/pages/api/tempest/membertrackingitems';
 import dayjs from 'dayjs';
 import { loggedInUserHasPermissionOnUser } from '../../../src/utils/userHasPermissionWithinOrg';
 

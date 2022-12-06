@@ -22,7 +22,7 @@ export const useUpdateMemberTrackingRecord = (verb: EMtrVerb) => {
   >(
     ({ memberTrackingRecord }) =>
       axios
-        .post(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}/${memberTrackingRecord.id}/${verb}`, {
+        .post(`${EUri.MEMBER_TRACKING_RECORDS}/${memberTrackingRecord.id}/${verb}`, {
           completedDate: memberTrackingRecord.completedDate,
         })
         .then((response) => response.data),
@@ -38,7 +38,7 @@ export const useCreateMemberTrackingRecord = () => {
   const queryClient = useQueryClient();
   return useMutation(
     (memberTrackingRecord: Partial<MemberTrackingRecord>) =>
-      axios.post(`/api/${MEMBER_TRACKING_RECORD_RESOURCE}`, memberTrackingRecord).then((response) => response.data),
+      axios.post(`${EUri.MEMBER_TRACKING_RECORDS}`, memberTrackingRecord).then((response) => response.data),
     {
       onSettled: (data: MemberTrackingRecord) => {
         queryClient.invalidateQueries(mtiQueryKeys.memberTrackingItems(data.traineeId, EMtrVariant.ALL));
