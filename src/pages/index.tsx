@@ -1,16 +1,8 @@
-import { useUser } from '@tron/nextjs-auth-p1';
-import { useRouter } from 'next/router';
+import { withPageAuth } from '@tron/nextjs-auth-p1';
+
 import { Link } from '../components/Navigation/Navigation';
-import { LoggedInUser } from '../repositories/userRepo';
 
 function LandingPage() {
-  const userQuery = useUser<LoggedInUser>();
-  const router = useRouter();
-
-  if (!userQuery.user && !userQuery.isLoading) {
-    router.push('/Unauthenticated');
-  }
-
   return (
     <div>
       Welcome to Cascade
@@ -25,4 +17,4 @@ function LandingPage() {
   );
 }
 
-export default LandingPage;
+export default withPageAuth(LandingPage);

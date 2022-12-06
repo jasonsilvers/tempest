@@ -1,5 +1,4 @@
 import { render } from '../testutils/TempestTestUtils';
-import AppIndex from '../../src/pages/index';
 import TempestIndex from '../../src/pages/Tempest/index';
 import { useTestUser } from '../testutils/mocks/NextMocks';
 import { ERole } from '../../src/const/enums';
@@ -7,9 +6,9 @@ import React from 'react';
 
 it('routes the user to the Unauthenticated app', async () => {
   const push = jest.fn();
-  render(<AppIndex />, { push });
+  render(<TempestIndex />, { push });
 
-  expect(push).toBeCalledTimes(2);
+  expect(push).toBeCalledTimes(1);
   expect(push).toBeCalledWith('/Unauthenticated');
 });
 
