@@ -91,7 +91,10 @@ export const MassSign = ({ usersQuery }: MassSignProps) => {
         .map((user) => (
           <div key={user.id}>
             <div tw="bg-gray-200 px-5 py-2 font-medium">
-              <span tw="underline text-primary cursor-pointer" onClick={() => router.push(`/Profile/${user.id}`)}>
+              <span
+                tw="underline text-primary cursor-pointer"
+                onClick={() => router.push(`/Tempest/Profile/${user.id}`)}
+              >
                 {user.rank} {user.firstName} {user.lastName}
               </span>
             </div>

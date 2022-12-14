@@ -28,6 +28,16 @@ module.exports = withBundleAnalyzer({
         destination: '/Tempest',
         permanent: false,
       },
+      {
+        source: '/Dashboard',
+        destination: '/Tempest',
+        permanent: false,
+      },
+      {
+        source: '/Profile/:path*',
+        destination: '/Tempest',
+        permanent: false,
+      },
     ];
   },
   async headers() {
