@@ -55,6 +55,8 @@ describe('Member role', () => {
 
   it('should be able to complete record if already signed by training monitor - part 2', () => {
     cy.loginAsMember();
+    const baseUrl = Cypress.config('baseUrl');
+    cy.visit(baseUrl + '/Tempest');
     
     cy.findByRole('button', { name: 'signature_button' }).click();
 
