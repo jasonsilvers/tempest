@@ -1,13 +1,16 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## Getting Started
 
-First, run the development server:
+First download ModHeader - https://modheader.com/modheader
+
+Add Authorization request header for localhost. JWTs for development can be found in cypress/fixtures/jwt.ts
+
+Setup and run the development server:
 
 ```bash
+npm run install
+npm run createDevDatabase
+npm run db:reset
 npm run dev
-# or
-yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
