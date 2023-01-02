@@ -7,7 +7,7 @@ Add Authorization request header for localhost. JWTs for development can be foun
 Setup and run the development server:
 
 ```bash
-npm run install
+npm install
 npm run createDevDatabase
 npm run db:reset
 npm run dev
